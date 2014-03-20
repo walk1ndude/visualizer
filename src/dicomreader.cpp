@@ -14,10 +14,10 @@
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
     _imageNumber(0) {
-    if (initOpenCL()) {
+ /*   if (initOpenCL()) {
         std::cerr << "OpenCL is not initialized... aborted" << std::endl;
         exit(0);
-    }
+    }*/
 }
 
 int DicomReader::initOpenCL() {

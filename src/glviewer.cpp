@@ -10,8 +10,8 @@
 
 GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages) :
     _program(0),
-    _rBottom(0.1),
-    _rTop(0.5),
+    _rBottom((float) 0.1),
+    _rTop((float) 0.5),
     _alpha(0),
     _beta(0),
     _distance(10),
@@ -53,7 +53,7 @@ void GLviewer::fetchMatrices() {
     _cameraUpDirection = _cameraTransformation * QVector3D(0, 1, 0);
 
     _pMatrix.setToIdentity();
-    _pMatrix.ortho(-2, 2, -2, 2, 0.001, 1000);
+    _pMatrix.ortho(-2, 2, -2, 2,(float) 0.001,(float) 1000.0);
 
     _mMatrix.setToIdentity();
 
@@ -157,9 +157,9 @@ void GLviewer::wheelEvent(QWheelEvent * event) {
 
     if (event->orientation() == Qt::Vertical) {
         if (d < 0) {
-            _distance *= 1.1;
+            _distance *= (float) 1.1;
         } else if (d > 0) {
-            _distance *= 0.9;
+            _distance *= (float) 0.9;
         }
 
         renderLater();
