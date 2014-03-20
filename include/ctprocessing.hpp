@@ -15,8 +15,6 @@ typedef uint32_t u_int32_t;
 #include "opencv2/core/core.hpp"
 #include "opencv2/ocl/ocl.hpp"
 
-#include <cmath>
-
 #define RADON_DEGREE_RANGE 180
 #define PI_TIMES_2 (2 * CV_PI)
 #define toRad(x) ((x) * CV_PI / 180.0)
