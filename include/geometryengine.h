@@ -9,6 +9,11 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
+typedef struct _VertexData {
+    QVector3D position;
+    QVector3D texCoord;
+}VertexData;
+
 class GeometryEngine : protected QOpenGLFunctions {
 
 public:
@@ -21,6 +26,9 @@ public:
 private:
     QOpenGLBuffer _vboVert;
     QOpenGLBuffer _vboInd;
+
+    VertexData * _vertices;
+    GLushort * _indices;
 
     int _shaderVertex;
     int _shaderTex;

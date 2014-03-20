@@ -1,19 +1,19 @@
 #include "geometryengine.h"
 
-typedef struct _VertexData {
-    QVector3D position;
-    QVector3D texCoord;
-}VertexData;
-
 GeometryEngine::GeometryEngine() :
     _vboVert(QOpenGLBuffer::VertexBuffer),
-    _vboInd(QOpenGLBuffer::IndexBuffer) {
+    _vboInd(QOpenGLBuffer::IndexBuffer),
+    _vertices(0),
+    _indices(0) {
 
 }
 
 GeometryEngine::~GeometryEngine() {
     _vboVert.destroy();
     _vboInd.destroy();
+
+    delete [] _vertices;
+    delete [] _indices;
 }
 
 void GeometryEngine::init(QOpenGLShaderProgram * program, const int & count) {
@@ -27,13 +27,13 @@ void GeometryEngine::init(QOpenGLShaderProgram * program, const int & count) {
 
 void GeometryEngine::initGeometry(const int & count) {
     _vboVert.create();
-    _vboVert.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
+    _vboVert.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
 
     int vertexCount = 4 * count;
     int indexCount = 6 * count;
 
-    VertexData vertices[vertexCount];
-    GLushort indices[indexCount];
+    _vertices = new VertexData[vertexCount];
+    _indices = new GLushort[indexCount];
 
     float step = 2.0 / (float) count;
     float stepTexture = 1.0 / (float) count;
@@ -45,30 +45,30 @@ void GeometryEngine::initGeometry(const int & count) {
     int currentIndex = 0;
 
     for (int i = 0; i != count; ++ i) {
-        vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 1.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(1.0, 1.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(1.0, 0.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 1.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(1.0, 1.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(1.0, 0.0, zCurrentTexture)};
 
-        indices[currentIndex ++] = 4 * i;
-        indices[currentIndex ++] = 4 * i + 1;
-        indices[currentIndex ++] = 4 * i + 2;
-        indices[currentIndex ++] = 4 * i;
-        indices[currentIndex ++] = 4 * i + 2;
-        indices[currentIndex ++] = 4 * i + 3;
+        _indices[currentIndex ++] = 4 * i;
+        _indices[currentIndex ++] = 4 * i + 1;
+        _indices[currentIndex ++] = 4 * i + 2;
+        _indices[currentIndex ++] = 4 * i;
+        _indices[currentIndex ++] = 4 * i + 2;
+        _indices[currentIndex ++] = 4 * i + 3;
 
         zCurrent += step;
         zCurrentTexture += stepTexture;
     };
 
     _vboVert.bind();
-    _vboVert.allocate(&vertices, vertexCount * sizeof(VertexData));
+    _vboVert.allocate(_vertices, vertexCount * sizeof(VertexData));
 
     _vboInd.create();
-    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
+    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
 
     _vboInd.bind();
-    _vboInd.allocate(&indices, indexCount * sizeof(GLushort));
+    _vboInd.allocate(_indices, indexCount * sizeof(GLushort));
 
     _indexCount = indexCount;
 }
