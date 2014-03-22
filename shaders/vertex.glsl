@@ -1,5 +1,6 @@
 #version 130
 in highp vec4 vertex;
+in highp vec4 normal;
 in highp vec4 tex;
 
 uniform highp mat4 mvpMatrix;

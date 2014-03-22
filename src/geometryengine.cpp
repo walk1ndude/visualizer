@@ -21,6 +21,7 @@ void GeometryEngine::init(QOpenGLShaderProgram * program, const int & count) {
 
     _shaderVertex = program->attributeLocation("vertex");
     _shaderTex = program->attributeLocation("tex");
+    _shaderNormal = program->attributeLocation("normal");
 
     initGeometry(count);
 }
@@ -45,10 +46,10 @@ void GeometryEngine::initGeometry(const int & count) {
     int currentIndex = 0;
 
     for (int i = 0; i != count; ++ i) {
-        _vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, zCurrentTexture)};
-        _vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 1.0, zCurrentTexture)};
-        _vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(1.0, 1.0, zCurrentTexture)};
-        _vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(1.0, 0.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 1.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 1.0, zCurrentTexture)};
+        _vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 0.0, zCurrentTexture)};
 
         _indices[currentIndex ++] = 4 * i;
         _indices[currentIndex ++] = 4 * i + 1;
@@ -81,9 +82,13 @@ void GeometryEngine::drawModel(QOpenGLShaderProgram * program) {
 
     offset += sizeof(QVector3D);
 
+    program->enableAttributeArray(_shaderNormal);
+    program->setAttributeBuffer(_shaderNormal, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+    offset += sizeof(QVector3D);
+
     program->enableAttributeArray(_shaderTex);
     program->setAttributeBuffer(_shaderTex, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
-
 }

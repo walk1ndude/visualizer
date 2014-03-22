@@ -7,6 +7,7 @@
 
 typedef struct _VertexData {
     QVector3D position;
+    QVector3D normal;
     QVector3D texCoord;
 }VertexData;
 
@@ -28,6 +29,7 @@ private:
 
     int _shaderVertex;
     int _shaderTex;
+    int _shaderNormal;
 
     int _indexCount;
 

@@ -8,8 +8,8 @@
 
 GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages) :
     _program(0),
-    _rBottom((float) 0.0001),
-    _rTop((float) 0.5),
+    _rBottom((float) 0.22),
+    _rTop((float) 0.3),
     _textureCV3D(QOpenGLTexture::Target3D),
     _ctImages(ctImages) {
 
@@ -44,6 +44,8 @@ void GLviewer::initialize() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_LIGHTING);
 
     initTextures();
 
