@@ -4,10 +4,6 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QtGui/QOpenGLBuffer>
-#include <QtGui/QOpenGLTexture>
-
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 
 typedef struct _VertexData {
     QVector3D position;

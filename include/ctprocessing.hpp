@@ -11,9 +11,9 @@ typedef uint32_t u_int32_t;
 
 #endif
 
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/core/core.hpp"
-#include "opencv2/ocl/ocl.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/ocl/ocl.hpp>
 
 #define RADON_DEGREE_RANGE 180
 #define PI_TIMES_2 (2 * CV_PI)

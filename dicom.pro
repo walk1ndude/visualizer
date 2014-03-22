@@ -61,14 +61,16 @@ SOURCES += src/main.cpp\
            src/dicomreader.cpp\
            src/glviewer.cpp \
            src/geometryengine.cpp \
-           src/openglwindow.cpp
+           src/openglwindow.cpp \
+           src/matrixstack.cpp
 
 HEADERS  += include/mainwindow.h\
             include/dicomreader.h\
             include/ctprocessing.hpp \
             include/glviewer.h \
             include/geometryengine.h \
-            include/openglwindow.h
+            include/openglwindow.h \
+            include/matrixstack.h
 
 RESOURCES += resources.qrc
 

@@ -2,22 +2,27 @@
 #include <QtGui/QScreen>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
-#include <iostream>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "glviewer.h"
 
-#include "opencv2/highgui/highgui.hpp"
-
 GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages) :
     _program(0),
-    _rBottom((float) 0.1),
+    _rBottom((float) 0.0001),
     _rTop((float) 0.5),
-    _alpha(0),
-    _beta(0),
-    _distance(10),
     _textureCV3D(QOpenGLTexture::Target3D),
     _ctImages(ctImages) {
 
+    ViewPortParams viewPortParams;
+
+    viewPortParams.left = -2.0;
+    viewPortParams.right = 2.0;
+    viewPortParams.bottom = -2.0;
+    viewPortParams.top = 2.0;
+    viewPortParams.nearVal = 0.001;
+    viewPortParams.farVal = 100.0;
+
+    _matrixStack.initialize(viewPortParams);
 }
 
 GLviewer::~GLviewer() {
@@ -45,24 +50,6 @@ void GLviewer::initialize() {
     _geometryEngine.init(_program, _count);
 }
 
-void GLviewer::fetchMatrices() {
-    _cameraTransformation.rotate(_alpha, 0, 1, 0);
-    _cameraTransformation.rotate(_beta, 1, 0, 0);
-
-    _cameraPosition = _cameraTransformation * QVector3D(0, 0, _distance);
-    _cameraUpDirection = _cameraTransformation * QVector3D(0, 1, 0);
-
-    _pMatrix.setToIdentity();
-    _pMatrix.ortho(-2, 2, -2, 2,(float) 0.001,(float) 1000.0);
-
-    _mMatrix.setToIdentity();
-
-    _vMatrix.setToIdentity();
-    _vMatrix.lookAt(_cameraPosition, QVector3D(0.0, 0.0, 0.0), _cameraUpDirection);
-
-    _program->setUniformValue(_shaderMatrix, _pMatrix * _vMatrix * _mMatrix);
-}
-
 void GLviewer::render() {
     const qreal retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
@@ -72,8 +59,7 @@ void GLviewer::render() {
 
     _program->bind();
 
-    fetchMatrices();
-
+    _program->setUniformValue(_shaderMatrix, _matrixStack.mvpMatrix());
     _program->setUniformValue(_shaderTexSample, 0);
     _program->setUniformValue(_shaderRBottom, _rBottom);
     _program->setUniformValue(_shaderRTop, _rTop);
@@ -105,7 +91,7 @@ void GLviewer::initTextures() {
     }
 
     _textureCV3D.setSize(image.cols, image.rows, _count);
-    _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
+    _textureCV3D.setFormat(QOpenGLTexture::R16_UNorm);
     _textureCV3D.allocateStorage();
 
     _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt16, (void *) data, &pixelOptions);
@@ -124,28 +110,8 @@ void GLviewer::mousePressEvent(QMouseEvent * event) {
 }
 
 void GLviewer::mouseMoveEvent(QMouseEvent * event) {
-    int dX = event->x() - _lastMousePosition.x();
-    int dY = event->y() - _lastMousePosition.y();
-
-    if (event->buttons() & Qt::LeftButton) {
-        _alpha -= dX;
-        while (_alpha < 0 ) {
-            _alpha += 360;
-        }
-        while (_alpha >= 360) {
-            _alpha -= 360;
-        }
-
-        _beta -= dY;
-        while (_beta < 0 ) {
-            _beta += 360;
-        }
-        while (_beta >= 360) {
-            _beta -= 360;
-        }
-
-        renderLater();
-    }
+    //int dX = event->x() - _lastMousePosition.x();
+    //int dY = event->y() - _lastMousePosition.y();
 
     _lastMousePosition = event->pos();
 
@@ -153,17 +119,39 @@ void GLviewer::mouseMoveEvent(QMouseEvent * event) {
 }
 
 void GLviewer::wheelEvent(QWheelEvent * event) {
-    int d = event->delta();
-
-    if (event->orientation() == Qt::Vertical) {
-        if (d < 0) {
-            _distance *= (float) 1.1;
-        } else if (d > 0) {
-            _distance *= (float) 0.9;
-        }
-
-        renderLater();
-    }
+    //int d = event->delta();
 
     event->accept();
+}
+
+void GLviewer::keyPressEvent(QKeyEvent * event) {
+    int key = event->key();
+
+    float dX = 0.0;
+    float dY = 0.0;
+    float dZ = 0.0;
+
+    switch (key) {
+    case Qt::Key_Up:
+        dX = -10.0;
+        break;
+
+    case Qt::Key_Down:
+        dX = 10.0;
+        break;
+
+    case Qt::Key_Left:
+        dY = -10.0;
+        break;
+
+    case Qt::Key_Right:
+        dY = 10.0;
+        break;
+
+    default:
+        break;
+    }
+
+    _matrixStack.setAngles(QVector3D(dX, dY, dZ));
+    renderNow();
 }

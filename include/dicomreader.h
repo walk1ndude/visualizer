@@ -3,12 +3,12 @@
 
 #include <QtCore/QObject>
 
-#include "gdcmImage.h"
-#include "gdcmFile.h"
+#include <gdcmImage.h>
+#include <gdcmFile.h>
+
+#include <opencv2/highgui/highgui.hpp>
 
 #include "ctprocessing.hpp"
-
-#include "opencv2/highgui/highgui.hpp"
 
 #define DICOM_ALL_OK 0
 #define DICOM_FILE_NOT_READABLE 1

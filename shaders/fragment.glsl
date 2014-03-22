@@ -1,6 +1,5 @@
 #version 130
 in highp vec4 fragTex;
-in highp vec4 aColor;
 
 uniform float rBottom;
 uniform float rTop;

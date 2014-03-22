@@ -1,6 +1,3 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-
 #include <QtCore/QDebug>
 
 #include <QtGui/QPixmap>
@@ -9,6 +6,9 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMessageBox>
 
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     _dicomReader = new DicomReader(this);
-    //_dicomReader->reset(_images);
 
     fetchConnections();
 }

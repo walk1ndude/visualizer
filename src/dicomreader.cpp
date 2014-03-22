@@ -1,8 +1,8 @@
-#include "gdcmReader.h"
-#include "gdcmImageReader.h"
-#include "gdcmAttribute.h"
-#include "gdcmDataSetHelper.h"
-#include "gdcmStringFilter.h"
+#include <gdcmReader.h>
+#include <gdcmImageReader.h>
+#include <gdcmAttribute.h>
+#include <gdcmDataSetHelper.h>
+#include <gdcmStringFilter.h>
 
 #include "dicomreader.h"
 
@@ -154,11 +154,11 @@ int DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage, Image
 
     std::cout << "loading done" << std::endl;
 
-    cv::namedWindow(WINDOW_BACKPROJECT_IMAGE, cv::WINDOW_AUTOSIZE);//| cv::WINDOW_OPENGL);
-    cv::namedWindow(WINDOW_INPUT_IMAGE, cv::WINDOW_AUTOSIZE);// | cv::WINDOW_OPENGL);
+    cv::namedWindow(WINDOW_INPUT_IMAGE, cv::WINDOW_AUTOSIZE);
+  /*  cv::namedWindow(WINDOW_BACKPROJECT_IMAGE, cv::WINDOW_AUTOSIZE);
     cv::namedWindow(WINDOW_RADON, cv::WINDOW_AUTOSIZE);
     cv::namedWindow(WINDOW_DHT, cv::WINDOW_AUTOSIZE);
-
+*/
     showImageWithNumber(0);
 
     return DICOM_ALL_OK;
@@ -195,10 +195,10 @@ void DicomReader::incImageNumber() {
 
 void DicomReader::showImageWithNumber(const size_t &imageNumber) {
     cv::imshow(WINDOW_INPUT_IMAGE, *((*_images).ctImages[imageNumber]));
-    cv::imshow(WINDOW_BACKPROJECT_IMAGE, *((*_images).images[imageNumber]));
+    /*cv::imshow(WINDOW_BACKPROJECT_IMAGE, *((*_images).images[imageNumber]));
 
     cv::imshow(WINDOW_RADON, *((*_images).sinograms[imageNumber]));
     cv::imshow(WINDOW_DHT, *((*_images).fourier1d[imageNumber]));
-
+*/
     cv::waitKey(1);
 }

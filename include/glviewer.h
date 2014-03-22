@@ -4,9 +4,13 @@
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QWheelEvent>
+#include <QtGui/QKeyEvent>
+
+#include <opencv2/core/core.hpp>
 
 #include "openglwindow.h"
 #include "geometryengine.h"
+#include "matrixstack.h"
 
 class GLviewer : public OpenGLWindow {
     Q_OBJECT
@@ -29,9 +33,12 @@ protected:
     void mousePressEvent(QMouseEvent * event);
     void mouseMoveEvent(QMouseEvent * event);
     void wheelEvent(QWheelEvent * event);
+    void keyPressEvent(QKeyEvent * event);
 
 private:
     QOpenGLShaderProgram * _program;
+
+    MatrixStack _matrixStack;
 
     int _shaderMatrix;
     int _shaderTexSample;
@@ -43,18 +50,6 @@ private:
 
     int _count;
 
-    float _alpha;
-    float _beta;
-    float _distance;
-
-    QMatrix4x4 _mMatrix;
-    QMatrix4x4 _vMatrix;
-    QMatrix4x4 _pMatrix;
-    QMatrix4x4 _cameraTransformation;
-
-    QVector3D _cameraPosition;
-    QVector3D _cameraUpDirection;
-
     QPoint _lastMousePosition;
 
     GeometryEngine _geometryEngine;
@@ -62,8 +57,6 @@ private:
     QOpenGLTexture _textureCV3D;
 
     std::vector<cv::Mat*> _ctImages;
-
-    void inline fetchMatrices();
 signals:
 
 public slots:
