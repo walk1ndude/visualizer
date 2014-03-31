@@ -33,7 +33,7 @@ Rectangle {
         Slider {
             id: rBottomSlider
             width: 200
-            position: 100
+            position: 20
             coeff: 0.00390625
             onValueChanged: {
                 rBottomChanged(value);
@@ -48,7 +48,7 @@ Rectangle {
         Slider {
             id: rTopSlider
             width: 200
-            position: 100
+            position: 160
             coeff: 0.00390625
             onValueChanged: {
                 rTopChanged(value);
@@ -120,7 +120,7 @@ Rectangle {
             minimum: 4
             maximum: 20
             onValueChanged: {
-                zRotChanged(value);
+                distChanged(value);
             }
         }
     }

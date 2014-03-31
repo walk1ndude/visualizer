@@ -1,99 +1,63 @@
 #include "matrixstack.h"
 
-void MatrixStack::initialize(const ViewPortParams & viewPortParams,
-                             const QVector3D & cameraPos,
-                             const QVector3D & rotationAngles,
-                             const QVector3D & viewPoint,
-                             const QVector3D & lookUpVector) {
+void MatrixStack::identity(const QVector3D & position, const QVector3D & orientation) {
+    _position = position;
+    _orientation = orientation;
 
-    _viewPortParams = viewPortParams;
-    _rotationAngles = rotationAngles;
-    _cameraPos = cameraPos;
-    _viewPoint = viewPoint;
-    _lookUpVector = lookUpVector;
-
-    _orientation = QVector3D(0.0, 0.0, 0.0);
-
-    _cameraTransformation.setToIdentity();
-    recalculateRotationMatrix();
-}
-
-QMatrix4x4 MatrixStack::mvpMatrix() {
-    return  _pMatrix * _vMatrix * _mMatrix;
-}
-
-void MatrixStack::setAngles(const QVector3D & rotationAngles) {
-    _rotationAngles = rotationAngles;
-
-    QVector3D newOrientation = _orientation + _rotationAngles;
-
-    float xRot = newOrientation.x();
-    float yRot = newOrientation.y();
-    float zRot = newOrientation.z();
-
-    if (_orientation.x() >= -90.0 && xRot <= -90.0) {
-        _rotationAngles.setX(180.0 + (90.0 + xRot));
-    }
-    else if (_orientation.x() <= 90.0 && xRot >= 90.0) {
-        _rotationAngles.setX(-180.0 + (xRot - 90.0));
-    }
-
-    while (xRot < -180.0 ) xRot += 360.0;
-    while (xRot >= 180.0) xRot -= 360.0;
-
-    _orientation.setX(xRot);
-
-    qDebug() << _rotationAngles << _orientation << newOrientation;
-
-    recalculateRotationMatrix();
-}
-
-void MatrixStack::setCameraPos(const QVector3D & cameraPos) {
-    _cameraPos = cameraPos;
-    recalculateCameraVectors();
-}
-
-void MatrixStack::setViewPoint(const QVector3D & viewPoint) {
-    _viewPoint = viewPoint;
-    recalculateCameraVectors();
-}
-
-void MatrixStack::setLookUpVector(const QVector3D & lookUpVector) {
-    _lookUpVector = lookUpVector;
-    recalculateCameraVectors();
-}
-
-void MatrixStack::identity() {
     _pMatrix.setToIdentity();
-    _mMatrix.setToIdentity();
     _vMatrix.setToIdentity();
+    _mMatrix.setToIdentity();
 }
 
-void MatrixStack::recalculateRotationMatrix() {
-    _cameraTransformation.rotate(_rotationAngles.x(), 1.0, 0.0, 0.0);
-    _cameraTransformation.rotate(_rotationAngles.y(), 0.0, 1.0, 0.0);
-    _cameraTransformation.rotate(_rotationAngles.z(), 0.0, 0.0, 1.0);
-
-    recalculateCameraVectors();
+QMatrix4x4 MatrixStack::modelView() {
+    return _vMatrix * _mMatrix;
 }
 
-void MatrixStack::recalculateCameraVectors() {
-    _cameraPosition = _cameraTransformation * _cameraPos;
-    _cameraViewPoint = _cameraTransformation * _viewPoint;
-    _cameraUpDirection = _cameraTransformation * _lookUpVector;
-
-    recalculateStack();
+QMatrix4x4 MatrixStack::projection() {
+    return _pMatrix;
 }
 
-void MatrixStack::recalculateStack() {
-    identity();
+void MatrixStack::translate(const QVector3D & vec) {
+    QVector3D pos = _position + vec;
+    pos.setZ(-pos.z());
 
-    _pMatrix.ortho(_viewPortParams.left,
-                   _viewPortParams.right,
-                   _viewPortParams.bottom,
-                   _viewPortParams.top,
-                   _viewPortParams.nearVal,
-                   _viewPortParams.farVal);
+    _mMatrix.translate(pos);
 
-    _vMatrix.lookAt(_cameraPosition, _cameraViewPoint, _cameraUpDirection);
+    _position += pos;
+}
+
+void MatrixStack::scale(const QVector3D & scale) {
+    _mMatrix.scale(scale);
+}
+
+float MatrixStack::anglePi(const float & angle) {
+    float a = angle;
+
+    while (a >= 180) {
+        a -= 180;
+    }
+    while (a <= -180) {
+        a += 180;
+    }
+
+    return a;
+}
+
+void MatrixStack::rotate(const QVector3D & angle) {
+    QVector3D rot = _orientation - angle;
+
+    _mMatrix.rotate(anglePi(rot.x()), 1.0, 0.0, 0.0);
+    _mMatrix.rotate(anglePi(rot.y()), 0.0, 1.0, 0.0);
+    _mMatrix.rotate(anglePi(rot.z()), 0.0, 0.0, 1.0);
+
+    _orientation = angle;
+}
+
+void MatrixStack::lookAt(const QVector3D & pos, const QVector3D & viewPoint, const QVector3D up) {
+    _vMatrix.lookAt(pos, viewPoint, up);
+}
+
+void MatrixStack::ortho(const float & left, const float & right, const float & bottom,
+                        const float & top, const float & near, const float & far) {
+    _pMatrix.ortho(left, right, bottom, top, near, far);
 }

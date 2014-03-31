@@ -41,7 +41,8 @@ private:
 
     MatrixStack _matrixStack;
 
-    int _shaderMatrix;
+    int _shaderModelView;
+    int _shaderProjection;
     int _shaderTexSample;
     int _shaderRBottom;
     int _shaderRTop;

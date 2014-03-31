@@ -8,21 +8,14 @@
 
 GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages) :
     _program(0),
-    _rBottom((float) 0.22),
-    _rTop((float) 0.3),
+    _rBottom((float) 0.1),
+    _rTop((float) 0.8),
     _textureCV3D(QOpenGLTexture::Target3D),
     _ctImages(ctImages) {
 
-    ViewPortParams viewPortParams;
-
-    viewPortParams.left = -2.0;
-    viewPortParams.right = 2.0;
-    viewPortParams.bottom = -2.0;
-    viewPortParams.top = 2.0;
-    viewPortParams.nearVal = 0.001;
-    viewPortParams.farVal = 100.0;
-
-    _matrixStack.initialize(viewPortParams);
+    _matrixStack.identity(QVector3D(0.0, 0.0, -4.0));
+    _matrixStack.ortho(-2.0, 2.0, -2.0, 2.0, 0.001, 100.0);
+    _matrixStack.lookAt(QVector3D(0.0, 0.0, -4.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
 
     fetchHud();
 }
@@ -51,7 +44,8 @@ void GLviewer::initialize() {
     _program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":shaders/fragment.glsl");
     _program->link();
 
-    _shaderMatrix = _program->uniformLocation("mvpMatrix");
+    _shaderModelView = _program->uniformLocation("modelView");
+    _shaderProjection = _program->uniformLocation("projection");
     _shaderTexSample = _program->uniformLocation("texSample");
     _shaderRBottom = _program->uniformLocation("rBottom");
     _shaderRTop = _program->uniformLocation("rTop");
@@ -79,7 +73,8 @@ void GLviewer::render() {
 
     _program->bind();
 
-    _program->setUniformValue(_shaderMatrix, _matrixStack.mvpMatrix());
+    _program->setUniformValue(_shaderModelView, _matrixStack.modelView());
+    _program->setUniformValue(_shaderProjection, _matrixStack.projection());
     _program->setUniformValue(_shaderTexSample, 0);
     _program->setUniformValue(_shaderRBottom, (GLfloat) _rBottom);
     _program->setUniformValue(_shaderRTop, (GLfloat) _rTop);
@@ -172,7 +167,7 @@ void GLviewer::keyPressEvent(QKeyEvent * event) {
         break;
     }
 
-    _matrixStack.setAngles(QVector3D(xRot, yRot, zRot));
+    _matrixStack.rotate(QVector3D(xRot, yRot, zRot));
     renderNow();
 }
 
@@ -189,21 +184,21 @@ void GLviewer::updateRTop(qreal rTop) {
 }
 
 void GLviewer::updateXRot(qreal xRot) {
-   _matrixStack.setAngles(QVector3D(xRot, 0.0, 0.0));
+   _matrixStack.rotate(QVector3D(xRot, 0.0, 0.0));
    renderNow();
 }
 
 void GLviewer::updateYRot(qreal yRot) {
-   _matrixStack.setAngles(QVector3D(0.0, yRot, 0.0));
+   _matrixStack.rotate(QVector3D(0.0, yRot, 0.0));
    renderNow();
 }
 
 void GLviewer::updateZRot(qreal zRot) {
-   _matrixStack.setAngles(QVector3D(0.0, 0.0, zRot));
+   _matrixStack.rotate(QVector3D(0.0, 0.0, zRot));
    renderNow();
 }
 
 void GLviewer::updateDist(qreal dist) {
-    _matrixStack.setCameraPos(QVector3D(0.0, 0.0, dist));
+    _matrixStack.translate(QVector3D(0.0, 0.0, dist));
     renderNow();
 }
