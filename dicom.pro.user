@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.0.82, 2014-03-22T06:32:49. -->
+<!-- Written by QtCreator 3.0.82, 2014-03-31T01:21:07. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -49,7 +49,12 @@
  </data>
  <data>
   <variable>ProjectExplorer.Project.PluginSettings</variable>
-  <valuemap type="QVariantMap"/>
+  <valuemap type="QVariantMap">
+   <valuemap type="QVariantMap" key="ClangProjectSettings">
+    <value type="QString" key="CustomPchFile"></value>
+    <value type="int" key="PchUsage">1</value>
+   </valuemap>
+  </valuemap>
  </data>
  <data>
   <variable>ProjectExplorer.Project.Target.0</variable>

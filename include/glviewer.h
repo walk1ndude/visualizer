@@ -9,6 +9,7 @@
 #include <opencv2/core/core.hpp>
 
 #include "openglwindow.h"
+#include "hud.h"
 #include "geometryengine.h"
 #include "matrixstack.h"
 
@@ -45,8 +46,8 @@ private:
     int _shaderRBottom;
     int _shaderRTop;
 
-    float _rBottom;
-    float _rTop;
+    qreal _rBottom;
+    qreal _rTop;
 
     int _count;
 
@@ -57,10 +58,20 @@ private:
     QOpenGLTexture _textureCV3D;
 
     std::vector<cv::Mat*> _ctImages;
+
+    Hud * _hud;
+
+    void fetchHud();
 signals:
 
 public slots:
+    void updateRBottom(qreal rBottom);
+    void updateRTop(qreal rTop);
 
+    void updateXRot(qreal xRot);
+    void updateYRot(qreal yRot);
+    void updateZRot(qreal zRot);
+    void updateDist(qreal dist);
 };
 
 #endif // GLVIEWER_H

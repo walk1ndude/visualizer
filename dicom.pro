@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets quick
 
 TARGET = dicom
 TEMPLATE = app
@@ -62,7 +60,8 @@ SOURCES += src/main.cpp\
            src/glviewer.cpp \
            src/geometryengine.cpp \
            src/openglwindow.cpp \
-           src/matrixstack.cpp
+           src/matrixstack.cpp \
+    src/hud.cpp
 
 HEADERS  += include/mainwindow.h\
             include/dicomreader.h\
@@ -70,7 +69,8 @@ HEADERS  += include/mainwindow.h\
             include/glviewer.h \
             include/geometryengine.h \
             include/openglwindow.h \
-            include/matrixstack.h
+            include/matrixstack.h \
+    include/hud.h
 
 RESOURCES += resources.qrc
 

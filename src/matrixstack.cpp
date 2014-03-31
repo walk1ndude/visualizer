@@ -27,21 +27,21 @@ void MatrixStack::setAngles(const QVector3D & rotationAngles) {
 
     QVector3D newOrientation = _orientation + _rotationAngles;
 
-    float dX = newOrientation.x();
-    float dY = newOrientation.y();
-    float dZ = newOrientation.z();
+    float xRot = newOrientation.x();
+    float yRot = newOrientation.y();
+    float zRot = newOrientation.z();
 
-    if (_orientation.x() >= -90.0 && dX <= -90.0) {
-        _rotationAngles.setX(180.0 + (90.0 + dX));
+    if (_orientation.x() >= -90.0 && xRot <= -90.0) {
+        _rotationAngles.setX(180.0 + (90.0 + xRot));
     }
-    else if (_orientation.x() <= 90.0 && dX >= 90.0) {
-        _rotationAngles.setX(-180.0 + (dX - 90.0));
+    else if (_orientation.x() <= 90.0 && xRot >= 90.0) {
+        _rotationAngles.setX(-180.0 + (xRot - 90.0));
     }
 
-    while (dX < -180.0 ) dX += 360.0;
-    while (dX >= 180.0) dX -= 360.0;
+    while (xRot < -180.0 ) xRot += 360.0;
+    while (xRot >= 180.0) xRot -= 360.0;
 
-    _orientation.setX(dX);
+    _orientation.setX(xRot);
 
     qDebug() << _rotationAngles << _orientation << newOrientation;
 

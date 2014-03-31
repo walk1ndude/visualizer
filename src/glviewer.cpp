@@ -23,10 +23,26 @@ GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages) :
     viewPortParams.farVal = 100.0;
 
     _matrixStack.initialize(viewPortParams);
+
+    fetchHud();
 }
 
 GLviewer::~GLviewer() {
     _textureCV3D.release();
+}
+
+void GLviewer::fetchHud() {
+    _hud = new Hud(this);
+
+    QObject::connect(_hud, SIGNAL(rBottomChanged(qreal)), this, SLOT(updateRBottom(qreal)));
+    QObject::connect(_hud, SIGNAL(rTopChanged(qreal)), this, SLOT(updateRTop(qreal)));
+
+    QObject::connect(_hud, SIGNAL(xRotChanged(qreal)), this, SLOT(updateXRot(qreal)));
+    QObject::connect(_hud, SIGNAL(yRotChanged(qreal)), this, SLOT(updateYRot(qreal)));
+    QObject::connect(_hud, SIGNAL(zRotChanged(qreal)), this, SLOT(updateZRot(qreal)));
+    QObject::connect(_hud, SIGNAL(distChanged(qreal)), this, SLOT(updateDist(qreal)));
+
+    _hud->show();
 }
 
 void GLviewer::initialize() {
@@ -56,15 +72,17 @@ void GLviewer::render() {
     const qreal retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
+    _hud->resize(width() * retinaScale, 0.2 * height() * retinaScale);
+
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
     _program->bind();
 
     _program->setUniformValue(_shaderMatrix, _matrixStack.mvpMatrix());
     _program->setUniformValue(_shaderTexSample, 0);
-    _program->setUniformValue(_shaderRBottom, _rBottom);
-    _program->setUniformValue(_shaderRTop, _rTop);
+    _program->setUniformValue(_shaderRBottom, (GLfloat) _rBottom);
+    _program->setUniformValue(_shaderRTop, (GLfloat) _rTop);
 
     _textureCV3D.bind();
 
@@ -129,31 +147,63 @@ void GLviewer::wheelEvent(QWheelEvent * event) {
 void GLviewer::keyPressEvent(QKeyEvent * event) {
     int key = event->key();
 
-    float dX = 0.0;
-    float dY = 0.0;
-    float dZ = 0.0;
+    float xRot = 0.0;
+    float yRot = 0.0;
+    float zRot = 0.0;
 
     switch (key) {
     case Qt::Key_Up:
-        dX = -10.0;
+        xRot = -10.0;
         break;
 
     case Qt::Key_Down:
-        dX = 10.0;
+        xRot = 10.0;
         break;
 
     case Qt::Key_Left:
-        dY = -10.0;
+        yRot = -10.0;
         break;
 
     case Qt::Key_Right:
-        dY = 10.0;
+        yRot = 10.0;
         break;
 
     default:
         break;
     }
 
-    _matrixStack.setAngles(QVector3D(dX, dY, dZ));
+    _matrixStack.setAngles(QVector3D(xRot, yRot, zRot));
+    renderNow();
+}
+
+void GLviewer::updateRBottom(qreal rBottom) {
+    _rBottom = std::min(rBottom, _rTop);
+    _rTop = std::max(rBottom, _rTop);
+    renderNow();
+}
+
+void GLviewer::updateRTop(qreal rTop) {
+    _rTop = std::max(rTop, _rBottom);
+    _rBottom = std::min(rTop, _rBottom);
+    renderNow();
+}
+
+void GLviewer::updateXRot(qreal xRot) {
+   _matrixStack.setAngles(QVector3D(xRot, 0.0, 0.0));
+   renderNow();
+}
+
+void GLviewer::updateYRot(qreal yRot) {
+   _matrixStack.setAngles(QVector3D(0.0, yRot, 0.0));
+   renderNow();
+}
+
+void GLviewer::updateZRot(qreal zRot) {
+   _matrixStack.setAngles(QVector3D(0.0, 0.0, zRot));
+   renderNow();
+}
+
+void GLviewer::updateDist(qreal dist) {
+    _matrixStack.setCameraPos(QVector3D(0.0, 0.0, dist));
     renderNow();
 }
