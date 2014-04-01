@@ -6,19 +6,27 @@
 
 #include "glviewer.h"
 
-GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings) :
+GLviewer::GLviewer(QWindow * parent) :
+    OpenGLWindow(parent),
     _program(0),
-    _rBottom((float) 0.1),
-    _rTop((float) 0.8),
-    _imageSpacings(imageSpacings),
     _textureCV3D(QOpenGLTexture::Target3D),
-    _ctImages(ctImages) {
-
-    _matrixStack.identity();
-    _matrixStack.ortho(-0.5, 0.5, -0.5, 0.5, 0.001, 1000.0);
-    _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+    _rBottom((float) 0.1),
+    _rTop((float) 0.8) {
 
     fetchHud();
+}
+
+void GLviewer::drawSlices(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings) {
+    _ctImages = ctImages;
+    _imageSpacings = imageSpacings;
+    _program = 0;
+
+    _matrixStack.identity();
+    _matrixStack.ortho(-1.5, 1.5, -1.5, 1.5, 0.001, 1000.0);
+    _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+
+    _hud->show();
+    show();
 }
 
 GLviewer::~GLviewer() {
@@ -49,8 +57,6 @@ void GLviewer::fetchHud() {
 
     QObject::connect(_hud, SIGNAL(angleChanged(qreal,qreal,qreal)), this, SLOT(updateAngle(qreal,qreal,qreal)));
     QObject::connect(_hud, SIGNAL(zoomZChanged(qreal)), this, SLOT(updateZoomZ(qreal)));
-
-    _hud->show();
 }
 
 void GLviewer::initialize() {
@@ -71,8 +77,6 @@ void GLviewer::initialize() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glEnable(GL_LIGHTING);
 
     initTextures();
 
@@ -106,7 +110,6 @@ void GLviewer::render() {
 }
 
 void GLviewer::initTextures() {
-
     cv::Mat image(*(_ctImages[0]));
 
     QOpenGLPixelTransferOptions pixelOptions;
@@ -125,10 +128,10 @@ void GLviewer::initTextures() {
     }
 
     _matrixStack.scale(QVector3D(
-                       image.cols / (float) image.cols * 1 /_imageSpacings[0],
-                       image.cols / (float) image.rows * 1 /_imageSpacings[1],
-                       _count / (float) image.cols * 1 /_imageSpacings[2])
-            );
+                       image.cols / (float) image.cols / 0.8,
+                       image.cols / (float) image.rows / 0.8,
+                       _count / (float) image.cols / 0.8
+            ));
 
     _textureCV3D.setSize(image.cols, image.rows, _count);
     _textureCV3D.setFormat(QOpenGLTexture::R16_UNorm);

@@ -1,8 +1,9 @@
 #include <gdcmReader.h>
 #include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
-#include <gdcmDataSetHelper.h>
 #include <gdcmStringFilter.h>
+
+#include <QtCore/QDebug>
 
 #include "dicomreader.h"
 
@@ -53,16 +54,8 @@ int DicomReader::initOpenCL() {
     return OPENCL_NOT_INITIALIZED;
 }
 
-DicomReader::DicomReader(const QString & dicomFile, Images & images, QObject * parent) : DicomReader(parent) {
-    readFile(dicomFile, images);
-}
-
-std::vector<float> DicomReader::imageSpacings() {
-    return _imageSpacings;
-}
-
 DicomReader::~DicomReader() {
-    reset(*_images);
+    reset(_images);
 }
 
 void DicomReader::resetV(std::vector<cv::Mat*> & vec, const int & newSize) {
@@ -78,7 +71,7 @@ void DicomReader::reset(Images & images, const int & newSize) {
     resetV(images.fourier1d, newSize);
 }
 
-int DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage, Images & images) {
+void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     std::vector<char>vbuffer;
     vbuffer.resize(dImage.GetBufferLength());
     char * buffer = &vbuffer[0];
@@ -115,9 +108,10 @@ int DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage, Image
     dImage.GetBuffer(buffer);
 
     //clear previous "garbage"
-    reset(images, imagesCount);
+    reset(_images, imagesCount);
 
-    ctData.images = &images;
+    ctData.images = &_images;
+
     //MONOCHROME2
 
     gdcm::PhotometricInterpretation photometricInterpretation = dImage.GetPhotometricInterpretation();
@@ -153,14 +147,14 @@ int DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage, Image
 
     ctData.buffer = buffer;
 
-    std::cout << "processing start" <<std::endl;
+    qDebug() << "processing start";
 
     //cv::ocl::oclMat * oclData = new cv::ocl::oclMat(500, 500, CV_16UC1);
     //cv::ocl::GaussianBlur(*oclData, *oclData, cv::Size(5, 5), 5);
 
     cv::parallel_for_(cv::Range(0, imagesCount), CtProcessing<u_int16_t>(ctData));
 
-    std::cout << "loading done" << std::endl;
+    qDebug() << "loading done";
 
     cv::namedWindow(WINDOW_INPUT_IMAGE, cv::WINDOW_AUTOSIZE);
   /*  cv::namedWindow(WINDOW_BACKPROJECT_IMAGE, cv::WINDOW_AUTOSIZE);
@@ -169,40 +163,30 @@ int DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage, Image
 */
     showImageWithNumber(0);
 
-    return DICOM_ALL_OK;
+    emit slicesProcessed(_images.ctImages, _imageSpacings);
 }
 
-int DicomReader::readFile(const QString & dicomFile, Images & images) {
+void DicomReader::readFile(QString dicomFile) {
     gdcm::ImageReader dIReader;
 
-    _images = &images;
-
-    dIReader.SetFileName(dicomFile.toStdString().c_str());
-
-    if (!dIReader.Read()) {
-        return DICOM_FILE_NOT_READABLE;
+    // dicomFile = "file:///...", we must cut protocol, so no "file://" <- start with 7th char
+    dIReader.SetFileName(dicomFile.mid(7).toStdString().c_str());
+    if (dIReader.Read()) {
+        readImage(dIReader.GetFile(), dIReader.GetImage());
     }
-
-    gdcm::File & dFile = dIReader.GetFile();
-    gdcm::Image & dImage = dIReader.GetImage();
-
-    readImage(dFile, dImage, images);
-
-    return DICOM_ALL_OK;
+    else {
+        qDebug() << "can't read file";
+    }
 }
 
-void DicomReader::decImageNumber() {    
-    _imageNumber = ((_imageNumber) ? _imageNumber : (*_images).ctImages.size()) - 1;
+void DicomReader::changeSliceNumber(int ds) {
+    _imageNumber += ds;
+    _imageNumber %= _images.ctImages.size();
     showImageWithNumber(_imageNumber);
 }
 
-void DicomReader::incImageNumber() {
-    ++_imageNumber %= (*_images).ctImages.size();
-    showImageWithNumber(_imageNumber);
-}
-
-void DicomReader::showImageWithNumber(const size_t &imageNumber) {
-    cv::imshow(WINDOW_INPUT_IMAGE, *((*_images).ctImages[imageNumber]));
+void DicomReader::showImageWithNumber(const size_t & imageNumber) {
+    cv::imshow(WINDOW_INPUT_IMAGE, *(_images.ctImages[imageNumber]));
     /*cv::imshow(WINDOW_BACKPROJECT_IMAGE, *((*_images).images[imageNumber]));
 
     cv::imshow(WINDOW_RADON, *((*_images).sinograms[imageNumber]));

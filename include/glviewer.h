@@ -15,7 +15,7 @@ class GLviewer : public OpenGLWindow {
     Q_OBJECT
     
 public:
-    explicit GLviewer(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings);
+    explicit GLviewer(QWindow * parent = 0);
 
     ~GLviewer();
 
@@ -38,6 +38,8 @@ private:
     int _shaderRBottom;
     int _shaderRTop;
 
+    QOpenGLTexture _textureCV3D;
+
     qreal _rBottom;
     qreal _rTop;
 
@@ -49,8 +51,6 @@ private:
 
     GeometryEngine _geometryEngine;
 
-    QOpenGLTexture _textureCV3D;
-
     std::vector<cv::Mat*> _ctImages;
 
     Hud * _hud;
@@ -61,6 +61,8 @@ private:
 signals:
 
 public slots:
+    void drawSlices(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings);
+
     void updateRBottom(qreal rBottom);
     void updateRTop(qreal rTop);
 

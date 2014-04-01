@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Controls 1.1
 
 Grid {
@@ -75,9 +75,9 @@ Grid {
     Slider {
         id: zoomZSlider
         width: 200
-        minimumValue: 1.0
+        minimumValue: 3.0
         maximumValue: 10.0
-        value: 1.0
+        value: 3.0
         onValueChanged: hudRotation.zoomZChanged(value);
     }
 

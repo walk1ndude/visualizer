@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets quick
+greaterThan(QT_MAJOR_VERSION, 4): QT += quick
 
 TARGET = dicom
 TEMPLATE = app
@@ -55,23 +55,20 @@ LIBS += -lgdcmcharls \
         -lgdcmopenjpeg
 
 SOURCES += src/main.cpp\
-           src/mainwindow.cpp\
            src/dicomreader.cpp\
            src/glviewer.cpp \
            src/geometryengine.cpp \
            src/openglwindow.cpp \
            src/matrixstack.cpp \
-    src/hud.cpp
+           src/hud.cpp
 
-HEADERS  += include/mainwindow.h\
+HEADERS  +=\
             include/dicomreader.h\
             include/ctprocessing.hpp \
             include/glviewer.h \
             include/geometryengine.h \
             include/openglwindow.h \
             include/matrixstack.h \
-    include/hud.h
+            include/hud.h
 
 RESOURCES += resources.qrc
-
-FORMS    += ui/mainwindow.ui
