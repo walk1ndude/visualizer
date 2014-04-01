@@ -6,8 +6,10 @@
 class MatrixStack {
 
 public:
-    QMatrix4x4 modelView();
+    QMatrix4x4 model();
+    QMatrix4x4 view();
     QMatrix4x4 projection();
+    QMatrix4x4 scaleM();
 
     void identity(const QVector3D & position = QVector3D(0.0, 0.0, 0.0),
                   const QVector3D & orientation = QVector3D(0.0, 0.0, 0.0));
@@ -25,6 +27,7 @@ private:
     QMatrix4x4 _mMatrix;
     QMatrix4x4 _vMatrix;
     QMatrix4x4 _pMatrix;
+    QMatrix4x4 _sMatrix;
 
     QVector3D _orientation;
     QVector3D _position;

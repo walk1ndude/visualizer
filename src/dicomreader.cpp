@@ -57,6 +57,10 @@ DicomReader::DicomReader(const QString & dicomFile, Images & images, QObject * p
     readFile(dicomFile, images);
 }
 
+std::vector<float> DicomReader::imageSpacings() {
+    return _imageSpacings;
+}
+
 DicomReader::~DicomReader() {
     reset(*_images);
 }
@@ -85,6 +89,10 @@ int DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage, Image
     gdcm::DataSet & dDataSet = dFile.GetDataSet();
 
     CtData ctData;
+
+    for (int i = 0; i != 3; ++ i) {
+        _imageSpacings.push_back(dImage.GetSpacing(i));
+    }
 
     gdcm::Tag tagFind(0x0028, 0x1050);
     if (dDataSet.FindDataElement(tagFind)) {

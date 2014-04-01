@@ -2,9 +2,6 @@
 #define GLVIEWER_H
 
 #include <QtGui/QOpenGLTexture>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QWheelEvent>
-#include <QtGui/QKeyEvent>
 
 #include <opencv2/core/core.hpp>
 
@@ -17,7 +14,7 @@ class GLviewer : public OpenGLWindow {
     Q_OBJECT
     
 public:
-    explicit GLviewer(const std::vector<cv::Mat *> & ctImages);
+    explicit GLviewer(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings);
 
     ~GLviewer();
 
@@ -31,18 +28,15 @@ protected:
 
     void resizeGL(int width, int height);
 
-    void mousePressEvent(QMouseEvent * event);
-    void mouseMoveEvent(QMouseEvent * event);
-    void wheelEvent(QWheelEvent * event);
-    void keyPressEvent(QKeyEvent * event);
-
 private:
     QOpenGLShaderProgram * _program;
 
     MatrixStack _matrixStack;
 
-    int _shaderModelView;
+    int _shaderModel;
+    int _shaderView;
     int _shaderProjection;
+    int _shaderScale;
     int _shaderTexSample;
     int _shaderRBottom;
     int _shaderRTop;
@@ -51,6 +45,8 @@ private:
     qreal _rTop;
 
     int _count;
+
+    std::vector<float>_imageSpacings;
 
     QPoint _lastMousePosition;
 
@@ -69,9 +65,7 @@ public slots:
     void updateRBottom(qreal rBottom);
     void updateRTop(qreal rTop);
 
-    void updateXRot(qreal xRot);
-    void updateYRot(qreal yRot);
-    void updateZRot(qreal zRot);
+    void updateAngle(qreal xRot, qreal yRot, qreal zRot);
     void updateDist(qreal dist);
 };
 

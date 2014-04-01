@@ -37,8 +37,12 @@ public:
   void reset(Images & images, const int & newSize = 0);
   void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
 
+  std::vector<float> imageSpacings();
+
 private:
   size_t _imageNumber;
+
+  std::vector<float>_imageSpacings;
 
   Images * _images;
 

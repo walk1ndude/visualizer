@@ -7,14 +7,23 @@ void MatrixStack::identity(const QVector3D & position, const QVector3D & orienta
     _pMatrix.setToIdentity();
     _vMatrix.setToIdentity();
     _mMatrix.setToIdentity();
+    _sMatrix.setToIdentity();
 }
 
-QMatrix4x4 MatrixStack::modelView() {
-    return _vMatrix * _mMatrix;
+QMatrix4x4 MatrixStack::model() {
+    return _mMatrix;
+}
+
+QMatrix4x4 MatrixStack::view() {
+    return _vMatrix;
 }
 
 QMatrix4x4 MatrixStack::projection() {
     return _pMatrix;
+}
+
+QMatrix4x4 MatrixStack::scaleM() {
+    return _sMatrix;
 }
 
 void MatrixStack::translate(const QVector3D & vec) {
@@ -27,7 +36,7 @@ void MatrixStack::translate(const QVector3D & vec) {
 }
 
 void MatrixStack::scale(const QVector3D & scale) {
-    _mMatrix.scale(scale);
+    _sMatrix.scale(scale);
 }
 
 float MatrixStack::anglePi(const float & angle) {
@@ -54,6 +63,7 @@ void MatrixStack::rotate(const QVector3D & angle) {
 }
 
 void MatrixStack::lookAt(const QVector3D & pos, const QVector3D & viewPoint, const QVector3D up) {
+    _position = pos;
     _vMatrix.lookAt(pos, viewPoint, up);
 }
 

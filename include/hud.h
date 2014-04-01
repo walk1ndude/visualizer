@@ -16,9 +16,7 @@ signals:
     void rBottomChanged(qreal rBottom);
     void rTopChanged(qreal rTop);
 
-    void xRotChanged(qreal xRot);
-    void yRotChanged(qreal yRot);
-    void zRotChanged(qreal zRot);
+    void angleChanged(qreal xRot, qreal yRot, qreal zRot);
     void distChanged(qreal dist);
 };
 

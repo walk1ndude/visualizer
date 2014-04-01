@@ -40,9 +40,8 @@ void MainWindow::readDicom() {
             format.setVersion(2, 1);
             format.setRenderableType(QSurfaceFormat::OpenGL);
             format.setProfile(QSurfaceFormat::CoreProfile);
-            format.setOption(QSurfaceFormat::DebugContext);
 
-            _glviewer = new GLviewer(_images.ctImages);
+            _glviewer = new GLviewer(_images.ctImages, _dicomReader->imageSpacings());
 
             _glviewer->setSurfaceType(QSurface::OpenGLSurface);
             _glviewer->setFormat(format);
