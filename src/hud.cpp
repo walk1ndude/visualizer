@@ -27,5 +27,5 @@ void Hud::fetchConnections() {
     QObject::connect(shaderGrid, SIGNAL(rTopChanged(qreal)), this, SIGNAL(rTopChanged(qreal)));
 
     QObject::connect(geometryGrid, SIGNAL(angleChanged(qreal, qreal, qreal)), this, SIGNAL(angleChanged(qreal,qreal,qreal)));
-    QObject::connect(geometryGrid, SIGNAL(distChanged(qreal)), this, SIGNAL(distChanged(qreal)));
+    QObject::connect(geometryGrid, SIGNAL(zoomZChanged(qreal)), this, SIGNAL(zoomZChanged(qreal)));
 }

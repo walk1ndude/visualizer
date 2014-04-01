@@ -2,6 +2,7 @@
 #define GLVIEWER_H
 
 #include <QtGui/QOpenGLTexture>
+#include <QtGui/QKeyEvent>
 
 #include <opencv2/core/core.hpp>
 
@@ -22,11 +23,7 @@ public:
     void render();
 
 protected:
-    void initTextures();
-
-    void paintGL();
-
-    void resizeGL(int width, int height);
+    void keyPressEvent(QKeyEvent * event);
 
 private:
     QOpenGLShaderProgram * _program;
@@ -59,6 +56,8 @@ private:
     Hud * _hud;
 
     void fetchHud();
+
+    void initTextures();
 signals:
 
 public slots:
@@ -66,7 +65,7 @@ public slots:
     void updateRTop(qreal rTop);
 
     void updateAngle(qreal xRot, qreal yRot, qreal zRot);
-    void updateDist(qreal dist);
+    void updateZoomZ(qreal zoomZ);
 };
 
 #endif // GLVIEWER_H

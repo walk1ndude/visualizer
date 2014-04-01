@@ -15,14 +15,30 @@ GLviewer::GLviewer(const std::vector<cv::Mat *> & ctImages, const std::vector<fl
     _ctImages(ctImages) {
 
     _matrixStack.identity();
-    _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.001, 100.0);
-    _matrixStack.lookAt(QVector3D(0.0, 0.0, 2.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+    _matrixStack.ortho(-0.5, 0.5, -0.5, 0.5, 0.001, 1000.0);
+    _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
 
     fetchHud();
 }
 
 GLviewer::~GLviewer() {
     _textureCV3D.release();
+}
+
+void GLviewer::keyPressEvent(QKeyEvent * event) {
+    int key = event->key();
+
+    switch (key) {
+        case Qt::Key_H:
+            if (_hud->isVisible()) {
+                _hud->hide();
+            }
+            else {
+                _hud->show();
+            }
+    }
+
+    event->accept();
 }
 
 void GLviewer::fetchHud() {
@@ -32,7 +48,7 @@ void GLviewer::fetchHud() {
     QObject::connect(_hud, SIGNAL(rTopChanged(qreal)), this, SLOT(updateRTop(qreal)));
 
     QObject::connect(_hud, SIGNAL(angleChanged(qreal,qreal,qreal)), this, SLOT(updateAngle(qreal,qreal,qreal)));
-    QObject::connect(_hud, SIGNAL(distChanged(qreal)), this, SLOT(updateDist(qreal)));
+    QObject::connect(_hud, SIGNAL(zoomZChanged(qreal)), this, SLOT(updateZoomZ(qreal)));
 
     _hud->show();
 }
@@ -144,7 +160,7 @@ void GLviewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
     renderNow();
 }
 
-void GLviewer::updateDist(qreal dist) {
-    _matrixStack.translate(QVector3D(0.0, 0.0, dist));
+void GLviewer::updateZoomZ(qreal dist) {
+    _matrixStack.zoomZ(dist);
     renderNow();
 }

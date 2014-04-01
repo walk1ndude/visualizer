@@ -26,13 +26,9 @@ QMatrix4x4 MatrixStack::scaleM() {
     return _sMatrix;
 }
 
-void MatrixStack::translate(const QVector3D & vec) {
-    QVector3D pos = _position + vec;
-    pos.setZ(-pos.z());
-
-    _mMatrix.translate(pos);
-
-    _position += pos;
+void MatrixStack::zoomZ(const qreal & dist) {
+    _pMatrix.setToIdentity();
+    _pMatrix.ortho(-dist/2, dist/2, -dist/2, dist/2, 0.001, 1000);
 }
 
 void MatrixStack::scale(const QVector3D & scale) {

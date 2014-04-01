@@ -19,7 +19,7 @@ public:
 
     void lookAt(const QVector3D & pos, const QVector3D & viewPoint, const QVector3D up);
 
-    void translate(const QVector3D & vec);
+    void zoomZ(const qreal & dist);
     void rotate(const QVector3D & angle);
     void scale(const QVector3D & scale);
 

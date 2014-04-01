@@ -17,7 +17,7 @@ signals:
     void rTopChanged(qreal rTop);
 
     void angleChanged(qreal xRot, qreal yRot, qreal zRot);
-    void distChanged(qreal dist);
+    void zoomZChanged(qreal zoomZ);
 };
 
 #endif // HUD_H

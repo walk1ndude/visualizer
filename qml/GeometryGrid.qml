@@ -8,7 +8,7 @@ Grid {
     spacing: 5
 
     signal angleChanged(real xRot, real yRot, real zRot);
-    signal distChanged(real value);
+    signal zoomZChanged(real value);
 
     Text {
         id: xRotText
@@ -68,22 +68,22 @@ Grid {
     }
 
     Text {
-        id: distText
-        text: qsTr("dist")
+        id: zoomZText
+        text: qsTr("zoom Z")
     }
 
     Slider {
-        id: distSlider
+        id: zoomZSlider
         width: 200
-        minimumValue: 2.0
-        maximumValue: 20.0
-        value: 2.0
-        onValueChanged: hudRotation.distChanged(value);
+        minimumValue: 1.0
+        maximumValue: 10.0
+        value: 1.0
+        onValueChanged: hudRotation.zoomZChanged(value);
     }
 
     Text {
-        id: disrSliderValue
-        text: Math.round(distSlider.value * 1000) / 1000
+        id: zoomZSliderValue
+        text: Math.round(zoomZSlider.value * 1000) / 1000
     }
 
     function updateAngle() {
