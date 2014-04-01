@@ -1,10 +1,11 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.1
 
 Grid {
     id: hudRotation
-    columns: 2
+    columns: 3
     rows: 4
-    spacing: 15
+    spacing: 5
 
     signal angleChanged(real xRot, real yRot, real zRot);
     signal distChanged(real value);
@@ -17,9 +18,15 @@ Grid {
     Slider {
         id: xRotSlider
         width: 200
-        minimum: -180
-        maximum: 180
+        minimumValue: -180.0
+        maximumValue: 180.0
+        value: 0.0
         onValueChanged: updateAngle();
+    }
+
+    Text {
+        id: xRotSliderValue
+        text: Math.round(xRotSlider.value * 1000) / 1000
     }
 
     Text {
@@ -30,9 +37,15 @@ Grid {
     Slider {
         id: yRotSlider
         width: 200
-        minimum: -180
-        maximum: 180
+        minimumValue: -180.0
+        maximumValue: 180.0
+        value: 0.0
         onValueChanged: updateAngle();
+    }
+
+    Text {
+        id: yRotSliderValue
+        text: Math.round(yRotSlider.value * 1000) / 1000
     }
 
     Text {
@@ -43,26 +56,34 @@ Grid {
     Slider {
         id: zRotSlider
         width: 200
-        minimum: -180
-        maximum: 180
+        minimumValue: -180.0
+        maximumValue: 180.0
+        value: 0.0
         onValueChanged: updateAngle();
     }
 
     Text {
+        id: zRotSliderValue
+        text: Math.round(zRotSlider.value * 1000) / 1000
+    }
+
+    Text {
         id: distText
-        text: qsTr("z axis")
+        text: qsTr("dist")
     }
 
     Slider {
         id: distSlider
         width: 200
-        coeff: 1.0
-        value: 4.0
-        minimum: 4
-        maximum: 20
-        onValueChanged: {
-            distChanged(value);
-        }
+        minimumValue: 2.0
+        maximumValue: 20.0
+        value: 2.0
+        onValueChanged: hudRotation.distChanged(value);
+    }
+
+    Text {
+        id: disrSliderValue
+        text: Math.round(distSlider.value * 1000) / 1000
     }
 
     function updateAngle() {

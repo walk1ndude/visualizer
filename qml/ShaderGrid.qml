@@ -1,10 +1,11 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.1
 
 Grid {
     id: hudShader
-    columns: 2
+    columns: 3
     rows: 2
-    spacing: 15
+    spacing: 5
 
     signal rBottomChanged(real value);
     signal rTopChanged(real value);
@@ -17,11 +18,15 @@ Grid {
     Slider {
         id: rBottomSlider
         width: 200
-        position: 20
-        coeff: 0.00390625
-        onValueChanged: {
-            rBottomChanged(value);
-        }
+        minimumValue: 0.0
+        maximumValue: 1.0
+        value: 0.2
+        onValueChanged: hudShader.rBottomChanged(value);
+    }
+
+    Text {
+        id: rBottomSliderValue
+        text: Math.round(rBottomSlider.value * 1000) / 1000
     }
 
     Text {
@@ -32,10 +37,14 @@ Grid {
     Slider {
         id: rTopSlider
         width: 200
-        position: 160
-        coeff: 0.00390625
-        onValueChanged: {
-            rTopChanged(value);
-        }
+        minimumValue: 0.0
+        maximumValue: 1.0
+        value: 0.6
+        onValueChanged: hudShader.rTopChanged(value);
+    }
+
+    Text {
+        id: rTopSliderValue
+        text: Math.round(rTopSlider.value * 1000) / 1000
     }
 }

@@ -3,7 +3,6 @@
         <file>shaders/fragment.glsl</file>
         <file>shaders/vertex.glsl</file>
         <file>qml/Hud.qml</file>
-        <file>qml/Slider.qml</file>
         <file>qml/GeometryGrid.qml</file>
         <file>qml/ShaderGrid.qml</file>
     </qresource>

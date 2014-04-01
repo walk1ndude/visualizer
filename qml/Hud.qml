@@ -9,7 +9,7 @@ Rectangle {
 
     Row {
         y: 10
-        spacing: 100
+        spacing: 50
 
         ShaderGrid {
             id: shaderGrid
