@@ -121,6 +121,10 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     ctData.images = &_images;
 
+    ctData.imageSpacing = &_imageSpacings;
+
+    ctData.isRadonNeeded = false;
+
     //MONOCHROME2
 
     gdcm::PhotometricInterpretation photometricInterpretation = dImage.GetPhotometricInterpretation();

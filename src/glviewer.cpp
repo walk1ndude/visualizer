@@ -128,9 +128,9 @@ void GLviewer::initTextures() {
     }
 
     _matrixStack.scale(QVector3D(
-                       image.cols * _imageSpacings[0] / (image.cols * _imageSpacings[0]) / 0.8,
-                       image.rows * _imageSpacings[1] / (image.cols * _imageSpacings[0]) / 0.8,
-                       _count * _imageSpacings[2] / (image.cols * _imageSpacings[0]) / 0.8
+                       image.cols * _imageSpacings[0] / (image.cols * _imageSpacings[0]) / 0.7,
+                       image.rows * _imageSpacings[1] / (image.cols * _imageSpacings[0]) / 0.7,
+                       _count * _imageSpacings[2] / (image.cols * _imageSpacings[0]) / 0.7
             ));
 
     _textureCV3D.setSize(image.cols, image.rows, _count);

@@ -11,6 +11,8 @@ typedef uint32_t u_int32_t;
 
 #endif
 
+#include <QtCore/QDebug>
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/ocl/ocl.hpp>
@@ -145,6 +147,8 @@ typedef struct _Images {
 typedef struct _CtData {
     Images * images;
 
+    std::vector<float> * imageSpacing;
+
     int bytesAllocated;
     int width;
     int height;
@@ -158,8 +162,11 @@ typedef struct _CtData {
 
     bool isLittleEndian;
     bool inverseNeeded;
+    bool isRadonNeeded;
+
     double slope;
     double intercept;
+
     char * buffer;
 }CtData;
 
@@ -168,46 +175,63 @@ class CtProcessing : public cv::ParallelLoopBody {
 private:
     CtData _ctData;
 
+    int width;
+    int height;
+
+    int pad;
+
+    int widthPad;
+    int heightPad;
+
+    int wPad;
+    int hPad;
+
+    std::vector<cv::Mat>rotationMatrix;
+
+    std::vector<float>cosTable;
+    std::vector<float>sinTable;
+
+    std::vector<float>dhtCoeffs;
 
 public:
     CtProcessing(CtData & ctData) : _ctData(ctData) {
         _ctData.offset = _ctData.bytesAllocated * _ctData.width * _ctData.height;
+
+        _ctData.imageSpacing->at(0) *= (float) 2.0;
+        _ctData.imageSpacing->at(1) *= (float) 2.0;
+
+        width = _ctData.width / 2;
+        height = _ctData.height / 2;
+
+        if (_ctData.isRadonNeeded) {
+
+            //useful image is ellipsoid with ra rb as width and height,
+            //all black near corners - we loss this "garbage" during rotations - good riddance
+            pad = std::max(width, height);
+
+            widthPad = std::ceil((pad - width) / 2.0);
+            heightPad = std::ceil((pad - height) / 2.0);
+
+            wPad = width + widthPad;
+            hPad = height + heightPad;
+
+            float twoPiN = PI_TIMES_2 / wPad;
+
+            for (int angle = 0; angle < RADON_DEGREE_RANGE; angle ++) {
+                rotationMatrix.push_back(cv::getRotationMatrix2D(cv::Point2i((width + widthPad) / 2, (height + heightPad) / 2),
+                                                             angle, 1.0));
+                cosTable.push_back(std::cos(toRad(angle)));
+                sinTable.push_back(std::sin(toRad(angle)));
+
+            }
+
+            for (int i = 0; i != wPad; i ++) {
+                dhtCoeffs.push_back(std::cos(twoPiN * i) + std::sin(twoPiN * i));
+            }
+        }
     }
 
     virtual void operator ()(const cv::Range & r) const {
-        int width = _ctData.width / 2;
-        int height = _ctData.height / 2;
-
-        //useful image is ellipsoid with ra rb as width and height,
-        //all black near corners - we loss this "garbage" during rotations - good riddance
-        int pad = std::max(width, height);
-
-        int widthPad = std::ceil((pad - width) / 2.0);
-        int heightPad = std::ceil((pad - height) / 2.0);
-
-        int wPad = width + widthPad;
-        int hPad = height + heightPad;
-
-        std::vector<cv::Mat>rotationMatrix;
-
-        std::vector<float>cosTable;
-        std::vector<float>sinTable;
-
-        for (int angle = 0; angle < RADON_DEGREE_RANGE; angle ++) {
-            rotationMatrix.push_back(cv::getRotationMatrix2D(cv::Point2i((width + widthPad) / 2, (height + heightPad) / 2),
-                                                             angle, 1.0));
-            cosTable.push_back(std::cos(toRad(angle)));
-            sinTable.push_back(std::sin(toRad(angle)));
-
-        }
-
-        std::vector<float>dhtCoeffs;
-
-        float twoPiN = PI_TIMES_2 / wPad;
-
-        for (int i = 0; i != wPad; i ++) {
-            dhtCoeffs.push_back(std::cos(twoPiN * i) + std::sin(twoPiN * i));
-        }
 
         for (register int i = r.start; i != r.end; ++ i) {
 
@@ -266,12 +290,12 @@ public:
             //cv::Scharr(*data, *data, -1, 1, 0);
 
             (*data).convertTo(*data, CV_8UC1, 1 / 256.0);
-            cv::GaussianBlur(*data, *data, cv::Size(3, 3), 5);
+           /* cv::GaussianBlur(*data, *data, cv::Size(3, 3), 5);
 
             cv::inRange(*data, cv::Scalar(5), cv::Scalar(20), *data);
 
             cv::dilate(*data, *data, cv::Mat(5, 5, CV_8UC1));
-
+*/
             //cv::threshold(*data, *data, 30, 100, CV_THRESH_TOZERO_INV);
             //cv::threshold(*data, *data, 39, 255, CV_THRESH_BINARY_INV);
 
