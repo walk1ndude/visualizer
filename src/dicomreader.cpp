@@ -96,8 +96,6 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
         _imageSpacings.push_back(1.0);
     }
 
-    qDebug() << _imageSpacings[2];
-
     tagFind.SetElementTag(0x0028, 0x1050);
     if (dDataSet.FindDataElement(tagFind)) {
         ctData.windowCenter = std::stoi(dStringFilter.ToString(tagFind));
