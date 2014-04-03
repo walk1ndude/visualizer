@@ -128,16 +128,16 @@ void GLviewer::initTextures() {
     }
 
     _matrixStack.scale(QVector3D(
-                       image.cols / (float) image.cols / 0.8,
-                       image.cols / (float) image.rows / 0.8,
-                       _count / (float) image.cols / 0.8
+                       image.cols * _imageSpacings[0] / (image.cols * _imageSpacings[0]) / 0.8,
+                       image.rows * _imageSpacings[1] / (image.cols * _imageSpacings[0]) / 0.8,
+                       _count * _imageSpacings[2] / (image.cols * _imageSpacings[0]) / 0.8
             ));
 
     _textureCV3D.setSize(image.cols, image.rows, _count);
-    _textureCV3D.setFormat(QOpenGLTexture::R16_UNorm);
+    _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
     _textureCV3D.allocateStorage();
 
-    _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt16, (void *) data, &pixelOptions);
+    _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) data, &pixelOptions);
 
     _textureCV3D.setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
     _textureCV3D.setMagnificationFilter(QOpenGLTexture::Linear);

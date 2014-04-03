@@ -83,11 +83,22 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     CtData ctData;
 
-    for (int i = 0; i != 3; ++ i) {
+    for (int i = 0; i != 2; ++ i) {
         _imageSpacings.push_back(dImage.GetSpacing(i));
     }
 
-    gdcm::Tag tagFind(0x0028, 0x1050);
+    gdcm::Tag tagFind(0x0018, 0x0050);
+    if (dDataSet.FindDataElement(tagFind)) {
+        _imageSpacings.push_back(std::stof(dStringFilter.ToString(tagFind)));
+    }
+    else {
+        //pure assumtion for now
+        _imageSpacings.push_back(1.0);
+    }
+
+    qDebug() << _imageSpacings[2];
+
+    tagFind.SetElementTag(0x0028, 0x1050);
     if (dDataSet.FindDataElement(tagFind)) {
         ctData.windowCenter = std::stoi(dStringFilter.ToString(tagFind));
     }

@@ -265,6 +265,20 @@ public:
             //cv::dilate(*data, *data, cv::Mat(3, 3, CV_8UC1));
             //cv::Scharr(*data, *data, -1, 1, 0);
 
+            (*data).convertTo(*data, CV_8UC1, 1 / 256.0);
+            cv::GaussianBlur(*data, *data, cv::Size(3, 3), 5);
+
+            cv::inRange(*data, cv::Scalar(5), cv::Scalar(20), *data);
+
+            cv::dilate(*data, *data, cv::Mat(5, 5, CV_8UC1));
+
+            //cv::threshold(*data, *data, 30, 100, CV_THRESH_TOZERO_INV);
+            //cv::threshold(*data, *data, 39, 255, CV_THRESH_BINARY_INV);
+
+            //cv::Mat * bFData = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+
+            //cv::bilateralFilter(*data, *bFData, 5, 10, 20);
+
             _ctData.images->images.at(i) = data;
 
             //cv::ocl::oclMat * oclData = new cv::ocl::oclMat(*data8);
