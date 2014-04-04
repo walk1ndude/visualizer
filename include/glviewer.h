@@ -4,8 +4,6 @@
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QKeyEvent>
 
-#include <opencv2/core/core.hpp>
-
 #include "openglwindow.h"
 #include "hud.h"
 #include "geometryengine.h"
@@ -16,7 +14,6 @@ class GLviewer : public OpenGLWindow {
     
 public:
     explicit GLviewer(QWindow * parent = 0);
-
     ~GLviewer();
 
     void initialize();
@@ -38,30 +35,33 @@ private:
     int _shaderRBottom;
     int _shaderRTop;
 
+    int _alignment;
+
+    size_t _rowLength;
+
     QOpenGLTexture _textureCV3D;
 
     qreal _rBottom;
     qreal _rTop;
 
-    int _count;
-
-    std::vector<float>_imageSpacings;
+    std::vector<float>_scaling;
+    std::vector<int>_size;
 
     QPoint _lastMousePosition;
 
     GeometryEngine _geometryEngine;
 
-    std::vector<cv::Mat*> _ctImages;
+    const uchar * _mergedData;
 
     Hud * _hud;
 
     void fetchHud();
-
     void initTextures();
 signals:
 
 public slots:
-    void drawSlices(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings);
+    void drawSlices(const uchar * mergedData, const std::vector<float> & scaling,
+                    const std::vector<int> & size, const int & alignment, const size_t & rowLength);
 
     void updateRBottom(qreal rBottom);
     void updateRTop(qreal rTop);

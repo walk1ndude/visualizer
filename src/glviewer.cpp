@@ -16,9 +16,15 @@ GLviewer::GLviewer(QWindow * parent) :
     fetchHud();
 }
 
-void GLviewer::drawSlices(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings) {
-    _ctImages = ctImages;
-    _imageSpacings = imageSpacings;
+void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & scaling, const std::vector<int> &size,
+                          const int & alignment, const size_t & rowLength) {
+    _mergedData = mergedData;
+    _scaling = scaling;
+    _size = size;
+
+    _alignment = alignment;
+    _rowLength = rowLength;
+
     _program = 0;
 
     _matrixStack.identity();
@@ -73,14 +79,12 @@ void GLviewer::initialize() {
     _shaderRBottom = _program->uniformLocation("rBottom");
     _shaderRTop = _program->uniformLocation("rTop");
 
-    _count = _ctImages.size();
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     initTextures();
 
-    _geometryEngine.init(_program, _count);
+    _geometryEngine.init(_program, _size[2]);
 }
 
 void GLviewer::render() {
@@ -110,34 +114,17 @@ void GLviewer::render() {
 }
 
 void GLviewer::initTextures() {
-    cv::Mat image(*(_ctImages[0]));
-
     QOpenGLPixelTransferOptions pixelOptions;
-    pixelOptions.setAlignment((image.step & 3) ? 1 : 4);
-    pixelOptions.setRowLength(image.step1());
+    pixelOptions.setAlignment(_alignment);
+    pixelOptions.setRowLength(_rowLength);
 
-    int byteSizeMat = _ctImages[0]->elemSize() * _ctImages[0]->total();
-    int byteSizeAll = byteSizeMat * _count;
+    _matrixStack.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
 
-    uchar * data = new uchar[byteSizeAll];
-
-    for (int i = 0; i != _count; ++ i) {
-        cv::flip(*(_ctImages[i]), image, 0);
-
-        memcpy(data + byteSizeMat * i, image.data, byteSizeMat);
-    }
-
-    _matrixStack.scale(QVector3D(
-                       image.cols * _imageSpacings[0] / (image.cols * _imageSpacings[0]) / 0.7,
-                       image.rows * _imageSpacings[1] / (image.cols * _imageSpacings[0]) / 0.7,
-                       _count * _imageSpacings[2] / (image.cols * _imageSpacings[0]) / 0.7
-            ));
-
-    _textureCV3D.setSize(image.cols, image.rows, _count);
+    _textureCV3D.setSize(_size[0], _size[1], _size[2]);
     _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
     _textureCV3D.allocateStorage();
 
-    _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) data, &pixelOptions);
+    _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) _mergedData, &pixelOptions);
 
     _textureCV3D.setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
     _textureCV3D.setMagnificationFilter(QOpenGLTexture::Linear);

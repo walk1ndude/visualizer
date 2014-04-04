@@ -27,19 +27,20 @@ public:
 private:
   size_t _imageNumber;
 
-  std::vector<float>_imageSpacings;
-
   Images _images;
 
   cv::ocl::Context * _context;
+
+  uchar * mergedData;
 
   int initOpenCL();
 
   void showImageWithNumber(const size_t & imageNumber);
   void readImage(gdcm::File & dFile, const gdcm::Image & dImage);
-
+  void mergeMatData(const std::vector<float> & imageSpacings);
 signals:
-  void slicesProcessed(const std::vector<cv::Mat *> & ctImages, const std::vector<float> & imageSpacings);
+  void slicesProcessed(const uchar * mergedData, const std::vector<float> & scaling,
+                       const std::vector<int> & size, const int & alignment, const size_t & rowLength);
 
 public slots:
   void readFile(QString dicomFile);

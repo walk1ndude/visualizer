@@ -56,6 +56,7 @@ int DicomReader::initOpenCL() {
 
 DicomReader::~DicomReader() {
     reset(_images);
+    delete [] mergedData;
 }
 
 void DicomReader::resetV(std::vector<cv::Mat*> & vec, const int & newSize) {
@@ -83,17 +84,19 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     CtData ctData;
 
+    std::vector<float>imageSpacings;
+
     for (int i = 0; i != 2; ++ i) {
-        _imageSpacings.push_back(dImage.GetSpacing(i));
+        imageSpacings.push_back(dImage.GetSpacing(i));
     }
 
     gdcm::Tag tagFind(0x0018, 0x0050);
     if (dDataSet.FindDataElement(tagFind)) {
-        _imageSpacings.push_back(std::stof(dStringFilter.ToString(tagFind)));
+        imageSpacings.push_back(std::stof(dStringFilter.ToString(tagFind)));
     }
     else {
         //pure assumtion for now
-        _imageSpacings.push_back(1.0);
+        imageSpacings.push_back(1.0);
     }
 
     tagFind.SetElementTag(0x0028, 0x1050);
@@ -121,7 +124,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     ctData.images = &_images;
 
-    ctData.imageSpacing = &_imageSpacings;
+    ctData.imageSpacing = &imageSpacings;
 
     ctData.isRadonNeeded = false;
 
@@ -176,7 +179,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 */
     showImageWithNumber(0);
 
-    emit slicesProcessed(_images.ctImages, _imageSpacings);
+    mergeMatData(imageSpacings);
 }
 
 void DicomReader::readFile(QString dicomFile) {
@@ -190,6 +193,32 @@ void DicomReader::readFile(QString dicomFile) {
     else {
         qDebug() << "can't read file";
     }
+}
+
+void DicomReader::mergeMatData(const std::vector<float> & imageSpacings) {
+    cv::Mat * image = _images.ctImages[0];
+    int z = _images.ctImages.size();
+
+    int byteSizeMat = image->elemSize() * image->total();
+    int byteSizeAll = byteSizeMat * z;
+
+    mergedData = new uchar[byteSizeAll];
+
+    for (int i = 0; i != z; ++ i) {
+        memcpy(mergedData + byteSizeMat * i, _images.ctImages[i]->data, byteSizeMat);
+    }
+
+    std::vector<float> scaling;
+    scaling.push_back(image->cols * imageSpacings[0] / (image->cols * imageSpacings[0]) / 0.7);
+    scaling.push_back(image->rows * imageSpacings[1] / (image->cols * imageSpacings[0]) / 0.7);
+    scaling.push_back(_images.ctImages.size() * imageSpacings[2] / (image->cols * imageSpacings[0]) / 0.7);
+
+    std::vector<int>size;
+    size.push_back(image->rows);
+    size.push_back(image->cols);
+    size.push_back(z);
+
+    emit slicesProcessed(mergedData, scaling, size, ((image->step & 3) ? 1 : 4), image->step1());
 }
 
 void DicomReader::changeSliceNumber(int ds) {
