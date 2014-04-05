@@ -164,8 +164,8 @@ typedef struct _CtData {
     bool inverseNeeded;
     bool isRadonNeeded;
 
-    double slope;
-    double intercept;
+    float slope;
+    float intercept;
 
     char * buffer;
 }CtData;
@@ -290,6 +290,11 @@ public:
             //cv::Scharr(*data, *data, -1, 1, 0);
 
             (*data).convertTo(*data, CV_8UC1, 1 / 256.0);
+
+            cv::equalizeHist(*data, *data);
+            cv::medianBlur(*data, *data, 7);
+
+            cv::threshold(*data, *data, 5, 255, CV_THRESH_TOZERO);
            /* cv::GaussianBlur(*data, *data, cv::Size(3, 3), 5);
 
             cv::inRange(*data, cv::Scalar(5), cv::Scalar(20), *data);

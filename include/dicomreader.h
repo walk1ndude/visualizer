@@ -40,7 +40,7 @@ private:
   void mergeMatData(const std::vector<float> & imageSpacings);
 signals:
   void slicesProcessed(const uchar * mergedData, const std::vector<float> & scaling,
-                       const std::vector<int> & size, const int & alignment, const size_t & rowLength);
+                       const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
 
 public slots:
   void readFile(QString dicomFile);

@@ -45,7 +45,7 @@ private:
     qreal _rTop;
 
     std::vector<float>_scaling;
-    std::vector<int>_size;
+    std::vector<size_t>_size;
 
     QPoint _lastMousePosition;
 
@@ -61,7 +61,7 @@ signals:
 
 public slots:
     void drawSlices(const uchar * mergedData, const std::vector<float> & scaling,
-                    const std::vector<int> & size, const int & alignment, const size_t & rowLength);
+                    const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
 
     void updateRBottom(qreal rBottom);
     void updateRTop(qreal rTop);

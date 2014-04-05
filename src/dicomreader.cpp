@@ -213,7 +213,7 @@ void DicomReader::mergeMatData(const std::vector<float> & imageSpacings) {
     scaling.push_back(image->rows * imageSpacings[1] / (image->cols * imageSpacings[0]) / 0.7);
     scaling.push_back(_images.ctImages.size() * imageSpacings[2] / (image->cols * imageSpacings[0]) / 0.7);
 
-    std::vector<int>size;
+    std::vector<size_t>size;
     size.push_back(image->rows);
     size.push_back(image->cols);
     size.push_back(z);

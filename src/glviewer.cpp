@@ -16,7 +16,7 @@ GLviewer::GLviewer(QWindow * parent) :
     fetchHud();
 }
 
-void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & scaling, const std::vector<int> &size,
+void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> &size,
                           const int & alignment, const size_t & rowLength) {
     _mergedData = mergedData;
     _scaling = scaling;
