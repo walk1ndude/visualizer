@@ -28,7 +28,7 @@ void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & s
     _program = 0;
 
     _matrixStack.identity();
-    _matrixStack.ortho(-1.5, 1.5, -1.5, 1.5, 0.001, 1000.0);
+    _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.001, 1000.0);
     _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
 
     _hud->show();

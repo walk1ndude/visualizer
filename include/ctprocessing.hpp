@@ -290,23 +290,70 @@ public:
             //cv::Scharr(*data, *data, -1, 1, 0);
 
             (*data).convertTo(*data, CV_8UC1, 1 / 256.0);
+/*
+            cv::medianBlur(*data, *data, 9);
 
-            cv::equalizeHist(*data, *data);
-            cv::medianBlur(*data, *data, 7);
+            cv::Mat * mask = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::inRange(*data, cv::Scalar(1), cv::Scalar(25), *mask);
 
-            cv::threshold(*data, *data, 5, 255, CV_THRESH_TOZERO);
-           /* cv::GaussianBlur(*data, *data, cv::Size(3, 3), 5);
-
-            cv::inRange(*data, cv::Scalar(5), cv::Scalar(20), *data);
-
-            cv::dilate(*data, *data, cv::Mat(5, 5, CV_8UC1));
+            cv::Mat * result = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::bitwise_and(*data, *data, *result, *mask);
+*/
+            //delete mask;
+  /*          cv::dilate(*data, *data, cv::Mat(5, 5, CV_8UC1));
 */
             //cv::threshold(*data, *data, 30, 100, CV_THRESH_TOZERO_INV);
             //cv::threshold(*data, *data, 39, 255, CV_THRESH_BINARY_INV);
 
-            //cv::Mat * bFData = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::Mat * bFData = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::Mat * bones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::Mat * tissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
 
-            //cv::bilateralFilter(*data, *bFData, 5, 10, 20);
+            cv::bilateralFilter(*data, *bFData, 5, 20, 30);
+
+            data->copyTo(*bones);
+            bFData->copyTo(*tissues);
+
+            cv::Mat * maskBones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::Mat * maskTissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+
+            cv::inRange(*bones, cv::Scalar(50), cv::Scalar(60), *maskBones); // 50 - 60
+
+            cv::inRange(*tissues, cv::Scalar(110), cv::Scalar(150), *maskTissues); // 50 - 60
+            cv::medianBlur(*maskTissues, *maskTissues, 15);
+
+            cv::Mat * resultBones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::Mat * resultTissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            cv::Mat * result = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+
+            cv::bitwise_and(*bones, *bones, *resultBones, *maskBones);
+            cv::bitwise_and(*tissues, *tissues, *resultTissues, *maskTissues);
+
+            cv::Mat * contoursMask = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+
+            std::vector<std::vector<cv::Point> > contours;
+            std::vector<cv::Vec4i> hierarchy;
+
+            cv::GaussianBlur(*resultBones, *resultBones, cv::Size(3, 3), 0.5);
+
+            cv::findContours(*resultBones, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+
+            for (size_t k = 0; k < contours.size(); ++ k) {
+                if (contours.at(k).size() > 30) {
+                    cv::drawContours(*contoursMask, contours, k, cv::Scalar(255), CV_FILLED);
+                }
+            }
+
+            cv::bitwise_and(*resultBones, *resultBones, *result, *contoursMask);
+
+            cv::equalizeHist(*result, *result);
+
+            //cv::dilate(*resultContours, *resultContours, cv::Mat(5, 5, CV_8UC1));
+
+
+            //*result = *resultBones + *resultTissues;
+
+            _ctData.images->ctImages.at(i) = result;
 
             _ctData.images->images.at(i) = data;
 
@@ -318,7 +365,6 @@ public:
 
             //cv::Mat * backprojection = new cv::Mat(backproject(*sinogram, cosTable, sinTable));
 
-            _ctData.images->ctImages.at(i) = data;
             _ctData.images->fourier1d.at(i) = data;
             _ctData.images->sinograms.at(i) = data;
             //_ctData.images->images.at(i) = backprojection;
