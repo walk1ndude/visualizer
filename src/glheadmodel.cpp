@@ -16,8 +16,8 @@ GLHeadModel::~GLHeadModel() {
     delete [] _indices;
 }
 
-void GLHeadModel::init(QOpenGLShaderProgram * program, const int & zCount, QOpenGLFunctions_3_3_Core * openglFuncs) {
-    _openglFuncs = openglFuncs;
+void GLHeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
+    initializeOpenGLFunctions();
 
     _shaderVertex = program->attributeLocation("vertex");
     _shaderTex = program->attributeLocation("tex");
@@ -94,5 +94,5 @@ void GLHeadModel::drawModel(QOpenGLShaderProgram * program) {
     program->enableAttributeArray(_shaderTex);
     program->setAttributeBuffer(_shaderTex, GL_FLOAT, offset, 3, sizeof(VertexData));
 
-    _openglFuncs->glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
 }

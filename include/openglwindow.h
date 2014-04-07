@@ -65,8 +65,6 @@ public slots:
     void renderNow();
 
 protected:
-    QOpenGLFunctions_3_3_Core * _openglFuncs;
-
     QOpenGLContext * _context;
 
     bool event(QEvent * event);

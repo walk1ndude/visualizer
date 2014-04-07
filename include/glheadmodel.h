@@ -18,7 +18,7 @@ public:
     GLHeadModel();
     ~GLHeadModel();
 
-    void init(QOpenGLShaderProgram * program, const int & zCount, QOpenGLFunctions_3_3_Core * openglFuncs);
+    void init(QOpenGLShaderProgram * program, const int & zCount);
     void drawModel(QOpenGLShaderProgram * program);
 
 private:
@@ -26,8 +26,6 @@ private:
     QOpenGLBuffer _vboInd;
 
     QOpenGLVertexArrayObject _vao;
-
-    QOpenGLFunctions_3_3_Core * _openglFuncs;
 
     VertexData * _vertices;
     GLushort * _indices;

@@ -33,7 +33,7 @@ void OpenGLWindow::render() {
         _device = new QOpenGLPaintDevice;
     }
 
-    _openglFuncs->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     _device->setSize(size());
 
@@ -92,10 +92,8 @@ void OpenGLWindow::renderNow() {
 
     _context->makeCurrent(this);
 
-    _openglFuncs = _context->versionFunctions<QOpenGLFunctions_3_3_Core>();
-
     if (needsInitialize) {
-        _openglFuncs->initializeOpenGLFunctions();
+        initializeOpenGLFunctions();
         initialize();
     }
 

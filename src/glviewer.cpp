@@ -79,23 +79,23 @@ void GLviewer::initialize() {
     _shaderRBottom = _program->uniformLocation("rBottom");
     _shaderRTop = _program->uniformLocation("rTop");
 
-    _openglFuncs->glEnable(GL_CULL_FACE);
-    _openglFuncs->glEnable(GL_BLEND);
-    _openglFuncs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     initTextures();
 
-    _glHeadModel.init(_program, _size[2], _openglFuncs);
+    _glHeadModel.init(_program, _size[2]);
 }
 
 void GLviewer::render() {
     const qreal retinaScale = devicePixelRatio();
-    _openglFuncs->glViewport(0, 0, width() * retinaScale, height() * retinaScale);
+    glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     _hud->resize(width() * retinaScale, 0.2 * height() * retinaScale);
 
-    _openglFuncs->glClear(GL_COLOR_BUFFER_BIT);
-    _openglFuncs->glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
     _program->bind();
 
