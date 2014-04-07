@@ -2,12 +2,10 @@
 #include <QtGui/QScreen>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
-#include <opencv2/highgui/highgui.hpp>
-
 #include "glviewer.h"
 
-GLviewer::GLviewer(QWindow * parent) :
-    OpenGLWindow(parent),
+GLviewer::GLviewer(const QSurfaceFormat & surfaceFormat, QWindow * parent) :
+    OpenGLWindow(surfaceFormat, parent),
     _program(0),
     _textureCV3D(QOpenGLTexture::Target3D),
     _rBottom((float) 0.1),
@@ -30,6 +28,8 @@ void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & s
     _matrixStack.identity();
     _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.001, 1000.0);
     _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+
+    _matrixStack.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
 
     _hud->show();
     show();
@@ -79,22 +79,23 @@ void GLviewer::initialize() {
     _shaderRBottom = _program->uniformLocation("rBottom");
     _shaderRTop = _program->uniformLocation("rTop");
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    _openglFuncs->glEnable(GL_CULL_FACE);
+    _openglFuncs->glEnable(GL_BLEND);
+    _openglFuncs->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     initTextures();
 
-    _geometryEngine.init(_program, _size[2]);
+    _glHeadModel.init(_program, _size[2], _openglFuncs);
 }
 
 void GLviewer::render() {
     const qreal retinaScale = devicePixelRatio();
-    glViewport(0, 0, width() * retinaScale, height() * retinaScale);
+    _openglFuncs->glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     _hud->resize(width() * retinaScale, 0.2 * height() * retinaScale);
 
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    _openglFuncs->glClear(GL_COLOR_BUFFER_BIT);
+    _openglFuncs->glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
     _program->bind();
 
@@ -108,7 +109,7 @@ void GLviewer::render() {
 
     _textureCV3D.bind();
 
-    _geometryEngine.drawModel(_program);
+    _glHeadModel.drawModel(_program);
 
     _program->release();
 }
@@ -118,13 +119,15 @@ void GLviewer::initTextures() {
     pixelOptions.setAlignment(_alignment);
     pixelOptions.setRowLength(_rowLength);
 
-    _matrixStack.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
-
+    _textureCV3D.create();
     _textureCV3D.setSize(_size[0], _size[1], _size[2]);
     _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
+
     _textureCV3D.allocateStorage();
 
     _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) _mergedData, &pixelOptions);
+
+    _textureCV3D.setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
 
     _textureCV3D.setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
     _textureCV3D.setMagnificationFilter(QOpenGLTexture::Linear);

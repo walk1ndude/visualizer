@@ -6,14 +6,14 @@
 
 #include "openglwindow.h"
 #include "hud.h"
-#include "geometryengine.h"
+#include "glheadmodel.h"
 #include "matrixstack.h"
 
 class GLviewer : public OpenGLWindow {
     Q_OBJECT
     
 public:
-    explicit GLviewer(QWindow * parent = 0);
+    explicit GLviewer(const QSurfaceFormat & surfaceFormat, QWindow * parent = 0);
     ~GLviewer();
 
     void initialize();
@@ -49,7 +49,7 @@ private:
 
     QPoint _lastMousePosition;
 
-    GeometryEngine _geometryEngine;
+    GLHeadModel _glHeadModel;
 
     const uchar * _mergedData;
 

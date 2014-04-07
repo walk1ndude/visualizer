@@ -41,14 +41,16 @@
 #ifndef OPENGLWINDOW_H
 #define OPENGLWINDOW_H
 
+#include <QtCore/QDebug>
+
 #include <QtGui/QWindow>
-#include <QtGui/QOpenGLFunctions>
+#include <QtGui/QOpenGLFunctions_3_3_Core>
 #include <QtGui/QOpenGLPaintDevice>
 
-class OpenGLWindow : public QWindow, protected QOpenGLFunctions {
+class OpenGLWindow : public QWindow, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
 public:
-    explicit OpenGLWindow(QWindow * parent = 0);
+    explicit OpenGLWindow(const QSurfaceFormat & surfaceFormat, QWindow * parent = 0);
     ~OpenGLWindow();
 
     virtual void render(QPainter * painter);
@@ -63,6 +65,10 @@ public slots:
     void renderNow();
 
 protected:
+    QOpenGLFunctions_3_3_Core * _openglFuncs;
+
+    QOpenGLContext * _context;
+
     bool event(QEvent * event);
 
     void exposeEvent(QExposeEvent * event);
@@ -72,8 +78,9 @@ private:
     bool _updatePending;
     bool _animating;
 
-    QOpenGLContext * _context;
     QOpenGLPaintDevice * _device;
+
+    QSurfaceFormat _surfaceFormat;
 };
 
 #endif // OPENGLWINDOW_H

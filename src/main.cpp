@@ -15,13 +15,12 @@ int main(int argc, char * argv[]) {
 
     QSurfaceFormat format;
     format.setSamples(16);
-    format.setVersion(2, 1);
+    format.setVersion(3, 3);
     format.setRenderableType(QSurfaceFormat::OpenGL);
     format.setProfile(QSurfaceFormat::CoreProfile);
 
-    GLviewer glviewer;
+    GLviewer glviewer(format);
 
-    glviewer.setFormat(format);
     glviewer.resize(640, 640);
 
     QObject::connect(appWindow, SIGNAL(fileOpened(QString)), &dicomReader, SLOT(readFile(QString)));
