@@ -177,7 +177,8 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     cv::namedWindow(WINDOW_RADON, cv::WINDOW_AUTOSIZE);
     cv::namedWindow(WINDOW_DHT, cv::WINDOW_AUTOSIZE);
 */
-    medianSmooth(5);
+    medianSmooth(2);
+    //expSmooth(0.7);
     mergeMatData(imageSpacings);
 
     showImageWithNumber(0);
@@ -191,15 +192,15 @@ void DicomReader::medianSmooth(const size_t & neighbours) {
     cv::Mat mergeMat(_images.ctImages[0]->cols, _images.ctImages[0]->rows, CV_8UC1);
 
     for (size_t i = 0; i != size; ++ i) {
-        if (i < neighbours || i > size - neighbours) {
+        if (i < neighbours || i > size - neighbours - 1) {
            medians.push_back(_images.ctImages[i]);
         }
         else {
             mergeMat = cv::Scalar(0);
-            for (size_t j = i; j != i + neighbours; ++ j) {
+            for (size_t j = i - neighbours; j != i + neighbours + 1; ++ j) {
                 mergeMat += *(_images.ctImages[j]);
             }
-            medians.push_back(new cv::Mat(mergeMat / neighbours));
+            medians.push_back(new cv::Mat(mergeMat / (2 * neighbours + 1)));
         }
     }
 
@@ -209,6 +210,27 @@ void DicomReader::medianSmooth(const size_t & neighbours) {
 
     _images.ctImages.erase(_images.ctImages.begin(), _images.ctImages.begin() + neighbours);
     _images.ctImages.erase(_images.ctImages.end() - neighbours, _images.ctImages.end());
+}
+
+void DicomReader::expSmooth(const float & alpha) {
+    std::vector<cv::Mat *>medians;
+
+    size_t size = _images.ctImages.size();
+
+    cv::Mat mergeMat(_images.ctImages[0]->cols, _images.ctImages[0]->rows, CV_8UC1);
+
+    for (size_t i = 0; i != size; ++ i) {
+        if (i == 0) {
+           mergeMat = (5 * (*(_images.ctImages[0])) + 2 * (*(_images.ctImages[1])) - (*(_images.ctImages[2]))) / 6;
+        }
+        else if (i == size - 1) {
+           mergeMat = (5 * (*(_images.ctImages[i])) + 2 * (*(_images.ctImages[i - 1])) - (*(_images.ctImages[i - 2]))) / 6;
+        }
+        else {
+            mergeMat = alpha * (*(_images.ctImages[i])) + (1 - alpha) * mergeMat;
+        }
+        medians.push_back(new cv::Mat(mergeMat));
+    }
 }
 
 void DicomReader::readFile(QString dicomFile) {

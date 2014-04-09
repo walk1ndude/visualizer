@@ -38,7 +38,9 @@ private:
   void showImageWithNumber(const size_t & imageNumber);
   void readImage(gdcm::File & dFile, const gdcm::Image & dImage);
   void mergeMatData(const std::vector<float> & imageSpacings);
+
   void medianSmooth(const size_t &neighbours);
+  void expSmooth(const float & alpha);
 signals:
   void slicesProcessed(const uchar * mergedData, const std::vector<float> & scaling,
                        const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
