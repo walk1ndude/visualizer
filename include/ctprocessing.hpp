@@ -139,6 +139,7 @@ static inline cv::Mat backproject(const cv::Mat & sinogram, const std::vector<fl
 
 typedef struct _Images {
     std::vector<cv::Mat*>ctImages;
+    std::vector<cv::Mat*>smoothImages;
     std::vector<cv::Mat*>images;
     std::vector<cv::Mat*>sinograms;
     std::vector<cv::Mat*>fourier1d;
@@ -399,6 +400,50 @@ public:
 
             //delete contourImage;
             //delete oclData;
+        }
+    }
+};
+
+typedef struct _SmoothData {
+    std::vector<cv::Mat*> * data;
+    std::vector<cv::Mat*> * smoothData;
+
+    size_t neighbourRadius;
+}SmoothData;
+
+class VolumeSmoothing : public cv::ParallelLoopBody {
+private:
+    SmoothData _smoothData;
+
+    size_t _cols;
+    size_t _rows;
+
+    size_t _neighbourCount;
+
+public:
+    VolumeSmoothing(SmoothData & smoothData) :
+        _smoothData(smoothData),
+        _cols(smoothData.data->at(0)->cols),
+        _rows(smoothData.data->at(0)->rows) {
+
+        _neighbourCount = 2 * _smoothData.neighbourRadius + 1;
+    }
+
+    virtual void operator ()(const cv::Range & r) const {
+        for (register int i = r.start; i != r.end; ++ i) {
+            cv::Mat mergeMat(cv::Mat::zeros(_rows, _cols, CV_16UC1));
+            cv::Mat mergeMat8(_cols, _rows, CV_8UC1);
+            cv::Mat conv16(_cols, _rows, CV_16UC1);
+
+            for (size_t j = i + _smoothData.neighbourRadius; j != i + _neighbourCount; ++ j) {
+                _smoothData.data->at(j)->convertTo(conv16, CV_16UC1, 256.0);
+                mergeMat += conv16;
+            }
+
+            mergeMat /= _neighbourCount;
+
+            mergeMat.convertTo(mergeMat8, CV_8UC1, 1 / 256.0);
+            _smoothData.smoothData->at(i) = new cv::Mat(mergeMat8);
         }
     }
 };
