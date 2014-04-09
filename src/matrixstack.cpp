@@ -26,6 +26,10 @@ QMatrix4x4 MatrixStack::scaleM() {
     return _sMatrix;
 }
 
+QMatrix3x3 MatrixStack::normalM() {
+    return (_mMatrix * _vMatrix).normalMatrix();
+}
+
 void MatrixStack::zoomZ(const qreal & dist) {
     _pMatrix.setToIdentity();
     _pMatrix.ortho(-dist/2, dist/2, -dist/2, dist/2, 0.001, 1000);

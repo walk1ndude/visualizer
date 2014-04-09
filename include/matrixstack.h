@@ -10,6 +10,7 @@ public:
     QMatrix4x4 view();
     QMatrix4x4 projection();
     QMatrix4x4 scaleM();
+    QMatrix3x3 normalM();
 
     void identity(const QVector3D & position = QVector3D(0.0, 0.0, 0.0),
                   const QVector3D & orientation = QVector3D(0.0, 0.0, 0.0));

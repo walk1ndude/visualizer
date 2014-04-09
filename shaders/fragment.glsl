@@ -1,5 +1,7 @@
 #version 330 core
-in highp vec4 fragTex;
+smooth in highp vec4 fragTex;
+
+smooth in highp float fragNormal;
 
 uniform float rBottom;
 uniform float rTop;

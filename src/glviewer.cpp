@@ -9,7 +9,8 @@ GLviewer::GLviewer(const QSurfaceFormat & surfaceFormat, QWindow * parent) :
     _program(0),
     _textureCV3D(QOpenGLTexture::Target3D),
     _rBottom((float) 0.1),
-    _rTop((float) 0.8) {
+    _rTop((float) 0.8),
+    _lightPos(QVector3D(0.0, 0.0, -10.0)){
 
     fetchHud();
 }
@@ -75,6 +76,8 @@ void GLviewer::initialize() {
     _shaderView = _program->uniformLocation("view");
     _shaderProjection = _program->uniformLocation("projection");
     _shaderScale = _program->uniformLocation("scale");
+    _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
+    _shaderLightPos = _program->uniformLocation("lightPos");
     _shaderTexSample = _program->uniformLocation("texSample");
     _shaderRBottom = _program->uniformLocation("rBottom");
     _shaderRTop = _program->uniformLocation("rTop");
@@ -95,7 +98,7 @@ void GLviewer::render() {
     _hud->resize(width() * retinaScale, 0.2 * height() * retinaScale);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     _program->bind();
 
@@ -103,6 +106,8 @@ void GLviewer::render() {
     _program->setUniformValue(_shaderView, _matrixStack.view());
     _program->setUniformValue(_shaderProjection, _matrixStack.projection());
     _program->setUniformValue(_shaderScale, _matrixStack.scaleM());
+    _program->setUniformValue(_shaderNormalMatrix, _matrixStack.normalM());
+    _program->setUniformValue(_shaderLightPos, _lightPos);
     _program->setUniformValue(_shaderTexSample, 0);
     _program->setUniformValue(_shaderRBottom, (GLfloat) _rBottom);
     _program->setUniformValue(_shaderRTop, (GLfloat) _rTop);
@@ -122,6 +127,8 @@ void GLviewer::initTextures() {
     _textureCV3D.create();
     _textureCV3D.setSize(_size[0], _size[1], _size[2]);
     _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
+    _textureCV3D.setMaximumLevelOfDetail(100);
+    _textureCV3D.setMinimumLevelOfDetail(-100);
 
     _textureCV3D.allocateStorage();
 

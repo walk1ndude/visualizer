@@ -177,9 +177,38 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     cv::namedWindow(WINDOW_RADON, cv::WINDOW_AUTOSIZE);
     cv::namedWindow(WINDOW_DHT, cv::WINDOW_AUTOSIZE);
 */
-    showImageWithNumber(0);
-
+    medianSmooth(5);
     mergeMatData(imageSpacings);
+
+    showImageWithNumber(0);
+}
+
+void DicomReader::medianSmooth(const size_t & neighbours) {
+    std::vector<cv::Mat *>medians;
+
+    size_t size = _images.ctImages.size();
+
+    cv::Mat mergeMat(_images.ctImages[0]->cols, _images.ctImages[0]->rows, CV_8UC1);
+
+    for (size_t i = 0; i != size; ++ i) {
+        if (i < neighbours || i > size - neighbours) {
+           medians.push_back(_images.ctImages[i]);
+        }
+        else {
+            mergeMat = cv::Scalar(0);
+            for (size_t j = i; j != i + neighbours; ++ j) {
+                mergeMat += *(_images.ctImages[j]);
+            }
+            medians.push_back(new cv::Mat(mergeMat / neighbours));
+        }
+    }
+
+    for (size_t i = 0; i != size; ++ i) {
+        _images.ctImages[i] = medians[i];
+    }
+
+    _images.ctImages.erase(_images.ctImages.begin(), _images.ctImages.begin() + neighbours);
+    _images.ctImages.erase(_images.ctImages.end() - neighbours, _images.ctImages.end());
 }
 
 void DicomReader::readFile(QString dicomFile) {

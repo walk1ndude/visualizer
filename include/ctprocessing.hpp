@@ -217,7 +217,7 @@ public:
 
             float twoPiN = PI_TIMES_2 / wPad;
 
-            for (int angle = 0; angle < RADON_DEGREE_RANGE; angle ++) {
+            for (int angle = 0; angle < RADON_DEGREE_RANGE; ++ angle) {
                 rotationMatrix.push_back(cv::getRotationMatrix2D(cv::Point2i((width + widthPad) / 2, (height + heightPad) / 2),
                                                              angle, 1.0));
                 cosTable.push_back(std::cos(toRad(angle)));
@@ -225,7 +225,7 @@ public:
 
             }
 
-            for (int i = 0; i != wPad; i ++) {
+            for (int i = 0; i != wPad; ++ i) {
                 dhtCoeffs.push_back(std::cos(twoPiN * i) + std::sin(twoPiN * i));
             }
         }
@@ -317,7 +317,7 @@ public:
             cv::Mat * maskBones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
             cv::Mat * maskTissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
 
-            cv::inRange(*bones, cv::Scalar(50), cv::Scalar(60), *maskBones); // 50 - 60
+            cv::inRange(*bones, cv::Scalar(52), cv::Scalar(58), *maskBones); // 50 - 60
 
             cv::inRange(*tissues, cv::Scalar(110), cv::Scalar(150), *maskTissues); // 50 - 60
             cv::medianBlur(*maskTissues, *maskTissues, 15);
@@ -329,6 +329,10 @@ public:
             cv::bitwise_and(*bones, *bones, *resultBones, *maskBones);
             cv::bitwise_and(*tissues, *tissues, *resultTissues, *maskTissues);
 
+            cv::adaptiveThreshold(*resultBones, *resultBones, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 5);
+
+            cv::dilate(*resultBones, *resultBones, cv::Mat(3, 3, CV_8UC1));
+
             cv::Mat * contoursMask = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
 
             std::vector<std::vector<cv::Point> > contours;
@@ -339,7 +343,7 @@ public:
             cv::findContours(*resultBones, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
 
             for (size_t k = 0; k < contours.size(); ++ k) {
-                if (contours.at(k).size() > 30) {
+                if (contours.at(k).size() > 10) {
                     cv::drawContours(*contoursMask, contours, k, cv::Scalar(255), CV_FILLED);
                 }
             }

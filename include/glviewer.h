@@ -31,6 +31,8 @@ private:
     int _shaderView;
     int _shaderProjection;
     int _shaderScale;
+    int _shaderNormalMatrix;
+    int _shaderLightPos;
     int _shaderTexSample;
     int _shaderRBottom;
     int _shaderRTop;
@@ -46,6 +48,8 @@ private:
 
     std::vector<float>_scaling;
     std::vector<size_t>_size;
+
+    QVector3D _lightPos;
 
     QPoint _lastMousePosition;
 
