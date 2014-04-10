@@ -4,6 +4,7 @@
 #include <gdcmStringFilter.h>
 
 #include <QtCore/QDebug>
+#include <QtCore/QDateTime>
 
 #include "dicomreader.h"
 
@@ -15,10 +16,10 @@
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
     _imageNumber(0) {
- /*   if (initOpenCL()) {
+   if (initOpenCL()) {
         std::cerr << "OpenCL is not initialized... aborted" << std::endl;
         exit(0);
-    }*/
+    }
 }
 
 int DicomReader::initOpenCL() {
@@ -44,7 +45,7 @@ int DicomReader::initOpenCL() {
 
                         return OPENCL_ALL_OK;
                     }
-                    catch (cv::Exception &){
+                    catch (cv::Exception &) {
                         continue;
                     }
                 }
@@ -163,6 +164,8 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     ctData.buffer = buffer;
 
+    qint64 startTime = QDateTime::currentMSecsSinceEpoch();
+
     qDebug() << "processing start";
 
     //cv::ocl::oclMat * oclData = new cv::ocl::oclMat(500, 500, CV_16UC1);
@@ -170,15 +173,19 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     cv::parallel_for_(cv::Range(0, imagesCount), CtProcessing<u_int16_t>(ctData));
 
-    qDebug() << "loading done";
+    qDebug() << "loading done" << QDateTime::currentMSecsSinceEpoch() - startTime;
 
     cv::namedWindow(WINDOW_INPUT_IMAGE, cv::WINDOW_AUTOSIZE);
   /*  cv::namedWindow(WINDOW_BACKPROJECT_IMAGE, cv::WINDOW_AUTOSIZE);
     cv::namedWindow(WINDOW_RADON, cv::WINDOW_AUTOSIZE);
     cv::namedWindow(WINDOW_DHT, cv::WINDOW_AUTOSIZE);
 */
+    startTime = QDateTime::currentMSecsSinceEpoch();
+
     medianSmooth(2);
     mergeMatData(_images.smoothImages, imageSpacings);
+
+    qDebug() << "merge finished" << QDateTime::currentMSecsSinceEpoch() - startTime;
 
     showImageWithNumber(0);
 }
@@ -194,8 +201,6 @@ void DicomReader::medianSmooth(const size_t & neighbourRadius) {
     smoothData.neighbourRadius = neighbourRadius;
 
     cv::parallel_for_(cv::Range(0, _images.smoothImages.size()), VolumeSmoothing(smoothData));
-
-    qDebug() << "ok";
 }
 
 void DicomReader::readFile(QString dicomFile) {

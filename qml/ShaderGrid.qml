@@ -4,11 +4,12 @@ import QtQuick.Controls 1.1
 Grid {
     id: hudShader
     columns: 3
-    rows: 2
+    rows: 3
     spacing: 5
 
     signal rBottomChanged(real value);
     signal rTopChanged(real value);
+    signal ambientIntensityChanged(real value);
 
     Text {
         id: rBottomText
@@ -46,5 +47,24 @@ Grid {
     Text {
         id: rTopSliderValue
         text: Math.round(rTopSlider.value * 1000) / 1000
+    }
+
+    Text {
+        id: ambientIntensityText
+        text: qsTr("ambientIntensity")
+    }
+
+    Slider {
+        id: ambientIntensitySlider
+        width: 200
+        minimumValue: 0.1
+        maximumValue: 30.0
+        value: 12.0
+        onValueChanged: hudShader.ambientIntensityChanged(value);
+    }
+
+    Text {
+        id: ambientIntensitySliderValue
+        text: Math.round(ambientIntensitySlider.value * 1000) / 1000
     }
 }

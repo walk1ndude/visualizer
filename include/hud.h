@@ -15,6 +15,7 @@ private:
 signals:
     void rBottomChanged(qreal rBottom);
     void rTopChanged(qreal rTop);
+    void ambientIntensityChanged(qreal ambientIntensity);
 
     void angleChanged(qreal xRot, qreal yRot, qreal zRot);
     void zoomZChanged(qreal zoomZ);
