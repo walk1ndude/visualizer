@@ -2,9 +2,11 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
 
+import OpenGL 1.0
+
 ApplicationWindow {
     id: window
-    width: 400
+    width: 600
     height: 200
 
     signal fileOpened(string fileName);
@@ -51,5 +53,12 @@ ApplicationWindow {
             case Qt.Key_Right: sliceNumberChanged(1); break;
             }
         }
+    }
+
+    OpenGLItem {
+        id: item
+
+        width: 320
+        height: 480
     }
 }

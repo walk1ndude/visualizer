@@ -5,8 +5,12 @@
 #include "dicomreader.h"
 #include "glviewer.h"
 
+#include "openglitem.h"
+
 int main(int argc, char * argv[]) {
     QGuiApplication a(argc, argv);
+
+    qmlRegisterType<OpenGLItem>("OpenGL", 1, 0, "OpenGLItem");
 
     QQmlApplicationEngine engine(QUrl("qrc:/qml/MainWindow.qml"));
     QObject * appWindow = engine.rootObjects().at(0);
@@ -21,7 +25,7 @@ int main(int argc, char * argv[]) {
 
     GLviewer glviewer(format);
 
-    glviewer.resize(640, 640);
+    glviewer.resize(1000, 640);
 
     QObject::connect(appWindow, SIGNAL(fileOpened(QString)), &dicomReader, SLOT(readFile(QString)));
     QObject::connect(appWindow, SIGNAL(sliceNumberChanged(int)), &dicomReader, SLOT(changeSliceNumber(int)));

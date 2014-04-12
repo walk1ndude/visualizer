@@ -61,6 +61,7 @@ SOURCES += src/main.cpp\
            src/glheadmodel.cpp \
            src/matrixstack.cpp \
            src/hud.cpp \
+    src/openglitem.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
@@ -68,6 +69,7 @@ HEADERS  += include/dicomreader.h \
             include/glviewer.h \
             include/glheadmodel.h \
             include/matrixstack.h \
-            include/hud.h
+            include/hud.h \
+    include/openglitem.h
 
 RESOURCES += resources.qrc
