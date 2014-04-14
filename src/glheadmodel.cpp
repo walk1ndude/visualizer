@@ -104,7 +104,5 @@ void GLHeadModel::drawModel() {
 
     glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
 
-    qDebug() << glGetError();
-
     _vao.release();
 }

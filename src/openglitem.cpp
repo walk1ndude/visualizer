@@ -1,24 +1,33 @@
 #include <QtQuick/QQuickWindow>
+#include <QtQuick/QSGSimpleTextureNode>
 
-#include <QtCore/QDebug>
+#include <QtGui/QOpenGLFramebufferObject>
 
 #include "openglitem.h"
 
 OpenGLItem::OpenGLItem() :
     _context(0),
-    _fbo(0),
+    _surface(0),
     _needsInitialize(false) {
 
     setFlag(QQuickItem::ItemHasContents);
 
+    QObject::connect(this, &QQuickItem::windowChanged, this, &OpenGLItem::windowChangedSettings);
 }
 
 OpenGLItem::~OpenGLItem() {
 
 }
 
+void OpenGLItem::windowChangedSettings(QQuickWindow * window) {
+    if (window) {
+       window->setClearBeforeRendering(false);
+    }
+}
+
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     if (_needsInitialize) {
+
         _context = new QOpenGLContext;
 
         QSurfaceFormat format;
@@ -31,6 +40,10 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         _context->create();
 
         QObject::connect(_context, &QOpenGLContext::aboutToBeDestroyed, this, &OpenGLItem::cleanup, Qt::DirectConnection);
+
+        _surface = new QOffscreenSurface;
+        _surface->setFormat(format);
+        _surface->create();
 
         _context->makeCurrent(window());
 
@@ -47,81 +60,30 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     }
 
     if (_context && width() && height()) {
-
-        if (_fbo) {
-            delete _fbo;
-            _fbo = 0;
-        }
-
         const qreal retinaScale = window()->devicePixelRatio();
 
-        QOpenGLFramebufferObjectFormat formatFBO;
+        QOpenGLFramebufferObject * fbo = new QOpenGLFramebufferObject(width() * retinaScale, height() * retinaScale);
 
-        formatFBO.setSamples(16);
-        formatFBO.setMipmap(true);
-        formatFBO.setInternalTextureFormat(GL_RGBA);
+        texNode->setTexture(window()->createTextureFromId(fbo->texture(), fbo->size()));
+        texNode->setRect(boundingRect());
 
-        _fbo = new QOpenGLFramebufferObject(QSize(width() * retinaScale, height() * retinaScale), formatFBO);
+        fbo->bind();
 
         _context->makeCurrent(window());
 
-        texNode->setTexture(window()->createTextureFromId(_fbo->texture(), _fbo->size()));
-        texNode->setRect(boundingRect());
-
-        _fbo->bind();
-
         render();
 
-        _fbo->bindDefault();
-        _fbo->release();
-
-        _fbo->toImage().save("name.png","png");
+        fbo->release();
 
         _context->swapBuffers(window());
+
+        delete fbo;
     }
     else {
         texNode->setTexture(window()->createTextureFromId(0, QSize(0, 0)));
     }
 
     return texNode;
-}
-
-void OpenGLItem::contextSwitch() {
-    if (_needsInitialize) {
-
-        _context = new QOpenGLContext;
-
-        QSurfaceFormat format;
-        format.setSamples(16);
-        format.setVersion(3, 3);
-        format.setRenderableType(QSurfaceFormat::OpenGL);
-        format.setProfile(QSurfaceFormat::CoreProfile);
-
-        _context->moveToThread(thread());
-
-        _context->setFormat(format);
-        _context->create();
-
-        _context->makeCurrent(window());
-
-        QObject::connect(_context, &QOpenGLContext::aboutToBeDestroyed, this, &OpenGLItem::cleanup, Qt::DirectConnection);
-
-        initializeOpenGLFunctions();
-        initialize();
-    }
-
-    if (_context) {
-
-        QOpenGLContext * savedContext = QOpenGLContext::currentContext();
-
-        _context->makeCurrent(window());
-
-        //render();
-
-        _context->swapBuffers(window());
-
-        savedContext->makeCurrent(window());
-    }
 }
 
 void OpenGLItem::initialize() {

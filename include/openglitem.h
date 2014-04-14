@@ -1,13 +1,13 @@
 #ifndef OPENGLITEM_H
 #define OPENGLITEM_H
 
+#include <QtCore/QDebug>
+
 #include <QtQuick/QQuickItem>
-#include <QtQuick/QSGSimpleTextureNode>
 
 #include <QtGui/QOpenGLFunctions_3_3_Core>
-#include <QtGui/QOpenGLShaderProgram>
-#include <QtGui/QOpenGLFramebufferObject>
 #include <QtGui/QOpenGLContext>
+#include <QtGui/QOffscreenSurface>
 
 class OpenGLItem : public QQuickItem, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT
@@ -19,7 +19,7 @@ public:
 protected:
     QOpenGLContext * _context;
 
-    QOpenGLFramebufferObject * _fbo;
+    QOffscreenSurface * _surface;
 
     bool _needsInitialize;
 
@@ -27,14 +27,13 @@ protected:
 
     QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 
-    void contextSwitch();
-
 protected slots:
     virtual void render();
-
     virtual void sync();
-
     virtual void cleanup();
+
+private slots:
+    void windowChangedSettings(QQuickWindow * window);
 };
 
 #endif // OPENGLITEM_H

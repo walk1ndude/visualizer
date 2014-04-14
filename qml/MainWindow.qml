@@ -2,8 +2,6 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
 
-import TomographyTools 1.0
-
 ApplicationWindow {
     id: window
     width: 1000
@@ -55,12 +53,11 @@ ApplicationWindow {
         }
     }
 
-
-    SliceViewer {
-        id: sliceViewer
-        objectName: "sliceViewer"
+    SliceItem {
+        id: sliceItem
 
         width: 640
         height: 640
     }
+
 }

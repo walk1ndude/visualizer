@@ -4,7 +4,6 @@
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QKeyEvent>
 
-#include "openglwindow.h"
 #include "openglitem.h"
 #include "hud.h"
 #include "glheadmodel.h"

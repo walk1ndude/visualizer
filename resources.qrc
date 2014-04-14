@@ -6,5 +6,6 @@
         <file>qml/GeometryGrid.qml</file>
         <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
+        <file>qml/SliceItem.qml</file>
     </qresource>
 </RCC>
