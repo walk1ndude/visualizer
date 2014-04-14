@@ -2,12 +2,12 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
 
-import OpenGL 1.0
+import TomographyTools 1.0
 
 ApplicationWindow {
     id: window
-    width: 600
-    height: 200
+    width: 1000
+    height: 670
 
     signal fileOpened(string fileName);
     signal sliceNumberChanged(int ds);
@@ -55,10 +55,12 @@ ApplicationWindow {
         }
     }
 
-    OpenGLItem {
-        id: item
 
-        width: 320
-        height: 480
+    SliceViewer {
+        id: sliceViewer
+        objectName: "sliceViewer"
+
+        width: 640
+        height: 640
     }
 }

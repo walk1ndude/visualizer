@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/fragment.glsl</file>
-        <file>shaders/vertex.glsl</file>
+        <file>shaders/sliceFragment.glsl</file>
+        <file>shaders/sliceVertex.glsl</file>
         <file>qml/Hud.qml</file>
         <file>qml/GeometryGrid.qml</file>
         <file>qml/ShaderGrid.qml</file>

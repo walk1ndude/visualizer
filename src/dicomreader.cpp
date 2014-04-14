@@ -57,7 +57,6 @@ int DicomReader::initOpenCL() {
 
 DicomReader::~DicomReader() {
     reset(_images);
-    delete [] mergedData;
 }
 
 void DicomReader::resetV(std::vector<cv::Mat*> & vec, const int & newSize) {
@@ -223,7 +222,7 @@ void DicomReader::mergeMatData(const std::vector<cv::Mat *> & ctImages, const st
     int byteSizeMat = image->elemSize() * image->total();
     int byteSizeAll = byteSizeMat * z;
 
-    mergedData = new uchar[byteSizeAll];
+    uchar * mergedData = new uchar[byteSizeAll];
 
     for (int i = 0; i != z; ++ i) {
         memcpy(mergedData + byteSizeMat * i, ctImages[i]->data, byteSizeMat);

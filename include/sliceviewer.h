@@ -5,6 +5,7 @@
 #include <QtGui/QKeyEvent>
 
 #include "openglwindow.h"
+#include "openglitem.h"
 #include "hud.h"
 #include "glheadmodel.h"
 #include "matrixstack.h"
@@ -19,18 +20,21 @@ typedef enum _GPU_Driver {
 
 void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage = "");
 
-class GLviewer : public OpenGLWindow {
+class SliceViewer : public OpenGLItem {
     Q_OBJECT
     
 public:
-    explicit GLviewer(const QSurfaceFormat & surfaceFormat, QWindow * parent = 0);
-    ~GLviewer();
+    explicit SliceViewer();
+    ~SliceViewer();
+
+protected:
+    void keyPressEvent(QKeyEvent * event);
 
     void initialize();
     void render();
 
-protected:
-    void keyPressEvent(QKeyEvent * event);
+    void sync();
+    void cleanup();
 
 private:
     QOpenGLShaderProgram * _program;
@@ -50,6 +54,8 @@ private:
 
     int _alignment;
 
+    bool _slicesReady;
+
     size_t _rowLength;
 
     QOpenGLTexture _textureCV3D;
@@ -67,7 +73,7 @@ private:
 
     GLHeadModel _glHeadModel;
 
-    const uchar * _mergedData;
+    uchar * _mergedData;
 
     Hud * _hud;
 
@@ -78,7 +84,7 @@ private:
 signals:
 
 public slots:
-    void drawSlices(const uchar * mergedData, const std::vector<float> & scaling,
+    void drawSlices(uchar * mergedData, const std::vector<float> & scaling,
                     const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
 
     void updateRBottom(qreal rBottom);

@@ -31,8 +31,6 @@ private:
 
   cv::ocl::Context * _context;
 
-  uchar * mergedData;
-
   int initOpenCL();
 
   void showImageWithNumber(const size_t & imageNumber);
@@ -41,7 +39,7 @@ private:
 
   void medianSmooth(const size_t & neighbourRadius);
 signals:
-  void slicesProcessed(const uchar * mergedData, const std::vector<float> & scaling,
+  void slicesProcessed(uchar * mergedData, const std::vector<float> & scaling,
                        const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
 
 public slots:

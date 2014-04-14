@@ -2,7 +2,7 @@
 #include <QtGui/QScreen>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
-#include "glviewer.h"
+#include "sliceviewer.h"
 
 void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage) {
    GLint nCurAvailMemoryInKB = 0;
@@ -32,20 +32,22 @@ void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage) 
             << "MiB, Free:" << nCurAvailMemoryInKB / 1024 << "MiB";
 }
 
-GLviewer::GLviewer(const QSurfaceFormat & surfaceFormat, QWindow * parent) :
-    OpenGLWindow(surfaceFormat, parent),
+SliceViewer::SliceViewer() :
+    OpenGLItem(),
     _program(0),
+    _slicesReady(false),
     _textureCV3D(QOpenGLTexture::Target3D),
     _rBottom((GLfloat) 0.1),
     _rTop((GLfloat) 0.8),
     _ambientIntensity((GLfloat) 12.0),
     _lightPos(QVector3D(0.0, 0.0, -10.0)),
+    _mergedData(0),
     _gpu_driver(NVidia_binary) {
 
     fetchHud();
 }
 
-void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> &size,
+void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> &size,
                           const int & alignment, const size_t & rowLength) {
     _mergedData = mergedData;
     _scaling = scaling;
@@ -54,7 +56,10 @@ void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & s
     _alignment = alignment;
     _rowLength = rowLength;
 
-    _program = 0;
+    if (_program) {
+        delete _program;
+        _program = 0;
+    }
 
     _matrixStack.identity();
     _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.001, 1000.0);
@@ -63,14 +68,18 @@ void GLviewer::drawSlices(const uchar * mergedData, const std::vector<float> & s
     _matrixStack.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
 
     _hud->show();
-    show();
+
+    _slicesReady = true;
+    _needsInitialize = true;
+
+    update();
 }
 
-GLviewer::~GLviewer() {
+SliceViewer::~SliceViewer() {
     _textureCV3D.release();
 }
 
-void GLviewer::keyPressEvent(QKeyEvent * event) {
+void SliceViewer::keyPressEvent(QKeyEvent * event) {
     int key = event->key();
 
     switch (key) {
@@ -86,23 +95,28 @@ void GLviewer::keyPressEvent(QKeyEvent * event) {
     event->accept();
 }
 
-void GLviewer::fetchHud() {
-    _hud = new Hud(this);
+void SliceViewer::fetchHud() {
+    _hud = new Hud(window());
 
-    QObject::connect(_hud, &Hud::rBottomChanged, this, &GLviewer::updateRBottom);
-    QObject::connect(_hud, &Hud::rTopChanged, this, &GLviewer::updateRTop);
+    QObject::connect(_hud, &Hud::rBottomChanged, this, &SliceViewer::updateRBottom);
+    QObject::connect(_hud, &Hud::rTopChanged, this, &SliceViewer::updateRTop);
 
-    QObject::connect(_hud, &Hud::angleChanged, this, &GLviewer::updateAngle);
-    QObject::connect(_hud, &Hud::zoomZChanged, this, &GLviewer::updateZoomZ);
-    QObject::connect(_hud, &Hud::ambientIntensityChanged, this, &GLviewer::updateAmbientIntensity);
+    QObject::connect(_hud, &Hud::angleChanged, this, &SliceViewer::updateAngle);
+    QObject::connect(_hud, &Hud::zoomZChanged, this, &SliceViewer::updateZoomZ);
+    QObject::connect(_hud, &Hud::ambientIntensityChanged, this, &SliceViewer::updateAmbientIntensity);
 }
 
-void GLviewer::initialize() {
+void SliceViewer::initialize() {
+
+    if (!_slicesReady) {
+        return;
+    }
+
     gpu_profiling(_gpu_driver, "initialization begin");
 
-    _program = new QOpenGLShaderProgram(this);
-    _program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":shaders/vertex.glsl");
-    _program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":shaders/fragment.glsl");
+    _program = new QOpenGLShaderProgram;
+    _program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":shaders/sliceVertex.glsl");
+    _program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":shaders/sliceFragment.glsl");
     _program->link();
 
     _shaderModel = _program->uniformLocation("model");
@@ -127,8 +141,12 @@ void GLviewer::initialize() {
     gpu_profiling(_gpu_driver, "initialization end");
 }
 
-void GLviewer::render() {
-    const qreal retinaScale = devicePixelRatio();
+void SliceViewer::render() {
+    if (!_program) {
+        return;
+    }
+
+    const qreal retinaScale = window()->devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     _hud->resize(width() * retinaScale, 0.2 * height() * retinaScale);
@@ -151,14 +169,27 @@ void GLviewer::render() {
 
     _textureCV3D.bind();
 
-    _glHeadModel.drawModel(_program);
+    _glHeadModel.drawModel();
 
     gpu_profiling(_gpu_driver, "actual drawing");
+
+    _textureCV3D.release();
 
     _program->release();
 }
 
-void GLviewer::initTextures() {
+void SliceViewer::sync() {
+
+}
+
+void SliceViewer::cleanup() {
+    if (_program) {
+        delete _program;
+        _program = 0;
+    }
+}
+
+void SliceViewer::initTextures() {
     QOpenGLPixelTransferOptions pixelOptions;
     pixelOptions.setAlignment(_alignment);
     pixelOptions.setRowLength(_rowLength);
@@ -180,31 +211,34 @@ void GLviewer::initTextures() {
     _textureCV3D.setWrapMode(QOpenGLTexture::ClampToBorder);
 
     _textureCV3D.generateMipMaps();
+
+    delete [] _mergedData;
+    _mergedData = 0;
 }
 
-void GLviewer::updateRBottom(qreal rBottom) {
+void SliceViewer::updateRBottom(qreal rBottom) {
     _rBottom = std::min(rBottom, (qreal) _rTop);
     _rTop = std::max(rBottom, (qreal) _rTop);
-    renderNow();
+    update();
 }
 
-void GLviewer::updateRTop(qreal rTop) {
+void SliceViewer::updateRTop(qreal rTop) {
     _rTop = std::max(rTop, (qreal) _rBottom);
     _rBottom = std::min(rTop, (qreal) _rBottom);
-    renderNow();
+    update();
 }
 
-void GLviewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
+void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
     _matrixStack.rotate(QVector3D(xRot, yRot, zRot));
-    renderNow();
+    update();
 }
 
-void GLviewer::updateZoomZ(qreal dist) {
+void SliceViewer::updateZoomZ(qreal dist) {
     _matrixStack.zoomZ(dist);
-    renderNow();
+    update();
 }
 
-void GLviewer::updateAmbientIntensity(qreal ambientIntensity) {
+void SliceViewer::updateAmbientIntensity(qreal ambientIntensity) {
     _ambientIntensity = ambientIntensity;
-    renderNow();
+    update();
 }

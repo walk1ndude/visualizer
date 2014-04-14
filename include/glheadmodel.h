@@ -6,12 +6,6 @@
 #include <QtGui/QOpenGLBuffer>
 #include <QtGui/QOpenGLVertexArrayObject>
 
-typedef struct _VertexData {
-    QVector3D position;
-    QVector3D normal;
-    QVector3D texCoord;
-}VertexData;
-
 class GLHeadModel : protected QOpenGLFunctions_3_3_Core {
 
 public:
@@ -19,7 +13,7 @@ public:
     ~GLHeadModel();
 
     void init(QOpenGLShaderProgram * program, const int & zCount);
-    void drawModel(QOpenGLShaderProgram * program);
+    void drawModel();
 
 private:
     QOpenGLBuffer _vboVert;
@@ -27,16 +21,13 @@ private:
 
     QOpenGLVertexArrayObject _vao;
 
-    VertexData * _vertices;
-    GLushort * _indices;
-
     int _shaderVertex;
     int _shaderTex;
     int _shaderNormal;
 
     int _indexCount;
 
-    void initGeometry(const int & zCount);
+    void initGeometry(QOpenGLShaderProgram * program, const int & zCount);
 };
 
 #endif // GEOMETRYENGINE_H

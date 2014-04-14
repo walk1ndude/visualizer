@@ -1,19 +1,20 @@
 #include "glheadmodel.h"
 
+typedef struct _VertexData {
+    QVector3D position;
+    QVector3D normal;
+    QVector3D texCoord;
+}VertexData;
+
 GLHeadModel::GLHeadModel() :
     _vboVert(QOpenGLBuffer::VertexBuffer),
-    _vboInd(QOpenGLBuffer::IndexBuffer),
-    _vertices(0),
-    _indices(0) {
+    _vboInd(QOpenGLBuffer::IndexBuffer) {
 
 }
 
 GLHeadModel::~GLHeadModel() {
     _vboVert.destroy();
     _vboInd.destroy();
-
-    delete [] _vertices;
-    delete [] _indices;
 }
 
 void GLHeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
@@ -23,10 +24,10 @@ void GLHeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
     _shaderTex = program->attributeLocation("tex");
     _shaderNormal = program->attributeLocation("normal");
 
-    initGeometry(zCount);
+    initGeometry(program, zCount);
 }
 
-void GLHeadModel::initGeometry(const int & zCount) {
+void GLHeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount) {
     _vao.create();
     _vao.bind();
 
@@ -36,8 +37,8 @@ void GLHeadModel::initGeometry(const int & zCount) {
     int vertexCount = 4 * zCount;
     int indexCount = 6 * zCount;
 
-    _vertices = new VertexData[vertexCount];
-    _indices = new GLushort[indexCount];
+    VertexData * vertices = new VertexData[vertexCount];
+    GLushort * indices = new GLushort[indexCount];
 
     float step = 2.0 / (float) zCount;
     float stepTexture = 1.0 / (float) zCount;
@@ -50,35 +51,25 @@ void GLHeadModel::initGeometry(const int & zCount) {
 
     for (int i = 0; i != zCount; ++ i) {
         // this, or cv::flip in dicomreader.. anyway, we can always rotate to appropriate degree...
-        _vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 1.0, zCurrentTexture)};
-        _vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, zCurrentTexture)};
-        _vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 0.0, zCurrentTexture)};
-        _vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 1.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 1.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 0.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 1.0, zCurrentTexture)};
 
-        _indices[currentIndex ++] = 4 * i;
-        _indices[currentIndex ++] = 4 * i + 2;
-        _indices[currentIndex ++] = 4 * i + 1;
-        _indices[currentIndex ++] = 4 * i;
-        _indices[currentIndex ++] = 4 * i + 3;
-        _indices[currentIndex ++] = 4 * i + 2;
+        indices[currentIndex ++] = 4 * i;
+        indices[currentIndex ++] = 4 * i + 2;
+        indices[currentIndex ++] = 4 * i + 1;
+        indices[currentIndex ++] = 4 * i;
+        indices[currentIndex ++] = 4 * i + 3;
+        indices[currentIndex ++] = 4 * i + 2;
 
         zCurrent += step;
         zCurrentTexture += stepTexture;
     };
 
     _vboVert.bind();
-    _vboVert.allocate(_vertices, vertexCount * sizeof(VertexData));
+    _vboVert.allocate(vertices, vertexCount * sizeof(VertexData));
 
-    _vboInd.create();
-    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
-
-    _vboInd.bind();
-    _vboInd.allocate(_indices, indexCount * sizeof(GLushort));
-
-    _indexCount = indexCount;
-}
-
-void GLHeadModel::drawModel(QOpenGLShaderProgram * program) {
     int offset = 0;
 
     program->enableAttributeArray(_shaderVertex);
@@ -94,5 +85,26 @@ void GLHeadModel::drawModel(QOpenGLShaderProgram * program) {
     program->enableAttributeArray(_shaderTex);
     program->setAttributeBuffer(_shaderTex, GL_FLOAT, offset, 3, sizeof(VertexData));
 
+    _vboInd.create();
+    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
+
+    _vboInd.bind();
+    _vboInd.allocate(indices, indexCount * sizeof(GLushort));
+
+    _indexCount = indexCount;
+
+    _vao.release();
+
+    delete [] vertices;
+    delete [] indices;
+}
+
+void GLHeadModel::drawModel() {
+    _vao.bind();
+
     glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
+
+    qDebug() << glGetError();
+
+    _vao.release();
 }
