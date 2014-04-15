@@ -4,7 +4,7 @@ import QtQuick.Dialogs 1.1
 
 ApplicationWindow {
     id: window
-    width: 1000
+    width: 640
     height: 670
 
     signal fileOpened(string fileName);
@@ -55,6 +55,7 @@ ApplicationWindow {
 
     SliceItem {
         id: sliceItem
+        objectName: "sliceItem"
 
         width: 640
         height: 640

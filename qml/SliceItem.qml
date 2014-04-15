@@ -4,6 +4,8 @@ import TomographyTools 1.0
 
 Item {
 
+    id: sliceItem
+
     Hud {
         id: sliceHud
         objectName: "sliceHud"
@@ -15,5 +17,7 @@ Item {
 
         width: 640
         height: 640
+
+        z: -1
     }
 }

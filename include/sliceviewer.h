@@ -5,7 +5,6 @@
 #include <QtGui/QKeyEvent>
 
 #include "openglitem.h"
-#include "hud.h"
 #include "glheadmodel.h"
 #include "matrixstack.h"
 
@@ -30,7 +29,7 @@ protected:
     void keyPressEvent(QKeyEvent * event);
 
     void initialize();
-    void render();
+    void render(const GLsizei viewportWidth, const GLsizei viewportHeight);
 
     void sync();
     void cleanup();
@@ -74,13 +73,9 @@ private:
 
     uchar * _mergedData;
 
-    Hud * _hud;
-
     GPU_Driver _gpu_driver;
 
-    void fetchHud();
     void initTextures();
-signals:
 
 public slots:
     void drawSlices(uchar * mergedData, const std::vector<float> & scaling,

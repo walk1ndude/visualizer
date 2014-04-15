@@ -44,7 +44,6 @@ SliceViewer::SliceViewer() :
     _mergedData(0),
     _gpu_driver(NVidia_binary) {
 
-    fetchHud();
 }
 
 void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> &size,
@@ -67,8 +66,6 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
 
     _matrixStack.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
 
-    _hud->show();
-
     _slicesReady = true;
     _needsInitialize = true;
 
@@ -80,30 +77,9 @@ SliceViewer::~SliceViewer() {
 }
 
 void SliceViewer::keyPressEvent(QKeyEvent * event) {
-    int key = event->key();
-
-    switch (key) {
-        case Qt::Key_H:
-            if (_hud->isVisible()) {
-                _hud->hide();
-            }
-            else {
-                _hud->show();
-            }
-    }
+    //int key = event->key();
 
     event->accept();
-}
-
-void SliceViewer::fetchHud() {
-    _hud = new Hud(window());
-
-    QObject::connect(_hud, &Hud::rBottomChanged, this, &SliceViewer::updateRBottom);
-    QObject::connect(_hud, &Hud::rTopChanged, this, &SliceViewer::updateRTop);
-
-    QObject::connect(_hud, &Hud::angleChanged, this, &SliceViewer::updateAngle);
-    QObject::connect(_hud, &Hud::zoomZChanged, this, &SliceViewer::updateZoomZ);
-    QObject::connect(_hud, &Hud::ambientIntensityChanged, this, &SliceViewer::updateAmbientIntensity);
 }
 
 void SliceViewer::initialize() {
@@ -141,15 +117,12 @@ void SliceViewer::initialize() {
     gpu_profiling(_gpu_driver, "initialization end");
 }
 
-void SliceViewer::render() {
+void SliceViewer::render(const GLsizei viewportWidth, const GLsizei viewportHeight) {
     if (!_program) {
         return;
     }
 
-    const qreal retinaScale = window()->devicePixelRatio();
-    glViewport(0, 0, width() * retinaScale, height() * retinaScale);
-
-    _hud->resize(width() * retinaScale, 0.2 * height() * retinaScale);
+    glViewport(0, 0, viewportWidth, viewportHeight);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -197,8 +170,6 @@ void SliceViewer::initTextures() {
     _textureCV3D.create();
     _textureCV3D.setSize(_size[0], _size[1], _size[2]);
     _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
-    _textureCV3D.setMaximumLevelOfDetail(100);
-    _textureCV3D.setMinimumLevelOfDetail(-100);
 
     _textureCV3D.allocateStorage();
 

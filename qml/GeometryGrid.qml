@@ -7,9 +7,6 @@ Grid {
     rows: 4
     spacing: 5
 
-    signal angleChanged(real xRot, real yRot, real zRot);
-    signal zoomZChanged(real value);
-
     Text {
         id: xRotText
         text: qsTr("x axis")
@@ -78,7 +75,7 @@ Grid {
         minimumValue: 2.0
         maximumValue: 10.0
         value: 2.0
-        onValueChanged: hudRotation.zoomZChanged(value);
+        onValueChanged: hud.zoomZChanged(value);
     }
 
     Text {
@@ -87,6 +84,6 @@ Grid {
     }
 
     function updateAngle() {
-        angleChanged(xRotSlider.value, yRotSlider.value, zRotSlider.value);
+        hud.angleChanged(xRotSlider.value, yRotSlider.value, zRotSlider.value);
     }
 }

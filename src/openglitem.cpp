@@ -7,8 +7,10 @@
 
 OpenGLItem::OpenGLItem() :
     _context(0),
-    _surface(0),
-    _needsInitialize(false) {
+    _contextQt(0),
+    _needsInitialize(false),
+    _fbo(0),
+    _surface(0) {
 
     setFlag(QQuickItem::ItemHasContents);
 
@@ -26,12 +28,13 @@ void OpenGLItem::windowChangedSettings(QQuickWindow * window) {
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
+    _contextQt = window()->openglContext();
+
     if (_needsInitialize) {
 
         _context = new QOpenGLContext;
 
         QSurfaceFormat format;
-        format.setSamples(16);
         format.setVersion(3, 3);
         format.setRenderableType(QSurfaceFormat::OpenGL);
         format.setProfile(QSurfaceFormat::CoreProfile);
@@ -45,12 +48,19 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         _surface->setFormat(format);
         _surface->create();
 
-        _context->makeCurrent(window());
+        _fboFormat.setTextureTarget(GL_TEXTURE_2D);
+        _fboFormat.setInternalTextureFormat(GL_RGBA);
+        _fboFormat.setMipmap(true);
+
+        _contextQt->doneCurrent();
+        _context->makeCurrent(_surface);
 
         initializeOpenGLFunctions();
         initialize();
 
         _needsInitialize = false;
+
+        emit initialized();
     }
 
     QSGSimpleTextureNode * texNode = static_cast<QSGSimpleTextureNode *>(node);
@@ -59,25 +69,38 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         texNode = new QSGSimpleTextureNode;
     }
 
-    if (_context && width() && height()) {
+    if (_context) {
         const qreal retinaScale = window()->devicePixelRatio();
 
-        QOpenGLFramebufferObject * fbo = new QOpenGLFramebufferObject(width() * retinaScale, height() * retinaScale);
+        const GLsizei viewportWidth = width() * retinaScale;
+        const GLsizei viewportHeight = height() * retinaScale;
 
-        texNode->setTexture(window()->createTextureFromId(fbo->texture(), fbo->size()));
+        if (_fbo) {
+            delete _fbo;
+            _fbo = 0;
+        }
+
+        _fbo = new QOpenGLFramebufferObject(QSize(viewportWidth, viewportHeight), _fboFormat);
+
+        texNode->setTexture(window()->createTextureFromId(_fbo->texture(), _fbo->size()));
         texNode->setRect(boundingRect());
 
-        fbo->bind();
+        _fbo->bind();
 
-        _context->makeCurrent(window());
+        _contextQt->doneCurrent();
+        _context->makeCurrent(_surface);
 
-        render();
+        render(viewportWidth, viewportHeight);
 
-        fbo->release();
+        glFlush();
+        _context->swapBuffers(_surface);
 
-        _context->swapBuffers(window());
+        _context->doneCurrent();
+        _contextQt->makeCurrent(window());
 
-        delete fbo;
+        _contextQt->swapBuffers(window());
+
+        _fbo->bindDefault();
     }
     else {
         texNode->setTexture(window()->createTextureFromId(0, QSize(0, 0)));
@@ -90,8 +113,9 @@ void OpenGLItem::initialize() {
 
 }
 
-void OpenGLItem::render() {
-
+void OpenGLItem::render(const GLsizei viewportWidth, const GLsizei viewportHeight) {
+    Q_UNUSED(viewportWidth);
+    Q_UNUSED(viewportHeight);
 }
 
 void OpenGLItem::sync() {

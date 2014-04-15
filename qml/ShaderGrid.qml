@@ -7,10 +7,6 @@ Grid {
     rows: 3
     spacing: 5
 
-    signal rBottomChanged(real value);
-    signal rTopChanged(real value);
-    signal ambientIntensityChanged(real value);
-
     Text {
         id: rBottomText
         text: qsTr("rBottom")
@@ -22,7 +18,7 @@ Grid {
         minimumValue: 0.0
         maximumValue: 1.0
         value: 0.2
-        onValueChanged: hudShader.rBottomChanged(value);
+        onValueChanged: hud.rBottomChanged(value);
     }
 
     Text {
@@ -41,7 +37,7 @@ Grid {
         minimumValue: 0.0
         maximumValue: 1.0
         value: 0.6
-        onValueChanged: hudShader.rTopChanged(value);
+        onValueChanged: hud.rTopChanged(value);
     }
 
     Text {
@@ -60,7 +56,7 @@ Grid {
         minimumValue: 0.1
         maximumValue: 30.0
         value: 12.0
-        onValueChanged: hudShader.ambientIntensityChanged(value);
+        onValueChanged: hud.ambientIntensityChanged(value);
     }
 
     Text {

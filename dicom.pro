@@ -58,7 +58,6 @@ SOURCES += src/main.cpp\
            src/dicomreader.cpp\
            src/glheadmodel.cpp \
            src/matrixstack.cpp \
-           src/hud.cpp \
            src/openglitem.cpp \
            src/sliceviewer.cpp
 
@@ -66,7 +65,6 @@ HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
             include/glheadmodel.h \
             include/matrixstack.h \
-            include/hud.h \
             include/openglitem.h \
             include/sliceviewer.h
 
