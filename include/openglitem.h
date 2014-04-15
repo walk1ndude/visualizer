@@ -18,9 +18,6 @@ public:
     ~OpenGLItem();
 
 protected:
-    QOpenGLContext * _context;
-    QOpenGLContext * _contextQt;
-
     bool _needsInitialize;
 
     virtual void initialize();
@@ -28,19 +25,14 @@ protected:
     QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 
 private:
-    QOpenGLFramebufferObjectFormat _fboFormat;
+    QOpenGLContext * _context;
 
     QOpenGLFramebufferObject * _fbo;
-
-    QOffscreenSurface * _surface;
 
 protected slots:
     virtual void render(const GLsizei viewportWidth, const GLsizei viewportHeight);
     virtual void sync();
     virtual void cleanup();
-
-private slots:
-    void windowChangedSettings(QQuickWindow * window);
 
 signals:
     void initialized();

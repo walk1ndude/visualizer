@@ -21,7 +21,7 @@ Item {
 
         Row {
             y: 10
-            spacing: 50
+            spacing: 40
 
             ShaderGrid {
                 id: shaderGrid

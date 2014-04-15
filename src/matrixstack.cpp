@@ -42,11 +42,11 @@ void MatrixStack::scale(const QVector3D & scale) {
 float MatrixStack::anglePi(const float & angle) {
     float a = angle;
 
-    while (a >= 180) {
-        a -= 180;
+    while (a >= 360) {
+        a -= 360;
     }
-    while (a <= -180) {
-        a += 180;
+    while (a <= -360) {
+        a += 360;
     }
 
     return a;

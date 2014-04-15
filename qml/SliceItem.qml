@@ -6,18 +6,25 @@ Item {
 
     id: sliceItem
 
-    Hud {
-        id: sliceHud
-        objectName: "sliceHud"
-    }
 
-    SliceViewer {
-        id: sliceViewer
-        objectName: "sliceViewer"
+    Rectangle {
 
-        width: 640
-        height: 640
 
-        z: -1
+        Hud {
+            id: sliceHud
+            objectName: "sliceHud"
+        }
+
+        SliceViewer {
+            id: sliceViewer
+            objectName: "sliceViewer"
+
+            anchors.right: parent.right
+
+            width: 640
+            height: 640
+
+            z: -1
+        }
     }
 }
