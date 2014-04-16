@@ -59,13 +59,15 @@ SOURCES += src/main.cpp\
            src/glheadmodel.cpp \
            src/matrixstack.cpp \
            src/openglitem.cpp \
-           src/sliceviewer.cpp
+           src/sliceviewer.cpp \
+    src/appwindow.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
             include/glheadmodel.h \
             include/matrixstack.h \
             include/openglitem.h \
-            include/sliceviewer.h
+            include/sliceviewer.h \
+    include/appwindow.h
 
 RESOURCES += resources.qrc

@@ -2,7 +2,6 @@
 #define GLVIEWER_H
 
 #include <QtGui/QOpenGLTexture>
-#include <QtGui/QKeyEvent>
 
 #include "openglitem.h"
 #include "glheadmodel.h"

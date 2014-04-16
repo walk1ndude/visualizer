@@ -8,7 +8,6 @@
 #include <QtGui/QOpenGLFunctions_3_3_Core>
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFramebufferObject>
-#include <QtGui/QOffscreenSurface>
 
 class OpenGLItem : public QQuickItem, protected QOpenGLFunctions_3_3_Core {
     Q_OBJECT

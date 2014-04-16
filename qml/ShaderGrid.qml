@@ -20,7 +20,7 @@ Grid {
     }
 
     Text {
-        text: Math.round(rBottomSlider.value * 1000) / 1000
+        text: hud.pad((Math.round(rBottomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     Text {
@@ -37,7 +37,7 @@ Grid {
     }
 
     Text {
-        text: Math.round(rTopSlider.value * 1000) / 1000
+        text: hud.pad((Math.round(rTopSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     Text {
@@ -54,6 +54,6 @@ Grid {
     }
 
     Text {
-        text: Math.round(ambientIntensitySlider.value * 1000) / 1000
+        text: hud.pad((Math.round(ambientIntensitySlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 }

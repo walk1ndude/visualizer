@@ -21,6 +21,11 @@ Item {
 
         GeometryGrid {
             anchors.right: parent.right
+            anchors.rightMargin: 10
         }
+    }
+
+    function pad (number, max, decimal) {
+        return (Array(max + 1).join(' ') + number).slice(-max - decimal - 2);
     }
 }

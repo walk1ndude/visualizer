@@ -3,8 +3,11 @@ import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
 
 ApplicationWindow {
+    id: appWindow
     width: 640
     height: 670
+
+    title: "sliceViewer"
 
     signal fileOpened(string fileName);
     signal sliceNumberChanged(int ds);
@@ -27,14 +30,12 @@ ApplicationWindow {
 
     FileDialog {
         id: openFileDialog
-        title: "Choose DICOM file"
+        title: 'Choose DICOM file'
         selectMultiple: false
         selectFolder: false
-        nameFilters: [ "DICOM files (*.dcm)" ]
-        selectedNameFilter: "DICOM files (*.dcm)"
-        onAccepted: {
-            fileOpened(fileUrl);
-        }
+        nameFilters: ['application/dicom']
+        selectedNameFilter: 'application/dicom'
+        onAccepted: fileOpened(fileUrl);
     }
 
     FocusScope {
@@ -50,9 +51,11 @@ ApplicationWindow {
         }
     }
 
-    SliceItem {
-        objectName: "sliceItem"
-
-        anchors.fill: parent
+    Row {
+        objectName: "sliceRow"
+        SliceItem {
+            width: appWindow.width
+            height: appWindow.height
+        }
     }
 }

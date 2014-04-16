@@ -20,7 +20,7 @@ Grid {
     }
 
     Text {
-        text: Math.round(xRotSlider.value * 1000) / 1000
+        text: hud.pad((Math.round(xRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     Text {
@@ -37,7 +37,7 @@ Grid {
     }
 
     Text {
-        text: Math.round(yRotSlider.value * 1000) / 1000
+        text: hud.pad((Math.round(yRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     Text {
@@ -54,7 +54,7 @@ Grid {
     }
 
     Text {
-        text: Math.round(zRotSlider.value * 1000) / 1000
+        text: hud.pad((Math.round(zRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     Text {
@@ -71,7 +71,7 @@ Grid {
     }
 
     Text {
-        text: Math.round(zoomZSlider.value * 1000) / 1000
+        text: hud.pad((Math.round(zoomZSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     function updateAngle() {
