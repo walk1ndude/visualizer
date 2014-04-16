@@ -2,13 +2,11 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 
 Grid {
-    id: hudRotation
     columns: 3
     rows: 4
     spacing: 5
 
     Text {
-        id: xRotText
         text: qsTr("x axis")
     }
 
@@ -22,12 +20,10 @@ Grid {
     }
 
     Text {
-        id: xRotSliderValue
         text: Math.round(xRotSlider.value * 1000) / 1000
     }
 
     Text {
-        id: yRotText
         text: qsTr("y axis")
     }
 
@@ -41,12 +37,10 @@ Grid {
     }
 
     Text {
-        id: yRotSliderValue
         text: Math.round(yRotSlider.value * 1000) / 1000
     }
 
     Text {
-        id: zRotText
         text: qsTr("z axis")
     }
 
@@ -60,12 +54,10 @@ Grid {
     }
 
     Text {
-        id: zRotSliderValue
         text: Math.round(zRotSlider.value * 1000) / 1000
     }
 
     Text {
-        id: zoomZText
         text: qsTr("zoom Z")
     }
 
@@ -79,7 +71,6 @@ Grid {
     }
 
     Text {
-        id: zoomZSliderValue
         text: Math.round(zoomZSlider.value * 1000) / 1000
     }
 

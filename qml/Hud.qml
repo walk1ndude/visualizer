@@ -11,24 +11,16 @@ Item {
     signal zoomZChanged(real value);
 
     Rectangle {
-        id: hudRectangle
         color: "#71888888"
 
         anchors.fill: parent
 
-        Row {
-            y: 10
-            spacing: hudRectangle.width * 0.05
+        ShaderGrid {
+            anchors.left: parent.left
+        }
 
-            ShaderGrid {
-                id: shaderGrid
-                objectName: "shaderGrid"
-            }
-
-            GeometryGrid {
-                id: geometryGrid
-                objectName: "geometryGrid"
-            }
+        GeometryGrid {
+            anchors.right: parent.right
         }
     }
 }

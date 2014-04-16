@@ -3,7 +3,6 @@ import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
 
 ApplicationWindow {
-    id: window
     width: 640
     height: 670
 
@@ -11,7 +10,6 @@ ApplicationWindow {
     signal sliceNumberChanged(int ds);
 
     menuBar: MenuBar {
-        id: menu
         Menu {
             title: '<font color="black">File</font>'
             MenuItem {
@@ -40,7 +38,6 @@ ApplicationWindow {
     }
 
     FocusScope {
-        id: scope
         focus: true
         anchors.fill: parent
 
@@ -54,11 +51,8 @@ ApplicationWindow {
     }
 
     SliceItem {
-        id: sliceItem
         objectName: "sliceItem"
 
         anchors.fill: parent
-
     }
-
 }

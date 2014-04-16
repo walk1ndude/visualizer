@@ -2,13 +2,11 @@ import QtQuick 2.2
 import QtQuick.Controls 1.1
 
 Grid {
-    id: hudShader
     columns: 3
     rows: 3
     spacing: 5
 
     Text {
-        id: rBottomText
         text: qsTr("rBottom")
     }
 
@@ -22,12 +20,10 @@ Grid {
     }
 
     Text {
-        id: rBottomSliderValue
         text: Math.round(rBottomSlider.value * 1000) / 1000
     }
 
     Text {
-        id: rTopText
         text: qsTr("rTop")
     }
 
@@ -41,12 +37,10 @@ Grid {
     }
 
     Text {
-        id: rTopSliderValue
         text: Math.round(rTopSlider.value * 1000) / 1000
     }
 
     Text {
-        id: ambientIntensityText
         text: qsTr("ambientIntensity")
     }
 
@@ -60,7 +54,6 @@ Grid {
     }
 
     Text {
-        id: ambientIntensitySliderValue
         text: Math.round(ambientIntensitySlider.value * 1000) / 1000
     }
 }
