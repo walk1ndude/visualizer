@@ -72,8 +72,8 @@ Grid {
     Slider {
         id: zoomZSlider
         width: 200
-        minimumValue: 2.0
-        maximumValue: 10.0
+        minimumValue: 0.1
+        maximumValue: 4.0
         value: 2.0
         onValueChanged: hud.zoomZChanged(value);
     }

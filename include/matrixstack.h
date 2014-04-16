@@ -18,6 +18,8 @@ public:
     void ortho(const float & left, const float & right, const float & bottom,
                const float & top, const float & nearVal, const float & farVal);
 
+    void perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal);
+
     void lookAt(const QVector3D & pos, const QVector3D & viewPoint, const QVector3D up);
 
     void zoomZ(const qreal & dist);

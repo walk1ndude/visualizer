@@ -30,9 +30,11 @@ private:
     QOpenGLFramebufferObject * _fbo;
 
 protected slots:
-    virtual void render(const GLsizei viewportWidth, const GLsizei viewportHeight);
+    virtual void render();
     virtual void sync();
     virtual void cleanup();
+
+    void windowChanged(QQuickWindow * window);
 
 signals:
     void initialized();

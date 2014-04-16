@@ -26,10 +26,8 @@ public:
     ~SliceViewer();
 
 protected:
-    void keyPressEvent(QKeyEvent * event);
-
     void initialize();
-    void render(const GLsizei viewportWidth, const GLsizei viewportHeight);
+    void render();
 
     void sync();
     void cleanup();
@@ -37,7 +35,9 @@ protected:
 private:
     QOpenGLShaderProgram * _program;
 
-    MatrixStack _matrixStack;
+    QVector<MatrixStack>_matrices;
+
+    QVector<QRect>_viewPorts;
 
     int _shaderModel;
     int _shaderView;
@@ -76,6 +76,8 @@ private:
     GPU_Driver _gpu_driver;
 
     void initTextures();
+
+    void calcViewPorts();
 
 public slots:
     void drawSlices(uchar * mergedData, const std::vector<float> & scaling,

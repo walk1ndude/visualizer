@@ -17,6 +17,13 @@ OpenGLItem::~OpenGLItem() {
 
 }
 
+void OpenGLItem::windowChanged(QQuickWindow * window) {
+    qDebug() << "here";
+    if (window) {
+
+    }
+}
+
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     QOpenGLContext * savedQt = window()->openglContext();
 
@@ -69,7 +76,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
 
         _context->makeCurrent(window());
 
-        render(viewportWidth, viewportHeight);
+        render();
 
         savedQt->makeCurrent(window());
 
@@ -89,9 +96,8 @@ void OpenGLItem::initialize() {
 
 }
 
-void OpenGLItem::render(const GLsizei viewportWidth, const GLsizei viewportHeight) {
-    Q_UNUSED(viewportWidth);
-    Q_UNUSED(viewportHeight);
+void OpenGLItem::render() {
+
 }
 
 void OpenGLItem::sync() {

@@ -39,11 +39,21 @@ SliceViewer::SliceViewer() :
     _textureCV3D(QOpenGLTexture::Target3D),
     _rBottom((GLfloat) 0.1),
     _rTop((GLfloat) 0.8),
-    _ambientIntensity((GLfloat) 12.0),
+    _ambientIntensity((GLfloat) 3.9),
     _lightPos(QVector3D(0.0, 0.0, -10.0)),
     _mergedData(0),
     _gpu_driver(NVidia_binary) {
 
+}
+
+void SliceViewer::calcViewPorts() {
+    int halfWidth = width() / 2;
+    int halfHeight = height() / 2;
+
+    _viewPorts[0] = QRect(halfWidth + 5, 0, halfWidth - 5, halfHeight + 5);
+    _viewPorts[1] = QRect(0, 0, halfWidth - 5, halfHeight + 5);
+    _viewPorts[2] = QRect(0, halfHeight + 5, halfWidth - 5, halfHeight - 5);
+    _viewPorts[3] = QRect(halfWidth + 5, halfHeight + 5, halfWidth - 5, halfHeight - 5);
 }
 
 void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> &size,
@@ -60,11 +70,26 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
         _program = 0;
     }
 
-    _matrixStack.identity();
-    _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.001, 1000.0);
-    _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+    _matrices.resize(4);
 
-    _matrixStack.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
+    for (int i = 0; i != 4; ++ i) {
+        _matrices[i].identity();
+        if (i == 0) { //perspective
+            _matrices[i].perspective(90.0, 1.0, 0.1, 10.0);
+            _matrices[i].lookAt(QVector3D(0.0, 0.0, 1.4), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+        }
+        else {
+            _matrices[i].ortho(-0.9, 0.9, -0.9, 0.9, 0.01, 10.0);
+            _matrices[i].lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+        }
+        _matrices[i].scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
+    }
+
+    _matrices[0].rotate(QVector3D(-90.0, 0.0, 0.0));
+    _matrices[2].rotate(QVector3D(-90.0, 0.0, 0.0));
+    _matrices[3].rotate(QVector3D(-90.0, -90.0, 0.0));
+
+    _viewPorts.resize(4);
 
     _slicesReady = true;
     _needsInitialize = true;
@@ -73,13 +98,7 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
 }
 
 SliceViewer::~SliceViewer() {
-    _textureCV3D.release();
-}
 
-void SliceViewer::keyPressEvent(QKeyEvent * event) {
-    //int key = event->key();
-
-    event->accept();
 }
 
 void SliceViewer::initialize() {
@@ -117,38 +136,44 @@ void SliceViewer::initialize() {
     gpu_profiling(_gpu_driver, "initialization end");
 }
 
-void SliceViewer::render(const GLsizei viewportWidth, const GLsizei viewportHeight) {
+void SliceViewer::render() {
     if (!_program) {
         return;
     }
 
-    glViewport(0, 0, viewportWidth, viewportHeight);
+    calcViewPorts();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _program->bind();
-
-    _program->setUniformValue(_shaderModel, _matrixStack.model());
-    _program->setUniformValue(_shaderView, _matrixStack.view());
-    _program->setUniformValue(_shaderProjection, _matrixStack.projection());
-    _program->setUniformValue(_shaderScale, _matrixStack.scaleM());
-    _program->setUniformValue(_shaderNormalMatrix, _matrixStack.normalM());
-    _program->setUniformValue(_shaderLightPos, _lightPos);
-    _program->setUniformValue(_shaderAmbientIntensity, _ambientIntensity);
-    _program->setUniformValue(_shaderTexSample, 0);
-    _program->setUniformValue(_shaderRBottom, _rBottom);
-    _program->setUniformValue(_shaderRTop, _rTop);
-
     _textureCV3D.bind();
 
-    _glHeadModel.drawModel();
+    _program->bind();
+
+    for (int i = 0; i != 4; ++ i) {
+
+        glViewport(_viewPorts[i].x(), _viewPorts[i].y(), _viewPorts[i].width(), _viewPorts[i].height());
+
+        _program->setUniformValue(_shaderModel, _matrices[i].model());
+        _program->setUniformValue(_shaderView, _matrices[i].view());
+        _program->setUniformValue(_shaderProjection, _matrices[i].projection());
+        _program->setUniformValue(_shaderScale, _matrices[i].scaleM());
+        _program->setUniformValue(_shaderNormalMatrix, _matrices[i].normalM());
+        _program->setUniformValue(_shaderLightPos, _lightPos);
+        _program->setUniformValue(_shaderAmbientIntensity, _ambientIntensity);
+        _program->setUniformValue(_shaderTexSample, 0);
+        _program->setUniformValue(_shaderRBottom, _rBottom);
+        _program->setUniformValue(_shaderRTop, _rTop);
+
+        _glHeadModel.drawModel();
+
+    }
+
+    _program->release();
 
     gpu_profiling(_gpu_driver, "actual drawing");
 
     _textureCV3D.release();
-
-    _program->release();
 }
 
 void SliceViewer::sync() {
@@ -200,12 +225,18 @@ void SliceViewer::updateRTop(qreal rTop) {
 }
 
 void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
-    _matrixStack.rotate(QVector3D(xRot, yRot, zRot));
+    _matrices[0].rotate(QVector3D(xRot + 90.0, yRot, zRot)); // perspective
+    _matrices[1].rotate(QVector3D(0.0, 0.0, zRot));
+    _matrices[2].rotate(QVector3D(xRot + 90.0, 0.0, 0.0));
+    _matrices[3].rotate(QVector3D(90.0, yRot + 90.0, 0.0));
+
     update();
 }
 
 void SliceViewer::updateZoomZ(qreal dist) {
-    _matrixStack.zoomZ(dist);
+    for (int i = 1; i!= 4; ++ i) {
+        _matrices[i].zoomZ(dist);
+    }
     update();
 }
 

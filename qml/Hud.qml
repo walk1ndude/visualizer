@@ -10,18 +10,15 @@ Item {
     signal angleChanged(real xRot, real yRot, real zRot);
     signal zoomZChanged(real value);
 
-    visible: false
-
     Rectangle {
         id: hudRectangle
         color: "#71888888"
-        width: 640
-        height: 100
-        focus: true
+
+        anchors.fill: parent
 
         Row {
             y: 10
-            spacing: 40
+            spacing: hudRectangle.width * 0.05
 
             ShaderGrid {
                 id: shaderGrid
@@ -33,9 +30,5 @@ Item {
                 objectName: "geometryGrid"
             }
         }
-    }
-
-    function show() {
-        hud.visible = true;
     }
 }

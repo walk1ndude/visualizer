@@ -55,7 +55,7 @@ Grid {
         width: 200
         minimumValue: 0.1
         maximumValue: 30.0
-        value: 12.0
+        value: 3.9
         onValueChanged: hud.ambientIntensityChanged(value);
     }
 

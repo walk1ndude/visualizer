@@ -36,9 +36,25 @@ int main(int argc, char * argv[]) {
 
     QObject::connect(&dicomReader, &DicomReader::slicesProcessed, sliceViewer, &SliceViewer::drawSlices);
 
-    QObject::connect(sliceViewer, SIGNAL(initialized()), hud, SLOT(show()));
+    QObject::connect(sliceViewer, SIGNAL(initialized()), sliceItem, SLOT(show()));
 
     window->show();
+
+    QObject::connect(window, &QQuickWindow::heightChanged, [=](const int & height) {
+        sliceViewer->setHeight(height);
+        sliceViewer->update();
+    });
+
+    QObject::connect(window, &QQuickWindow::widthChanged, [=](const int & width) {
+        sliceViewer->setWidth(width);
+        sliceViewer->update();
+    });
+
+    QObject::connect(window, &QQuickWindow::visibilityChanged, [=](const QWindow::Visibility & visibility) {
+        if (visibility != (QWindow::Minimized || QWindow::Hidden)) {
+            sliceViewer->update();
+        }
+    });
 
     return a.exec();
 }

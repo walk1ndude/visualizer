@@ -32,7 +32,7 @@ QMatrix3x3 MatrixStack::normalM() {
 
 void MatrixStack::zoomZ(const qreal & dist) {
     _pMatrix.setToIdentity();
-    _pMatrix.ortho(-dist/2, dist/2, -dist/2, dist/2, 0.001, 1000);
+    _pMatrix.ortho(-dist/2, dist/2, -dist/2, dist/2, 0.1, 10.0);
 }
 
 void MatrixStack::scale(const QVector3D & scale) {
@@ -42,11 +42,11 @@ void MatrixStack::scale(const QVector3D & scale) {
 float MatrixStack::anglePi(const float & angle) {
     float a = angle;
 
-    while (a >= 360) {
-        a -= 360;
+    while (a >= 180) {
+        a -= 180;
     }
-    while (a <= -360) {
-        a += 360;
+    while (a <= -180) {
+        a += 180;
     }
 
     return a;
@@ -70,4 +70,8 @@ void MatrixStack::lookAt(const QVector3D & pos, const QVector3D & viewPoint, con
 void MatrixStack::ortho(const float & left, const float & right, const float & bottom,
                         const float & top, const float & near, const float & far) {
     _pMatrix.ortho(left, right, bottom, top, near, far);
+}
+
+void MatrixStack::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
+    _pMatrix.perspective(fov, aspectRatio, nearVal, farVal);
 }

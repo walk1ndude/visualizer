@@ -57,8 +57,8 @@ ApplicationWindow {
         id: sliceItem
         objectName: "sliceItem"
 
-        width: 640
-        height: 640
+        anchors.fill: parent
+
     }
 
 }
