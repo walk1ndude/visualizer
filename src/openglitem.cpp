@@ -9,13 +9,14 @@ OpenGLItem::OpenGLItem() :
     _context(0),
     _needsInitialize(false),
     _isTextureUpdated(true),
+    _needToDestroyTextures(false),
     _fbo(0) {
 
     setFlag(QQuickItem::ItemHasContents);
 }
 
 OpenGLItem::~OpenGLItem() {
-
+    delete _context;
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
@@ -57,6 +58,18 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     }
 
     if (_context) {
+
+        if (_needToDestroyTextures) {
+            _context->makeCurrent(window());
+            cleanupTextures();
+
+            _context->deleteLater();
+            emit destroyed();
+
+            texNode->setTexture(window()->createTextureFromId(0, QSize(0, 0)));
+
+            return texNode;
+        }
 
         const GLsizei viewportWidth = width() * window()->devicePixelRatio();
         const GLsizei viewportHeight = height() * window()->devicePixelRatio();
@@ -109,5 +122,13 @@ void OpenGLItem::sync() {
 }
 
 void OpenGLItem::cleanup() {
+
+}
+
+void OpenGLItem::destroyContext() {
+
+}
+
+void OpenGLItem::cleanupTextures() {
 
 }

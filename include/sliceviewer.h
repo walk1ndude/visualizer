@@ -71,6 +71,7 @@ private:
     GPU_Driver _gpu_driver;
 
     void initializeTextures();
+    void cleanupTextures();
     void calcViewPorts();
 
 public slots:
@@ -81,6 +82,8 @@ public slots:
 
     void updateAngle(qreal xRot, qreal yRot, qreal zRot);
     void updateZoomZ(qreal zoomZ);
+
+    void destroyContext();
 };
 
 #endif // GLVIEWER_H

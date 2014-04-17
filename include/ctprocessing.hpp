@@ -122,8 +122,9 @@ static inline cv::Mat backproject(const cv::Mat & src, cv::Mat & dst,
 
 void inline filterOneSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
                            const cv::Mat & dilateMat, const cv::Size & gaussSize) {
-    cv::Mat maskRange(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
-    cv::Mat maskedRange(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
+    dst = cv::Mat::zeros(src.rows, src.rows, CV_8UC1);
+    cv::Mat maskRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
+    cv::Mat maskedRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     cv::inRange(src, cv::Scalar(minValue), cv::Scalar(maxValue), maskRange);
 
@@ -133,7 +134,7 @@ void inline filterOneSlice(const cv::Mat & src, cv::Mat & dst, const int & minVa
     cv::dilate(maskedRange, maskedRange, dilateMat);
     cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 0.5);
 
-    cv::Mat maskContours(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
+    cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     std::vector<std::vector<cv::Point> >contours;
 
@@ -350,7 +351,6 @@ public:
 
     virtual void operator ()(const cv::Range & r) const {
         for (register int i = r.start; i != r.end; ++ i) {
-            *(_filterData.dst[i]) = cv::Scalar(0);
             filterOneSlice(*(_filterData.src[i]), *(_filterData.dst[i]), _filterData.minValue, _filterData.maxValue, _dilateMat, _gaussSize);
         }
     }

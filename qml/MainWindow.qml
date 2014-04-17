@@ -9,8 +9,11 @@ ApplicationWindow {
 
     title: "sliceViewer"
 
+    Component.onDestruction: { readyToQuit(); }
+
     signal fileOpened(string fileName);
     signal sliceNumberChanged(int ds);
+    signal readyToQuit();
 
     menuBar: MenuBar {
         Menu {
@@ -44,7 +47,7 @@ ApplicationWindow {
 
         Keys.onPressed: {
             switch (event.key) {
-            case Qt.Key_Escape: Qt.quit(); break;
+            case Qt.Key_Escape: readyToQuit(); break;
             case Qt.Key_Left: sliceNumberChanged(-1); break;
             case Qt.Key_Right: sliceNumberChanged(1); break;
             }

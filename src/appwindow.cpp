@@ -29,6 +29,12 @@ void AppWindow::fetchConnections() {
         QObject::connect(appWindow, SIGNAL(fileOpened(QString)), this, SIGNAL(fileOpened(QString)));
         QObject::connect(appWindow, SIGNAL(sliceNumberChanged(int)), this, SIGNAL(sliceNumberChanged(int)));
 
+        QObject::connect(appWindow, SIGNAL(readyToQuit()), sliceViewer, SLOT(destroyContext()));
+
+        //QObject::connect(appWindow, &QQuickWindow::destroyed, sliceViewer, &SliceViewer::destroyContext);
+
+        QObject::connect(sliceViewer, &SliceViewer::destroyed, [=]() { qApp->quit(); });
+
         QObject::connect(hud, SIGNAL(maxValueChanged(int)), this, SIGNAL(maxValueChanged(int)));
         QObject::connect(hud, SIGNAL(minValueChanged(int)), this, SIGNAL(minValueChanged(int)));
 

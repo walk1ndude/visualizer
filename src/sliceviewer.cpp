@@ -186,6 +186,12 @@ void SliceViewer::cleanup() {
     }
 }
 
+void SliceViewer::cleanupTextures() {
+    if (_textureCV3D.isStorageAllocated()) {
+        _textureCV3D.destroy();
+    }
+}
+
 void SliceViewer::initializeTextures() {
     if (_textureCV3D.isStorageAllocated()) {
         _textureCV3D.destroy();
@@ -233,5 +239,10 @@ void SliceViewer::updateZoomZ(qreal dist) {
 
 void SliceViewer::updateAmbientIntensity(qreal ambientIntensity) {
     _ambientIntensity = ambientIntensity;
+    update();
+}
+
+void SliceViewer::destroyContext() {
+    _needToDestroyTextures = true;
     update();
 }

@@ -23,8 +23,12 @@ protected:
 
     bool _isTextureUpdated;
 
+    bool _needToDestroyTextures;
+
     virtual void initialize();
     virtual void initializeTextures();
+
+    virtual void cleanupTextures();
 
     QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 
@@ -35,6 +39,9 @@ protected slots:
     virtual void render();
     virtual void sync();
     virtual void cleanup();
+
+public slots:
+    virtual void destroyContext();
 
 signals:
     void initialized();
