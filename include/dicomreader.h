@@ -21,13 +21,15 @@ public:
   explicit DicomReader(QObject * parent = 0);
   ~DicomReader();
 
-  void reset(Images & images, const int & newSize = 0);
+  void reset(const int & newSize = 0);
   void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
 
 private:
   size_t _imageNumber;
 
-  Images _images;
+  std::vector<cv::Mat *> _noisy;
+  std::vector<cv::Mat *> _filtered;
+  std::vector<cv::Mat *> _smoothed;
 
   cv::ocl::Context * _context;
 
@@ -35,7 +37,7 @@ private:
 
   void showImageWithNumber(const size_t & imageNumber);
   void readImage(gdcm::File & dFile, const gdcm::Image & dImage);
-  void mergeMatData(const std::vector<cv::Mat*> & ctImages, const std::vector<float> & imageSpacings);
+  void mergeMatData(const std::vector<cv::Mat*> & src, const std::vector<float> & imageSpacings);
 
   void medianSmooth(const size_t & neighbourRadius);
 signals:

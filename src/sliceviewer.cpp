@@ -75,7 +75,7 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
     for (int i = 0; i != 4; ++ i) {
         _matrices[i].identity();
         if (i == 0) { //perspective
-            _matrices[i].perspective(90.0, 1.0, 0.1, 10.0);
+            _matrices[i].perspective(60.0, 1.0, 0.1, 10.0);
             _matrices[i].lookAt(QVector3D(0.0, 0.0, 1.4), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
         }
         else {

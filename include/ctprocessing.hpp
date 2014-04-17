@@ -11,8 +11,6 @@ typedef uint32_t u_int32_t;
 
 #endif
 
-#include <QtCore/QDebug>
-
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/ocl/ocl.hpp>
@@ -21,99 +19,86 @@ typedef uint32_t u_int32_t;
 #define PI_TIMES_2 (2 * CV_PI)
 #define toRad(x) ((x) * CV_PI / 180.0)
 
-static inline cv::Mat radon(const cv::Mat & ctImage, const std::vector<cv::Mat> & rotationMatrix,
-                            const int & theta,
-                            const int & width, const int & height,
-                            const int & wPad, const int & hPad) {
+static inline void radon(const cv::Mat & src, cv::Mat & dst, const std::vector<cv::Mat> & rotationMatrix,
+                         const int & theta,
+                         const int & width, const int & height,
+                         const int & wPad, const int & hPad) {
+    assert(src.type() == CV_16UC1);
 
+    dst = cv::Mat::zeros(theta, src.cols, CV_32FC1);
 
     cv::Mat imgPad(cv::Mat::zeros(hPad, wPad, CV_16UC1));
     cv::Mat imgPadRotated(cv::Mat::zeros(hPad, wPad, CV_16UC1));
 
-    cv::Mat sinogram(cv::Mat::zeros(theta, wPad, CV_32FC1));
-
-    ctImage.copyTo(imgPad(cv::Rect(ceil((wPad - width) / 2.0), ceil((hPad - height) / 2.0), width, height)));
-
-//      imgPad.convertTo(imgPad8, CV_8UC1, 1/256.0);
+    src.copyTo(imgPad(cv::Rect(ceil((wPad - width) / 2.0), ceil((hPad - height) / 2.0), width, height)));
 
     cv::Size size(imgPad.rows, imgPad.cols);
-/*
-    cv::ocl::oclMat imgPadOcl(imgPad8);
-    cv::ocl::oclMat imgPadRotatedOcl(imgPadRotated);
-
-*/
     cv::Mat sinogramCol;
 
     for (int angle = 0; angle != theta; ++ angle) {
         cv::warpAffine(imgPad, imgPadRotated, rotationMatrix[angle],
                        size, cv::INTER_LINEAR | cv::WARP_INVERSE_MAP, cv::BORDER_TRANSPARENT);
-/*
-        cv::ocl::warpAffine(imgPadOcl, imgPadRotatedOcl, rotationMatrix, size, cv::INTER_LINEAR | cv::WARP_INVERSE_MAP);
-        imgPadRotatedOcl.download(imgPadRotated);
-        */
 
-        sinogramCol = sinogram(cv::Rect(0, angle, wPad, 1));
+        sinogramCol = dst(cv::Rect(0, angle, wPad, 1));
         cv::reduce(imgPadRotated, sinogramCol, 0, CV_REDUCE_SUM, CV_32FC1);
-
     }
-
-    cv::Mat sinogram16(wPad, hPad, CV_16UC1);
-    sinogram.convertTo(sinogram16, CV_16UC1, 1 / 256.0);
-
-    return sinogram16;
 }
 
-static inline cv::Mat Fourier1D(const cv::Mat & sinogram, const std::vector<float> & dhtCoeffs) {
-    cv::Mat fourier1d(cv::Mat::zeros(sinogram.rows, sinogram.cols, CV_32FC1));
+static inline void fourier1D(const cv::Mat & src, cv::Mat dst, const std::vector<float> & dhtCoeffs) {
+    assert(src.type() == CV_32FC1);
+
+    dst = cv::Mat::zeros(src.rows, src.cols, CV_32FC1);
 
     int pos;
     double elem;
 
-    for (int angle = 0; angle != sinogram.rows; ++ angle) {
+    for (int angle = 0; angle != src.rows; ++ angle) {
 
-        for (int col = 0; col != sinogram.cols; ++ col) {
+        for (int col = 0; col != src.cols; ++ col) {
             elem = 0;
-            pos = (col + sinogram.cols - sinogram.cols / 2) % sinogram.cols;
+            pos = (col + src.cols - src.cols / 2) % src.cols;
 
-            for (int i = 0; i != sinogram.cols; i ++) {
-                elem += (sinogram.at<u_int16_t>(angle, i) * dhtCoeffs[i]);
+            for (int i = 0; i != src.cols; i ++) {
+                elem += (src.at<float>(angle, i) * dhtCoeffs[i]);
             }
 
-            fourier1d.at<float>(angle, pos) = ((pos % 2) ? (-1) : 1) * elem / sinogram.cols;
+            dst.at<float>(angle, pos) = ((pos % 2) ? (-1) : 1) * elem / src.cols;
         }
     }
-
-    return fourier1d;
 }
 
-static inline cv::Mat Fourier1Dto2D(const cv::Mat & fourier1d, const std::vector<float> & sinTable, const std::vector<float> & cosTable) {
-    cv::Mat fourier2d(cv::Mat::zeros(fourier1d.rows, fourier1d.cols, CV_32FC1));
+static inline cv::Mat fourier1Dto2D(const cv::Mat & src, cv::Mat & dst,
+                                    const std::vector<float> & sinTable, const std::vector<float> & cosTable) {
+    assert(src.type() == CV_32FC1);
 
-    int orgx = fourier1d.rows / 2;
+    dst = cv::Mat::zeros(src.rows, src.cols, CV_32FC1);
+
+    int orgx = src.rows / 2;
     int orgy = orgx;
     int radius;
     int x;
     int y;
 
-    for (int angle = 0; angle != fourier1d.rows; ++ angle) {
-        for (int col = 0; col != fourier1d.cols; ++ col) {
-            radius = col - fourier1d.rows / 2;
+    for (int angle = 0; angle != src.rows; ++ angle) {
+        for (int col = 0; col != src.cols; ++ col) {
+            radius = col - src.rows / 2;
 
             x = (int) (orgx + radius * cosTable[angle]);
             y = (int) (orgy - radius * sinTable[angle]);
 
-            fourier2d.at<float>(y, x) = fourier1d.at<float>(angle, col);
+            dst.at<float>(y, x) = src.at<float>(angle, col);
         }
     }
-
-    return fourier2d;
 }
 
-static inline cv::Mat backproject(const cv::Mat & sinogram, const std::vector<float> & cosTable, const std::vector<float> & sinTable) {
-    int paralProj = sinogram.cols;
-    int theta = sinogram.rows;
+static inline cv::Mat backproject(const cv::Mat & src, cv::Mat & dst,
+                                  const std::vector<float> & cosTable, const std::vector<float> & sinTable) {
+    assert(src.type() == CV_32FC1);
 
-    cv::Mat backproj(cv::Mat::zeros(paralProj, paralProj, CV_16UC1));
+    int paralProj = src.cols;
+    int theta = src.rows;
+
+    dst = cv::Mat::zeros(paralProj, paralProj, CV_32FC1);
 
     int midIndex = std::floor(paralProj / 2.0) + 1;
 
@@ -128,25 +113,44 @@ static inline cv::Mat backproject(const cv::Mat & sinogram, const std::vector<fl
             for (int x = xMin; x != xMax; ++ x) {
                 rotX = (int)(midIndex - y * sinTable[angle] - x * cosTable[angle]);
                 if (rotX >= 0 && rotX < paralProj) {
-                    backproj.at<float>(y - yMin, x - xMin) += (sinogram.at<float>(angle, rotX) / paralProj);
+                    dst.at<float>(y - yMin, x - xMin) += (src.at<float>(angle, rotX) / paralProj);
                 }
             }
         }
     }
-
-    return backproj;
 }
 
-typedef struct _Images {
-    std::vector<cv::Mat*>ctImages;
-    std::vector<cv::Mat*>smoothImages;
-    std::vector<cv::Mat*>images;
-    std::vector<cv::Mat*>sinograms;
-    std::vector<cv::Mat*>fourier1d;
-}Images;
+void inline filterOneSlice(const cv::Mat & src, cv::Mat & dst, const int & minVal, const int & maxVal) {
+    cv::Mat maskRange(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
+    cv::Mat maskedRange(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
+
+    cv::inRange(src, cv::Scalar(minVal), cv::Scalar(maxVal), maskRange);
+
+    cv::bitwise_and(src, src, maskedRange, maskRange);
+
+    cv::adaptiveThreshold(maskedRange, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 5);
+    cv::dilate(maskedRange, maskedRange, cv::Mat(3, 3, CV_8UC1));
+    cv::GaussianBlur(maskedRange, maskedRange, cv::Size(3, 3), 0.5);
+
+    cv::Mat maskContours(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
+
+    std::vector<std::vector<cv::Point> >contours;
+
+    cv::findContours(maskedRange, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cv::Point());
+
+    for (size_t k = 0; k < contours.size(); ++ k) {
+        if (contours.at(k).size() > 10) {
+            cv::drawContours(maskContours, contours, k, cv::Scalar(255), CV_FILLED);
+        }
+    }
+
+    cv::bitwise_and(maskedRange, maskedRange, dst, maskContours);
+    cv::equalizeHist(dst, dst);
+}
 
 typedef struct _CtData {
-    Images * images;
+    std::vector<cv::Mat *> * noisy;
+    std::vector<cv::Mat *> * filtered;
 
     std::vector<float> * imageSpacing;
 
@@ -258,7 +262,6 @@ public:
 
                     bufferImageI += _ctData.bytesAllocated;
 
-
                     /* similar as http://code.google.com/p/pydicom/source/browse/source/dicom/contrib/pydicom_PIL.py*/
                     pixel = _ctData.slope * pixel + _ctData.intercept;
 
@@ -283,123 +286,40 @@ public:
                 }
             }
 
-
             cv::resize(*data, *data, cv::Size(width, height));
-
-            //cv::GaussianBlur(*data, *data, cv::Size(9, 9), 5);
-            //cv::dilate(*data, *data, cv::Mat(3, 3, CV_8UC1));
-            //cv::Scharr(*data, *data, -1, 1, 0);
-
             (*data).convertTo(*data, CV_8UC1, 1 / 256.0);
-/*
-            cv::medianBlur(*data, *data, 9);
 
-            cv::Mat * mask = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::inRange(*data, cv::Scalar(1), cv::Scalar(25), *mask);
+            cv::Mat * filtered = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
 
-            cv::Mat * result = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::bitwise_and(*data, *data, *result, *mask);
-*/
-            //delete mask;
-  /*          cv::dilate(*data, *data, cv::Mat(5, 5, CV_8UC1));
-*/
-            //cv::threshold(*data, *data, 30, 100, CV_THRESH_TOZERO_INV);
-            //cv::threshold(*data, *data, 39, 255, CV_THRESH_BINARY_INV);
+            filterOneSlice(*data, *filtered, 40, 55);
 
-            cv::Mat * bFData = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::Mat * bones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::Mat * tissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+            _ctData.noisy->at(i) = data;
+            _ctData.filtered->at(i) = filtered;
+        }
+    }
+};
 
-            cv::bilateralFilter(*data, *bFData, 5, 20, 30);
+typedef struct _FilterData {
+    std::vector<cv::Mat *> src;
+    std::vector<cv::Mat *> dst;
 
-            data->copyTo(*bones);
-            bFData->copyTo(*tissues);
+    int minVal;
+    int maxVal;
+} FilterData;
 
-            cv::Mat * maskBones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::Mat * maskTissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
+class SliceFilter : public cv::ParallelLoopBody {
+private:
+    FilterData _filterData;
 
-            cv::inRange(*bones, cv::Scalar(52), cv::Scalar(58), *maskBones); // 50 - 60
+public:
+    SliceFilter(FilterData & filterData) :
+        _filterData(filterData) {
 
-            cv::inRange(*tissues, cv::Scalar(110), cv::Scalar(150), *maskTissues); // 50 - 60
-            cv::medianBlur(*maskTissues, *maskTissues, 15);
+    }
 
-            cv::Mat * resultBones = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::Mat * resultTissues = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-            cv::Mat * result = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-
-            cv::bitwise_and(*bones, *bones, *resultBones, *maskBones);
-            cv::bitwise_and(*tissues, *tissues, *resultTissues, *maskTissues);
-
-            cv::adaptiveThreshold(*resultBones, *resultBones, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 5);
-
-            cv::dilate(*resultBones, *resultBones, cv::Mat(3, 3, CV_8UC1));
-
-            cv::Mat * contoursMask = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
-
-            std::vector<std::vector<cv::Point> > contours;
-            std::vector<cv::Vec4i> hierarchy;
-
-            cv::GaussianBlur(*resultBones, *resultBones, cv::Size(3, 3), 0.5);
-
-            cv::findContours(*resultBones, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
-
-            for (size_t k = 0; k < contours.size(); ++ k) {
-                if (contours.at(k).size() > 10) {
-                    cv::drawContours(*contoursMask, contours, k, cv::Scalar(255), CV_FILLED);
-                }
-            }
-
-            cv::bitwise_and(*resultBones, *resultBones, *result, *contoursMask);
-
-            cv::equalizeHist(*result, *result);
-
-            //cv::dilate(*resultContours, *resultContours, cv::Mat(5, 5, CV_8UC1));
-
-
-            //*result = *resultBones + *resultTissues;
-
-            _ctData.images->ctImages.at(i) = result;
-
-            _ctData.images->images.at(i) = data;
-
-            //cv::ocl::oclMat * oclData = new cv::ocl::oclMat(*data8);
-
-            //cv::Mat * sinogram = new cv::Mat(radon(*data, rotationMatrix, RADON_DEGREE_RANGE, width, height, wPad, hPad));
-
-            //cv::Mat * fourier1d = new cv::Mat(Fourier1D(*sinogram, dhtCoeffs));
-
-            //cv::Mat * backprojection = new cv::Mat(backproject(*sinogram, cosTable, sinTable));
-
-            _ctData.images->fourier1d.at(i) = data;
-            _ctData.images->sinograms.at(i) = data;
-            //_ctData.images->images.at(i) = backprojection;
-
-            //cv::medianBlur(*data8, *contourImage, 5);
-            //cv::Canny(*contourImage, *contourImage, CANNY_LOWER, 3 * CANNY_LOWER, 3);
-
-            //cv::threshold(*contourImage, *contourImage, 250, 255, CV_THRESH_OTSU);
-            //cv::dilate(*contourImage, *contourImage, 19);
-
-            //cv::Mat * steger = new cv::Mat();
-            //stegerEdges(*contourImage, *steger, 5, 0, 10.0);
-
-            //cv::adaptiveThreshold(*contourImage, *contourImage, 200, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 3, 1);
-    /*
-            std::vector<std::vector<cv::Point> > contours;
-            std::vector<cv::Vec4i> hierarchy;
-
-            cv::findContours(data8, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_TC89_KCOS, cv::Point(0, 0));
-
-            for (uint k = 0; k < contours.size(); k ++) {
-                if (contours.at(k).size() > 300) {
-                    cv::drawContours(*contourImage, contours, k, cv::Scalar(0x00FF), 2, 8, hierarchy, 0, cv::Point());
-                }
-            }
-    */
-            //oclData->download(*contourImage);
-
-            //delete contourImage;
-            //delete oclData;
+    virtual void operator ()(const cv::Range & r) const {
+        for (register int i = r.start; i != r.end; ++ i) {
+            filterOneSlice(*(_filterData.src[i]), *(_filterData.dst[i]), _filterData.minVal, _filterData.maxVal);
         }
     }
 };
