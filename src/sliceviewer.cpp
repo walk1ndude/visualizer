@@ -46,6 +46,10 @@ SliceViewer::SliceViewer() :
 
 }
 
+SliceViewer::~SliceViewer() {
+
+}
+
 void SliceViewer::calcViewPorts() {
     int halfWidth = width() / 2;
     int halfHeight = height() / 2;
@@ -100,10 +104,6 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
     _needsInitialize = true;
 
     update();
-}
-
-SliceViewer::~SliceViewer() {
-
 }
 
 void SliceViewer::initialize() {

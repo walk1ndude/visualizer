@@ -14,7 +14,7 @@ class OpenGLItem : public QQuickItem, protected QOpenGLFunctions_3_3_Core {
 
 public:
     OpenGLItem();
-    ~OpenGLItem();
+    virtual ~OpenGLItem();
 
 protected:
     QOpenGLContext * _context;

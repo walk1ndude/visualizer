@@ -22,7 +22,7 @@ class SliceViewer : public OpenGLItem {
     
 public:
     explicit SliceViewer();
-    ~SliceViewer();
+    virtual ~SliceViewer();
 
 protected:
     void initialize();

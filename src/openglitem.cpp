@@ -16,7 +16,12 @@ OpenGLItem::OpenGLItem() :
 }
 
 OpenGLItem::~OpenGLItem() {
-    delete _context;
+    if (_context) {
+        delete _context;
+    }
+    if (_fbo) {
+        delete _fbo;
+    }
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
@@ -64,6 +69,11 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
             cleanupTextures();
 
             _context->deleteLater();
+
+            if (_fbo) {
+                delete _fbo;
+            }
+
             emit destroyed();
 
             texNode->setTexture(window()->createTextureFromId(0, QSize(0, 0)));
