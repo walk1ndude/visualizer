@@ -29,8 +29,8 @@ void AppWindow::fetchConnections() {
         QObject::connect(appWindow, SIGNAL(fileOpened(QString)), this, SIGNAL(fileOpened(QString)));
         QObject::connect(appWindow, SIGNAL(sliceNumberChanged(int)), this, SIGNAL(sliceNumberChanged(int)));
 
-        QObject::connect(hud, SIGNAL(rTopChanged(qreal)), sliceViewer, SLOT(updateRTop(qreal)));
-        QObject::connect(hud, SIGNAL(rBottomChanged(qreal)), sliceViewer, SLOT(updateRBottom(qreal)));
+        QObject::connect(hud, SIGNAL(maxValueChanged(int)), this, SIGNAL(maxValueChanged(int)));
+        QObject::connect(hud, SIGNAL(minValueChanged(int)), this, SIGNAL(minValueChanged(int)));
 
         QObject::connect(hud, SIGNAL(angleChanged(qreal,qreal,qreal)), sliceViewer, SLOT(updateAngle(qreal,qreal,qreal)));
         QObject::connect(hud, SIGNAL(ambientIntensityChanged(qreal)), sliceViewer, SLOT(updateAmbientIntensity(qreal)));

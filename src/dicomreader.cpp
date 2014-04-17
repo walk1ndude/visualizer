@@ -15,7 +15,9 @@
 
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
-    _imageNumber(0) {
+    _imageNumber(0),
+    _minValue(40),
+    _maxValue(55) {
    if (initOpenCL()) {
         std::cerr << "OpenCL is not initialized... aborted" << std::endl;
         exit(0);
@@ -123,15 +125,20 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
         ctData.windowWidth = 0;
     }
 
-    int imagesCount = dImage.GetDimension(2);
+    ctData.width = dImage.GetDimension(0);
+    ctData.height = dImage.GetDimension(1);
+    ctData.depth = dImage.GetDimension(2);
 
     dImage.GetBuffer(buffer);
 
     //clear previous "garbage"
-    reset(imagesCount);
+    reset(ctData.depth);
 
     ctData.noisy = &_noisy;
     ctData.filtered = &_filtered;
+
+    ctData.minValueRange = _minValue;
+    ctData.maxValueRange = _maxValue;
 
     ctData.imageSpacing = &imageSpacings;
 
@@ -158,9 +165,6 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     ctData.isLittleEndian = (pixelFormat.GetBitsAllocated() - pixelFormat.GetHighBit() == 1) ? true : false;
 
-    ctData.width = dImage.GetDimension(0);
-    ctData.height = dImage.GetDimension(1);
-
     try {
         ctData.slope = dImage.GetSlope();
         ctData.intercept = dImage.GetIntercept();
@@ -176,7 +180,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     qDebug() << "processing start";
 
-    cv::parallel_for_(cv::Range(0, imagesCount), CtProcessing<u_int16_t>(ctData));
+    cv::parallel_for_(cv::Range(0, ctData.depth), CtProcessing<u_int16_t>(ctData));
 
     qDebug() << "loading done" << QDateTime::currentMSecsSinceEpoch() - startTime;
 
@@ -193,64 +197,109 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 }
 
 void DicomReader::medianSmooth(const size_t & neighbourRadius) {
-    resetV(_smoothed, _smoothed.size() - 2 * neighbourRadius);
+    resetV(_smoothed, _filtered.size() - 2 * neighbourRadius);
 
     SmoothData smoothData;
 
-    smoothData.data = &_filtered;
-    smoothData.smoothData = &_smoothed;
+    smoothData.src = &_filtered;
+    smoothData.dst = &_smoothed;
 
     smoothData.neighbourRadius = neighbourRadius;
 
-    cv::parallel_for_(cv::Range(0, _smoothed.size()), VolumeSmoothing(smoothData));
+    cv::parallel_for_(cv::Range(0, _smoothed.size()), VolumeSmoother(smoothData));
 }
 
 void DicomReader::readFile(QString dicomFile) {
+    //_mutex.lock();
+
     gdcm::ImageReader dIReader;
 
     // dicomFile = "file:///...", we must cut protocol, so no "file://" <- start with 7th char
     dIReader.SetFileName(dicomFile.mid(7).toStdString().c_str());
     if (dIReader.Read()) {
         readImage(dIReader.GetFile(), dIReader.GetImage());
+        //_mutex.unlock();
     }
     else {
         qDebug() << "can't read file";
+        //_mutex.unlock();
     }
 }
 
 void DicomReader::mergeMatData(const std::vector<cv::Mat *> & src, const std::vector<float> & imageSpacings) {
     cv::Mat * image = src[0];
-    int z = src.size();
+    int depth = src.size();
 
     int byteSizeMat = image->elemSize() * image->total();
-    int byteSizeAll = byteSizeMat * z;
+    int byteSizeAll = byteSizeMat * depth;
 
     uchar * mergedData = new uchar[byteSizeAll];
 
-    for (int i = 0; i != z; ++ i) {
+    for (int i = 0; i != depth; ++ i) {
         memcpy(mergedData + byteSizeMat * i, src[i]->data, byteSizeMat);
     }
 
     std::vector<float> scaling;
-    scaling.push_back(image->cols * imageSpacings[0] / (image->cols * imageSpacings[0]) / 0.7);
-    scaling.push_back(image->rows * imageSpacings[1] / (image->cols * imageSpacings[0]) / 0.7);
-    scaling.push_back(src.size() * imageSpacings[2] / (image->cols * imageSpacings[0]) / 0.7);
-
     std::vector<size_t>size;
-    size.push_back(image->rows);
-    size.push_back(image->cols);
-    size.push_back(z);
+
+    if (imageSpacings.size() > 0) {
+
+        scaling.push_back(image->cols * imageSpacings[0] / (image->cols * imageSpacings[0]) / 0.7);
+        scaling.push_back(image->rows * imageSpacings[1] / (image->cols * imageSpacings[0]) / 0.7);
+        scaling.push_back(src.size() * imageSpacings[2] / (image->cols * imageSpacings[0]) / 0.7);
+
+        size.push_back(image->rows);
+        size.push_back(image->cols);
+        size.push_back(depth);
+    }
 
     emit slicesProcessed(mergedData, scaling, size, ((image->step & 3) ? 1 : 4), image->step1());
 }
 
+void DicomReader::updateFiltered() {
+    FilterData filterData;
+
+    filterData.src = _noisy;
+    filterData.dst = _filtered;
+
+    filterData.minValue = _minValue;
+    filterData.maxValue = _maxValue;
+
+    cv::parallel_for_(cv::Range(0, _noisy.size()), SliceFilter(filterData));
+
+    medianSmooth(2);
+    mergeMatData(_smoothed);
+}
+
 void DicomReader::changeSliceNumber(int ds) {
     _imageNumber += ds;
-    _imageNumber %= _filtered.size();
+    _imageNumber %= _smoothed.size();
     showImageWithNumber(_imageNumber);
 }
 
 void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_INPUT_IMAGE, *(_filtered[imageNumber]));
+    cv::imshow(WINDOW_INPUT_IMAGE, *(_smoothed[imageNumber]));
     cv::waitKey(1);
+}
+
+void DicomReader::updateMinValue(int minValue) {
+    //_mutex.lock();
+
+    _minValue = std::min(minValue, _maxValue);
+    _maxValue = std::max(minValue, _maxValue);
+
+    updateFiltered();
+
+    //_mutex.unlock();
+}
+
+void DicomReader::updateMaxValue(int maxValue) {
+    //_mutex.lock();
+
+    _maxValue = std::max(maxValue, _minValue);
+    _minValue = std::min(maxValue, _minValue);
+
+    updateFiltered();
+
+    //_mutex.unlock();
 }

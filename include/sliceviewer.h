@@ -46,8 +46,6 @@ private:
     int _shaderLightPos;
     int _shaderAmbientIntensity;
     int _shaderTexSample;
-    int _shaderRBottom;
-    int _shaderRTop;
 
     int _alignment;
 
@@ -57,8 +55,6 @@ private:
 
     QOpenGLTexture _textureCV3D;
 
-    GLfloat _rBottom;
-    GLfloat _rTop;
     GLfloat _ambientIntensity;
 
     std::vector<float>_scaling;
@@ -74,16 +70,13 @@ private:
 
     GPU_Driver _gpu_driver;
 
-    void initTextures();
-
+    void initializeTextures();
     void calcViewPorts();
 
 public slots:
     void drawSlices(uchar * mergedData, const std::vector<float> & scaling,
                     const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
 
-    void updateRBottom(qreal rBottom);
-    void updateRTop(qreal rTop);
     void updateAmbientIntensity(qreal ambientIntensity);
 
     void updateAngle(qreal xRot, qreal yRot, qreal zRot);

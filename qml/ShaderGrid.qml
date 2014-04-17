@@ -7,37 +7,37 @@ Grid {
     spacing: 5
 
     Text {
-        text: qsTr("rBottom")
+        text: qsTr("minValue")
     }
 
     Slider {
-        id: rBottomSlider
+        id: minValueSlider
         width: 200
-        minimumValue: 0.0
-        maximumValue: 1.0
-        value: 0.2
-        onValueChanged: hud.rBottomChanged(value);
+        minimumValue: 0
+        maximumValue: 150
+        value: 40
+        onValueChanged: hud.minValueChanged(value);
     }
 
     Text {
-        text: hud.pad((Math.round(rBottomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        text: minValueSlider.value
     }
 
     Text {
-        text: qsTr("rTop")
+        text: qsTr("maxValue")
     }
 
     Slider {
-        id: rTopSlider
+        id: maxValueSlider
         width: 200
-        minimumValue: 0.0
-        maximumValue: 1.0
-        value: 0.6
-        onValueChanged: hud.rTopChanged(value);
+        minimumValue: 0
+        maximumValue: 150
+        value: 55
+        onValueChanged: hud.maxValueChanged(value);
     }
 
     Text {
-        text: hud.pad((Math.round(rTopSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        text: maxValueSlider.value
     }
 
     Text {

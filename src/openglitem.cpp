@@ -6,8 +6,9 @@
 #include "openglitem.h"
 
 OpenGLItem::OpenGLItem() :
-    _needsInitialize(false),
     _context(0),
+    _needsInitialize(false),
+    _isTextureUpdated(true),
     _fbo(0) {
 
     setFlag(QQuickItem::ItemHasContents);
@@ -15,13 +16,6 @@ OpenGLItem::OpenGLItem() :
 
 OpenGLItem::~OpenGLItem() {
 
-}
-
-void OpenGLItem::windowChanged(QQuickWindow * window) {
-    qDebug() << "here";
-    if (window) {
-
-    }
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
@@ -63,6 +57,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     }
 
     if (_context) {
+
         const GLsizei viewportWidth = width() * window()->devicePixelRatio();
         const GLsizei viewportHeight = height() * window()->devicePixelRatio();
 
@@ -75,6 +70,11 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         _fbo->bind();
 
         _context->makeCurrent(window());
+
+        if (!_isTextureUpdated) {
+            initializeTextures();
+            _isTextureUpdated = true;
+        }
 
         render();
 
@@ -93,6 +93,10 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
 }
 
 void OpenGLItem::initialize() {
+
+}
+
+void OpenGLItem::initializeTextures() {
 
 }
 

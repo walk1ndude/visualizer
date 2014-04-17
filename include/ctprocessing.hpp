@@ -120,17 +120,18 @@ static inline cv::Mat backproject(const cv::Mat & src, cv::Mat & dst,
     }
 }
 
-void inline filterOneSlice(const cv::Mat & src, cv::Mat & dst, const int & minVal, const int & maxVal) {
+void inline filterOneSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
+                           const cv::Mat & dilateMat, const cv::Size & gaussSize) {
     cv::Mat maskRange(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
     cv::Mat maskedRange(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
 
-    cv::inRange(src, cv::Scalar(minVal), cv::Scalar(maxVal), maskRange);
+    cv::inRange(src, cv::Scalar(minValue), cv::Scalar(maxValue), maskRange);
 
     cv::bitwise_and(src, src, maskedRange, maskRange);
 
     cv::adaptiveThreshold(maskedRange, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 5);
-    cv::dilate(maskedRange, maskedRange, cv::Mat(3, 3, CV_8UC1));
-    cv::GaussianBlur(maskedRange, maskedRange, cv::Size(3, 3), 0.5);
+    cv::dilate(maskedRange, maskedRange, dilateMat);
+    cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 0.5);
 
     cv::Mat maskContours(cv::Mat(cv::Mat::zeros(src.cols, src.rows, CV_8UC1)));
 
@@ -154,11 +155,17 @@ typedef struct _CtData {
 
     std::vector<float> * imageSpacing;
 
+    size_t neighboursRadius;
+
     int bytesAllocated;
     int width;
     int height;
+    int depth;
     int offset;
     int type;
+
+    int minValueRange;
+    int maxValueRange;
 
     int64_t minValue;
     int64_t maxValue;
@@ -180,23 +187,29 @@ class CtProcessing : public cv::ParallelLoopBody {
 private:
     CtData _ctData;
 
-    int width;
-    int height;
+    int _width;
+    int _height;
 
-    int pad;
+    cv::Size _size;
 
-    int widthPad;
-    int heightPad;
+    cv::Size _gaussSize;
 
-    int wPad;
-    int hPad;
+    cv::Mat _dilateMat;
 
-    std::vector<cv::Mat>rotationMatrix;
+    int _pad;
 
-    std::vector<float>cosTable;
-    std::vector<float>sinTable;
+    int _widthPad;
+    int _heightPad;
 
-    std::vector<float>dhtCoeffs;
+    int _wPad;
+    int _hPad;
+
+    std::vector<cv::Mat>_rotationMatrix;
+
+    std::vector<float>_cosTable;
+    std::vector<float>_sinTable;
+
+    std::vector<float>_dhtCoeffs;
 
 public:
     CtProcessing(CtData & ctData) : _ctData(ctData) {
@@ -205,33 +218,40 @@ public:
         _ctData.imageSpacing->at(0) *= (float) 2.0;
         _ctData.imageSpacing->at(1) *= (float) 2.0;
 
-        width = _ctData.width / 2;
-        height = _ctData.height / 2;
+        _width = _ctData.width / 2;
+        _height = _ctData.height / 2;
+
+        _size = cv::Size(_width, _height);
+
+        _dilateMat = cv::Mat(3, 3, CV_8UC1);
+        _gaussSize = cv::Size(3, 3);
 
         if (_ctData.isRadonNeeded) {
 
             //useful image is ellipsoid with ra rb as width and height,
             //all black near corners - we loss this "garbage" during rotations - good riddance
-            pad = std::max(width, height);
+            _pad = std::max(_width, _height);
 
-            widthPad = std::ceil((pad - width) / 2.0);
-            heightPad = std::ceil((pad - height) / 2.0);
+            _widthPad = std::ceil((_pad - _width) / 2.0);
+            _heightPad = std::ceil((_pad - _height) / 2.0);
 
-            wPad = width + widthPad;
-            hPad = height + heightPad;
+            _wPad = _width + _widthPad;
+            _hPad = _height + _heightPad;
 
-            float twoPiN = PI_TIMES_2 / wPad;
+            float twoPiN = PI_TIMES_2 / _wPad;
 
             for (int angle = 0; angle < RADON_DEGREE_RANGE; ++ angle) {
-                rotationMatrix.push_back(cv::getRotationMatrix2D(cv::Point2i((width + widthPad) / 2, (height + heightPad) / 2),
-                                                             angle, 1.0));
-                cosTable.push_back(std::cos(toRad(angle)));
-                sinTable.push_back(std::sin(toRad(angle)));
+                _rotationMatrix.push_back(cv::getRotationMatrix2D(cv::Point2i(
+                                                                      (_width + _widthPad) / 2,
+                                                                      (_height + _heightPad) / 2
+                                                                      ),angle, 1.0));
+                _cosTable.push_back(std::cos(toRad(angle)));
+                _sinTable.push_back(std::sin(toRad(angle)));
 
             }
 
-            for (int i = 0; i != wPad; ++ i) {
-                dhtCoeffs.push_back(std::cos(twoPiN * i) + std::sin(twoPiN * i));
+            for (int i = 0; i != _wPad; ++ i) {
+                _dhtCoeffs.push_back(std::cos(twoPiN * i) + std::sin(twoPiN * i));
             }
         }
     }
@@ -286,15 +306,20 @@ public:
                 }
             }
 
-            cv::resize(*data, *data, cv::Size(width, height));
+            cv::resize(*data, *data, _size);
             (*data).convertTo(*data, CV_8UC1, 1 / 256.0);
 
             cv::Mat * filtered = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
 
-            filterOneSlice(*data, *filtered, 40, 55);
+            filterOneSlice(*data, *filtered, _ctData.minValueRange, _ctData.maxValueRange, _dilateMat, _gaussSize);
 
             _ctData.noisy->at(i) = data;
             _ctData.filtered->at(i) = filtered;
+
+            //_filteredReady.at(i) = true;
+            /*
+            bool canFilter = true;
+            int leftestNeighbour = std::max(0, i - _ctData.neighboursRadius);*/
         }
     }
 };
@@ -303,35 +328,42 @@ typedef struct _FilterData {
     std::vector<cv::Mat *> src;
     std::vector<cv::Mat *> dst;
 
-    int minVal;
-    int maxVal;
+    int minValue;
+    int maxValue;
 } FilterData;
 
 class SliceFilter : public cv::ParallelLoopBody {
 private:
     FilterData _filterData;
 
+    cv::Mat _dilateMat;
+
+    cv::Size _gaussSize;
+
 public:
     SliceFilter(FilterData & filterData) :
         _filterData(filterData) {
 
+        _dilateMat = cv::Mat(3, 3, CV_8UC1);
+        _gaussSize = cv::Size(3, 3);
     }
 
     virtual void operator ()(const cv::Range & r) const {
         for (register int i = r.start; i != r.end; ++ i) {
-            filterOneSlice(*(_filterData.src[i]), *(_filterData.dst[i]), _filterData.minVal, _filterData.maxVal);
+            *(_filterData.dst[i]) = cv::Scalar(0);
+            filterOneSlice(*(_filterData.src[i]), *(_filterData.dst[i]), _filterData.minValue, _filterData.maxValue, _dilateMat, _gaussSize);
         }
     }
 };
 
 typedef struct _SmoothData {
-    std::vector<cv::Mat*> * data;
-    std::vector<cv::Mat*> * smoothData;
+    std::vector<cv::Mat*> * src;
+    std::vector<cv::Mat*> * dst;
 
     size_t neighbourRadius;
 }SmoothData;
 
-class VolumeSmoothing : public cv::ParallelLoopBody {
+class VolumeSmoother : public cv::ParallelLoopBody {
 private:
     SmoothData _smoothData;
 
@@ -341,10 +373,10 @@ private:
     size_t _neighbourCount;
 
 public:
-    VolumeSmoothing(SmoothData & smoothData) :
+    VolumeSmoother(SmoothData & smoothData) :
         _smoothData(smoothData),
-        _cols(smoothData.data->at(0)->cols),
-        _rows(smoothData.data->at(0)->rows) {
+        _cols(smoothData.src->at(0)->cols),
+        _rows(smoothData.src->at(0)->rows) {
 
         _neighbourCount = 2 * _smoothData.neighbourRadius + 1;
     }
@@ -356,14 +388,14 @@ public:
             cv::Mat conv16(_cols, _rows, CV_16UC1);
 
             for (size_t j = i + _smoothData.neighbourRadius; j != i + _neighbourCount; ++ j) {
-                _smoothData.data->at(j)->convertTo(conv16, CV_16UC1, 256.0);
+                _smoothData.src->at(j)->convertTo(conv16, CV_16UC1, 256.0);
                 mergeMat += conv16;
             }
 
             mergeMat /= _neighbourCount;
 
             mergeMat.convertTo(mergeMat8, CV_8UC1, 1 / 256.0);
-            _smoothData.smoothData->at(i) = new cv::Mat(mergeMat8);
+            _smoothData.dst->at(i) = new cv::Mat(mergeMat8);
         }
     }
 };

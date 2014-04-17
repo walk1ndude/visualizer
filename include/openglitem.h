@@ -17,23 +17,24 @@ public:
     ~OpenGLItem();
 
 protected:
+    QOpenGLContext * _context;
+
     bool _needsInitialize;
 
+    bool _isTextureUpdated;
+
     virtual void initialize();
+    virtual void initializeTextures();
 
     QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 
 private:
-    QOpenGLContext * _context;
-
     QOpenGLFramebufferObject * _fbo;
 
 protected slots:
     virtual void render();
     virtual void sync();
     virtual void cleanup();
-
-    void windowChanged(QQuickWindow * window);
 
 signals:
     void initialized();

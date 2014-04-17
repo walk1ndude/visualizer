@@ -26,6 +26,9 @@ signals:
     void fileOpened(QString fileName);
     void sliceNumberChanged(int number);
 
+    void minValueChanged(int minValue);
+    void maxValueChanged(int maxValue);
+
     void slicesProcessed(uchar * mergedData, const std::vector<float> & scaling,
                          const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
 };

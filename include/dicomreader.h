@@ -2,6 +2,7 @@
 #define DICOMREADER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QMutex>
 
 #include <gdcmImage.h>
 #include <gdcmFile.h>
@@ -33,13 +34,20 @@ private:
 
   cv::ocl::Context * _context;
 
+  //QMutex _mutex;
+
+  int _minValue;
+  int _maxValue;
+
   int initOpenCL();
 
   void showImageWithNumber(const size_t & imageNumber);
   void readImage(gdcm::File & dFile, const gdcm::Image & dImage);
-  void mergeMatData(const std::vector<cv::Mat*> & src, const std::vector<float> & imageSpacings);
+  void mergeMatData(const std::vector<cv::Mat*> & src, const std::vector<float> & imageSpacings = std::vector<float>());
 
   void medianSmooth(const size_t & neighbourRadius);
+
+  void updateFiltered();
 signals:
   void slicesProcessed(uchar * mergedData, const std::vector<float> & scaling,
                        const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
@@ -47,6 +55,9 @@ signals:
 public slots:
   void readFile(QString dicomFile);
   void changeSliceNumber(int ds);
+
+  void updateMinValue(int minValue);
+  void updateMaxValue(int maxValue);
 };
 
 #endif // DICOMREADER_H

@@ -36,8 +36,4 @@ void main(void) {
     float fDiffuseIntensity = max(0.0, dot(normalize(fragNormal), -sunLight.vDirection));
 
     fragColor = fragColor * vec4(sunLight.vColor * (sunLight.fAmbientIntensity + fDiffuseIntensity), 1.0);
-
-    if (fragColor.r < rBottom || fragColor.r > rTop) {
-        discard;
-    }
 }

@@ -3,8 +3,8 @@ import QtQuick 2.2
 Item {
     id: hud
 
-    signal rTopChanged(real value);
-    signal rBottomChanged(real value);
+    signal minValueChanged(int value);
+    signal maxValueChanged(int value);
     signal ambientIntensityChanged(real value);
 
     signal angleChanged(real xRot, real yRot, real zRot);

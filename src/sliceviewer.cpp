@@ -2,6 +2,8 @@
 #include <QtGui/QScreen>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
+#include <QtQuick/QQuickWindow>
+
 #include "sliceviewer.h"
 
 void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage) {
@@ -37,8 +39,6 @@ SliceViewer::SliceViewer() :
     _program(0),
     _slicesReady(false),
     _textureCV3D(QOpenGLTexture::Target3D),
-    _rBottom((GLfloat) 0.1),
-    _rTop((GLfloat) 0.8),
     _ambientIntensity((GLfloat) 3.9),
     _lightPos(QVector3D(0.0, 0.0, -10.0)),
     _mergedData(0),
@@ -50,25 +50,30 @@ void SliceViewer::calcViewPorts() {
     int halfWidth = width() / 2;
     int halfHeight = height() / 2;
 
-    _viewPorts[0] = QRect(halfWidth + 5, 0, halfWidth - 5, halfHeight + 5);
-    _viewPorts[1] = QRect(0, 0, halfWidth - 5, halfHeight + 5);
+    _viewPorts[0] = QRect(halfWidth + 5, 0, halfWidth - 5, halfHeight - 5);
+    _viewPorts[1] = QRect(0, 0, halfWidth - 5, halfHeight - 5);
     _viewPorts[2] = QRect(0, halfHeight + 5, halfWidth - 5, halfHeight - 5);
     _viewPorts[3] = QRect(halfWidth + 5, halfHeight + 5, halfWidth - 5, halfHeight - 5);
 }
 
-void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> &size,
+void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> & size,
                           const int & alignment, const size_t & rowLength) {
+
     _mergedData = mergedData;
+
+    if (_slicesReady) {
+        _isTextureUpdated = false;
+        update();
+        return;
+    }
+
+    cleanup();
+
     _scaling = scaling;
     _size = size;
 
     _alignment = alignment;
     _rowLength = rowLength;
-
-    if (_program) {
-        delete _program;
-        _program = 0;
-    }
 
     _matrices.resize(4);
 
@@ -122,14 +127,12 @@ void SliceViewer::initialize() {
     _shaderLightPos = _program->uniformLocation("lightPos");
     _shaderAmbientIntensity = _program->uniformLocation("ambientIntensity");
     _shaderTexSample = _program->uniformLocation("texSample");
-    _shaderRBottom = _program->uniformLocation("rBottom");
-    _shaderRTop = _program->uniformLocation("rTop");
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    initTextures();
+    initializeTextures();
 
     _glHeadModel.init(_program, _size[2]);
 
@@ -151,7 +154,6 @@ void SliceViewer::render() {
     _program->bind();
 
     for (int i = 0; i != 4; ++ i) {
-
         glViewport(_viewPorts[i].x(), _viewPorts[i].y(), _viewPorts[i].width(), _viewPorts[i].height());
 
         _program->setUniformValue(_shaderModel, _matrices[i].model());
@@ -162,11 +164,8 @@ void SliceViewer::render() {
         _program->setUniformValue(_shaderLightPos, _lightPos);
         _program->setUniformValue(_shaderAmbientIntensity, _ambientIntensity);
         _program->setUniformValue(_shaderTexSample, 0);
-        _program->setUniformValue(_shaderRBottom, _rBottom);
-        _program->setUniformValue(_shaderRTop, _rTop);
 
         _glHeadModel.drawModel();
-
     }
 
     _program->release();
@@ -187,7 +186,11 @@ void SliceViewer::cleanup() {
     }
 }
 
-void SliceViewer::initTextures() {
+void SliceViewer::initializeTextures() {
+    if (_textureCV3D.isStorageAllocated()) {
+        _textureCV3D.destroy();
+    }
+
     QOpenGLPixelTransferOptions pixelOptions;
     pixelOptions.setAlignment(_alignment);
     pixelOptions.setRowLength(_rowLength);
@@ -210,18 +213,6 @@ void SliceViewer::initTextures() {
 
     delete [] _mergedData;
     _mergedData = 0;
-}
-
-void SliceViewer::updateRBottom(qreal rBottom) {
-    _rBottom = std::min(rBottom, (qreal) _rTop);
-    _rTop = std::max(rBottom, (qreal) _rTop);
-    update();
-}
-
-void SliceViewer::updateRTop(qreal rTop) {
-    _rTop = std::max(rTop, (qreal) _rBottom);
-    _rBottom = std::min(rTop, (qreal) _rBottom);
-    update();
 }
 
 void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
