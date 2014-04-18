@@ -38,7 +38,7 @@ SliceViewer::SliceViewer() :
     OpenGLItem(),
     _program(0),
     _slicesReady(false),
-    _textureCV3D(QOpenGLTexture::Target3D),
+    _textureCV3D(0),
     _ambientIntensity((GLfloat) 3.9),
     _lightPos(QVector3D(0.0, 0.0, -10.0)),
     _mergedData(0),
@@ -134,7 +134,7 @@ void SliceViewer::initialize() {
 
     initializeTextures();
 
-    _glHeadModel.init(_program, _size[2]);
+    _headModel.init(_program, _size[2]);
 
     gpu_profiling(_gpu_driver, "initialization end");
 }
@@ -149,7 +149,7 @@ void SliceViewer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _textureCV3D.bind();
+    _textureCV3D->bind();
 
     _program->bind();
 
@@ -165,57 +165,54 @@ void SliceViewer::render() {
         _program->setUniformValue(_shaderAmbientIntensity, _ambientIntensity);
         _program->setUniformValue(_shaderTexSample, 0);
 
-        _glHeadModel.drawModel();
+        _headModel.drawModel();
     }
 
     _program->release();
 
     gpu_profiling(_gpu_driver, "actual drawing");
 
-    _textureCV3D.release();
-}
-
-void SliceViewer::sync() {
-
+    _textureCV3D->release();
 }
 
 void SliceViewer::cleanup() {
     if (_program) {
         delete _program;
-        _program = 0;
-    }
-}
 
-void SliceViewer::cleanupTextures() {
-    if (_textureCV3D.isStorageAllocated()) {
-        _textureCV3D.destroy();
+        if (_textureCV3D->isStorageAllocated()) {
+            _textureCV3D->destroy();
+        }
+
+        _headModel.destroyModel();
     }
 }
 
 void SliceViewer::initializeTextures() {
-    if (_textureCV3D.isStorageAllocated()) {
-        _textureCV3D.destroy();
+    _textureCV3D = new QOpenGLTexture(QOpenGLTexture::Target3D);
+
+    if (_textureCV3D->isStorageAllocated()) {
+        _textureCV3D->destroy();
     }
 
     QOpenGLPixelTransferOptions pixelOptions;
     pixelOptions.setAlignment(_alignment);
     pixelOptions.setRowLength(_rowLength);
 
-    _textureCV3D.create();
-    _textureCV3D.setSize(_size[0], _size[1], _size[2]);
-    _textureCV3D.setFormat(QOpenGLTexture::R8_UNorm);
+    _textureCV3D->create();
+    _textureCV3D->setSize(_size[0], _size[1], _size[2]);
+    _textureCV3D->setFormat(QOpenGLTexture::R8_UNorm);
 
-    _textureCV3D.allocateStorage();
+    _textureCV3D->allocateStorage();
 
-    _textureCV3D.setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) _mergedData, &pixelOptions);
+    _textureCV3D->setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) _mergedData, &pixelOptions);
 
-    _textureCV3D.setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
+    _textureCV3D->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
 
-    _textureCV3D.setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
-    _textureCV3D.setMagnificationFilter(QOpenGLTexture::Linear);
-    _textureCV3D.setWrapMode(QOpenGLTexture::ClampToBorder);
+    _textureCV3D->setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
+    _textureCV3D->setMagnificationFilter(QOpenGLTexture::Linear);
+    _textureCV3D->setWrapMode(QOpenGLTexture::ClampToBorder);
 
-    _textureCV3D.generateMipMaps();
+    _textureCV3D->generateMipMaps();
 
     delete [] _mergedData;
     _mergedData = 0;
@@ -239,10 +236,5 @@ void SliceViewer::updateZoomZ(qreal dist) {
 
 void SliceViewer::updateAmbientIntensity(qreal ambientIntensity) {
     _ambientIntensity = ambientIntensity;
-    update();
-}
-
-void SliceViewer::destroyContext() {
-    _needToDestroyTextures = true;
     update();
 }

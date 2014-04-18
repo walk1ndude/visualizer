@@ -4,7 +4,7 @@
 #include <QtGui/QOpenGLTexture>
 
 #include "openglitem.h"
-#include "glheadmodel.h"
+#include "headmodel.h"
 #include "matrixstack.h"
 
 typedef enum _GPU_Driver {
@@ -25,11 +25,9 @@ public:
     virtual ~SliceViewer();
 
 protected:
-    void initialize();
-    void render();
-
-    void sync();
-    void cleanup();
+    virtual void initialize();
+    virtual void initializeTextures();
+    virtual void render();
 
 private:
     QOpenGLShaderProgram * _program;
@@ -53,7 +51,7 @@ private:
 
     size_t _rowLength;
 
-    QOpenGLTexture _textureCV3D;
+    QOpenGLTexture * _textureCV3D;
 
     GLfloat _ambientIntensity;
 
@@ -64,14 +62,12 @@ private:
 
     QPoint _lastMousePosition;
 
-    GLHeadModel _glHeadModel;
+    HeadModel _headModel;
 
     uchar * _mergedData;
 
     GPU_Driver _gpu_driver;
 
-    void initializeTextures();
-    void cleanupTextures();
     void calcViewPorts();
 
 public slots:
@@ -83,7 +79,7 @@ public slots:
     void updateAngle(qreal xRot, qreal yRot, qreal zRot);
     void updateZoomZ(qreal zoomZ);
 
-    void destroyContext();
+    virtual void cleanup();
 };
 
 #endif // GLVIEWER_H

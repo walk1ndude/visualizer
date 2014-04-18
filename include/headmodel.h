@@ -6,14 +6,16 @@
 #include <QtGui/QOpenGLBuffer>
 #include <QtGui/QOpenGLVertexArrayObject>
 
-class GLHeadModel : protected QOpenGLFunctions_3_3_Core {
+class HeadModel : protected QOpenGLFunctions_3_3_Core {
 
 public:
-    GLHeadModel();
-    ~GLHeadModel();
+    HeadModel();
+    ~HeadModel();
 
     void init(QOpenGLShaderProgram * program, const int & zCount);
     void drawModel();
+
+    void destroyModel();
 
 private:
     QOpenGLBuffer _vboVert;

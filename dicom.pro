@@ -56,18 +56,18 @@ LIBS += -lgdcmcharls \
 
 SOURCES += src/main.cpp\
            src/dicomreader.cpp\
-           src/glheadmodel.cpp \
            src/matrixstack.cpp \
            src/openglitem.cpp \
            src/sliceviewer.cpp \
-    src/appwindow.cpp
+           src/appwindow.cpp \
+           src/headmodel.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
-            include/glheadmodel.h \
             include/matrixstack.h \
             include/openglitem.h \
             include/sliceviewer.h \
-    include/appwindow.h
+            include/appwindow.h \
+            include/headmodel.h
 
 RESOURCES += resources.qrc

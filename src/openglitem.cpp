@@ -2,34 +2,36 @@
 #include <QtQuick/QSGSimpleTextureNode>
 
 #include <QtGui/QOpenGLFramebufferObject>
+#include <QtGui/QOffscreenSurface>
 
 #include "openglitem.h"
 
 OpenGLItem::OpenGLItem() :
-    _context(0),
     _needsInitialize(false),
     _isTextureUpdated(true),
-    _needToDestroyTextures(false),
+    _context(0),
     _fbo(0) {
 
     setFlag(QQuickItem::ItemHasContents);
+    QObject::connect(this, &OpenGLItem::windowChanged, this, &OpenGLItem::handleWindowChanged, Qt::DirectConnection);
+}
+
+void OpenGLItem::handleWindowChanged(QQuickWindow * window) {
+    if (window) {
+        window->setClearBeforeRendering(false);
+    }
 }
 
 OpenGLItem::~OpenGLItem() {
-    if (_context) {
-        delete _context;
-    }
     if (_fbo) {
         delete _fbo;
     }
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
-    QOpenGLContext * savedQt = window()->openglContext();
+    QOpenGLContext * savedContext = window()->openglContext();
 
     if (_needsInitialize) {
-        window()->setClearBeforeRendering(false);
-
         _context = new QOpenGLContext;
 
         QSurfaceFormat format;
@@ -42,9 +44,10 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         _context->setFormat(format);
         _context->create();
 
-        QObject::connect(_context, &QOpenGLContext::aboutToBeDestroyed, this, &OpenGLItem::cleanup, Qt::DirectConnection);
-
         _context->makeCurrent(window());
+
+        QObject::connect(window(), SIGNAL(closing(QQuickCloseEvent *)), _context, SIGNAL(aboutToBeDestroyed()));
+        QObject::connect(_context, &QOpenGLContext::aboutToBeDestroyed, [=]() { this->cleaningUp(); });
 
         initializeOpenGLFunctions();
         initialize();
@@ -53,7 +56,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
 
         emit initialized();
 
-        savedQt->makeCurrent(window());
+        savedContext->makeCurrent(window());
     }
 
     QSGSimpleTextureNode * texNode = static_cast<QSGSimpleTextureNode *>(node);
@@ -63,23 +66,6 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     }
 
     if (_context) {
-
-        if (_needToDestroyTextures) {
-            _context->makeCurrent(window());
-            cleanupTextures();
-
-            _context->deleteLater();
-
-            if (_fbo) {
-                delete _fbo;
-            }
-
-            emit destroyed();
-
-            texNode->setTexture(window()->createTextureFromId(0, QSize(0, 0)));
-
-            return texNode;
-        }
 
         const GLsizei viewportWidth = width() * window()->devicePixelRatio();
         const GLsizei viewportHeight = height() * window()->devicePixelRatio();
@@ -101,7 +87,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
 
         render();
 
-        savedQt->makeCurrent(window());
+        savedContext->makeCurrent(window());
 
         _fbo->bindDefault();
 
@@ -127,18 +113,19 @@ void OpenGLItem::render() {
 
 }
 
-void OpenGLItem::sync() {
-
-}
-
 void OpenGLItem::cleanup() {
 
 }
 
-void OpenGLItem::destroyContext() {
+void OpenGLItem::cleaningUp() {
+    QOffscreenSurface cleanUpHelper;
+    cleanUpHelper.create();
 
-}
+    QOpenGLContext * savedContext = window()->openglContext();
 
-void OpenGLItem::cleanupTextures() {
+    _context->makeCurrent(&cleanUpHelper);
 
+    cleanup();
+
+    savedContext->makeCurrent(&cleanUpHelper);
 }

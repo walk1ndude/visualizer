@@ -1,4 +1,4 @@
-#include "glheadmodel.h"
+#include "headmodel.h"
 
 typedef struct _VertexData {
     QVector3D position;
@@ -6,18 +6,18 @@ typedef struct _VertexData {
     QVector3D texCoord;
 }VertexData;
 
-GLHeadModel::GLHeadModel() :
+HeadModel::HeadModel() :
     _vboVert(QOpenGLBuffer::VertexBuffer),
     _vboInd(QOpenGLBuffer::IndexBuffer) {
 
 }
 
-GLHeadModel::~GLHeadModel() {
+HeadModel::~HeadModel() {
     _vboVert.destroy();
     _vboInd.destroy();
 }
 
-void GLHeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
+void HeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
     initializeOpenGLFunctions();
 
     _shaderVertex = program->attributeLocation("vertex");
@@ -27,7 +27,7 @@ void GLHeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
     initGeometry(program, zCount);
 }
 
-void GLHeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount) {
+void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount) {
     _vao.create();
     _vao.bind();
 
@@ -95,14 +95,24 @@ void GLHeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCoun
 
     _vao.release();
 
+    _vboVert.release();
+    _vboInd.release();
+
     delete [] vertices;
     delete [] indices;
 }
 
-void GLHeadModel::drawModel() {
+void HeadModel::drawModel() {
     _vao.bind();
 
     glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
 
     _vao.release();
+}
+
+void HeadModel::destroyModel() {
+    _vao.destroy();
+
+    _vboVert.destroy();
+    _vboInd.destroy();
 }
