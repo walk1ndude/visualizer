@@ -188,11 +188,12 @@ void SliceViewer::cleanup() {
 }
 
 void SliceViewer::initializeTextures() {
-    _textureCV3D = new QOpenGLTexture(QOpenGLTexture::Target3D);
 
-    if (_textureCV3D->isStorageAllocated()) {
+    if (!_isTextureUpdated && _textureCV3D->isStorageAllocated()) {
         _textureCV3D->destroy();
     }
+
+    _textureCV3D = new QOpenGLTexture(QOpenGLTexture::Target3D);
 
     QOpenGLPixelTransferOptions pixelOptions;
     pixelOptions.setAlignment(_alignment);

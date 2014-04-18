@@ -260,15 +260,32 @@ void DicomReader::updateFiltered() {
     FilterData filterData;
 
     filterData.src = _noisy;
-    filterData.dst = _filtered;
 
     filterData.minValue = _minValue;
     filterData.maxValue = _maxValue;
 
+    filterData.neighbourRadius = 2;
+
+    uchar * mergedData = 0;
+
+    int alignment = 0;
+    size_t rowLength = 0;
+
+    filterData.alignment = &alignment;
+    filterData.rowLenght = &rowLength;
+
+    filterData.mergeLocation = &mergedData;
+
+    qint64 startTime = QDateTime::currentMSecsSinceEpoch();
+
     cv::parallel_for_(cv::Range(0, _noisy.size()), SliceFilter(filterData));
 
-    medianSmooth(2);
-    mergeMatData(_smoothed);
+    qDebug() << "finished" << QDateTime::currentMSecsSinceEpoch() - startTime;
+
+    std::vector<float> scaling;
+    std::vector<size_t>size;
+
+    emit slicesProcessed(mergedData, scaling, size, alignment, rowLength);
 }
 
 void DicomReader::changeSliceNumber(int ds) {

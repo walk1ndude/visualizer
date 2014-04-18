@@ -11,6 +11,8 @@ typedef uint32_t u_int32_t;
 
 #endif
 
+#include <QtCore/QDebug>
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/ocl/ocl.hpp>
@@ -120,8 +122,9 @@ static inline cv::Mat backproject(const cv::Mat & src, cv::Mat & dst,
     }
 }
 
-void inline filterOneSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
+void inline filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
                            const cv::Mat & dilateMat, const cv::Size & gaussSize) {
+
     dst = cv::Mat::zeros(src.rows, src.rows, CV_8UC1);
     cv::Mat maskRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
     cv::Mat maskedRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
@@ -312,22 +315,87 @@ public:
 
             cv::Mat * filtered = new cv::Mat(cv::Mat::zeros(data->cols, data->rows, CV_8UC1));
 
-            filterOneSlice(*data, *filtered, _ctData.minValueRange, _ctData.maxValueRange, _dilateMat, _gaussSize);
+            filterSlice(*data, *filtered, _ctData.minValueRange, _ctData.maxValueRange, _dilateMat, _gaussSize);
 
             _ctData.noisy->at(i) = data;
             _ctData.filtered->at(i) = filtered;
-
-            //_filteredReady.at(i) = true;
-            /*
-            bool canFilter = true;
-            int leftestNeighbour = std::max(0, i - _ctData.neighboursRadius);*/
         }
     }
 };
 
+static void inline smoothSlices(const size_t & startSlice, const size_t & endSlice,
+                                const std::vector<cv::Mat *> & slices, cv::Mat & smoothed) {
+    int cols = slices.at(startSlice)->cols;
+    int rows = slices.at(startSlice)->rows;
+
+    cv::Mat mergeMat(cv::Mat::zeros(rows, cols, CV_16UC1));
+    cv::Mat conv16(cols, rows, CV_16UC1);
+
+    for (size_t i = startSlice; i != endSlice; ++ i) {
+        slices.at(i)->convertTo(conv16, CV_16UC1, 256.0);
+        mergeMat += conv16;
+    }
+
+    mergeMat /= (endSlice - startSlice);
+
+    smoothed = cv::Mat::zeros(rows, cols, CV_8UC1);
+
+    mergeMat.convertTo(smoothed, CV_8UC1, 1 / 256.0);
+}
+
+static void inline mergeSlice(const int & startSlice, const int & endSlice, const int & sliceSize,
+                               const std::vector<cv::Mat *> & slices, uchar * mergeStartPoint) {
+
+    cv::Mat smoothed;
+
+    smoothSlices(startSlice, endSlice, slices, smoothed);
+    memcpy(mergeStartPoint, smoothed.data, sliceSize);
+}
+
+static void inline checkNeighbours(const int & position, const int & radiusNeighbour,
+                                   const int & minNeighbour, const int & maxNeighbour,
+                                   const std::vector<bool> & hasProcessed, std::vector<bool> & hasMerged,
+                                   const std::vector<cv::Mat *> & slices, const int & sliceSize,
+                                   uchar * mergeStartPoint) {
+    int leftestNeighbour = std::max(minNeighbour, position - 2 * radiusNeighbour);
+    int rightestNeighbour = std::min(maxNeighbour - 2 * radiusNeighbour + 1, position + 2 * radiusNeighbour + 1);
+
+    int leftCheckNeighbour;
+    int rightCheckNeighbour;
+    int currentCheckNeighnour;
+
+    for (int i = leftestNeighbour; i != rightestNeighbour; ++ i) {
+        if (hasMerged[i]) {
+            continue;
+        }
+
+        leftCheckNeighbour = i;
+        rightCheckNeighbour = i + 2 * radiusNeighbour + 1;
+        currentCheckNeighnour = leftCheckNeighbour;
+
+        bool canMerge = true;
+
+        while (canMerge && currentCheckNeighnour != rightCheckNeighbour) {
+            canMerge &= hasProcessed[currentCheckNeighnour ++];
+        }
+
+        if (canMerge) {
+            hasMerged[i] = true;
+            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, slices, mergeStartPoint + sliceSize * i);
+        }
+    }
+}
+
 typedef struct _FilterData {
     std::vector<cv::Mat *> src;
-    std::vector<cv::Mat *> dst;
+
+    uchar ** mergeLocation;
+
+    size_t * rowLenght;
+
+    int * alignment;
+
+    int neighbourRadius;
 
     int minValue;
     int maxValue;
@@ -341,19 +409,53 @@ private:
 
     cv::Size _gaussSize;
 
+    int _intervalNeighbours;
+
+    mutable std::vector<bool>_hasProcessed; // because flags need to be changeds in const method
+    mutable std::vector<bool>_hasMerged;
+
+    std::vector<cv::Mat *>_filtered;
+
+    int _sliceSize;
+
 public:
     SliceFilter(FilterData & filterData) :
         _filterData(filterData) {
 
         _dilateMat = cv::Mat(3, 3, CV_8UC1);
         _gaussSize = cv::Size(3, 3);
+
+        _hasProcessed.resize(_filterData.src.size(), false);
+        _hasMerged.resize(_filterData.src.size() - 2 * _filterData.neighbourRadius, false);
+
+        _filtered.resize(_filterData.src.size(), new cv::Mat);
+
+        cv::Mat * srcOneSlice = _filterData.src.at(0);
+        _sliceSize = srcOneSlice->elemSize() * srcOneSlice->total();
+
+        *(_filterData.mergeLocation) = new uchar[_sliceSize * _filterData.src.size()];
+
+        *(_filterData.alignment) = (srcOneSlice->step & 3) ? 1 : 4;
+        *(_filterData.rowLenght) = srcOneSlice->step1();
+
+        _intervalNeighbours = 2 * _filterData.neighbourRadius + 1;
+    }
+
+    ~SliceFilter() {
+        _filtered.clear();
     }
 
     virtual void operator ()(const cv::Range & r) const {
-        for (register int i = r.start; i != r.end; ++ i) {
-            filterOneSlice(*(_filterData.src[i]), *(_filterData.dst[i]), _filterData.minValue, _filterData.maxValue, _dilateMat, _gaussSize);
+        for (int i = r.start; i != r.end; ++ i) {
+            filterSlice(*(_filterData.src[i]), *(_filtered[i]), _filterData.minValue, _filterData.maxValue, _dilateMat, _gaussSize);
+
+            _hasProcessed[i] = true;
+
+            checkNeighbours(i, _filterData.neighbourRadius, 0, _filtered.size(),
+                            _hasProcessed, _hasMerged, _filtered,
+                            _sliceSize, *(_filterData.mergeLocation));
+            }
         }
-    }
 };
 
 typedef struct _SmoothData {
