@@ -2,6 +2,7 @@
 #include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
 #include <gdcmStringFilter.h>
+#include <gdcmException.h>
 
 #include <QtCore/QDebug>
 #include <QtCore/QDateTime>
@@ -62,15 +63,15 @@ DicomReader::~DicomReader() {
 }
 
 void DicomReader::resetV(std::vector<cv::Mat *> & vec, const int & newSize) {
-    qDeleteAll(vec.begin(), vec.end());
+    for (std::vector<cv::Mat *>::iterator it = vec.begin(); it != vec.end(); ++ it) {
+        delete *it;
+    }
     vec.clear();
     vec.resize(newSize);
 }
 
 void DicomReader::reset(const int & newSize) {
     resetV(_noisy, newSize);
-    resetV(_filtered, newSize);
-    resetV(_smoothed, newSize);
 }
 
 void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
@@ -82,8 +83,6 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     dStringFilter.SetFile(dFile);
 
     gdcm::DataSet & dDataSet = dFile.GetDataSet();
-
-    CtData ctData;
 
     std::vector<float>imageSpacings;
 
@@ -109,157 +108,139 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
         imageSpacings[2] += 0.1;
     }
 
+    LoaderData loaderData;
+
     tagFind.SetElementTag(0x0028, 0x1050);
     if (dDataSet.FindDataElement(tagFind)) {
-        ctData.windowCenter = std::stoi(dStringFilter.ToString(tagFind));
+        loaderData.dicomData.windowCenter = std::stoi(dStringFilter.ToString(tagFind));
     }
     else {
-        ctData.windowCenter = 0;
+        loaderData.dicomData.windowCenter = 0;
     }
 
     tagFind.SetElementTag(0x0028, 0x1051);
     if (dDataSet.FindDataElement(tagFind)) {
-        ctData.windowWidth = std::stoi(dStringFilter.ToString(tagFind));
+        loaderData.dicomData.windowWidth = std::stoi(dStringFilter.ToString(tagFind));
     }
     else {
-        ctData.windowWidth = 0;
+        loaderData.dicomData.windowWidth = 0;
     }
 
-    ctData.width = dImage.GetDimension(0);
-    ctData.height = dImage.GetDimension(1);
-    ctData.depth = dImage.GetDimension(2);
+    loaderData.dicomData.width = dImage.GetDimension(0);
+    loaderData.dicomData.height = dImage.GetDimension(1);
+    loaderData.dicomData.depth = dImage.GetDimension(2);
 
     dImage.GetBuffer(buffer);
 
-    //clear previous "garbage"
-    reset(ctData.depth);
+    loaderData.filterData.src = &_noisy;
 
-    ctData.noisy = &_noisy;
-    ctData.filtered = &_filtered;
+    loaderData.filterData.minValue = _minValue;
+    loaderData.filterData.maxValue = _maxValue;
 
-    ctData.minValueRange = _minValue;
-    ctData.maxValueRange = _maxValue;
+    loaderData.dicomData.imageSpacing = &imageSpacings;
 
-    ctData.imageSpacing = &imageSpacings;
-
-    ctData.isRadonNeeded = false;
+    loaderData.dicomData.isRadonNeeded = false;
 
     //MONOCHROME2
 
     gdcm::PhotometricInterpretation photometricInterpretation = dImage.GetPhotometricInterpretation();
 
     if (photometricInterpretation == gdcm::PhotometricInterpretation::MONOCHROME2) {
-        ctData.inverseNeeded = true;
+        loaderData.dicomData.inverseNeeded = true;
     }
     else {
-        ctData.inverseNeeded = false;
+        loaderData.dicomData.inverseNeeded = false;
     }
 
     gdcm::PixelFormat pixelFormat = dImage.GetPixelFormat();
     if (pixelFormat.GetScalarType() == gdcm::PixelFormat::UINT16) {
-        ctData.type = CV_16UC1;
+        loaderData.dicomData.type = CV_16UC1;
     }
-    ctData.bytesAllocated = pixelFormat.GetBitsAllocated() / 8;
-    ctData.minValue = pixelFormat.GetMin();
-    ctData.maxValue = pixelFormat.GetMax();
+    else {
+        loaderData.dicomData.type = CV_8UC1; // for now
+    }
 
-    ctData.isLittleEndian = (pixelFormat.GetBitsAllocated() - pixelFormat.GetHighBit() == 1) ? true : false;
+    loaderData.dicomData.bytesAllocated = pixelFormat.GetBitsAllocated() / 8;
+
+    loaderData.dicomData.minValue = pixelFormat.GetMin();
+    loaderData.dicomData.maxValue = pixelFormat.GetMax();
+
+    loaderData.dicomData.isLittleEndian = (pixelFormat.GetBitsAllocated() - pixelFormat.GetHighBit() == 1) ? true : false;
 
     try {
-        ctData.slope = dImage.GetSlope();
-        ctData.intercept = dImage.GetIntercept();
+        loaderData.dicomData.slope = dImage.GetSlope();
+        loaderData.dicomData.intercept = dImage.GetIntercept();
     }
-    catch(...) {
-        ctData.slope = 1.0;
-        ctData.intercept = 0.0;
+    catch (gdcm::Exception &) {
+        loaderData.dicomData.slope = 1.0;
+        loaderData.dicomData.intercept = 0.0;
     }
 
-    ctData.buffer = buffer;
+    loaderData.dicomData.buffer = buffer;
 
-    qint64 startTime = QDateTime::currentMSecsSinceEpoch();
+    loaderData.filterData.minValue = _minValue;
+    loaderData.filterData.maxValue = _maxValue;
+
+    uchar * mergedData;
+
+    size_t rowLength;
+
+    int aligment;
+
+    loaderData.filterData.mergeLocation = &mergedData;
+
+    loaderData.filterData.rowLenght = &rowLength;
+    loaderData.filterData.alignment = &aligment;
+
+    loaderData.filterData.neighbourRadius = 2;
 
     qDebug() << "processing start";
 
-    cv::parallel_for_(cv::Range(0, ctData.depth), CtProcessing<u_int16_t>(ctData));
+    qint64 procTime = QDateTime::currentMSecsSinceEpoch();
 
-    qDebug() << "loading done" << QDateTime::currentMSecsSinceEpoch() - startTime;
+    cv::parallel_for_(cv::Range(0, loaderData.dicomData.depth), SliceLoader<u_int16_t>(loaderData));
 
-    cv::namedWindow(WINDOW_INPUT_IMAGE, cv::WINDOW_AUTOSIZE);
+    procTime = QDateTime::currentMSecsSinceEpoch() - procTime;
 
-    startTime = QDateTime::currentMSecsSinceEpoch();
+    qDebug() << "loading done" << procTime;
 
-    medianSmooth(2);
-    mergeMatData(_smoothed, imageSpacings);
+    //cv::namedWindow(WINDOW_INPUT_IMAGE, CV_WINDOW_AUTOSIZE);
 
-    qDebug() << "merge finished" << QDateTime::currentMSecsSinceEpoch() - startTime;
+    std::vector<float>scaling;
+    std::vector<size_t>size;
 
-    showImageWithNumber(0);
-}
+    cv::Mat * image = _noisy.at(0);
 
-void DicomReader::medianSmooth(const size_t & neighbourRadius) {
-    resetV(_smoothed, _filtered.size() - 2 * neighbourRadius);
+    int depth = loaderData.dicomData.depth - loaderData.filterData.neighbourRadius * 2;
 
-    SmoothData smoothData;
+    scaling.push_back(image->cols * imageSpacings[0] / (image->cols * imageSpacings[0]) / 0.7);
+    scaling.push_back(image->rows * imageSpacings[1] / (image->cols * imageSpacings[0]) / 0.7);
+    scaling.push_back(depth * imageSpacings[2] / (image->cols * imageSpacings[0]) / 0.7);
 
-    smoothData.src = &_filtered;
-    smoothData.dst = &_smoothed;
+    size.push_back(image->rows);
+    size.push_back(image->cols);
+    size.push_back(depth);
 
-    smoothData.neighbourRadius = neighbourRadius;
-
-    cv::parallel_for_(cv::Range(0, _smoothed.size()), VolumeSmoother(smoothData));
+    emit slicesProcessed(mergedData, scaling, size, aligment, rowLength);
 }
 
 void DicomReader::readFile(QString dicomFile) {
-    //_mutex.lock();
-
     gdcm::ImageReader dIReader;
 
     // dicomFile = "file:///...", we must cut protocol, so no "file://" <- start with 7th char
     dIReader.SetFileName(dicomFile.mid(7).toStdString().c_str());
     if (dIReader.Read()) {
         readImage(dIReader.GetFile(), dIReader.GetImage());
-        //_mutex.unlock();
     }
     else {
         qDebug() << "can't read file";
-        //_mutex.unlock();
     }
-}
-
-void DicomReader::mergeMatData(const std::vector<cv::Mat *> & src, const std::vector<float> & imageSpacings) {
-    cv::Mat * image = src[0];
-    int depth = src.size();
-
-    int byteSizeMat = image->elemSize() * image->total();
-    int byteSizeAll = byteSizeMat * depth;
-
-    uchar * mergedData = new uchar[byteSizeAll];
-
-    for (int i = 0; i != depth; ++ i) {
-        memcpy(mergedData + byteSizeMat * i, src[i]->data, byteSizeMat);
-    }
-
-    std::vector<float> scaling;
-    std::vector<size_t>size;
-
-    if (imageSpacings.size() > 0) {
-
-        scaling.push_back(image->cols * imageSpacings[0] / (image->cols * imageSpacings[0]) / 0.7);
-        scaling.push_back(image->rows * imageSpacings[1] / (image->cols * imageSpacings[0]) / 0.7);
-        scaling.push_back(src.size() * imageSpacings[2] / (image->cols * imageSpacings[0]) / 0.7);
-
-        size.push_back(image->rows);
-        size.push_back(image->cols);
-        size.push_back(depth);
-    }
-
-    emit slicesProcessed(mergedData, scaling, size, ((image->step & 3) ? 1 : 4), image->step1());
 }
 
 void DicomReader::updateFiltered() {
     FilterData filterData;
 
-    filterData.src = _noisy;
+    filterData.src = &_noisy;
 
     filterData.minValue = _minValue;
     filterData.maxValue = _maxValue;
@@ -276,13 +257,15 @@ void DicomReader::updateFiltered() {
 
     filterData.mergeLocation = &mergedData;
 
-    qint64 startTime = QDateTime::currentMSecsSinceEpoch();
+    qint64 procTime = QDateTime::currentMSecsSinceEpoch();
 
     cv::parallel_for_(cv::Range(0, _noisy.size()), SliceFilter(filterData));
 
-    qDebug() << "finished" << QDateTime::currentMSecsSinceEpoch() - startTime;
+    procTime = QDateTime::currentMSecsSinceEpoch() - procTime;
 
-    std::vector<float> scaling;
+    qDebug() << "finished" << procTime;
+
+    std::vector<float>scaling;
     std::vector<size_t>size;
 
     emit slicesProcessed(mergedData, scaling, size, alignment, rowLength);
@@ -290,33 +273,25 @@ void DicomReader::updateFiltered() {
 
 void DicomReader::changeSliceNumber(int ds) {
     _imageNumber += ds;
-    _imageNumber %= _smoothed.size();
+    _imageNumber %= _noisy.size();
     showImageWithNumber(_imageNumber);
 }
 
 void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_INPUT_IMAGE, *(_smoothed[imageNumber]));
+    cv::imshow(WINDOW_INPUT_IMAGE, *(_noisy[imageNumber]));
     cv::waitKey(1);
 }
 
 void DicomReader::updateMinValue(int minValue) {
-    //_mutex.lock();
-
     _minValue = std::min(minValue, _maxValue);
     _maxValue = std::max(minValue, _maxValue);
 
     updateFiltered();
-
-    //_mutex.unlock();
 }
 
 void DicomReader::updateMaxValue(int maxValue) {
-    //_mutex.lock();
-
     _maxValue = std::max(maxValue, _minValue);
     _minValue = std::min(maxValue, _minValue);
 
     updateFiltered();
-
-    //_mutex.unlock();
 }

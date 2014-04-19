@@ -2,7 +2,6 @@
 #define DICOMREADER_H
 
 #include <QtCore/QObject>
-#include <QtCore/QMutex>
 
 #include <gdcmImage.h>
 #include <gdcmFile.h>
@@ -29,12 +28,8 @@ private:
   size_t _imageNumber;
 
   std::vector<cv::Mat *> _noisy;
-  std::vector<cv::Mat *> _filtered;
-  std::vector<cv::Mat *> _smoothed;
 
   cv::ocl::Context * _context;
-
-  //QMutex _mutex;
 
   int _minValue;
   int _maxValue;
