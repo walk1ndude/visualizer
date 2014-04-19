@@ -6,14 +6,7 @@
 #include <gdcmImage.h>
 #include <gdcmFile.h>
 
-#include <opencv2/highgui/highgui.hpp>
-
 #include "ctprocessing.hpp"
-
-#define OPENCL_ALL_OK 0
-#define OPENCL_NOT_INITIALIZED 1
-
-#define CANNY_LOWER 200
 
 class DicomReader : public QObject {
   Q_OBJECT
@@ -29,23 +22,17 @@ private:
 
   std::vector<cv::Mat *> _noisy;
 
-  cv::ocl::Context * _context;
-
   int _minValue;
   int _maxValue;
 
-  int initOpenCL();
-
   void showImageWithNumber(const size_t & imageNumber);
   void readImage(gdcm::File & dFile, const gdcm::Image & dImage);
-  void mergeMatData(const std::vector<cv::Mat*> & src, const std::vector<float> & imageSpacings = std::vector<float>());
-
-  void medianSmooth(const size_t & neighbourRadius);
 
   void updateFiltered();
 signals:
-  void slicesProcessed(uchar * mergedData, const std::vector<float> & scaling,
-                       const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
+  void slicesProcessed(uchar * mergedData, const std::vector<float> & scaling = std::vector<float>(),
+                       const std::vector<size_t> & size = std::vector<size_t>(),
+                       const int & alignment = 0, const size_t & rowLength = 0);
 
 public slots:
   void readFile(QString dicomFile);

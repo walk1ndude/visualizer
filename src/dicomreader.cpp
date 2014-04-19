@@ -9,53 +9,16 @@
 
 #include "dicomreader.h"
 
-#define WINDOW_BACKPROJECT_IMAGE "backprojet"
-#define WINDOW_INPUT_IMAGE "input"
-#define WINDOW_RADON "sinogram"
-#define WINDOW_DHT "fourier1d"
+#include <opencv2/highgui/highgui.hpp>
+
+#define WINDOW_NOISY "noisy"
 
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
     _imageNumber(0),
     _minValue(40),
     _maxValue(55) {
-   if (initOpenCL()) {
-        std::cerr << "OpenCL is not initialized... aborted" << std::endl;
-        exit(0);
-    }
-}
 
-int DicomReader::initOpenCL() {
-    cv::ocl::PlatformsInfo platforms;
-
-    if (cv::ocl::getOpenCLPlatforms(platforms)) {
-
-        cv::ocl::DevicesInfo devices;
-
-        cv::ocl::DeviceType deviceType[2] = {cv::ocl::CVCL_DEVICE_TYPE_GPU, cv::ocl::CVCL_DEVICE_TYPE_CPU};
-
-        // for now just take the first OpenCL capable GPU or CPU
-
-        for (uint i = 0; i < 2; i ++) {
-            for (uint platformN = 0; platformN < platforms.size(); platformN ++) {
-
-                if (cv::ocl::getOpenCLDevices(devices, deviceType[i], platforms[platformN])) {
-                    try {
-                        cv::ocl::setDevice(devices[0]);
-
-                        std::cout << cv::ocl::Context::getContext()->getDeviceInfo().deviceName << " " <<
-                                    cv::ocl::Context::getContext()->getDeviceInfo().deviceProfile << std::endl;
-
-                        return OPENCL_ALL_OK;
-                    }
-                    catch (cv::Exception &) {
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-    return OPENCL_NOT_INITIALIZED;
 }
 
 DicomReader::~DicomReader() {
@@ -204,7 +167,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     qDebug() << "loading done" << procTime;
 
-    //cv::namedWindow(WINDOW_INPUT_IMAGE, CV_WINDOW_AUTOSIZE);
+    //cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
 
     std::vector<float>scaling;
     std::vector<size_t>size;
@@ -265,10 +228,7 @@ void DicomReader::updateFiltered() {
 
     qDebug() << "finished" << procTime;
 
-    std::vector<float>scaling;
-    std::vector<size_t>size;
-
-    emit slicesProcessed(mergedData, scaling, size, alignment, rowLength);
+    emit slicesProcessed(mergedData);
 }
 
 void DicomReader::changeSliceNumber(int ds) {
@@ -278,7 +238,7 @@ void DicomReader::changeSliceNumber(int ds) {
 }
 
 void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_INPUT_IMAGE, *(_noisy[imageNumber]));
+    cv::imshow(WINDOW_NOISY, *(_noisy[imageNumber]));
     cv::waitKey(1);
 }
 

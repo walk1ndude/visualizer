@@ -60,8 +60,6 @@ private:
 
     QVector3D _lightPos;
 
-    QPoint _lastMousePosition;
-
     HeadModel _headModel;
 
     uchar * _mergedData;
@@ -71,8 +69,9 @@ private:
     void calcViewPorts();
 
 public slots:
-    void drawSlices(uchar * mergedData, const std::vector<float> & scaling,
-                    const std::vector<size_t> & size, const int & alignment, const size_t & rowLength);
+    void drawSlices(uchar * mergedData, const std::vector<float> & scaling = std::vector<float>(),
+                    const std::vector<size_t> & size = std::vector<size_t>(),
+                    const int & alignment = 0, const size_t & rowLength = 0);
 
     void updateAmbientIntensity(qreal ambientIntensity);
 

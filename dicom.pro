@@ -16,8 +16,9 @@ INCLUDEPATH += include
 unix {
     INCLUDEPATH += /usr/include/gdcm-2.4
 
-    CONFIG += link_pkgconfig
-    PKGCONFIG += opencv
+    LIBS += -lopencv_core \
+            -lopencv_imgproc \
+            -lopencv_highgui
 }
 
 win32 {
@@ -39,20 +40,14 @@ win32 {
 
     LIBS += -lopencv_core248 \
             -lopencv_highgui248 \
-            -lopencv_imgproc248 \
-            -lopencv_ocl248
+            -lopencv_imgproc248
 }
 
-LIBS += -lgdcmcharls \
-        -lgdcmjpeg12 \
-        -lgdcmCommon \
-        -lgdcmjpeg16 \
+LIBS += -lgdcmCommon \
         -lgdcmDICT \
-        -lgdcmjpeg8 \
-        -lgdcmDSED \
         -lgdcmMSFF \
-        -lgdcmIOD \
-        -lgdcmopenjpeg
+        -lgdcmDSED \
+        -lgdcmIOD
 
 SOURCES += src/main.cpp\
            src/dicomreader.cpp\
