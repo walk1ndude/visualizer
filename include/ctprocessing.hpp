@@ -69,7 +69,7 @@ static inline void fourier1D(const cv::Mat & src, cv::Mat dst, const std::vector
     }
 }
 
-static inline cv::Mat fourier1Dto2D(const cv::Mat & src, cv::Mat & dst,
+static inline void fourier1Dto2D(const cv::Mat & src, cv::Mat & dst,
                                     const std::vector<float> & sinTable, const std::vector<float> & cosTable) {
     assert(src.type() == CV_32FC1);
 
@@ -93,7 +93,7 @@ static inline cv::Mat fourier1Dto2D(const cv::Mat & src, cv::Mat & dst,
     }
 }
 
-static inline cv::Mat backproject(const cv::Mat & src, cv::Mat & dst,
+static inline void backproject(const cv::Mat & src, cv::Mat & dst,
                                   const std::vector<float> & cosTable, const std::vector<float> & sinTable) {
     assert(src.type() == CV_32FC1);
 
@@ -122,7 +122,7 @@ static inline cv::Mat backproject(const cv::Mat & src, cv::Mat & dst,
     }
 }
 
-void inline filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
+static void inline filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
                            const cv::Mat & dilateMat, const cv::Size & gaussSize) {
 
     dst = cv::Mat::zeros(src.rows, src.rows, CV_8UC1);
@@ -262,7 +262,7 @@ public:
 
     virtual void operator ()(const cv::Range & r) const {
 
-        for (register int i = r.start; i != r.end; ++ i) {
+        for (int i = r.start; i != r.end; ++ i) {
 
             cv::Mat * data = new cv::Mat(_ctData.width, _ctData.height, _ctData.type);
             T pixel;
@@ -323,28 +323,25 @@ public:
     }
 };
 
-static void inline smoothSlices(const size_t & startSlice, const size_t & endSlice,
-                                const std::vector<cv::Mat *> & slices, cv::Mat & smoothed) {
-    int cols = slices.at(startSlice)->cols;
-    int rows = slices.at(startSlice)->rows;
+static void inline smoothSlices(const int startSlice, const int endSlice, std::vector<cv::Mat> & slices, cv::Mat & smoothed) {
+    int cols = slices.at(startSlice).cols;
+    int rows = slices.at(startSlice).rows;
 
     cv::Mat mergeMat(cv::Mat::zeros(rows, cols, CV_16UC1));
     cv::Mat conv16(cols, rows, CV_16UC1);
 
-    for (size_t i = startSlice; i != endSlice; ++ i) {
-        slices.at(i)->convertTo(conv16, CV_16UC1, 256.0);
+    for (int i = startSlice; i != endSlice; ++ i) {
+        slices.at(i).convertTo(conv16, CV_16UC1, 256.0);
         mergeMat += conv16;
     }
 
     mergeMat /= (endSlice - startSlice);
 
-    smoothed = cv::Mat::zeros(rows, cols, CV_8UC1);
-
-    mergeMat.convertTo(smoothed, CV_8UC1, 1 / 256.0);
+    mergeMat.convertTo(smoothed, CV_8UC1, 0.00390625); // 1 / 256.0
 }
 
 static void inline mergeSlice(const int & startSlice, const int & endSlice, const int & sliceSize,
-                               const std::vector<cv::Mat *> & slices, uchar * mergeStartPoint) {
+                              std::vector<cv::Mat> & slices, uchar * mergeStartPoint) {
 
     cv::Mat smoothed;
 
@@ -352,36 +349,36 @@ static void inline mergeSlice(const int & startSlice, const int & endSlice, cons
     memcpy(mergeStartPoint, smoothed.data, sliceSize);
 }
 
-static void inline checkNeighbours(const int & position, const int & radiusNeighbour,
+static void inline checkNeighbours(const int & position, const int & neighbourDiameter,
                                    const int & minNeighbour, const int & maxNeighbour,
                                    const std::vector<bool> & hasProcessed, std::vector<bool> & hasMerged,
-                                   const std::vector<cv::Mat *> & slices, const int & sliceSize,
+                                   std::vector<cv::Mat> & slices, const int & sliceSize,
                                    uchar * mergeStartPoint) {
-    int leftestNeighbour = std::max(minNeighbour, position - 2 * radiusNeighbour);
-    int rightestNeighbour = std::min(maxNeighbour - 2 * radiusNeighbour + 1, position + 2 * radiusNeighbour + 1);
+    int leftestMergeNeighbour = std::max(minNeighbour, position - neighbourDiameter);
+    int rightestMergeNeighbour = std::min(maxNeighbour - neighbourDiameter, position + 1);
 
-    int leftCheckNeighbour;
     int rightCheckNeighbour;
-    int currentCheckNeighnour;
+    int currentCheckNeighbour;
 
-    for (int i = leftestNeighbour; i != rightestNeighbour; ++ i) {
-        if (hasMerged[i]) {
+    bool canMerge;
+
+    for (int leftCheckNeighbour = leftestMergeNeighbour; leftCheckNeighbour != rightestMergeNeighbour; ++ leftCheckNeighbour) {
+        if (hasMerged[leftCheckNeighbour]) {
             continue;
         }
 
-        leftCheckNeighbour = i;
-        rightCheckNeighbour = i + 2 * radiusNeighbour + 1;
-        currentCheckNeighnour = leftCheckNeighbour;
+        rightCheckNeighbour = leftCheckNeighbour + neighbourDiameter + 1;
+        currentCheckNeighbour = leftCheckNeighbour;
 
-        bool canMerge = true;
+        canMerge = true;
 
-        while (canMerge && currentCheckNeighnour != rightCheckNeighbour) {
-            canMerge &= hasProcessed[currentCheckNeighnour ++];
+        while (canMerge && currentCheckNeighbour != rightCheckNeighbour) {
+            canMerge &= hasProcessed[currentCheckNeighbour ++];
         }
 
         if (canMerge) {
-            hasMerged[i] = true;
-            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, slices, mergeStartPoint + sliceSize * i);
+            hasMerged[leftCheckNeighbour] = true;
+            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, slices, mergeStartPoint + sliceSize * leftCheckNeighbour);
         }
     }
 }
@@ -409,12 +406,12 @@ private:
 
     cv::Size _gaussSize;
 
-    int _intervalNeighbours;
+    int _neighbourDiameter;
 
     mutable std::vector<bool>_hasProcessed; // because flags need to be changeds in const method
     mutable std::vector<bool>_hasMerged;
 
-    std::vector<cv::Mat *>_filtered;
+    mutable std::vector<cv::Mat>_filtered;
 
     int _sliceSize;
 
@@ -422,23 +419,24 @@ public:
     SliceFilter(FilterData & filterData) :
         _filterData(filterData) {
 
+        _neighbourDiameter = _filterData.neighbourRadius;
+
         _dilateMat = cv::Mat(3, 3, CV_8UC1);
         _gaussSize = cv::Size(3, 3);
 
         _hasProcessed.resize(_filterData.src.size(), false);
-        _hasMerged.resize(_filterData.src.size() - 2 * _filterData.neighbourRadius, false);
-
-        _filtered.resize(_filterData.src.size(), new cv::Mat);
+        _hasMerged.resize(_filterData.src.size() - _neighbourDiameter, false);
 
         cv::Mat * srcOneSlice = _filterData.src.at(0);
+
+        _filtered.resize(_filterData.src.size());
+
         _sliceSize = srcOneSlice->elemSize() * srcOneSlice->total();
 
-        *(_filterData.mergeLocation) = new uchar[_sliceSize * _filterData.src.size()];
+        *(_filterData.mergeLocation) = new uchar[_sliceSize * (_filterData.src.size() - _neighbourDiameter)];
 
         *(_filterData.alignment) = (srcOneSlice->step & 3) ? 1 : 4;
         *(_filterData.rowLenght) = srcOneSlice->step1();
-
-        _intervalNeighbours = 2 * _filterData.neighbourRadius + 1;
     }
 
     ~SliceFilter() {
@@ -447,11 +445,11 @@ public:
 
     virtual void operator ()(const cv::Range & r) const {
         for (int i = r.start; i != r.end; ++ i) {
-            filterSlice(*(_filterData.src[i]), *(_filtered[i]), _filterData.minValue, _filterData.maxValue, _dilateMat, _gaussSize);
+            filterSlice(*(_filterData.src[i]), _filtered[i], _filterData.minValue, _filterData.maxValue, _dilateMat, _gaussSize);
 
             _hasProcessed[i] = true;
 
-            checkNeighbours(i, _filterData.neighbourRadius, 0, _filtered.size(),
+            checkNeighbours(i, _neighbourDiameter, 0, _filtered.size(),
                             _hasProcessed, _hasMerged, _filtered,
                             _sliceSize, *(_filterData.mergeLocation));
             }
@@ -484,7 +482,7 @@ public:
     }
 
     virtual void operator ()(const cv::Range & r) const {
-        for (register int i = r.start; i != r.end; ++ i) {
+        for (int i = r.start; i != r.end; ++ i) {
             cv::Mat mergeMat(cv::Mat::zeros(_rows, _cols, CV_16UC1));
             cv::Mat mergeMat8(_cols, _rows, CV_8UC1);
             cv::Mat conv16(_cols, _rows, CV_16UC1);

@@ -66,7 +66,6 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     }
 
     if (_context) {
-
         const GLsizei viewportWidth = width() * window()->devicePixelRatio();
         const GLsizei viewportHeight = height() * window()->devicePixelRatio();
 
