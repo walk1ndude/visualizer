@@ -189,29 +189,27 @@ void SliceViewer::cleanup() {
 
 void SliceViewer::initializeTextures() {
 
-    if (!_isTextureUpdated && _textureCV3D->isStorageAllocated()) {
-        _textureCV3D->destroy();
-    }
+    if (!_textureCV3D) {
+        _textureCV3D = new QOpenGLTexture(QOpenGLTexture::Target3D);
 
-    _textureCV3D = new QOpenGLTexture(QOpenGLTexture::Target3D);
+        _textureCV3D->create();
+        _textureCV3D->setSize(_size[0], _size[1], _size[2]);
+        _textureCV3D->setFormat(QOpenGLTexture::R8_UNorm);
+
+        _textureCV3D->allocateStorage();
+
+        _textureCV3D->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
+
+        _textureCV3D->setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
+        _textureCV3D->setMagnificationFilter(QOpenGLTexture::Linear);
+        _textureCV3D->setWrapMode(QOpenGLTexture::ClampToBorder);
+    }
 
     QOpenGLPixelTransferOptions pixelOptions;
     pixelOptions.setAlignment(_alignment);
     pixelOptions.setRowLength(_rowLength);
 
-    _textureCV3D->create();
-    _textureCV3D->setSize(_size[0], _size[1], _size[2]);
-    _textureCV3D->setFormat(QOpenGLTexture::R8_UNorm);
-
-    _textureCV3D->allocateStorage();
-
     _textureCV3D->setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) _mergedData, &pixelOptions);
-
-    _textureCV3D->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
-
-    _textureCV3D->setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
-    _textureCV3D->setMagnificationFilter(QOpenGLTexture::Linear);
-    _textureCV3D->setWrapMode(QOpenGLTexture::ClampToBorder);
 
     _textureCV3D->generateMipMaps();
 
