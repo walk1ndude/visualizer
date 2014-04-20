@@ -4,12 +4,17 @@ typedef struct _VertexData {
     QVector3D position;
     QVector3D normal;
     QVector3D texCoord;
-}VertexData;
+} VertexData;
 
 HeadModel::HeadModel() :
     _vboVert(QOpenGLBuffer::VertexBuffer),
     _vboInd(QOpenGLBuffer::IndexBuffer) {
 
+    _headMaterial.emmisive = QVector4D(0.1, 0.1, 0.1, 0.1);
+    _headMaterial.diffuse = QVector4D(0.1, 0.1, 0.1, 0.1);
+    _headMaterial.specular = QVector4D(0.5, 0.7, 0.8, 1.0);
+
+    _headMaterial.shininess = 10.0;
 }
 
 HeadModel::~HeadModel() {
@@ -23,6 +28,11 @@ void HeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
     _shaderVertex = program->attributeLocation("vertex");
     _shaderTex = program->attributeLocation("tex");
     _shaderNormal = program->attributeLocation("normal");
+
+    _shaderMaterialEmmisive = program->uniformLocation("materialEmissive");
+    _shaderMaterialDiffuse = program->uniformLocation("materialDiffuse");
+    _shaderMaterialSpecular = program->uniformLocation("materialSpecular");
+    _shaderMaterialShininess = program->uniformLocation("materialShininess");
 
     initGeometry(program, zCount);
 }
@@ -102,7 +112,12 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     delete [] indices;
 }
 
-void HeadModel::drawModel() {
+void HeadModel::drawModel(QOpenGLShaderProgram * program) {
+    program->setUniformValue(_shaderMaterialEmmisive, _headMaterial.emmisive);
+    program->setUniformValue(_shaderMaterialDiffuse, _headMaterial.diffuse);
+    program->setUniformValue(_shaderMaterialSpecular, _headMaterial.specular);
+    program->setUniformValue(_shaderMaterialShininess, _headMaterial.shininess);
+
     _vao.bind();
 
     glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);

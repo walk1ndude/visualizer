@@ -40,9 +40,11 @@ SliceViewer::SliceViewer() :
     _slicesReady(false),
     _textureCV3D(0),
     _ambientIntensity((GLfloat) 3.9),
-    _lightPos(QVector3D(0.0, 0.0, -10.0)),
     _mergedData(0),
     _gpu_driver(NVidia_binary) {
+
+    _lightSource.color = QVector4D(0.5, 0.5, 0.0, 1.0);
+    _lightSource.position = QVector4D(10.0, 10.0, -10.0, 0.0);
 
 }
 
@@ -124,8 +126,9 @@ void SliceViewer::initialize() {
     _shaderProjection = _program->uniformLocation("projection");
     _shaderScale = _program->uniformLocation("scale");
     _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
-    _shaderLightPos = _program->uniformLocation("lightPos");
     _shaderAmbientIntensity = _program->uniformLocation("ambientIntensity");
+    _shaderLightPosition = _program->uniformLocation("lightPosition");
+    _shaderLightColor = _program->uniformLocation("lightColor");
     _shaderTexSample = _program->uniformLocation("texSample");
 
     glEnable(GL_CULL_FACE);
@@ -161,11 +164,12 @@ void SliceViewer::render() {
         _program->setUniformValue(_shaderProjection, _matrices[i].projection());
         _program->setUniformValue(_shaderScale, _matrices[i].scaleM());
         _program->setUniformValue(_shaderNormalMatrix, _matrices[i].normalM());
-        _program->setUniformValue(_shaderLightPos, _lightPos);
         _program->setUniformValue(_shaderAmbientIntensity, _ambientIntensity);
+        _program->setUniformValue(_shaderLightPosition, _lightSource.position);
+        _program->setUniformValue(_shaderLightColor, _lightSource.color);
         _program->setUniformValue(_shaderTexSample, 0);
 
-        _headModel.drawModel();
+        _headModel.drawModel(_program);
     }
 
     _program->release();

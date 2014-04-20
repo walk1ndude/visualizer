@@ -1,5 +1,5 @@
-#ifndef GLVIEWER_H
-#define GLVIEWER_H
+#ifndef SLICEVIEWER_H
+#define SLICEVIEWER_H
 
 #include <QtGui/QOpenGLTexture>
 
@@ -13,7 +13,12 @@ typedef enum _GPU_Driver {
     AMD_opensource,
     NVidia_opensourse,
     Intel_opensource
-}GPU_Driver;
+} GPU_Driver;
+
+typedef struct _LightSource {
+    QVector4D position;
+    QVector4D color;
+} LightSource;
 
 void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage = "");
 
@@ -41,9 +46,12 @@ private:
     int _shaderProjection;
     int _shaderScale;
     int _shaderNormalMatrix;
-    int _shaderLightPos;
-    int _shaderAmbientIntensity;
     int _shaderTexSample;
+
+    int _shaderLightPosition;
+    int _shaderLightColor;
+
+    int _shaderAmbientIntensity;
 
     int _alignment;
 
@@ -58,7 +66,7 @@ private:
     std::vector<float>_scaling;
     std::vector<size_t>_size;
 
-    QVector3D _lightPos;
+    LightSource _lightSource;
 
     HeadModel _headModel;
 
@@ -81,4 +89,4 @@ public slots:
     virtual void cleanup();
 };
 
-#endif // GLVIEWER_H
+#endif // SLICEVIEWER_H

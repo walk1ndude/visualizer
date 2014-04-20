@@ -14,14 +14,15 @@ uniform highp float shininess;
 uniform highp mat3 normalMatrix;
 
 smooth out highp vec4 fragPos;
-smooth out highp vec3 fragNormal;
+smooth out highp vec4 fragNormal;
+smooth out highp vec4 vertexPos;
 
 void main(void) {
-    vec4 vertexPos = view * vertex;
+    vertexPos = view * vertex;
 
     gl_Position = projection * vertexPos;
 
-    fragNormal = normalize(normalMatrix * normal);
+    fragNormal = vec4(normalize(normalMatrix * normal), 0);
 
     vec4 texVec = vec4(0.5, 0.5, 0.5, 1.0);
     fragPos = scale * model * (tex - texVec) + texVec;
