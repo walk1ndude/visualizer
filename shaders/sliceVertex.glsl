@@ -13,9 +13,9 @@ uniform highp float shininess;
 
 uniform highp mat3 normalMatrix;
 
-smooth out highp vec4 fragPos;
-smooth out highp vec4 fragNormal;
-smooth out highp vec4 vertexPos;
+out highp vec4 fragPos;
+out highp vec4 fragNormal;
+out highp vec4 vertexPos;
 
 void main(void) {
     vertexPos = view * vertex;

@@ -84,7 +84,7 @@ public slots:
     void updateAmbientIntensity(qreal ambientIntensity);
 
     void updateAngle(qreal xRot, qreal yRot, qreal zRot);
-    void updateZoomZ(qreal zoomZ);
+    void updateZoom(qreal factor);
 
     virtual void cleanup();
 };

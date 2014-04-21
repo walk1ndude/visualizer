@@ -37,6 +37,10 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         QSurfaceFormat format;
         format.setVersion(3, 3);
         format.setSamples(16);
+        format.setRedBufferSize(8);
+        format.setGreenBufferSize(8);
+        format.setBlueBufferSize(8);
+        format.setDepthBufferSize(16);
         format.setRenderableType(QSurfaceFormat::OpenGL);
         format.setProfile(QSurfaceFormat::CoreProfile);
         format.setSwapBehavior(QSurfaceFormat::TripleBuffer);

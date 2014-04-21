@@ -12,7 +12,7 @@ public:
     QMatrix4x4 scaleM();
     QMatrix3x3 normalM();
 
-    void identity(const QVector3D & position = QVector3D(0.0, 0.0, 0.0),
+    void identity(const QVector3D & eye = QVector3D(0.0, 0.0, 0.0),
                   const QVector3D & orientation = QVector3D(0.0, 0.0, 0.0));
 
     void ortho(const float & left, const float & right, const float & bottom,
@@ -20,9 +20,9 @@ public:
 
     void perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal);
 
-    void lookAt(const QVector3D & pos, const QVector3D & viewPoint, const QVector3D up);
+    void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D up);
 
-    void zoomZ(const qreal & dist);
+    void zoom(const qreal & factor);
     void rotate(const QVector3D & angle);
     void scale(const QVector3D & scale);
 
@@ -33,7 +33,18 @@ private:
     QMatrix4x4 _sMatrix;
 
     QVector3D _orientation;
-    QVector3D _position;
+    QVector3D _eye;
+    QVector3D _center;
+    QVector3D _up;
+
+    bool _isPerspective;
+
+    qreal _fov;
+
+    qreal _aspectRatio;
+
+    qreal _nearVal;
+    qreal _farVal;
 
     float anglePi(const float & angle);
 };

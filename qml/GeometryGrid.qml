@@ -58,20 +58,20 @@ Grid {
     }
 
     Text {
-        text: qsTr("zoom Z")
+        text: qsTr("zoom")
     }
 
     Slider {
-        id: zoomZSlider
+        id: zoomSlider
         width: 200
         minimumValue: 0.1
         maximumValue: 4.0
         value: 2.0
-        onValueChanged: hud.zoomZChanged(value);
+        onValueChanged: hud.zoomChanged(value);
     }
 
     Text {
-        text: hud.pad((Math.round(zoomZSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        text: hud.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     function updateAngle() {

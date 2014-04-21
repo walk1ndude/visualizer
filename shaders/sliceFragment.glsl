@@ -1,7 +1,7 @@
 #version 330 core
-smooth in highp vec4 fragPos;
-smooth in highp vec4 fragNormal;
-smooth in highp vec4 vertexPos;
+in highp vec4 fragPos;
+in highp vec4 fragNormal;
+in highp vec4 vertexPos;
 
 uniform highp sampler3D texSample;
 

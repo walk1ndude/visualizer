@@ -1,7 +1,7 @@
 #include "matrixstack.h"
 
-void MatrixStack::identity(const QVector3D & position, const QVector3D & orientation) {
-    _position = position;
+void MatrixStack::identity(const QVector3D & eye, const QVector3D & orientation) {
+    _eye = eye;
     _orientation = orientation;
 
     _pMatrix.setToIdentity();
@@ -30,9 +30,14 @@ QMatrix3x3 MatrixStack::normalM() {
     return (_mMatrix * _vMatrix).normalMatrix();
 }
 
-void MatrixStack::zoomZ(const qreal & dist) {
+void MatrixStack::zoom(const qreal & factor) {
     _pMatrix.setToIdentity();
-    _pMatrix.ortho(-dist/2, dist/2, -dist/2, dist/2, 0.1, 10.0);
+    if (_isPerspective) {
+        _pMatrix.perspective(_fov / fabs(_eye.z() / factor), _aspectRatio, _nearVal, _farVal);
+    }
+    else {
+        _pMatrix.ortho(-factor / 2, factor / 2, -factor / 2, factor / 2, _nearVal, _farVal);
+    }
 }
 
 void MatrixStack::scale(const QVector3D & scale) {
@@ -62,16 +67,32 @@ void MatrixStack::rotate(const QVector3D & angle) {
     _orientation = angle;
 }
 
-void MatrixStack::lookAt(const QVector3D & pos, const QVector3D & viewPoint, const QVector3D up) {
-    _position = pos;
-    _vMatrix.lookAt(pos, viewPoint, up);
+void MatrixStack::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D up) {
+    _eye = eye;
+    _center = center;
+    _up = up;
+    _vMatrix.setToIdentity();
+    _vMatrix.lookAt(eye, center, up);
 }
 
 void MatrixStack::ortho(const float & left, const float & right, const float & bottom,
-                        const float & top, const float & near, const float & far) {
-    _pMatrix.ortho(left, right, bottom, top, near, far);
+                        const float & top, const float & nearVal, const float & farVal) {
+    _pMatrix.ortho(left, right, bottom, top, nearVal, farVal);
+
+    _nearVal = nearVal;
+    _farVal = farVal;
+
+    _isPerspective = false;
 }
 
 void MatrixStack::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
     _pMatrix.perspective(fov, aspectRatio, nearVal, farVal);
+
+    _fov = fov;
+    _aspectRatio = aspectRatio;
+
+    _nearVal = nearVal;
+    _farVal = farVal;
+
+    _isPerspective = true;
 }

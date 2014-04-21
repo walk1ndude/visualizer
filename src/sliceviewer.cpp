@@ -87,7 +87,7 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
         _matrices[i].identity();
         if (i == 0) { //perspective
             _matrices[i].perspective(60.0, 1.0, 0.1, 10.0);
-            _matrices[i].lookAt(QVector3D(0.0, 0.0, 1.4), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
+            _matrices[i].lookAt(QVector3D(0.0, 0.0, 2.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
         }
         else {
             _matrices[i].ortho(-0.9, 0.9, -0.9, 0.9, 0.01, 10.0);
@@ -132,8 +132,12 @@ void SliceViewer::initialize() {
     _shaderTexSample = _program->uniformLocation("texSample");
 
     glEnable(GL_CULL_FACE);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     initializeTextures();
 
@@ -230,9 +234,9 @@ void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
     update();
 }
 
-void SliceViewer::updateZoomZ(qreal dist) {
-    for (int i = 1; i!= 4; ++ i) {
-        _matrices[i].zoomZ(dist);
+void SliceViewer::updateZoom(qreal factor) {
+    for (int i = 0; i!= 4; ++ i) {
+        _matrices[i].zoom(factor);
     }
     update();
 }

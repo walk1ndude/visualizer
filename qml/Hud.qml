@@ -8,7 +8,7 @@ Item {
     signal ambientIntensityChanged(real value);
 
     signal angleChanged(real xRot, real yRot, real zRot);
-    signal zoomZChanged(real value);
+    signal zoomChanged(real value);
 
     Rectangle {
         color: "#71888888"
