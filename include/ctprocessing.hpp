@@ -170,19 +170,20 @@ inline void calcGradientSlice(const int & position, const std::vector<cv::Mat> &
 
 inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
                         const cv::Mat & dilateMat, const cv::Size & gaussSize) {
-    //cv::Mat filtered(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
+    cv::Mat filtered(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     cv::Mat maskRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
+    cv::Mat masked(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
     cv::Mat maskedRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     cv::inRange(src, cv::Scalar(minValue), cv::Scalar(maxValue), maskRange);
 
-    cv::bitwise_and(src, src, maskedRange, maskRange);
+    cv::bitwise_and(src, src, masked, maskRange);
 
-    cv::adaptiveThreshold(maskedRange, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 3);
+    cv::adaptiveThreshold(masked, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 3);
     cv::dilate(maskedRange, maskedRange, dilateMat);
-    cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 1.2);
-
+    cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 2);
+/*
     std::vector<cv::Vec3f> circles;
 
     cv::HoughCircles(maskedRange, circles, CV_HOUGH_GRADIENT, 1, src.cols / 100, 200, 100, 0, 0);
@@ -190,7 +191,7 @@ inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue
     for (size_t i = 0; i != circles.size(); ++ i) {
         cv::circle(maskedRange, cv::Point(circles[i][0], circles[i][1]), cvRound(circles[i][2]), cv::Scalar(255), 3, 8, 0);
     }
-/*
+*/
     cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     std::vector<std::vector<cv::Point> >contours;
@@ -203,8 +204,8 @@ inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue
         }
     }
 
-    cv::bitwise_and(maskedRange, maskedRange, filtered, maskContours);*/
-    cv::equalizeHist(maskedRange, dst);
+    cv::bitwise_and(masked, masked, filtered, maskContours);
+    cv::equalizeHist(filtered, dst);
 }
 
 inline void smoothSlices(const int startSlice, const int endSlice, std::vector<cv::Mat> & slices, cv::Mat & smoothed) {
@@ -508,8 +509,8 @@ public:
 
         _dicomData.sliceSize = _dicomData.bytesAllocated * _dicomData.width * _dicomData.height;
 
-        float ratioX = 0.5;
-        float ratioY = 0.5;
+        float ratioX = 1.0;
+        float ratioY = 1.0;
 
         _dicomData.imageSpacing->at(0) *= (1 / ratioX);
         _dicomData.imageSpacing->at(1) *= (1 / ratioY);

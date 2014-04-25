@@ -17,8 +17,8 @@ Item {
             id: minValueSlider
             width: 200
             minimumValue: 0
-            maximumValue: 100
-            value: 40
+            maximumValue: 255
+            value: 5
             onValueChanged: hud.minValueChanged(value);
         }
 
@@ -34,8 +34,8 @@ Item {
             id: maxValueSlider
             width: 200
             minimumValue: 0
-            maximumValue: 100
-            value: 55
+            maximumValue: 255
+            value: 100
             onValueChanged: hud.maxValueChanged(value);
         }
 

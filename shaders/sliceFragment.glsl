@@ -63,6 +63,11 @@ void main(void) {
             vec4 specular = pow(RdotV, headMaterial.shininess) * light.color * headMaterial.specular;
 
             fragColor = light.color * (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
+
+           /* if (fragColor.r < 0.15) {
+                fragColor.a = 1.0;
+            }
+*/
         }
         else {
             discard;

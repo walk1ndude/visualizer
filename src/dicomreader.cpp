@@ -276,7 +276,7 @@ void DicomReader::changeSliceNumber(int ds) {
 }
 
 void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_NOISY, *(_filtered[imageNumber]));
+    cv::imshow(WINDOW_NOISY, *(_noisy[imageNumber]));
     cv::waitKey(1);
 }
 
