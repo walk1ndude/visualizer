@@ -1,5 +1,10 @@
 #include "matrixstack.h"
 
+MatrixStack::MatrixStack(ProjectionType projectionType) :
+    _projectionType(projectionType) {
+    identity();
+}
+
 void MatrixStack::identity(const QVector3D & eye, const QVector3D & orientation) {
     _eye = eye;
     _orientation = orientation;
@@ -32,7 +37,7 @@ QMatrix3x3 MatrixStack::normalM() {
 
 void MatrixStack::zoom(const qreal & factor) {
     _pMatrix.setToIdentity();
-    if (_isPerspective) {
+    if (_projectionType == MatrixStack::PERSPECTIVE) {
         _pMatrix.perspective(_fov / fabs(_eye.z() / factor), _aspectRatio, _nearVal, _farVal);
     }
     else {
@@ -81,8 +86,6 @@ void MatrixStack::ortho(const float & left, const float & right, const float & b
 
     _nearVal = nearVal;
     _farVal = farVal;
-
-    _isPerspective = false;
 }
 
 void MatrixStack::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
@@ -93,6 +96,4 @@ void MatrixStack::perspective(const float & fov, const float & aspectRatio, cons
 
     _nearVal = nearVal;
     _farVal = farVal;
-
-    _isPerspective = true;
 }

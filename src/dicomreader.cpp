@@ -97,6 +97,8 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     loaderData.filterData.src = &_noisy;
 
+    loaderData.filterData.filtered = &_filtered;
+
     loaderData.filterData.minValue = _minValue;
     loaderData.filterData.maxValue = _maxValue;
 
@@ -144,16 +146,24 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     loaderData.filterData.minValue = _minValue;
     loaderData.filterData.maxValue = _maxValue;
 
-    uchar * mergedData;
+    uchar * mergedData = 0;
 
-    size_t rowLength;
+    uchar * gradientData = 0;
 
-    int aligment;
+    size_t rowLength = 0;
+    int aligment = 0;
+
+    size_t rowLengthGradient = 0;
+    int aligmentGradient = 0;
 
     loaderData.filterData.mergeLocation = &mergedData;
+    loaderData.filterData.gradientLocation = &gradientData;
 
     loaderData.filterData.rowLenght = &rowLength;
     loaderData.filterData.alignment = &aligment;
+
+    loaderData.filterData.alignmentGradient = &aligmentGradient;
+    loaderData.filterData.rowLenghtGradient = &rowLengthGradient;
 
     loaderData.filterData.neighbourRadius = 2;
 
@@ -167,12 +177,24 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     qDebug() << "loading done" << procTime;
 
-    //cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
 
     std::vector<float>scaling;
     std::vector<size_t>size;
 
+    delete [] gradientData;
+
     cv::Mat * image = _noisy.at(0);
+
+    cv::Mat dummyTest(cv::Mat(32, 32, CV_8UC3, cv::Scalar(100, 128, 155)));
+
+    int dummySize = dummyTest.elemSize() * dummyTest.total();
+
+    gradientData = new uchar[dummySize * 32];
+
+    for (size_t i = 0; i != 32; ++ i) {
+        memcpy(gradientData + i * dummySize, dummyTest.data, dummySize);
+    }
 
     int depth = loaderData.dicomData.depth - loaderData.filterData.neighbourRadius * 2;
 
@@ -184,14 +206,21 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     size.push_back(image->cols);
     size.push_back(depth);
 
-    emit slicesProcessed(mergedData, scaling, size, aligment, rowLength);
+    aligmentGradient = 0;
+    rowLengthGradient = 0;
+
+    emit slicesProcessed(mergedData, gradientData, scaling, size, aligment, rowLength, aligmentGradient, rowLengthGradient);
 }
 
 void DicomReader::readFile(QString dicomFile) {
     gdcm::ImageReader dIReader;
 
     // dicomFile = "file:///...", we must cut protocol, so no "file://" <- start with 7th char
+#if defined(_WIN32)
+    dIReader.SetFileName(dicomFile.mid(8).toStdString().c_str());
+#else
     dIReader.SetFileName(dicomFile.mid(7).toStdString().c_str());
+#endif
     if (dIReader.Read()) {
         readImage(dIReader.GetFile(), dIReader.GetImage());
     }
@@ -212,13 +241,22 @@ void DicomReader::updateFiltered() {
 
     uchar * mergedData = 0;
 
+    uchar * gradientData = 0;
+
     int alignment = 0;
     size_t rowLength = 0;
+
+    int alignmentGradient = 0;
+    size_t rowLengthGradient = 0;
 
     filterData.alignment = &alignment;
     filterData.rowLenght = &rowLength;
 
+    filterData.alignmentGradient = &alignmentGradient;
+    filterData.rowLenghtGradient = &rowLengthGradient;
+
     filterData.mergeLocation = &mergedData;
+    filterData.gradientLocation = &gradientData;
 
     qint64 procTime = QDateTime::currentMSecsSinceEpoch();
 
@@ -228,7 +266,7 @@ void DicomReader::updateFiltered() {
 
     qDebug() << "finished" << procTime;
 
-    emit slicesProcessed(mergedData);
+    emit slicesProcessed(mergedData, gradientData);
 }
 
 void DicomReader::changeSliceNumber(int ds) {
@@ -238,7 +276,7 @@ void DicomReader::changeSliceNumber(int ds) {
 }
 
 void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_NOISY, *(_noisy[imageNumber]));
+    cv::imshow(WINDOW_NOISY, *(_filtered[imageNumber]));
     cv::waitKey(1);
 }
 

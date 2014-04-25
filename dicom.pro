@@ -55,7 +55,9 @@ SOURCES += src/main.cpp\
            src/openglitem.cpp \
            src/sliceviewer.cpp \
            src/appwindow.cpp \
-           src/headmodel.cpp
+           src/headmodel.cpp \
+    src/viewport.cpp \
+    src/viewports.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
@@ -63,6 +65,8 @@ HEADERS  += include/dicomreader.h \
             include/openglitem.h \
             include/sliceviewer.h \
             include/appwindow.h \
-            include/headmodel.h
+            include/headmodel.h \
+    include/viewport.h \
+    include/viewports.h
 
 RESOURCES += resources.qrc

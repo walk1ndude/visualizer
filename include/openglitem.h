@@ -23,6 +23,7 @@ protected:
 
     virtual void initialize();
     virtual void initializeTextures();
+    virtual void initializeViewPorts();
 
     QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 

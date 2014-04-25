@@ -2,7 +2,6 @@
 
 typedef struct _VertexData {
     QVector3D position;
-    QVector3D normal;
     QVector3D texCoord;
 } VertexData;
 
@@ -27,12 +26,11 @@ void HeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
 
     _shaderVertex = program->attributeLocation("vertex");
     _shaderTex = program->attributeLocation("tex");
-    _shaderNormal = program->attributeLocation("normal");
 
-    _shaderMaterialEmmisive = program->uniformLocation("materialEmissive");
-    _shaderMaterialDiffuse = program->uniformLocation("materialDiffuse");
-    _shaderMaterialSpecular = program->uniformLocation("materialSpecular");
-    _shaderMaterialShininess = program->uniformLocation("materialShininess");
+    _shaderHeadMaterialEmmisive = program->uniformLocation("headMaterial.emmisive");
+    _shaderHeadMaterialDiffuse = program->uniformLocation("headMaterial.diffuse");
+    _shaderHeadMaterialSpecular = program->uniformLocation("headMaterial.specular");
+    _shaderHeadMaterialShininess = program->uniformLocation("headMaterial.shininess");
 
     initGeometry(program, zCount);
 }
@@ -60,11 +58,10 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     int currentIndex = 0;
 
     for (int i = 0; i != zCount; ++ i) {
-        // this, or cv::flip in dicomreader.. anyway, we can always rotate to appropriate degree...
-        vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 1.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 0.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(0.0, 0.0, 1.0), QVector3D(1.0, 1.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 1.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(1.0, 0.0, zCurrentTexture)};
+        vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(1.0, 1.0, zCurrentTexture)};
 
         indices[currentIndex ++] = 4 * i;
         indices[currentIndex ++] = 4 * i + 2;
@@ -84,11 +81,6 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
 
     program->enableAttributeArray(_shaderVertex);
     program->setAttributeBuffer(_shaderVertex, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-    offset += sizeof(QVector3D);
-
-    program->enableAttributeArray(_shaderNormal);
-    program->setAttributeBuffer(_shaderNormal, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     offset += sizeof(QVector3D);
 
@@ -113,10 +105,10 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
 }
 
 void HeadModel::drawModel(QOpenGLShaderProgram * program) {
-    program->setUniformValue(_shaderMaterialEmmisive, _headMaterial.emmisive);
-    program->setUniformValue(_shaderMaterialDiffuse, _headMaterial.diffuse);
-    program->setUniformValue(_shaderMaterialSpecular, _headMaterial.specular);
-    program->setUniformValue(_shaderMaterialShininess, _headMaterial.shininess);
+    program->setUniformValue(_shaderHeadMaterialEmmisive, _headMaterial.emmisive);
+    program->setUniformValue(_shaderHeadMaterialDiffuse, _headMaterial.diffuse);
+    program->setUniformValue(_shaderHeadMaterialSpecular, _headMaterial.specular);
+    program->setUniformValue(_shaderHeadMaterialShininess, _headMaterial.shininess);
 
     _vao.bind();
 

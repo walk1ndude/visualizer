@@ -33,8 +33,11 @@ void AppWindow::fetchConnections() {
         QObject::connect(hud, SIGNAL(minValueChanged(int)), this, SIGNAL(minValueChanged(int)));
 
         QObject::connect(hud, SIGNAL(angleChanged(qreal,qreal,qreal)), sliceViewer, SLOT(updateAngle(qreal,qreal,qreal)));
-        QObject::connect(hud, SIGNAL(ambientIntensityChanged(qreal)), sliceViewer, SLOT(updateAmbientIntensity(qreal)));
         QObject::connect(hud, SIGNAL(zoomChanged(qreal)), sliceViewer, SLOT(updateZoom(qreal)));
+
+        QObject::connect(hud, SIGNAL(sRangeChanged(QVector2D)), sliceViewer, SLOT(updateSRange(QVector2D)));
+        QObject::connect(hud, SIGNAL(tRangeChanged(QVector2D)), sliceViewer, SLOT(updateTRange(QVector2D)));
+        QObject::connect(hud, SIGNAL(pRangeChanged(QVector2D)), sliceViewer, SLOT(updatePRange(QVector2D)));
 
         QObject::connect(this, &AppWindow::slicesProcessed, sliceViewer, &SliceViewer::drawSlices);
 

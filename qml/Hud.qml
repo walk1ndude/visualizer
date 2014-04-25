@@ -5,7 +5,10 @@ Item {
 
     signal minValueChanged(int value);
     signal maxValueChanged(int value);
-    signal ambientIntensityChanged(real value);
+
+    signal sRangeChanged(vector2d sRange);
+    signal tRangeChanged(vector2d tRange);
+    signal pRangeChanged(vector2d pRange);
 
     signal angleChanged(real xRot, real yRot, real zRot);
     signal zoomChanged(real value);

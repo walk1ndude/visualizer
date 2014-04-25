@@ -7,5 +7,6 @@
         <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/SliceItem.qml</file>
+        <file>qml/Range.qml</file>
     </qresource>
 </RCC>

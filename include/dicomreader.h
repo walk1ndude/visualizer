@@ -21,6 +21,7 @@ private:
   size_t _imageNumber;
 
   std::vector<cv::Mat *> _noisy;
+  std::vector<cv::Mat *> _filtered;
 
   int _minValue;
   int _maxValue;
@@ -30,9 +31,10 @@ private:
 
   void updateFiltered();
 signals:
-  void slicesProcessed(uchar * mergedData, const std::vector<float> & scaling = std::vector<float>(),
+  void slicesProcessed(uchar * mergedData, uchar * gradientData, const std::vector<float> & scaling = std::vector<float>(),
                        const std::vector<size_t> & size = std::vector<size_t>(),
-                       const int & alignment = 0, const size_t & rowLength = 0);
+                       const int & alignment = 0, const size_t & rowLength = 0,
+                       const int & alignmentGradient = 0, const size_t & rowLengthGradient = 0);
 
 public slots:
   void readFile(QString dicomFile);

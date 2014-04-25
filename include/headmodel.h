@@ -34,12 +34,11 @@ private:
 
     int _shaderVertex;
     int _shaderTex;
-    int _shaderNormal;
 
-    int _shaderMaterialEmmisive;
-    int _shaderMaterialDiffuse;
-    int _shaderMaterialSpecular;
-    int _shaderMaterialShininess;
+    int _shaderHeadMaterialEmmisive;
+    int _shaderHeadMaterialDiffuse;
+    int _shaderHeadMaterialSpecular;
+    int _shaderHeadMaterialShininess;
 
     int _indexCount;
 

@@ -6,6 +6,14 @@
 class MatrixStack {
 
 public:
+
+    enum ProjectionType {
+        PERSPECTIVE,
+        ORTHOGONAL
+    };
+
+    explicit MatrixStack(ProjectionType projectionType);
+
     QMatrix4x4 model();
     QMatrix4x4 view();
     QMatrix4x4 projection();
@@ -37,7 +45,7 @@ private:
     QVector3D _center;
     QVector3D _up;
 
-    bool _isPerspective;
+    ProjectionType _projectionType;
 
     qreal _fov;
 

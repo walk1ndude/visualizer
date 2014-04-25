@@ -12,7 +12,7 @@ Item {
             objectName: "sliceHud"
 
             width: sliceItem.width
-            height: sliceItem.height * 0.15
+            height: sliceItem.height * 0.25
 
             visible: false
         }
@@ -61,4 +61,5 @@ Item {
         horizontalSeparator.visible = !horizontalSeparator.visible;
         verticalSeparator.visible = !verticalSeparator.visible;
     }
+
 }

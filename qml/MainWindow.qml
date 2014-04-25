@@ -44,9 +44,9 @@ ApplicationWindow {
 
         Keys.onPressed: {
             switch (event.key) {
-            case Qt.Key_Escape: Qt.quit(); break;
-            case Qt.Key_Left: sliceNumberChanged(-1); break;
-            case Qt.Key_Right: sliceNumberChanged(1); break;
+                case Qt.Key_Escape: Qt.quit(); break;
+                case Qt.Key_Left: sliceNumberChanged(-1); break;
+                case Qt.Key_Right: sliceNumberChanged(1); break;
             }
         }
     }
@@ -54,6 +54,7 @@ ApplicationWindow {
     Row {
         objectName: "sliceRow"
         SliceItem {
+            id: sliceItem
             width: appWindow.width
             height: appWindow.height
         }

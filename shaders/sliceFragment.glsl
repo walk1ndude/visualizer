@@ -1,43 +1,74 @@
 #version 330 core
-in highp vec4 fragPos;
-in highp vec4 fragNormal;
-in highp vec4 vertexPos;
+smooth in highp vec4 fragPos;
+smooth in highp vec4 fragNormal;
+smooth in highp vec4 vertexPos;
 
-uniform highp sampler3D texSample;
+struct Ranges {
+   vec2 sRange;
+   vec2 tRange;
+   vec2 pRange;
+};
+
+uniform highp Ranges ranges;
+
+uniform highp sampler3D texHead;
+uniform highp sampler3D texGradient;
 
 uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
-uniform highp vec4 materialEmissive;
-uniform highp vec4 materialDiffuse;
-uniform highp vec4 materialSpecular;
-uniform highp float materialShininess;
+uniform highp mat3 normalMatrix;
 
-uniform highp vec4 lightDirection;
-uniform highp vec4 lightColor;
+struct Material {
+    vec4 emissive;
+    vec4 diffuse;
+    vec4 specular;
+    float shininess;
+};
 
-uniform highp float ambientIntensity;
+uniform highp Material headMaterial;
+
+struct LightSource {
+    vec4 direction;
+    vec4 color;
+    float ambientIntensity;
+};
+
+uniform highp LightSource light;
 
 out highp vec4 fragColor;
 
 void main(void) {
-    vec4 emissive = materialEmissive;
+    if (fragPos.s >= ranges.sRange[0] && fragPos.s <= ranges.sRange[1]
+            && fragPos.t >= ranges.tRange[0] && fragPos.t <= ranges.tRange[1]
+            && fragPos.p >= ranges.pRange[0] && fragPos.p <= ranges.pRange[1]) {
+        vec4 headColor = texture(texHead, fragPos.stp);
 
-    vec4 N = normalize(fragNormal);
-    vec4 L = normalize(lightDirection - fragPos);
+        if (headColor.r > 0.01) {
 
-    float NdotL = max(dot(N, L), 0);
-    vec4 diffuse =  NdotL * lightColor * materialDiffuse;
+            vec4 N = normalize(vec4(normalMatrix * noise3(0.5), 0.0));//texture(texGradient, fragPos.stp));
+            vec4 L = normalize(light.direction - fragPos);
 
-    vec4 V = normalize(vec4(0.0, 0.0, 0.0, 1.0) - fragPos);
-    vec4 H = normalize(L + V);
-    vec4 R = reflect(-L, N);
+            float NdotL = max(dot(N, L), 0);
+            vec4 diffuse =  NdotL * light.color * headMaterial.diffuse;
 
-    float RdotV = max(dot(R, V), 0);
-    float NdotH = max(dot(N, H), 0);
+            vec4 V = normalize(noise4(0.5) - fragPos);
+            vec4 H = normalize(L + V);
+            vec4 R = reflect(-L, N);
 
-    vec4 specular = pow(RdotV, materialShininess) * lightColor * materialSpecular;
+            float RdotV = max(dot(R, V), 0);
+            float NdotH = max(dot(N, H), 0);
 
-    fragColor = lightColor * (emissive + ambientIntensity + diffuse + specular) * texture(texSample, fragPos.stp);
+            vec4 specular = pow(RdotV, headMaterial.shininess) * light.color * headMaterial.specular;
+
+            fragColor = light.color * (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
+        }
+        else {
+            discard;
+        }
+    }
+    else {
+        discard;
+    }
 }

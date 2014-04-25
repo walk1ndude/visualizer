@@ -1,0 +1,47 @@
+import QtQuick 2.2
+import QtQuick.Controls 1.1
+
+Grid {
+    id: range
+
+    property vector2d rangeVector: Qt.vector2d(
+                                       Math.min(minRangeSlider.value, maxRangeSlider.value),
+                                       Math.max(minRangeSlider.value, maxRangeSlider.value)
+                                       )
+
+    columns: 3
+    rows: 2
+    spacing: 5
+
+    Text {
+        text: qsTr("min" + range.objectName)
+    }
+
+    Slider {
+        id: minRangeSlider
+        width: 200
+        minimumValue: 0.0
+        maximumValue: 1.0
+        value: 0.0
+    }
+
+    Text {
+        text: hud.pad((Math.round(minRangeSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+    }
+
+    Text {
+        text: qsTr("max" + range.objectName)
+    }
+
+    Slider {
+        id: maxRangeSlider
+        width: 200
+        minimumValue: 0.0
+        maximumValue: 1.0
+        value: 1.0
+    }
+
+    Text {
+        text: hud.pad((Math.round(maxRangeSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+    }
+}

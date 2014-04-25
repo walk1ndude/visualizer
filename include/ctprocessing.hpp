@@ -14,6 +14,8 @@ typedef uint32_t u_int32_t;
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 
+#include <QtCore/QDebug>
+
 #define RADON_DEGREE_RANGE 180
 #define PI_TIMES_2 (2 * CV_PI)
 #define toRad(x) ((x) * CV_PI / 180.0)
@@ -122,9 +124,53 @@ inline void backproject(const cv::Mat & src, cv::Mat & dst,
     }
 }
 
+static int count = 0;
+
+inline void calcGradientSlice(const int & position, const std::vector<cv::Mat> & smoothed, uchar * gradientStartPosition) {
+    int height = smoothed.at(0).cols;
+    int width = smoothed.at(0).rows;
+
+    qDebug() << count ++;
+
+    int startSlice = std::max(0, position - 1);
+    int endSlice = std::min((int) smoothed.size() - 1, position + 1);
+
+    cv::Vec3f p;
+    cv::Vec3f n;
+    cv::Vec3f normalized;
+
+    cv::Mat dummy(height, width, CV_8UC3);
+
+    for (int x = 0; x != width; ++ x) {
+        for (int y = 0; y != height; ++ y) {
+            p[0] = smoothed.at(position).at<uchar>(y, std::max(x - 1, 0));
+            n[0] = smoothed.at(position).at<uchar>(y, std::min(x + 1, width));
+
+            p[1] = smoothed.at(position).at<uchar>(std::max(y, y - 1), x);
+            n[1] = smoothed.at(position).at<uchar>(std::max(y, y + 1), x);
+
+            p[2] = smoothed.at(startSlice).at<uchar>(y, x);
+            n[2] = smoothed.at(endSlice).at<uchar>(y, x);
+
+            cv::normalize(n - p, normalized, 1.0);
+/*
+            *(currentPos ++) = normalized[0];
+            *(currentPos ++) = normalized[1];
+            *(currentPos ++) = normalized[2];
+            */
+
+            dummy.at<cv::Vec3b>(y, x)[0] = 255;
+            dummy.at<cv::Vec3b>(y, x)[1] = 255;
+            dummy.at<cv::Vec3b>(y, x)[2] = 255;
+        }
+    }
+
+    memcpy(gradientStartPosition, dummy.data, dummy.elemSize() * dummy.total());
+}
+
 inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
                         const cv::Mat & dilateMat, const cv::Size & gaussSize) {
-    dst = cv::Mat::zeros(src.rows, src.rows, CV_8UC1);
+    //cv::Mat filtered(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     cv::Mat maskRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
     cv::Mat maskedRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
@@ -133,10 +179,18 @@ inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue
 
     cv::bitwise_and(src, src, maskedRange, maskRange);
 
-    cv::adaptiveThreshold(maskedRange, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 5);
+    cv::adaptiveThreshold(maskedRange, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 3);
     cv::dilate(maskedRange, maskedRange, dilateMat);
-    cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 0.5);
+    cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 1.2);
 
+    std::vector<cv::Vec3f> circles;
+
+    cv::HoughCircles(maskedRange, circles, CV_HOUGH_GRADIENT, 1, src.cols / 100, 200, 100, 0, 0);
+
+    for (size_t i = 0; i != circles.size(); ++ i) {
+        cv::circle(maskedRange, cv::Point(circles[i][0], circles[i][1]), cvRound(circles[i][2]), cv::Scalar(255), 3, 8, 0);
+    }
+/*
     cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     std::vector<std::vector<cv::Point> >contours;
@@ -149,8 +203,8 @@ inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue
         }
     }
 
-    cv::bitwise_and(maskedRange, maskedRange, dst, maskContours);
-    cv::equalizeHist(dst, dst);
+    cv::bitwise_and(maskedRange, maskedRange, filtered, maskContours);*/
+    cv::equalizeHist(maskedRange, dst);
 }
 
 inline void smoothSlices(const int startSlice, const int endSlice, std::vector<cv::Mat> & slices, cv::Mat & smoothed) {
@@ -158,7 +212,7 @@ inline void smoothSlices(const int startSlice, const int endSlice, std::vector<c
     int rows = slices.at(startSlice).rows;
 
     cv::Mat mergeMat(cv::Mat::zeros(rows, cols, CV_16UC1));
-    cv::Mat conv16(cols, rows, CV_16UC1);
+    cv::Mat conv16;
 
     for (int i = startSlice; i != endSlice; ++ i) {
         slices.at(i).convertTo(conv16, CV_16UC1, FROM_8_TO_16);
@@ -171,19 +225,19 @@ inline void smoothSlices(const int startSlice, const int endSlice, std::vector<c
 }
 
 inline void mergeSlice(const int & startSlice, const int & endSlice, const int & sliceSize,
-                       std::vector<cv::Mat> & slices, uchar * mergeStartPoint) {
+                       std::vector<cv::Mat> & slices, std::vector<cv::Mat> & smoothed,
+                       uchar * mergeStartPoint) {
+    int position = startSlice;
 
-    cv::Mat smoothed;
-
-    smoothSlices(startSlice, endSlice, slices, smoothed);
-    memcpy(mergeStartPoint, smoothed.data, sliceSize);
+    smoothSlices(startSlice, endSlice, slices, smoothed[position]);
+    memcpy(mergeStartPoint, smoothed[position].data, sliceSize);
 }
 
 inline void checkNeighbours(const int & position, const int & neighbourDiameter,
                             const int & minNeighbour, const int & maxNeighbour,
-                            const std::vector<bool> & hasProcessed, std::vector<bool> & hasMerged,
-                            std::vector<cv::Mat> & slices, const int & sliceSize,
-                            uchar * mergeStartPoint) {
+                            std::vector<cv::Mat> & filtered, std::vector<cv::Mat> & smoothed,
+                            std::vector<bool> & gradientCalculated,
+                            const int & sliceSize, uchar * mergeStartPoint, uchar * gradientStartPoint) {
     int leftestMergeNeighbour = std::max(minNeighbour, position - neighbourDiameter);
     int rightestMergeNeighbour = std::min(maxNeighbour - neighbourDiameter, position + 1);
 
@@ -192,8 +246,25 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
 
     bool canMerge;
 
+    //leftestMergeNeighbour = minNeighbour;
+    //rightestMergeNeighbour = maxNeighbour - neighbourDiameter;
+
+    int leftGradient;
+    int rightGradient;
+
     for (int leftCheckNeighbour = leftestMergeNeighbour; leftCheckNeighbour != rightestMergeNeighbour; ++ leftCheckNeighbour) {
-        if (hasMerged[leftCheckNeighbour]) {
+
+        leftGradient = std::max(minNeighbour, leftCheckNeighbour - 1);
+        rightGradient = std::min((int) smoothed.size() - 1, leftCheckNeighbour + 1);
+
+        if (!smoothed.at(leftCheckNeighbour).empty()) {
+
+            if (!gradientCalculated.at(leftCheckNeighbour)
+                    && !smoothed.at(leftGradient).empty() && !smoothed.at(rightGradient).empty()) {
+                gradientCalculated[leftCheckNeighbour] = true;
+                calcGradientSlice(leftCheckNeighbour, smoothed, gradientStartPoint + sliceSize * 3 * leftCheckNeighbour);
+            }
+
             continue;
         }
 
@@ -203,24 +274,34 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
         canMerge = true;
 
         while (canMerge && currentCheckNeighbour != rightCheckNeighbour) {
-            canMerge &= hasProcessed[currentCheckNeighbour ++];
+            canMerge &= !filtered[currentCheckNeighbour ++].empty();
         }
 
         if (canMerge) {
-            hasMerged[leftCheckNeighbour] = true;
-            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, slices, mergeStartPoint + sliceSize * leftCheckNeighbour);
+            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, filtered, smoothed,
+                       mergeStartPoint + sliceSize * leftCheckNeighbour);
+
+            if (!gradientCalculated.at(leftCheckNeighbour) && !smoothed.at(leftGradient).empty() && !smoothed.at(rightGradient).empty()) {
+                gradientCalculated[leftCheckNeighbour] = true;
+                calcGradientSlice(leftCheckNeighbour, smoothed, gradientStartPoint + sliceSize * 3 * leftCheckNeighbour);
+            }
         }
     }
 }
 
 typedef struct _FilterData {
     std::vector<cv::Mat *> * src;
+    std::vector<cv::Mat *> * filtered;
 
     uchar ** mergeLocation;
 
-    size_t * rowLenght;
+    uchar ** gradientLocation;
 
+    size_t * rowLenght;
     int * alignment;
+
+    size_t * rowLenghtGradient;
+    int * alignmentGradient;
 
     int neighbourRadius;
 
@@ -228,16 +309,16 @@ typedef struct _FilterData {
     int maxValue;
 } FilterData;
 
-inline void processSlice(const int & i, std::vector<cv::Mat> & filtered, const FilterData & filterData,
-                         std::vector<bool> & hasProcessed, std::vector<bool> & hasMerged,
+inline void processSlice(const int & i, std::vector<cv::Mat> & filtered, std::vector<cv::Mat> & smoothed,
+                         std::vector<bool> & gradientCalculated,
+                         const FilterData & filterData,
                          const int & sliceSize, const cv::Mat & dilateMat,
                          const cv::Size & gaussSize, const int & neighbourDiameter) {
     filterSlice(*(filterData.src->at(i)), filtered[i], filterData.minValue, filterData.maxValue, dilateMat, gaussSize);
 
-    hasProcessed[i] = true;
+    checkNeighbours(i, neighbourDiameter, 0, filtered.size(), filtered, smoothed, gradientCalculated,
+                    sliceSize, *(filterData.mergeLocation), *(filterData.gradientLocation));
 
-    checkNeighbours(i, neighbourDiameter, 0, filtered.size(), hasProcessed, hasMerged, filtered,
-                    sliceSize, *(filterData.mergeLocation));
 }
 
 class SliceFilter : public cv::ParallelLoopBody {
@@ -250,27 +331,35 @@ protected:
 
     int _neighbourDiameter;
 
-    mutable std::vector<bool>_hasProcessed; // because flags need to be changeds in const method
-    mutable std::vector<bool>_hasMerged;
-
     mutable std::vector<cv::Mat>_filtered;
+    mutable std::vector<cv::Mat>_smoothed;
+
+    mutable std::vector<bool>_gradientCalculated;
 
     int _sliceSize;
 
     inline void fetchCvMats(const cv::Size & newSize, const int & newType = CV_8UC1) {
-        _hasProcessed.resize(_filterData.src->size(), false);
-        _hasMerged.resize(_filterData.src->size() - _neighbourDiameter, false);
+        int slicesTotalCount = _filterData.src->size();
+        int slicesMergeCount = slicesTotalCount - _neighbourDiameter;
 
-        _filtered.resize(_filterData.src->size());
+        _filtered.resize(slicesTotalCount);
+        _smoothed.resize(slicesMergeCount);
+
+        _gradientCalculated.resize(slicesMergeCount, false);
 
         cv::Mat dummyMat(cv::Mat::zeros(newSize, newType));
+        cv::Mat dummyMatGrad(cv::Mat::zeros(newSize, CV_8UC3));
 
         _sliceSize = dummyMat.elemSize() * dummyMat.total();
 
-        *(_filterData.mergeLocation) = new uchar[_sliceSize * (_filterData.src->size() - _neighbourDiameter)];
+        *(_filterData.mergeLocation) = new uchar[_sliceSize * slicesMergeCount];
+        *(_filterData.gradientLocation) = new uchar[_sliceSize * slicesMergeCount * 3]; // gradient image has 3 channels
 
         *(_filterData.alignment) = (dummyMat.step & 3) ? 1 : 4;
         *(_filterData.rowLenght) = dummyMat.step1();
+
+        *(_filterData.alignmentGradient) = (dummyMatGrad.step & 3) ? 1 : 4;
+        *(_filterData.rowLenghtGradient) = dummyMatGrad.step1();
     }
 
 public:
@@ -289,8 +378,8 @@ public:
 
     virtual void operator ()(const cv::Range & r) const {
         for (int i = r.start; i != r.end; ++ i) {
-            processSlice(i, _filtered, _filterData, _hasProcessed, _hasMerged, _sliceSize,
-                         _dilateMat, _gaussSize, _neighbourDiameter);
+            processSlice(i, _filtered, _smoothed, _gradientCalculated,
+                         _filterData, _sliceSize, _dilateMat, _gaussSize, _neighbourDiameter);
         }
     }
 };
@@ -349,7 +438,7 @@ template <typename T> inline void decodeSlice(const int & position, std::vector<
 
             posInBuffer += dicomData.bytesAllocated;
 
-            /* similar as http://code.google.com/p/pydicom/source/browse/source/dicom/contrib/pydicom_PIL.py*/
+            /* see http://www.dabsoft.ch/dicom/3/C.11.2.1.2/*/
             pixel = dicomData.slope * pixel + dicomData.intercept;
 
             if (pixel <= (dicomData.windowCenter - 0.5 - (dicomData.windowWidth - 1) / 2.0)) {
@@ -373,10 +462,10 @@ template <typename T> inline void decodeSlice(const int & position, std::vector<
         }
     }
 
-    cv::resize(dcmToMat, dcmToMat, scaledSize);
+    cv::resize(dcmToMat, dcmToMat, scaledSize, 0, 0, cv::INTER_LINEAR);
 
     if (dicomData.type == CV_16UC1) {
-        cv::Mat dcmToMat8(dicomData.width, dicomData.height, CV_8UC1);
+        cv::Mat dcmToMat8(scaledSize, CV_8UC1);
         dcmToMat.convertTo(dcmToMat8, CV_8UC1, FROM_16_TO_8);
         dst->at(position) = new cv::Mat(dcmToMat8);
     }
@@ -394,9 +483,6 @@ template <typename T>
 class SliceLoader : public SliceFilter {
 private:
     DicomData _dicomData;
-
-    int _width;
-    int _height;
 
     cv::Size _scaledSize;
 
@@ -422,15 +508,16 @@ public:
 
         _dicomData.sliceSize = _dicomData.bytesAllocated * _dicomData.width * _dicomData.height;
 
-        _dicomData.imageSpacing->at(0) *= (float) 2.0;
-        _dicomData.imageSpacing->at(1) *= (float) 2.0;
+        float ratioX = 0.5;
+        float ratioY = 0.5;
 
-        _width = _dicomData.width / 2;
-        _height = _dicomData.height / 2;
+        _dicomData.imageSpacing->at(0) *= (1 / ratioX);
+        _dicomData.imageSpacing->at(1) *= (1 / ratioY);
 
-        _scaledSize = cv::Size(_width, _height);
+        _scaledSize = cv::Size(_dicomData.width * ratioX, _dicomData.height * ratioY);
 
         _filterData.src->resize(_dicomData.depth);
+        _filterData.filtered->resize(_dicomData.depth);
 
         fetchCvMats(_scaledSize);
 
@@ -438,20 +525,20 @@ public:
 
             //useful image is ellipsoid with ra rb as width and height,
             //all black near corners - we loss this "garbage" during rotations - good riddance
-            _pad = std::max(_width, _height);
+            _pad = std::max(_scaledSize.width, _scaledSize.height);
 
-            _widthPad = std::ceil((_pad - _width) / 2.0);
-            _heightPad = std::ceil((_pad - _height) / 2.0);
+            _widthPad = std::ceil((_pad - _scaledSize.width) / 2.0);
+            _heightPad = std::ceil((_pad - _scaledSize.height) / 2.0);
 
-            _wPad = _width + _widthPad;
-            _hPad = _height + _heightPad;
+            _wPad = _scaledSize.width + _widthPad;
+            _hPad = _scaledSize.height + _heightPad;
 
             float twoPiN = PI_TIMES_2 / _wPad;
 
             for (int angle = 0; angle < RADON_DEGREE_RANGE; ++ angle) {
                 _rotationMatrix.push_back(cv::getRotationMatrix2D(cv::Point2i(
-                                                                      (_width + _widthPad) / 2,
-                                                                      (_height + _heightPad) / 2
+                                                                      (_scaledSize.width + _widthPad) / 2,
+                                                                      (_scaledSize.height + _heightPad) / 2
                                                                       ),
                                                                   angle, 1.0));
                 _cosTable.push_back(std::cos(toRad(angle)));
@@ -470,8 +557,11 @@ public:
         for (int i = r.start; i != r.end; ++ i) {
             decodeSlice<T>(i, _filterData.src, _scaledSize, _dicomData);
 
-            processSlice(i, _filtered, _filterData, _hasProcessed, _hasMerged, _sliceSize,
+            processSlice(i, _filtered, _smoothed, _gradientCalculated,
+                         _filterData, _sliceSize,
                          _dilateMat, _gaussSize, _neighbourDiameter);
+
+            _filterData.filtered->at(i) = new cv::Mat(_filtered.at(i));
         }
     }
 };

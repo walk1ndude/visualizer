@@ -1,7 +1,3 @@
-#include <QtGui/QColor>
-#include <QtGui/QScreen>
-#include <QtGui/QOpenGLPixelTransferOptions>
-
 #include <QtQuick/QQuickWindow>
 
 #include "sliceviewer.h"
@@ -37,14 +33,19 @@ void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage) 
 SliceViewer::SliceViewer() :
     OpenGLItem(),
     _program(0),
+    _sRange(QVector2D(0.0, 1.0)),
+    _tRange(QVector2D(0.0, 1.0)),
+    _pRange(QVector2D(0.0, 1.0)),
     _slicesReady(false),
-    _textureCV3D(0),
+    _textureHead(0),
+    _textureGradient(0),
     _ambientIntensity((GLfloat) 3.9),
     _mergedData(0),
     _gpu_driver(NVidia_binary) {
 
     _lightSource.color = QVector4D(0.5, 0.5, 0.0, 1.0);
     _lightSource.position = QVector4D(10.0, 10.0, -10.0, 0.0);
+    _lightSource.ambientIntensity = 4.3;
 
 }
 
@@ -52,20 +53,66 @@ SliceViewer::~SliceViewer() {
 
 }
 
-void SliceViewer::calcViewPorts() {
+void SliceViewer::initializeViewPorts() {
     int halfWidth = width() / 2;
     int halfHeight = height() / 2;
 
-    _viewPorts[0] = QRect(halfWidth + 5, 0, halfWidth - 5, halfHeight - 5);
-    _viewPorts[1] = QRect(0, 0, halfWidth - 5, halfHeight - 5);
-    _viewPorts[2] = QRect(0, halfHeight + 5, halfWidth - 5, halfHeight - 5);
-    _viewPorts[3] = QRect(halfWidth + 5, halfHeight + 5, halfWidth - 5, halfHeight - 5);
+    QVector<QPair<QRectF, ViewPort::ProjectionType> > viewPorts;
+
+    viewPorts.push_back(
+                QPair<QRectF, ViewPort::ProjectionType>(
+                    QRectF(
+                        (halfWidth + 5) / (float) width(),
+                        0,
+                        (halfWidth - 5) / (float) width(),
+                        (halfHeight - 5) / (float) height()
+                        ),
+                    ViewPort::PERSPECTIVE)
+                );
+
+    viewPorts.push_back(
+                QPair<QRectF, ViewPort::ProjectionType>(
+                    QRectF(
+                        0,
+                        0,
+                        (halfWidth - 5) / (float) width(),
+                        (halfHeight - 5) / (float) height()
+                        ),
+                    ViewPort::BOTTOM)
+                );
+
+    viewPorts.push_back(
+                QPair<QRectF, ViewPort::ProjectionType>(
+                    QRectF(
+                        0,
+                        (halfHeight + 5) / (float) height(),
+                        (halfWidth - 5) / (float) width(),
+                        (halfHeight - 5) / (float) height()
+                        ),
+                    ViewPort::LEFT)
+                );
+
+    viewPorts.push_back(
+                QPair<QRectF, ViewPort::ProjectionType>(
+                    QRectF(
+                        (halfWidth + 5) / (float) width(),
+                        (halfHeight + 5) / (float) height(),
+                        (halfWidth - 5) / (float) width(),
+                        (halfHeight - 5) / (float) height()
+                        ),
+                    ViewPort::FRONT)
+                );
+
+    _viewPorts.setViewPorts(viewPorts, window()->size());
 }
 
-void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scaling, const std::vector<size_t> & size,
-                          const int & alignment, const size_t & rowLength) {
+void SliceViewer::drawSlices(uchar * mergedData, uchar * gradientData,
+                             const std::vector<float> & scaling, const std::vector<size_t> & size,
+                             const int & alignment, const size_t & rowLength,
+                             const int & alignmentGradient, const size_t & rowLengthGradient) {
 
     _mergedData = mergedData;
+    _gradientData = gradientData;
 
     if (_slicesReady) {
         _isTextureUpdated = false;
@@ -78,29 +125,21 @@ void SliceViewer::drawSlices(uchar * mergedData, const std::vector<float> & scal
     _scaling = scaling;
     _size = size;
 
-    _alignment = alignment;
-    _rowLength = rowLength;
-
-    _matrices.resize(4);
-
-    for (int i = 0; i != 4; ++ i) {
-        _matrices[i].identity();
-        if (i == 0) { //perspective
-            _matrices[i].perspective(60.0, 1.0, 0.1, 10.0);
-            _matrices[i].lookAt(QVector3D(0.0, 0.0, 2.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-        }
-        else {
-            _matrices[i].ortho(-0.9, 0.9, -0.9, 0.9, 0.01, 10.0);
-            _matrices[i].lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-        }
-        _matrices[i].scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
+    if (rowLength) {
+        _pixelOptionsHead.setAlignment(alignment);
+        _pixelOptionsHead.setRowLength(rowLength);
     }
 
-    _matrices[0].rotate(QVector3D(-90.0, 0.0, 0.0));
-    _matrices[2].rotate(QVector3D(-90.0, 0.0, 0.0));
-    _matrices[3].rotate(QVector3D(-90.0, -90.0, 0.0));
+    if (rowLengthGradient) {
+        _pixelOptionsGradient.setAlignment(alignmentGradient);
+        _pixelOptionsGradient.setRowLength(rowLengthGradient);
+    }
 
-    _viewPorts.resize(4);
+    _viewPorts.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
+
+    _viewPorts[0].rotate(QVector3D(-90.0, 0.0, 0.0));
+    _viewPorts[2].rotate(QVector3D(-90.0, 0.0, 0.0));
+    _viewPorts[3].rotate(QVector3D(-90.0, -90.0, 0.0));
 
     _slicesReady = true;
     _needsInitialize = true;
@@ -126,10 +165,17 @@ void SliceViewer::initialize() {
     _shaderProjection = _program->uniformLocation("projection");
     _shaderScale = _program->uniformLocation("scale");
     _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
-    _shaderAmbientIntensity = _program->uniformLocation("ambientIntensity");
-    _shaderLightPosition = _program->uniformLocation("lightPosition");
-    _shaderLightColor = _program->uniformLocation("lightColor");
-    _shaderTexSample = _program->uniformLocation("texSample");
+
+    _shaderLightPosition = _program->uniformLocation("light.position");
+    _shaderLightColor = _program->uniformLocation("light.color");
+    _shaderLightAmbientIntensity = _program->uniformLocation("light.ambientIntensity");
+
+    _shaderSRange = _program->uniformLocation("ranges.sRange");
+    _shaderTRange = _program->uniformLocation("ranges.tRange");
+    _shaderPRange = _program->uniformLocation("ranges.pRange");
+
+    _shaderTexHead = _program->uniformLocation("texHead");
+    _shaderTexGradient = _program->uniformLocation("texGradient");
 
     glEnable(GL_CULL_FACE);
 
@@ -151,27 +197,39 @@ void SliceViewer::render() {
         return;
     }
 
-    calcViewPorts();
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _textureCV3D->bind();
+    _viewPorts.resize(window()->size());
+
+    _textureHead->bind(0);
+    _textureGradient->bind(1);
 
     _program->bind();
 
-    for (int i = 0; i != 4; ++ i) {
-        glViewport(_viewPorts[i].x(), _viewPorts[i].y(), _viewPorts[i].width(), _viewPorts[i].height());
+    QRectF boundingRect;
 
-        _program->setUniformValue(_shaderModel, _matrices[i].model());
-        _program->setUniformValue(_shaderView, _matrices[i].view());
-        _program->setUniformValue(_shaderProjection, _matrices[i].projection());
-        _program->setUniformValue(_shaderScale, _matrices[i].scaleM());
-        _program->setUniformValue(_shaderNormalMatrix, _matrices[i].normalM());
-        _program->setUniformValue(_shaderAmbientIntensity, _ambientIntensity);
+    for (int i = 0; i != 4; ++ i) {
+        boundingRect = _viewPorts[i].boundingRect();
+
+        glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
+
+        _program->setUniformValue(_shaderModel, _viewPorts[i].model());
+        _program->setUniformValue(_shaderView, _viewPorts[i].view());
+        _program->setUniformValue(_shaderProjection, _viewPorts[i].projection());
+        _program->setUniformValue(_shaderScale, _viewPorts[i].scaleM());
+        _program->setUniformValue(_shaderNormalMatrix, _viewPorts[i].normalM());
+
         _program->setUniformValue(_shaderLightPosition, _lightSource.position);
         _program->setUniformValue(_shaderLightColor, _lightSource.color);
-        _program->setUniformValue(_shaderTexSample, 0);
+        _program->setUniformValue(_shaderLightAmbientIntensity, _lightSource.ambientIntensity);
+
+        _program->setUniformValue(_shaderTexHead, 0);
+        _program->setUniformValue(_shaderTexGradient, 1);
+
+        _program->setUniformValue(_shaderSRange, _sRange);
+        _program->setUniformValue(_shaderTRange, _tRange);
+        _program->setUniformValue(_shaderPRange, _pRange);
 
         _headModel.drawModel(_program);
     }
@@ -180,68 +238,95 @@ void SliceViewer::render() {
 
     gpu_profiling(_gpu_driver, "actual drawing");
 
-    _textureCV3D->release();
+    _textureGradient->release();
+    _textureHead->release();
 }
 
 void SliceViewer::cleanup() {
     if (_program) {
         delete _program;
 
-        if (_textureCV3D->isStorageAllocated()) {
-            _textureCV3D->destroy();
+        if (_textureHead->isStorageAllocated()) {
+            _textureHead->destroy();
+        }
+
+        if (_textureGradient->isStorageAllocated()) {
+            _textureGradient->destroy();
         }
 
         _headModel.destroyModel();
     }
 }
 
-void SliceViewer::initializeTextures() {
+void SliceViewer::initializeTexture(QOpenGLTexture ** texture, uchar ** data,
+                                    const QOpenGLTexture::TextureFormat & textureFormat,
+                                    const QOpenGLTexture::PixelFormat & pixelFormat,
+                                    const QOpenGLPixelTransferOptions * pixelOptions) {
+    QOpenGLTexture * tex = *texture;
 
-    if (!_textureCV3D) {
-        _textureCV3D = new QOpenGLTexture(QOpenGLTexture::Target3D);
+    if (!tex) {
+        tex = new QOpenGLTexture(QOpenGLTexture::Target3D);
 
-        _textureCV3D->create();
-        _textureCV3D->setSize(_size[0], _size[1], _size[2]);
-        _textureCV3D->setFormat(QOpenGLTexture::R8_UNorm);
+        tex->create();
 
-        _textureCV3D->allocateStorage();
+        if (textureFormat == QOpenGLTexture::R8_UNorm) {
+            tex->setSize(_size[0], _size[1], _size[2]);
+            tex->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
+        }
+        else {
+            tex->setSize(32, 32, 32);
+        }
 
-        _textureCV3D->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
+        tex->setFormat(textureFormat);
 
-        _textureCV3D->setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
-        _textureCV3D->setMagnificationFilter(QOpenGLTexture::Linear);
-        _textureCV3D->setWrapMode(QOpenGLTexture::ClampToBorder);
+        tex->allocateStorage();
+
+        tex->setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
+        tex->setMagnificationFilter(QOpenGLTexture::Linear);
+        tex->setWrapMode(QOpenGLTexture::ClampToBorder);
     }
 
-    QOpenGLPixelTransferOptions pixelOptions;
-    pixelOptions.setAlignment(_alignment);
-    pixelOptions.setRowLength(_rowLength);
+    tex->setData(pixelFormat, QOpenGLTexture::UInt8, (void *) ((uchar *) *data), pixelOptions);
 
-    _textureCV3D->setData(QOpenGLTexture::Red, QOpenGLTexture::UInt8, (void *) _mergedData, &pixelOptions);
+    tex->generateMipMaps();
 
-    _textureCV3D->generateMipMaps();
+    *texture = tex;
 
-    delete [] _mergedData;
-    _mergedData = 0;
+    delete [] *data;
+    *data = 0;
+}
+
+void SliceViewer::initializeTextures() {
+    initializeTexture(&_textureHead, &_mergedData, QOpenGLTexture::R8_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
+    initializeTexture(&_textureGradient, &_gradientData, QOpenGLTexture::RGB8_UNorm, QOpenGLTexture::BGR, &_pixelOptionsGradient);
 }
 
 void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
-    _matrices[0].rotate(QVector3D(xRot + 90.0, yRot, zRot)); // perspective
-    _matrices[1].rotate(QVector3D(0.0, 0.0, zRot));
-    _matrices[2].rotate(QVector3D(xRot + 90.0, 0.0, 0.0));
-    _matrices[3].rotate(QVector3D(90.0, yRot + 90.0, 0.0));
-
+    _viewPorts.rotate(xRot, yRot, zRot);
     update();
 }
 
 void SliceViewer::updateZoom(qreal factor) {
-    for (int i = 0; i!= 4; ++ i) {
-        _matrices[i].zoom(factor);
-    }
+    _viewPorts.zoom(factor);
     update();
 }
 
 void SliceViewer::updateAmbientIntensity(qreal ambientIntensity) {
     _ambientIntensity = ambientIntensity;
+    update();
+}
+
+void SliceViewer::updateSRange(QVector2D sRange) {
+    _sRange = sRange;
+    update();
+}
+
+void SliceViewer::updateTRange(QVector2D tRange) {
+    _tRange = tRange;
+    update();
+}
+
+void SliceViewer::updatePRange(QVector2D pRange) {
+    _pRange = pRange;
     update();
 }

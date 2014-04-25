@@ -19,6 +19,7 @@ OpenGLItem::OpenGLItem() :
 void OpenGLItem::handleWindowChanged(QQuickWindow * window) {
     if (window) {
         window->setClearBeforeRendering(false);
+        initializeViewPorts();
     }
 }
 
@@ -109,6 +110,10 @@ void OpenGLItem::initialize() {
 }
 
 void OpenGLItem::initializeTextures() {
+
+}
+
+void OpenGLItem::initializeViewPorts() {
 
 }
 
