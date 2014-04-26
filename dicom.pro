@@ -27,20 +27,19 @@ win32 {
 
     !contains(QMAKE_HOST.arch, x86_64) {
             QMAKE_LFLAGS *= /MACHINE:X86
-            LIBS += -L"C:\opencv\build\x86\vc12\lib"
     }
     else {
         contains(QMAKE_HOST.arch, x86_64):{
             QMAKE_LFLAGS *= /MACHINE:X64
-            LIBS += -L"C:\opencv\build\x64\vc12\lib"
         }
     }
 
-    LIBS += -L"C:\GDCM\gdcm\bin\Debug"
+    LIBS += -L"C:\GDCM\gdcm\bin\MinSizeRel" \
+            -L"C:\opencv\build\lib\Release"
 
-    LIBS += -lopencv_core248 \
-            -lopencv_highgui248 \
-            -lopencv_imgproc248
+    LIBS += -lopencv_core249 \
+            -lopencv_highgui249 \
+            -lopencv_imgproc249
 }
 
 LIBS += -lgdcmCommon \
