@@ -183,15 +183,7 @@ inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue
     cv::adaptiveThreshold(masked, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 3);
     cv::dilate(maskedRange, maskedRange, dilateMat);
     cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 2);
-/*
-    std::vector<cv::Vec3f> circles;
 
-    cv::HoughCircles(maskedRange, circles, CV_HOUGH_GRADIENT, 1, src.cols / 100, 200, 100, 0, 0);
-
-    for (size_t i = 0; i != circles.size(); ++ i) {
-        cv::circle(maskedRange, cv::Point(circles[i][0], circles[i][1]), cvRound(circles[i][2]), cv::Scalar(255), 3, 8, 0);
-    }
-*/
     cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
 
     std::vector<std::vector<cv::Point> >contours;
@@ -259,13 +251,6 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
         rightGradient = std::min((int) smoothed.size() - 1, leftCheckNeighbour + 1);
 
         if (!smoothed.at(leftCheckNeighbour).empty()) {
-
-            if (!gradientCalculated.at(leftCheckNeighbour)
-                    && !smoothed.at(leftGradient).empty() && !smoothed.at(rightGradient).empty()) {
-                gradientCalculated[leftCheckNeighbour] = true;
-                calcGradientSlice(leftCheckNeighbour, smoothed, gradientStartPoint + sliceSize * 3 * leftCheckNeighbour);
-            }
-
             continue;
         }
 
@@ -281,11 +266,12 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
         if (canMerge) {
             mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, filtered, smoothed,
                        mergeStartPoint + sliceSize * leftCheckNeighbour);
-
-            if (!gradientCalculated.at(leftCheckNeighbour) && !smoothed.at(leftGradient).empty() && !smoothed.at(rightGradient).empty()) {
-                gradientCalculated[leftCheckNeighbour] = true;
-                calcGradientSlice(leftCheckNeighbour, smoothed, gradientStartPoint + sliceSize * 3 * leftCheckNeighbour);
             }
+
+        if (!gradientCalculated.at(leftCheckNeighbour)
+                && !smoothed.at(leftGradient).empty() && !smoothed.at(rightGradient).empty()) {
+            gradientCalculated[leftCheckNeighbour] = true;
+            calcGradientSlice(leftCheckNeighbour, smoothed, gradientStartPoint + sliceSize * 3 * leftCheckNeighbour);
         }
     }
 }
