@@ -26,10 +26,14 @@ void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage =
 
 class SliceViewer : public OpenGLItem {
     Q_OBJECT
+    Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
     
 public:
     explicit SliceViewer();
     virtual ~SliceViewer();
+
+    QVector3D rotation();
+    void setRotation(const QVector3D & rotation);
 
 protected:
     virtual void initialize();
@@ -62,6 +66,8 @@ private:
     QVector2D _tRange;
     QVector2D _pRange;
 
+    QVector3D _rotation;
+
     bool _slicesReady;
 
     QOpenGLTexture * _textureHead;
@@ -79,20 +85,23 @@ private:
 
     HeadModel _headModel;
 
-    uchar * _mergedData;
-    uchar * _gradientData;
+    QSharedPointer<uchar>_mergedData;
+    QSharedPointer<uchar>_gradientData;
 
     GPU_Driver _gpu_driver;
 
     void initializeViewPorts();
 
-    void initializeTexture(QOpenGLTexture ** texture, uchar ** data,
+    void initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
                            const QOpenGLTexture::TextureFormat & textureFormat,
                            const QOpenGLTexture::PixelFormat & pixelFormat,
                            const QOpenGLPixelTransferOptions * pixelOptions);
 
+signals:
+    void rotationChanged();
+
 public slots:
-    void drawSlices(uchar * mergedData, uchar * gradientData,
+    void drawSlices(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
                     const std::vector<float> & scaling = std::vector<float>(),
                     const std::vector<size_t> & size = std::vector<size_t>(),
                     const int & alignment = 0, const size_t & rowLength = 0,

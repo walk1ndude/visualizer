@@ -36,6 +36,7 @@ SliceViewer::SliceViewer() :
     _sRange(QVector2D(0.0, 1.0)),
     _tRange(QVector2D(0.0, 1.0)),
     _pRange(QVector2D(0.0, 1.0)),
+    _rotation(QVector3D(0.0, 0.0, 0.0)),
     _slicesReady(false),
     _textureHead(0),
     _textureGradient(0),
@@ -53,6 +54,15 @@ SliceViewer::~SliceViewer() {
 
 }
 
+QVector3D SliceViewer::rotation() {
+    return _rotation;
+}
+
+void SliceViewer::setRotation(const QVector3D & rotation) {
+    _rotation = rotation;
+    qDebug() << _rotation;
+}
+
 void SliceViewer::initializeViewPorts() {
     int halfWidth = width() / 2;
     int halfHeight = height() / 2;
@@ -62,10 +72,10 @@ void SliceViewer::initializeViewPorts() {
     viewPorts.push_back(
                 QPair<QRectF, ViewPort::ProjectionType>(
                     QRectF(
-                        (halfWidth + 5) / (float) width(),
+                        (halfWidth + 5) / (qreal) width(),
                         0,
-                        (halfWidth - 5) / (float) width(),
-                        (halfHeight - 5) / (float) height()
+                        (halfWidth - 5) / (qreal) width(),
+                        (halfHeight - 5) / (qreal) height()
                         ),
                     ViewPort::PERSPECTIVE)
                 );
@@ -75,8 +85,8 @@ void SliceViewer::initializeViewPorts() {
                     QRectF(
                         0,
                         0,
-                        (halfWidth - 5) / (float) width(),
-                        (halfHeight - 5) / (float) height()
+                        (halfWidth - 5) / (qreal) width(),
+                        (halfHeight - 5) / (qreal) height()
                         ),
                     ViewPort::BOTTOM)
                 );
@@ -85,9 +95,9 @@ void SliceViewer::initializeViewPorts() {
                 QPair<QRectF, ViewPort::ProjectionType>(
                     QRectF(
                         0,
-                        (halfHeight + 5) / (float) height(),
-                        (halfWidth - 5) / (float) width(),
-                        (halfHeight - 5) / (float) height()
+                        (halfHeight + 5) / (qreal) height(),
+                        (halfWidth - 5) / (qreal) width(),
+                        (halfHeight - 5) / (qreal) height()
                         ),
                     ViewPort::LEFT)
                 );
@@ -95,10 +105,10 @@ void SliceViewer::initializeViewPorts() {
     viewPorts.push_back(
                 QPair<QRectF, ViewPort::ProjectionType>(
                     QRectF(
-                        (halfWidth + 5) / (float) width(),
-                        (halfHeight + 5) / (float) height(),
-                        (halfWidth - 5) / (float) width(),
-                        (halfHeight - 5) / (float) height()
+                        (halfWidth + 5) / (qreal) width(),
+                        (halfHeight + 5) / (qreal) height(),
+                        (halfWidth - 5) / (qreal) width(),
+                        (halfHeight - 5) / (qreal) height()
                         ),
                     ViewPort::FRONT)
                 );
@@ -106,7 +116,7 @@ void SliceViewer::initializeViewPorts() {
     _viewPorts.setViewPorts(viewPorts, window()->size());
 }
 
-void SliceViewer::drawSlices(uchar * mergedData, uchar * gradientData,
+void SliceViewer::drawSlices(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
                              const std::vector<float> & scaling, const std::vector<size_t> & size,
                              const int & alignment, const size_t & rowLength,
                              const int & alignmentGradient, const size_t & rowLengthGradient) {
@@ -258,7 +268,7 @@ void SliceViewer::cleanup() {
     }
 }
 
-void SliceViewer::initializeTexture(QOpenGLTexture ** texture, uchar ** data,
+void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
                                     const QOpenGLTexture::TextureFormat & textureFormat,
                                     const QOpenGLTexture::PixelFormat & pixelFormat,
                                     const QOpenGLPixelTransferOptions * pixelOptions) {
@@ -286,19 +296,18 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, uchar ** data,
         tex->setWrapMode(QOpenGLTexture::ClampToBorder);
     }
 
-    tex->setData(pixelFormat, QOpenGLTexture::UInt8, (void *) ((uchar *) *data), pixelOptions);
+    tex->setData(pixelFormat, QOpenGLTexture::UInt8, (void *) textureData.data(), pixelOptions);
 
     tex->generateMipMaps();
 
     *texture = tex;
 
-    delete [] *data;
-    *data = 0;
+    textureData.clear();
 }
 
 void SliceViewer::initializeTextures() {
-    initializeTexture(&_textureHead, &_mergedData, QOpenGLTexture::R8_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
-    initializeTexture(&_textureGradient, &_gradientData, QOpenGLTexture::RGB8_UNorm, QOpenGLTexture::BGR, &_pixelOptionsGradient);
+    initializeTexture(&_textureHead, _mergedData, QOpenGLTexture::R8_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
+    initializeTexture(&_textureGradient, _gradientData, QOpenGLTexture::RGB8_UNorm, QOpenGLTexture::BGR, &_pixelOptionsGradient);
 }
 
 void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {

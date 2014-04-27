@@ -2,6 +2,7 @@
 #define DICOMREADER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QSharedPointer>
 
 #include <gdcmImage.h>
 #include <gdcmFile.h>
@@ -31,7 +32,8 @@ private:
 
   void updateFiltered();
 signals:
-  void slicesProcessed(uchar * mergedData, uchar * gradientData, const std::vector<float> & scaling = std::vector<float>(),
+  void slicesProcessed(QSharedPointer<uchar> mergedData, QSharedPointer<uchar>  gradientData,
+                       const std::vector<float> & scaling = std::vector<float>(),
                        const std::vector<size_t> & size = std::vector<size_t>(),
                        const int & alignment = 0, const size_t & rowLength = 0,
                        const int & alignmentGradient = 0, const size_t & rowLengthGradient = 0);

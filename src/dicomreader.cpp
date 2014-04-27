@@ -147,7 +147,6 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     loaderData.filterData.maxValue = _maxValue;
 
     uchar * mergedData = 0;
-
     uchar * gradientData = 0;
 
     size_t rowLength = 0;
@@ -182,19 +181,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     std::vector<float>scaling;
     std::vector<size_t>size;
 
-    delete [] gradientData;
-
     cv::Mat * image = _noisy.at(0);
-
-    cv::Mat dummyTest(cv::Mat(32, 32, CV_8UC3, cv::Scalar(100, 128, 155)));
-
-    int dummySize = dummyTest.elemSize() * dummyTest.total();
-
-    gradientData = new uchar[dummySize * 32];
-
-    for (size_t i = 0; i != 32; ++ i) {
-        memcpy(gradientData + i * dummySize, dummyTest.data, dummySize);
-    }
 
     int depth = loaderData.dicomData.depth - loaderData.filterData.neighbourRadius * 2;
 
@@ -209,7 +196,9 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
     aligmentGradient = 0;
     rowLengthGradient = 0;
 
-    emit slicesProcessed(mergedData, gradientData, scaling, size, aligment, rowLength, aligmentGradient, rowLengthGradient);
+    emit slicesProcessed(QSharedPointer<uchar>(mergedData),
+                         QSharedPointer<uchar>(gradientData),
+                         scaling, size, aligment, rowLength, aligmentGradient, rowLengthGradient);
 }
 
 void DicomReader::readFile(QString dicomFile) {
@@ -266,7 +255,9 @@ void DicomReader::updateFiltered() {
 
     qDebug() << "finished" << procTime;
 
-    emit slicesProcessed(mergedData, gradientData);
+    emit slicesProcessed(QSharedPointer<uchar>(mergedData),
+                         QSharedPointer<uchar>(gradientData)
+                         );
 }
 
 void DicomReader::changeSliceNumber(int ds) {

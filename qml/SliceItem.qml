@@ -35,7 +35,7 @@ Item {
             id: verticalSeparator
 
             color: "#FF888888"
-            y: sliceItem.height / 2 - 5
+            y: sliceItem.height / 2 - 22
             height: 10
             width: sliceItem.width
 
@@ -47,6 +47,14 @@ Item {
         SliceViewer {
             id: sliceViewer
             objectName: "sliceViewer"
+
+            property bool takeShots: false
+
+            Behavior on takeShots {
+                NumberAnimation {
+                    duration: 1000
+                }
+            }
 
             anchors.right: parent.right
 

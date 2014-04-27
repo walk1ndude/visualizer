@@ -29,7 +29,7 @@ signals:
     void minValueChanged(int minValue);
     void maxValueChanged(int maxValue);
 
-    void slicesProcessed(uchar * mergedData, uchar * gradientData,
+    void slicesProcessed(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
                          const std::vector<float> & scaling, const std::vector<size_t> & size,
                          const int & alignment, const size_t & rowLength,
                          const int & alignmentGradient, const size_t & rowLengthGradient);
