@@ -34,6 +34,9 @@ class SliceViewer : public OpenGLItem {
     Q_PROPERTY(QVector2D tRange READ tRange WRITE setTRange NOTIFY tRangeChanged)
     Q_PROPERTY(QVector2D pRange READ pRange WRITE setPRange NOTIFY pRangeChanged)
 
+    Q_PROPERTY(int minValue READ minValue WRITE setMinValue NOTIFY minValueChanged)
+    Q_PROPERTY(int maxValue READ maxValue WRITE setMaxValue NOTIFY maxValueChanged)
+
 public:
     explicit SliceViewer();
     virtual ~SliceViewer();
@@ -52,6 +55,12 @@ public:
 
     QVector2D pRange();
     void setPRange(const QVector2D & pRange);
+
+    int minValue();
+    void setMinValue(const int & minValue);
+
+    int maxValue();
+    void setMaxValue(const int & maxValue);
 
 protected:
     virtual void initialize();
@@ -87,6 +96,9 @@ private:
     QVector3D _rotation;
 
     qreal _zoomFactor;
+
+    int _minValue;
+    int _maxValue;
 
     bool _slicesReady;
 
@@ -124,6 +136,9 @@ signals:
     void sRangeChanged();
     void tRangeChanged();
     void pRangeChanged();
+
+    void minValueChanged(const int & minValue);
+    void maxValueChanged(const int & maxValue);
 
 public slots:
     void drawSlices(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,

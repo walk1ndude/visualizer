@@ -39,11 +39,11 @@ signals:
                        const int & alignmentGradient = 0, const size_t & rowLengthGradient = 0);
 
 public slots:
-  void readFile(QString dicomFile);
-  void changeSliceNumber(int ds);
+  void readFile(const QString & dicomFile);
+  void changeSliceNumber(const int & ds);
 
-  void updateMinValue(int minValue);
-  void updateMaxValue(int maxValue);
+  void updateMinValue(const int & minValue);
+  void updateMaxValue(const int & maxValue);
 };
 
 #endif // DICOMREADER_H

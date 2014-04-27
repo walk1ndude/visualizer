@@ -5,6 +5,8 @@ import TomographyTools 1.0
 Item {
     id: sliceItem
 
+    property bool takeShots: false
+
     Rectangle {
 
         Hud {
@@ -24,6 +26,8 @@ Item {
             onTRangeChanged: sliceViewer.tRange = sliceHud.tRange;
             onPRangeChanged: sliceViewer.pRange = sliceHud.pRange;
 
+            onMinValueChanged: sliceViewer.minValue = sliceHud.minValue;
+            onMaxValueChanged: sliceViewer.maxValue = sliceHud.maxValue;
         }
 
         Rectangle {
@@ -57,14 +61,6 @@ Item {
             id: sliceViewer
             objectName: "sliceViewer"
 
-            property bool takeShots: false
-
-            Behavior on takeShots {
-                NumberAnimation {
-                    duration: 1000
-                }
-            }
-
             anchors.right: parent.right
 
             width: 640
@@ -73,10 +69,26 @@ Item {
         }
     }
 
+    Behavior on takeShots {
+        //angleShotAnimation
+    }
+
     function show() {
         sliceHud.visible = !sliceHud.visible;
         horizontalSeparator.visible = !horizontalSeparator.visible;
         verticalSeparator.visible = !verticalSeparator.visible;
     }
 
+    NumberAnimation {
+        id: angleShotAnimation
+
+        target: sliceHud
+        property: "angleShot"
+
+        running: true
+        duration: 1000
+
+        from: 0.0
+        to: 180.0
+    }
 }

@@ -23,11 +23,11 @@ private:
     void fetchConnections();
 
 signals:
-    void fileOpened(QString fileName);
-    void sliceNumberChanged(int number);
+    void fileOpened(const QString & fileName);
+    void sliceNumberChanged(const int & number);
 
-    void minValueChanged(int minValue);
-    void maxValueChanged(int maxValue);
+    void minValueChanged(const int & minValue);
+    void maxValueChanged(const int & maxValue);
 
     void slicesProcessed(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
                          const std::vector<float> & scaling, const std::vector<size_t> & size,

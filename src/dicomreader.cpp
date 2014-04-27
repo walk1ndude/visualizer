@@ -201,7 +201,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
                          scaling, size, aligment, rowLength, aligmentGradient, rowLengthGradient);
 }
 
-void DicomReader::readFile(QString dicomFile) {
+void DicomReader::readFile(const QString & dicomFile) {
     gdcm::ImageReader dIReader;
 
     // dicomFile = "file:///...", we must cut protocol, so no "file://" <- start with 7th char
@@ -260,7 +260,7 @@ void DicomReader::updateFiltered() {
                          );
 }
 
-void DicomReader::changeSliceNumber(int ds) {
+void DicomReader::changeSliceNumber(const int & ds) {
     _imageNumber += ds;
     _imageNumber %= _noisy.size();
     showImageWithNumber(_imageNumber);
@@ -271,14 +271,14 @@ void DicomReader::showImageWithNumber(const size_t & imageNumber) {
     cv::waitKey(1);
 }
 
-void DicomReader::updateMinValue(int minValue) {
+void DicomReader::updateMinValue(const int & minValue) {
     _minValue = std::min(minValue, _maxValue);
     _maxValue = std::max(minValue, _maxValue);
 
     updateFiltered();
 }
 
-void DicomReader::updateMaxValue(int maxValue) {
+void DicomReader::updateMaxValue(const int & maxValue) {
     _maxValue = std::max(maxValue, _minValue);
     _minValue = std::min(maxValue, _minValue);
 

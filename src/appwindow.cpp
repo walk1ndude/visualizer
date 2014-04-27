@@ -24,15 +24,14 @@ void AppWindow::fetchConnections() {
 
     foreach (QObject * sliceItem, _appWindow->findChild<QQuickItem *>("sliceRow")->children()) {
         SliceViewer * sliceViewer = sliceItem->findChild<SliceViewer *>("sliceViewer");
-        QObject * hud = sliceItem->findChild<QObject *>("sliceHud");
 
-        QObject::connect(appWindow, SIGNAL(fileOpened(QString)), this, SIGNAL(fileOpened(QString)));
-        QObject::connect(appWindow, SIGNAL(sliceNumberChanged(int)), this, SIGNAL(sliceNumberChanged(int)));
-
-        QObject::connect(hud, SIGNAL(maxValueChanged(int)), this, SIGNAL(maxValueChanged(int)));
-        QObject::connect(hud, SIGNAL(minValueChanged(int)), this, SIGNAL(minValueChanged(int)));
+        QObject::connect(appWindow, SIGNAL(fileOpened(const QString &)), this, SIGNAL(fileOpened(const QString &)));
+        QObject::connect(appWindow, SIGNAL(sliceNumberChanged(const int &)), this, SIGNAL(sliceNumberChanged(const int &)));
 
         QObject::connect(this, &AppWindow::slicesProcessed, sliceViewer, &SliceViewer::drawSlices);
+
+        QObject::connect(sliceViewer, &SliceViewer::minValueChanged, this, &AppWindow::minValueChanged);
+        QObject::connect(sliceViewer, &SliceViewer::maxValueChanged, this, &AppWindow::maxValueChanged);
 
         QObject::connect(sliceViewer, SIGNAL(initialized()), sliceItem, SLOT(show()));
 

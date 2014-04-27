@@ -1,6 +1,8 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
 
+import "../js/helperfuncs.js" as HelperFuncs
+
 Grid {
     id: range
 
@@ -26,7 +28,7 @@ Grid {
     }
 
     Text {
-        text: hud.pad((Math.round(minRangeSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        text: HelperFuncs.pad((Math.round(minRangeSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
     Text {
@@ -42,6 +44,6 @@ Grid {
     }
 
     Text {
-        text: hud.pad((Math.round(maxRangeSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        text: HelperFuncs.pad((Math.round(maxRangeSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 }

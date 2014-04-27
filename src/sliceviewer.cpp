@@ -38,6 +38,8 @@ SliceViewer::SliceViewer() :
     _pRange(QVector2D(0.0, 1.0)),
     _rotation(QVector3D(0.0, 0.0, 0.0)),
     _zoomFactor(2.0),
+    _minValue(5),
+    _maxValue(100),
     _slicesReady(false),
     _textureHead(0),
     _textureGradient(0),
@@ -99,6 +101,24 @@ QVector2D SliceViewer::pRange() {
 void SliceViewer::setPRange(const QVector2D & pRange) {
     _pRange = pRange;
     update();
+}
+
+int SliceViewer::minValue() {
+    return _minValue;
+}
+
+void SliceViewer::setMinValue(const int & minValue) {
+    _minValue = minValue;
+    emit minValueChanged(_minValue);
+}
+
+int SliceViewer::maxValue() {
+    return _maxValue;
+}
+
+void SliceViewer::setMaxValue(const int & maxValue) {
+    _maxValue = maxValue;
+    emit maxValueChanged(_maxValue);
 }
 
 void SliceViewer::initializeViewPorts() {

@@ -8,5 +8,6 @@
         <file>qml/MainWindow.qml</file>
         <file>qml/SliceItem.qml</file>
         <file>qml/Range.qml</file>
+        <file>js/helperfuncs.js</file>
     </qresource>
 </RCC>
