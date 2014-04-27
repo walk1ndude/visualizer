@@ -47,7 +47,7 @@ ApplicationWindow {
                 case Qt.Key_Escape: Qt.quit(); break;
                 case Qt.Key_Left: sliceNumberChanged(-1); break;
                 case Qt.Key_Right: sliceNumberChanged(1); break;
-                case Qt.Key_S: sliceItem.takeShots = true; break;
+                case Qt.Key_S: sliceItem.takeShot = true; break;
             }
         }
     }

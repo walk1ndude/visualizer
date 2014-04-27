@@ -93,8 +93,6 @@ private:
     QVector2D _tRange;
     QVector2D _pRange;
 
-    QVector3D _rotation;
-
     qreal _zoomFactor;
 
     int _minValue;

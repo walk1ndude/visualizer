@@ -53,8 +53,6 @@ private:
 
     qreal _nearVal;
     qreal _farVal;
-
-    float anglePi(const float & angle);
 };
 
 #endif // MATRIXSTACK_H

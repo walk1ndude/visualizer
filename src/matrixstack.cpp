@@ -49,25 +49,12 @@ void MatrixStack::scale(const QVector3D & scale) {
     _sMatrix.scale(scale);
 }
 
-float MatrixStack::anglePi(const float & angle) {
-    float a = angle;
-
-    while (a >= 180) {
-        a -= 180;
-    }
-    while (a <= -180) {
-        a += 180;
-    }
-
-    return a;
-}
-
 void MatrixStack::rotate(const QVector3D & angle) {
     QVector3D rot = _orientation - angle;
 
-    _mMatrix.rotate(anglePi(rot.x()), 1.0, 0.0, 0.0);
-    _mMatrix.rotate(anglePi(rot.y()), 0.0, 1.0, 0.0);
-    _mMatrix.rotate(anglePi(rot.z()), 0.0, 0.0, 1.0);
+    _mMatrix.rotate(rot.x(), 1.0, 0.0, 0.0);
+    _mMatrix.rotate(rot.y(), 0.0, 1.0, 0.0);
+    _mMatrix.rotate(rot.z(), 0.0, 0.0, 1.0);
 
     _orientation = angle;
 }

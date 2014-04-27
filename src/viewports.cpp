@@ -43,16 +43,16 @@ void ViewPorts::rotate(qreal xRot, qreal yRot, qreal zRot) {
 
         switch (_viewPorts[i].projectionType()) {
             case ViewPort::PERSPECTIVE:
-                _viewPorts[i].rotate(QVector3D(xRot + 90.0, yRot, zRot));
+                _viewPorts[i].rotate(QVector3D(xRot - 90.0, yRot, zRot));
                 break;
             case ViewPort::BOTTOM:
                 _viewPorts[i].rotate(QVector3D(0.0, 0.0, zRot));
                 break;
-            case ViewPort::LEFT:
-                _viewPorts[i].rotate(QVector3D(xRot + 90.0, 0.0, 0.0));
-                break;
             case ViewPort::FRONT:
-                _viewPorts[i].rotate(QVector3D(90.0, yRot + 90.0, 0.0));
+                _viewPorts[i].rotate(QVector3D(xRot - 90.0, 0.0, 0.0));
+                break;
+            case ViewPort::LEFT:
+                _viewPorts[i].rotate(QVector3D(-90.0, yRot - 90.0, 0.0));
                 break;
         }
     }

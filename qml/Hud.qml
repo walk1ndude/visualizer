@@ -29,6 +29,8 @@ Item {
         GeometryGrid {
             id: geometryGrid
 
+            angleShot: hud.angleShot
+
             anchors.right: parent.right
             anchors.rightMargin: 10
         }

@@ -83,7 +83,7 @@ Grid {
         text: HelperFuncs.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
     }
 
-    onAngleShotChanged: yRotSlider.value = geometryGrid.angleShot
+    onAngleShotChanged: yRotSlider.value = geometryGrid.angleShot;
 
     function updateAngle() {
         geometryGrid.angle = Qt.vector3d(xRotSlider.value, yRotSlider.value, zRotSlider.value);

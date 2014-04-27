@@ -36,7 +36,6 @@ SliceViewer::SliceViewer() :
     _sRange(QVector2D(0.0, 1.0)),
     _tRange(QVector2D(0.0, 1.0)),
     _pRange(QVector2D(0.0, 1.0)),
-    _rotation(QVector3D(0.0, 0.0, 0.0)),
     _zoomFactor(2.0),
     _minValue(5),
     _maxValue(100),
@@ -63,6 +62,7 @@ QVector3D SliceViewer::rotation() {
 
 void SliceViewer::setRotation(const QVector3D & rotation) {
     _rotation = rotation;
+
     _viewPorts.rotate(_rotation.x(), _rotation.y(), _rotation.z());
     update();
 }
@@ -157,7 +157,7 @@ void SliceViewer::initializeViewPorts() {
                         (halfWidth - 5) / (qreal) width(),
                         (halfHeight - 5) / (qreal) height()
                         ),
-                    ViewPort::LEFT)
+                    ViewPort::FRONT)
                 );
 
     viewPorts.push_back(
@@ -168,7 +168,7 @@ void SliceViewer::initializeViewPorts() {
                         (halfWidth - 5) / (qreal) width(),
                         (halfHeight - 5) / (qreal) height()
                         ),
-                    ViewPort::FRONT)
+                    ViewPort::LEFT)
                 );
 
     _viewPorts.setViewPorts(viewPorts, window()->size());
@@ -204,10 +204,6 @@ void SliceViewer::drawSlices(QSharedPointer<uchar> mergedData, QSharedPointer<uc
     }
 
     _viewPorts.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
-
-    _viewPorts[0].rotate(QVector3D(-90.0, 0.0, 0.0));
-    _viewPorts[2].rotate(QVector3D(-90.0, 0.0, 0.0));
-    _viewPorts[3].rotate(QVector3D(-90.0, -90.0, 0.0));
 
     _slicesReady = true;
     _needsInitialize = true;
@@ -279,6 +275,10 @@ void SliceViewer::render() {
 
     for (int i = 0; i != 4; ++ i) {
         boundingRect = _viewPorts[i].boundingRect();
+
+        if (_viewPorts[i].projectionType() == ViewPort::PERSPECTIVE) {
+            _screenSaveRect = boundingRect;
+        }
 
         glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
 

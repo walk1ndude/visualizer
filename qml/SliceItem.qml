@@ -5,7 +5,7 @@ import TomographyTools 1.0
 Item {
     id: sliceItem
 
-    property bool takeShots: false
+    property bool takeShot: false
 
     Rectangle {
 
@@ -66,11 +66,15 @@ Item {
             width: 640
             height: 640
             z: -2
+
+            takeShot: sliceItem.takeShot
         }
     }
 
-    Behavior on takeShots {
-        //angleShotAnimation
+    onTakeShotChanged: {
+        if (sliceItem.takeShot) {
+            angleShotTimer.running = true;
+        }
     }
 
     function show() {
@@ -79,16 +83,22 @@ Item {
         verticalSeparator.visible = !verticalSeparator.visible;
     }
 
-    NumberAnimation {
-        id: angleShotAnimation
+    Timer {
+        id: angleShotTimer
+        interval: 200
 
-        target: sliceHud
-        property: "angleShot"
+        repeat: true
+        running: false
 
-        running: true
-        duration: 1000
+        onTriggered: {
+            sliceHud.angleShot += 1.0;
 
-        from: 0.0
-        to: 180.0
+            if (sliceHud.angleShot > 180.0) {
+                angleShotTimer.running = false;
+                sliceHud.angleShot = 0.0;
+
+                sliceItem.takeShot = false;
+            }
+        }
     }
 }

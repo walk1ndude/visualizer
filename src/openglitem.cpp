@@ -9,8 +9,10 @@
 OpenGLItem::OpenGLItem() :
     _needsInitialize(false),
     _isTextureUpdated(true),
+    _screenSaveRect(QRectF(0, 0, width(), height())),
     _context(0),
-    _fbo(0) {
+    _fbo(0),
+    _takeShot(false) {
 
     setFlag(QQuickItem::ItemHasContents);
     QObject::connect(this, &OpenGLItem::windowChanged, this, &OpenGLItem::handleWindowChanged, Qt::DirectConnection);
@@ -27,6 +29,14 @@ OpenGLItem::~OpenGLItem() {
     if (_fbo) {
         delete _fbo;
     }
+}
+
+bool OpenGLItem::takeShot() {
+    return _takeShot;
+}
+
+void OpenGLItem::setTakeShot(const bool & takeShot) {
+    _takeShot = takeShot;
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
@@ -90,6 +100,15 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         }
 
         render();
+
+        if (_takeShot) {
+            _fbo->toImage().copy(
+                        _screenSaveRect.x(),
+                        _screenSaveRect.y(),
+                        _screenSaveRect.width(),
+                        _screenSaveRect.height()
+                        ).save((_rotation.y() > 99 ? "" : (_rotation.y() > 9 ? "0" : "00")) + QString::number(_rotation.y()) + ".png");
+        }
 
         savedContext->makeCurrent(window());
 
