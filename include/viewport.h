@@ -26,7 +26,7 @@ public:
 
     void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
 
-    void zoom(const qreal & factor);
+    void zoom(const qreal & zoomFactor);
     void rotate(const QVector3D & angle);
     void scale(const QVector3D & scale);
 

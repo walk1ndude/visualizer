@@ -16,8 +16,8 @@
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
     _imageNumber(0),
-    _minValue(40),
-    _maxValue(55) {
+    _minValue(5),
+    _maxValue(100) {
 
 }
 

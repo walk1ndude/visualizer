@@ -67,7 +67,7 @@ Grid {
         minimumValue: 0.1
         maximumValue: 4.0
         value: 2.0
-        onValueChanged: hud.zoomChanged(value);
+        onValueChanged: hud.zoomFactor = value;
     }
 
     Text {
@@ -75,6 +75,6 @@ Grid {
     }
 
     function updateAngle() {
-        hud.angleChanged(xRotSlider.value, yRotSlider.value, zRotSlider.value);
+        hud.angle = Qt.vector3d(xRotSlider.value, yRotSlider.value, zRotSlider.value);
     }
 }

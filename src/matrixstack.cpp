@@ -35,13 +35,13 @@ QMatrix3x3 MatrixStack::normalM() {
     return (_mMatrix * _vMatrix).normalMatrix();
 }
 
-void MatrixStack::zoom(const qreal & factor) {
+void MatrixStack::zoom(const qreal & zoomFactor) {
     _pMatrix.setToIdentity();
     if (_projectionType == MatrixStack::PERSPECTIVE) {
-        _pMatrix.perspective(_fov / fabs(_eye.z() / factor), _aspectRatio, _nearVal, _farVal);
+        _pMatrix.perspective(_fov / fabs(_eye.z() / zoomFactor), _aspectRatio, _nearVal, _farVal);
     }
     else {
-        _pMatrix.ortho(-factor / 2, factor / 2, -factor / 2, factor / 2, _nearVal, _farVal);
+        _pMatrix.ortho(-zoomFactor / 2, zoomFactor / 2, -zoomFactor / 2, zoomFactor / 2, _nearVal, _farVal);
     }
 }
 

@@ -6,12 +6,12 @@ Item {
     signal minValueChanged(int value);
     signal maxValueChanged(int value);
 
-    signal sRangeChanged(vector2d sRange);
-    signal tRangeChanged(vector2d tRange);
-    signal pRangeChanged(vector2d pRange);
+    property vector3d angle: Qt.vector3d(0.0, 0.0, 0.0)
+    property real zoomFactor: 2.0
 
-    signal angleChanged(real xRot, real yRot, real zRot);
-    signal zoomChanged(real value);
+    property vector2d sRange: Qt.vector2d(0.0, 1.0)
+    property vector2d tRange: Qt.vector2d(0.0, 1.0)
+    property vector2d pRange: Qt.vector2d(0.0, 1.0)
 
     Rectangle {
         color: "#71888888"

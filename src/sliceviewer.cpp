@@ -37,6 +37,7 @@ SliceViewer::SliceViewer() :
     _tRange(QVector2D(0.0, 1.0)),
     _pRange(QVector2D(0.0, 1.0)),
     _rotation(QVector3D(0.0, 0.0, 0.0)),
+    _zoomFactor(2.0),
     _slicesReady(false),
     _textureHead(0),
     _textureGradient(0),
@@ -60,7 +61,44 @@ QVector3D SliceViewer::rotation() {
 
 void SliceViewer::setRotation(const QVector3D & rotation) {
     _rotation = rotation;
-    qDebug() << _rotation;
+    _viewPorts.rotate(_rotation.x(), _rotation.y(), _rotation.z());
+    update();
+}
+
+qreal SliceViewer::zoomFactor() {
+    return _zoomFactor;
+}
+
+void SliceViewer::setZoomFactor(const qreal & zoomFactor) {
+    _viewPorts.zoom(zoomFactor);
+    update();
+}
+
+QVector2D SliceViewer::sRange() {
+    return _sRange;
+}
+
+void SliceViewer::setSRange(const QVector2D & sRange) {
+    _sRange = sRange;
+    update();
+}
+
+QVector2D SliceViewer::tRange() {
+    return _tRange;
+}
+
+void SliceViewer::setTRange(const QVector2D & tRange) {
+    _tRange = tRange;
+    update();
+}
+
+QVector2D SliceViewer::pRange() {
+    return _pRange;
+}
+
+void SliceViewer::setPRange(const QVector2D & pRange) {
+    _pRange = pRange;
+    update();
 }
 
 void SliceViewer::initializeViewPorts() {
@@ -308,34 +346,4 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uc
 void SliceViewer::initializeTextures() {
     initializeTexture(&_textureHead, _mergedData, QOpenGLTexture::R8_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
     initializeTexture(&_textureGradient, _gradientData, QOpenGLTexture::RGB8_UNorm, QOpenGLTexture::BGR, &_pixelOptionsGradient);
-}
-
-void SliceViewer::updateAngle(qreal xRot, qreal yRot, qreal zRot) {
-    _viewPorts.rotate(xRot, yRot, zRot);
-    update();
-}
-
-void SliceViewer::updateZoom(qreal factor) {
-    _viewPorts.zoom(factor);
-    update();
-}
-
-void SliceViewer::updateAmbientIntensity(qreal ambientIntensity) {
-    _ambientIntensity = ambientIntensity;
-    update();
-}
-
-void SliceViewer::updateSRange(QVector2D sRange) {
-    _sRange = sRange;
-    update();
-}
-
-void SliceViewer::updateTRange(QVector2D tRange) {
-    _tRange = tRange;
-    update();
-}
-
-void SliceViewer::updatePRange(QVector2D pRange) {
-    _pRange = pRange;
-    update();
 }

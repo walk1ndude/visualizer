@@ -65,8 +65,8 @@ void ViewPort::scale(const QVector3D & scale) {
     _matrixStack.scale(scale);
 }
 
-void ViewPort::zoom(const qreal & factor) {
-    _matrixStack.zoom(factor);
+void ViewPort::zoom(const qreal & zoomFactor) {
+    _matrixStack.zoom(zoomFactor);
 }
 
 void ViewPort::rotate(const QVector3D & angle) {

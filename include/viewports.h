@@ -15,7 +15,7 @@ public:
 
     void scale(const QVector3D & scale);
     void rotate(qreal xRot, qreal yRot, qreal zRot);
-    void zoom(const qreal & factor);
+    void zoom(const qreal & zoomFactor);
 
     void resize(const QSize & windowSize);
 

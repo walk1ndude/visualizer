@@ -26,14 +26,32 @@ void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage =
 
 class SliceViewer : public OpenGLItem {
     Q_OBJECT
+
     Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
-    
+    Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor NOTIFY zoomFactorChanged)
+
+    Q_PROPERTY(QVector2D sRange READ sRange WRITE setSRange NOTIFY sRangeChanged)
+    Q_PROPERTY(QVector2D tRange READ tRange WRITE setTRange NOTIFY tRangeChanged)
+    Q_PROPERTY(QVector2D pRange READ pRange WRITE setPRange NOTIFY pRangeChanged)
+
 public:
     explicit SliceViewer();
     virtual ~SliceViewer();
 
     QVector3D rotation();
     void setRotation(const QVector3D & rotation);
+
+    qreal zoomFactor();
+    void setZoomFactor(const qreal & zoomFactor);
+
+    QVector2D sRange();
+    void setSRange(const QVector2D & sRange);
+
+    QVector2D tRange();
+    void setTRange(const QVector2D & tRange);
+
+    QVector2D pRange();
+    void setPRange(const QVector2D & pRange);
 
 protected:
     virtual void initialize();
@@ -68,6 +86,8 @@ private:
 
     QVector3D _rotation;
 
+    qreal _zoomFactor;
+
     bool _slicesReady;
 
     QOpenGLTexture * _textureHead;
@@ -99,6 +119,11 @@ private:
 
 signals:
     void rotationChanged();
+    void zoomFactorChanged();
+
+    void sRangeChanged();
+    void tRangeChanged();
+    void pRangeChanged();
 
 public slots:
     void drawSlices(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
@@ -106,15 +131,6 @@ public slots:
                     const std::vector<size_t> & size = std::vector<size_t>(),
                     const int & alignment = 0, const size_t & rowLength = 0,
                     const int & alignmentGradient = 0, const size_t & rowLengthGradient = 0);
-
-    void updateAmbientIntensity(qreal ambientIntensity);
-
-    void updateAngle(qreal xRot, qreal yRot, qreal zRot);
-    void updateZoom(qreal factor);
-
-    void updateSRange(QVector2D sRange);
-    void updateTRange(QVector2D tRange);
-    void updatePRange(QVector2D pRange);
 
     virtual void cleanup();
 };

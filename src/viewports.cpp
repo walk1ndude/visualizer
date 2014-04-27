@@ -58,8 +58,8 @@ void ViewPorts::rotate(qreal xRot, qreal yRot, qreal zRot) {
     }
 }
 
-void ViewPorts::zoom(const qreal & factor) {
+void ViewPorts::zoom(const qreal & zoomFactor) {
     for (int i = 0; i != _viewPorts.size(); ++ i) {
-        _viewPorts[i].zoom(factor);
+        _viewPorts[i].zoom(zoomFactor);
     }
 }

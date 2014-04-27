@@ -48,7 +48,7 @@ Item {
         id: sRange
         objectName: "SRange"
 
-        onRangeVectorChanged: hud.sRangeChanged(rangeVector)
+        onRangeVectorChanged: hud.sRange = rangeVector
 
         anchors.top: grid.bottom
     }
@@ -58,7 +58,7 @@ Item {
         id: tRange
         objectName: "TRange"
 
-        onRangeVectorChanged: hud.tRangeChanged(rangeVector)
+        onRangeVectorChanged: hud.tRange = rangeVector
 
         anchors.top: sRange.bottom
     }
@@ -68,7 +68,7 @@ Item {
         id: pRange
         objectName: "PRange"
 
-        onRangeVectorChanged: hud.pRangeChanged(rangeVector)
+        onRangeVectorChanged: hud.pRange = rangeVector
 
         anchors.top: tRange.bottom
     }

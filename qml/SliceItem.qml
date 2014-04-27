@@ -15,6 +15,15 @@ Item {
             height: sliceItem.height * 0.25
 
             visible: false
+
+            onAngleChanged: sliceViewer.rotation = sliceHud.angle;
+
+            onZoomFactorChanged: sliceViewer.zoomFactor = sliceHud.zoomFactor;
+
+            onSRangeChanged: sliceViewer.sRange = sliceHud.sRange;
+            onTRangeChanged: sliceViewer.tRange = sliceHud.tRange;
+            onPRangeChanged: sliceViewer.pRange = sliceHud.pRange;
+
         }
 
         Rectangle {
