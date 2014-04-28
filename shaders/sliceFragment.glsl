@@ -1,7 +1,5 @@
 #version 330 core
 smooth in highp vec4 fragPos;
-smooth in highp vec4 fragNormal;
-smooth in highp vec4 vertexPos;
 
 struct Ranges {
    vec2 sRange;
@@ -18,7 +16,7 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
-uniform highp mat3 normalMatrix;
+uniform highp mat4 normalMatrix;
 
 struct Material {
     vec4 emissive;
@@ -47,13 +45,15 @@ void main(void) {
 
         if (headColor.r > 0.01) {
 
-            vec4 N = normalize(vec4(normalMatrix * noise3(0.5), 0.0));//texture(texGradient, fragPos.stp));
+            vec4 normal = texture(texGradient, fragPos.stp);
+
+            vec4 N = normalize(normalMatrix * normal);
             vec4 L = normalize(light.direction - fragPos);
 
             float NdotL = max(dot(N, L), 0);
             vec4 diffuse =  NdotL * light.color * headMaterial.diffuse;
 
-            vec4 V = normalize(noise4(0.5) - fragPos);
+            vec4 V = normalize(normal - fragPos);
             vec4 H = normalize(L + V);
             vec4 R = reflect(-L, N);
 

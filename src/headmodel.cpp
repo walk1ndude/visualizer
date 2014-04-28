@@ -13,7 +13,7 @@ HeadModel::HeadModel() :
     _headMaterial.diffuse = QVector4D(0.1, 0.1, 0.1, 0.1);
     _headMaterial.specular = QVector4D(0.5, 0.7, 0.8, 1.0);
 
-    _headMaterial.shininess = 10.0;
+    _headMaterial.shininess = 50.0;
 }
 
 HeadModel::~HeadModel() {

@@ -11,15 +11,10 @@ uniform highp vec4 specular;
 uniform highp float shininess;
 
 smooth out highp vec4 fragPos;
-smooth out highp vec4 fragNormal;
-smooth out highp vec4 vertexPos;
 
 void main(void) {
-    vertexPos = view * vertex;
-
-    gl_Position = projection * vertexPos;
+    gl_Position = projection * view * vertex;
 
     vec4 texVec = vec4(0.5, 0.5, 0.5, 1.0);
     fragPos = scale * model * (tex - texVec) + texVec;
-
 }

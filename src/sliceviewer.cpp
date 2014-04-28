@@ -46,7 +46,7 @@ SliceViewer::SliceViewer() :
     _mergedData(0),
     _gpu_driver(NVidia_binary) {
 
-    _lightSource.color = QVector4D(0.5, 0.5, 0.0, 1.0);
+    _lightSource.color = QVector4D(1.0, 1.0, 1.0, 1.0);
     _lightSource.position = QVector4D(10.0, 10.0, -10.0, 0.0);
     _lightSource.ambientIntensity = 4.3;
 
@@ -342,7 +342,7 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uc
             tex->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
         }
         else {
-            tex->setSize(32, 32, 32);
+            tex->setSize(256, 256, _size[2]);
         }
 
         tex->setFormat(textureFormat);
