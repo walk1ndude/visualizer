@@ -10,7 +10,6 @@ struct Ranges {
 uniform highp Ranges ranges;
 
 uniform highp sampler3D texHead;
-uniform highp sampler3D texGradient;
 
 uniform highp mat4 model;
 uniform highp mat4 view;
@@ -35,17 +34,84 @@ struct LightSource {
 
 uniform highp LightSource light;
 
+uniform highp vec3 step;
+
 out highp vec4 fragColor;
+
+vec4 sobel3(vec3 position) {
+    vec3 p = vec3(0);
+    vec3 n = vec3(0);
+
+    float fragElem[27];
+
+    fragElem[0] = -1 * texture(texHead, position + vec3(-step.x, -step.y, -step.z)).r;
+    fragElem[1] = -3 * texture(texHead, position + vec3(-step.x, 0, -step.z)).r;
+    fragElem[2] = -1 * texture(texHead, position + vec3(-step.x, step.y, -step.z)).r;
+    fragElem[3] = -3 * texture(texHead, position + vec3(-step.x, -step.y, 0)).r;
+    fragElem[4] = -6 * texture(texHead, position + vec3(-step.x, 0, 0)).r;
+    fragElem[5] = -3 * texture(texHead, position + vec3(-step.x, step.y, 0)).r;
+    fragElem[6] = -1 * texture(texHead, position + vec3(-step.x, -step.y, step.z)).r;
+    fragElem[7] = -3 * texture(texHead, position + vec3(-step.x, 0, step.z)).r;
+    fragElem[8] = -1 * texture(texHead, position + vec3(-step.x, step.y, step.z)).r;
+
+    fragElem[9] = 0.0;
+    fragElem[10] = 0.0;
+    fragElem[11] = 0.0;
+    fragElem[12] = 0.0;
+    fragElem[13] = 0.0;
+    fragElem[14] = 0.0;
+    fragElem[15] = 0.0;
+    fragElem[16] = 0.0;
+    fragElem[17] = 0.0;
+
+    fragElem[18] = 1 * texture(texHead, position + vec3(step.x, -step.y, -step.z)).r;
+    fragElem[19] = 3 * texture(texHead, position + vec3(step.x, 0, -step.z)).r;
+    fragElem[20] = 1 * texture(texHead, position + vec3(step.x, step.y, -step.z)).r;
+    fragElem[21] = 3 * texture(texHead, position + vec3(step.x, -step.y, 0)).r;
+    fragElem[22] = 6 * texture(texHead, position + vec3(step.x, 0, 0)).r;
+    fragElem[23] = 3 * texture(texHead, position + vec3(step.x, step.y, 0)).r;
+    fragElem[24] = 1 * texture(texHead, position + vec3(step.x, -step.y, step.z)).r;
+    fragElem[25] = 3 * texture(texHead, position + vec3(step.x, 0, step.z)).r;
+    fragElem[26] = 1 * texture(texHead, position + vec3(step.x, step.y, step.z)).r;
+
+    for (int i = 0; i != 27; ++ i) {
+        if (i / 9 == 0) {
+            p.x += fragElem[i];
+        }
+
+        if (i / 9 == 2) {
+            n.x += fragElem[i];
+        }
+
+        if (i % 3 == 0) {
+            p.y += fragElem[i];
+        }
+
+        if (i % 3 == 2) {
+            n.y += fragElem[i];
+        }
+
+        if (i % 9 / 3 == 0) {
+            p.z += fragElem[i];
+        }
+
+        if (i % 9 / 3 == 2) {
+            n.z += fragElem[i];
+        }
+    }
+
+    return vec4(normalize(n - p), 0.0);
+}
 
 void main(void) {
     if (fragPos.s >= ranges.sRange[0] && fragPos.s <= ranges.sRange[1]
             && fragPos.t >= ranges.tRange[0] && fragPos.t <= ranges.tRange[1]
             && fragPos.p >= ranges.pRange[0] && fragPos.p <= ranges.pRange[1]) {
+
         vec4 headColor = texture(texHead, fragPos.stp);
 
         if (headColor.r > 0.01) {
-
-            vec4 normal = texture(texGradient, fragPos.stp);
+            vec4 normal = sobel3(fragPos.stp);
 
             vec4 N = normalize(normalMatrix * normal);
             vec4 L = normalize(light.direction - fragPos);
@@ -62,12 +128,14 @@ void main(void) {
 
             vec4 specular = pow(RdotV, headMaterial.shininess) * light.color * headMaterial.specular;
 
-            fragColor = light.color * (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
+            fragColor = (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
 
-           /* if (fragColor.r < 0.15) {
-                fragColor.a = 1.0;
+            if (headColor.r > 0.8) {
+                fragColor.a *= 10.0;
             }
-*/
+            else {
+                fragColor.a *= 0.01;
+            }
         }
         else {
             discard;

@@ -4,12 +4,14 @@ import QtQuick.Controls 1.1
 Item {
     id: shaderGrid
 
-    property vector2d sRange: Qt.vector2d(0.0, 1.0)
-    property vector2d tRange: Qt.vector2d(0.0, 1.0)
-    property vector2d pRange: Qt.vector2d(0.0, 1.0)
+    property vector2d sRange: sRange.rangeVector
+    property vector2d tRange: tRange.rangeVector
+    property vector2d pRange: pRange.rangeVector
 
-    property int minValue: 5
-    property int maxValue: 100
+    property vector2d huRange: Qt.vector2d(0, 65535)
+
+    property int minHU: minHUSlider.value
+    property int maxHU: maxHUSlider.value
 
     Grid {
         id: grid
@@ -19,39 +21,37 @@ Item {
         spacing: 5
 
         Text {
-            text: qsTr("minValue")
+            text: qsTr("minHU")
         }
 
         Slider {
-            id: minValueSlider
+            id: minHUSlider
             width: 200
-            minimumValue: 0
-            maximumValue: 255
-            value: 5
+            minimumValue: shaderGrid.huRange.x
+            maximumValue: shaderGrid.huRange.y
+            value: 400
             stepSize: 1.0
-            onValueChanged: shaderGrid.minValue = value;
         }
 
         Text {
-            text: minValueSlider.value
+            text: minHUSlider.value
         }
 
         Text {
-            text: qsTr("maxValue")
+            text: qsTr("maxHU")
         }
 
         Slider {
-            id: maxValueSlider
+            id: maxHUSlider
             width: 200
-            minimumValue: 0
-            maximumValue: 255
-            value: 100
+            minimumValue: shaderGrid.huRange.x
+            maximumValue: shaderGrid.huRange.y
+            value: 63512
             stepSize: 1.0
-            onValueChanged: shaderGrid.maxValue = value;
         }
 
         Text {
-            text: maxValueSlider.value
+            text: maxHUSlider.value
         }
     }
 

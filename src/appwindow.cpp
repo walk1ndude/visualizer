@@ -30,8 +30,8 @@ void AppWindow::fetchConnections() {
 
         QObject::connect(this, &AppWindow::slicesProcessed, sliceViewer, &SliceViewer::drawSlices);
 
-        QObject::connect(sliceViewer, &SliceViewer::minValueChanged, this, &AppWindow::minValueChanged);
-        QObject::connect(sliceViewer, &SliceViewer::maxValueChanged, this, &AppWindow::maxValueChanged);
+        QObject::connect(sliceViewer, &SliceViewer::minHUChanged, this, &AppWindow::minHUChanged);
+        QObject::connect(sliceViewer, &SliceViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
 
         QObject::connect(sliceViewer, SIGNAL(initialized()), sliceItem, SLOT(show()));
 

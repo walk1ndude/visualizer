@@ -16,18 +16,9 @@ Item {
             width: sliceItem.width
             height: sliceItem.height * 0.25
 
+            huRange: sliceViewer.huRange
+
             visible: false
-
-            onAngleChanged: sliceViewer.rotation = sliceHud.angle;
-
-            onZoomFactorChanged: sliceViewer.zoomFactor = sliceHud.zoomFactor;
-
-            onSRangeChanged: sliceViewer.sRange = sliceHud.sRange;
-            onTRangeChanged: sliceViewer.tRange = sliceHud.tRange;
-            onPRangeChanged: sliceViewer.pRange = sliceHud.pRange;
-
-            onMinValueChanged: sliceViewer.minValue = sliceHud.minValue;
-            onMaxValueChanged: sliceViewer.maxValue = sliceHud.maxValue;
         }
 
         Rectangle {
@@ -66,6 +57,17 @@ Item {
             width: 640
             height: 640
             z: -2
+
+            sRange: sliceHud.sRange
+            tRange: sliceHud.tRange
+            pRange: sliceHud.pRange
+
+            rotation: sliceHud.angle
+
+            zoomFactor: sliceHud.zoomFactor
+
+            minHU: sliceHud.minHU
+            maxHU: sliceHud.maxHU
 
             takeShot: sliceItem.takeShot
         }

@@ -24,26 +24,27 @@ private:
   std::vector<cv::Mat *> _noisy;
   std::vector<cv::Mat *> _filtered;
 
-  int _minValue;
-  int _maxValue;
+  DicomData _dicomData;
 
   void showImageWithNumber(const size_t & imageNumber);
-  void readImage(gdcm::File & dFile, const gdcm::Image & dImage);
+  void readImage(gdcm::File &dFile, const gdcm::Image & dImage);
 
-  void updateFiltered();
+  void fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage);
+  void runSliceProcessing(const bool & tellAboutHURange = false);
+  void updateDicomData();
 signals:
-  void slicesProcessed(QSharedPointer<uchar> mergedData, QSharedPointer<uchar>  gradientData,
+  void slicesProcessed(QSharedPointer<uchar> mergedData,
                        const std::vector<float> & scaling = std::vector<float>(),
                        const std::vector<size_t> & size = std::vector<size_t>(),
                        const int & alignment = 0, const size_t & rowLength = 0,
-                       const int & alignmentGradient = 0, const size_t & rowLengthGradient = 0);
+                       const std::vector<int> & huRange = std::vector<int>());
 
 public slots:
   void readFile(const QString & dicomFile);
   void changeSliceNumber(const int & ds);
 
-  void updateMinValue(const int & minValue);
-  void updateMaxValue(const int & maxValue);
+  void updateMinHU(const int &minHU);
+  void updateMaxHU(const int & maxHU);
 };
 
 #endif // DICOMREADER_H

@@ -12,8 +12,8 @@ int main(int argc, char * argv[]) {
 
     QObject::connect(&appWindow, &AppWindow::fileOpened, &dicomReader, &DicomReader::readFile);
     QObject::connect(&appWindow, &AppWindow::sliceNumberChanged, &dicomReader, &DicomReader::changeSliceNumber);
-    QObject::connect(&appWindow, &AppWindow::minValueChanged, &dicomReader, &DicomReader::updateMinValue);
-    QObject::connect(&appWindow, &AppWindow::maxValueChanged, &dicomReader, &DicomReader::updateMaxValue);
+    QObject::connect(&appWindow, &AppWindow::minHUChanged, &dicomReader, &DicomReader::updateMinHU);
+    QObject::connect(&appWindow, &AppWindow::maxHUChanged, &dicomReader, &DicomReader::updateMaxHU);
 
     QObject::connect(&dicomReader, &DicomReader::slicesProcessed, &appWindow, &AppWindow::slicesProcessed);
 

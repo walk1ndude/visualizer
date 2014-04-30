@@ -127,61 +127,24 @@ inline void backproject(const cv::Mat & src, cv::Mat & dst,
     }
 }
 
-static int count = 0;
-
-inline void calcGradientSlice(const int & position, const std::vector<cv::Mat> & smoothed, uchar * gradientStartPosition) {
-    int height = smoothed.at(0).cols;
-    int width = smoothed.at(0).rows;
-
-    int startSlice = std::max(0, position - 1);
-    int endSlice = std::min((int) smoothed.size() - 1, position + 1);
-
-    cv::Vec3f p;
-    cv::Vec3f n;
-    cv::Vec3f normalized;
-
-    cv::Mat gradSlice(cv::Mat::zeros(width, height, CV_8UC3));
-    cv::Mat gradSliceResized;
-
-    for (int x = 0; x != width; ++ x) {
-        for (int y = 0; y != height; ++ y) {
-            p[0] = smoothed.at(position).at<uchar>(y, std::max(x - 1, 0));
-            n[0] = smoothed.at(position).at<uchar>(y, std::min(x + 1, width));
-
-            p[1] = smoothed.at(position).at<uchar>(std::max(y, y - 1), x);
-            n[1] = smoothed.at(position).at<uchar>(std::max(y, y + 1), x);
-
-            p[2] = smoothed.at(startSlice).at<uchar>(y, x);
-            n[2] = smoothed.at(endSlice).at<uchar>(y, x);
-
-            cv::normalize(n - p, normalized, 1.0);
-
-            gradSlice.at<cv::Vec3b>(y, x) = normalized;
-        }
-    }
-
-    cv::resize(gradSlice, gradSliceResized, cv::Size(GRAD_WIDTH, GRAD_HEIGHT), 0, 0, cv::INTER_CUBIC);
-
-    memcpy(gradientStartPosition, gradSliceResized.data, gradSliceResized.elemSize() * gradSliceResized.total());
-}
-
-inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue, const int & maxValue,
+inline void filterSlice(const cv::Mat & src, cv::Mat & dst,
                         const cv::Mat & dilateMat, const cv::Size & gaussSize) {
-    cv::Mat filtered(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
-
-    cv::Mat maskRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
-    cv::Mat masked(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
-    cv::Mat maskedRange(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
+    cv::Mat filtered(cv::Mat::zeros(src.rows, src.cols, CV_16UC1));
+/*
+    cv::Mat maskRange(cv::Mat::zeros(src.rows, src.cols, CV_16UC1));
+    cv::Mat masked(cv::Mat::zeros(src.rows, src.cols, CV_16UC1));
+    cv::Mat maskedRange(cv::Mat::zeros(src.rows, src.cols, CV_16UC1));
 
     cv::inRange(src, cv::Scalar(minValue), cv::Scalar(maxValue), maskRange);
 
     cv::bitwise_and(src, src, masked, maskRange);
+*/
+    //cv::adaptiveThreshold(maskedRange, masked, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 3);
+    cv::dilate(src, filtered, dilateMat);
+    cv::GaussianBlur(filtered, dst, gaussSize, 2.4);
 
-    cv::adaptiveThreshold(masked, maskedRange, 255, cv::ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY_INV, 3, 3);
-    cv::dilate(maskedRange, maskedRange, dilateMat);
-    cv::GaussianBlur(maskedRange, maskedRange, gaussSize, 1.4);
-
-    cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_8UC1));
+    /*
+    cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_16UC1));
 
     std::vector<std::vector<cv::Point> >contours;
 
@@ -189,62 +152,54 @@ inline void filterSlice(const cv::Mat & src, cv::Mat & dst, const int & minValue
 
     for (size_t k = 0; k < contours.size(); ++ k) {
         if (contours.at(k).size() > 10) {
-            cv::drawContours(maskContours, contours, k, cv::Scalar(255), CV_FILLED);
+            cv::drawContours(maskContours, contours, k, cv::Scalar(65535), CV_FILLED);
         }
     }
 
-    cv::bitwise_and(masked, masked, filtered, maskContours);
-    cv::equalizeHist(filtered, dst);
+    cv::bitwise_and(masked, masked, dst, maskContours);*/
+    //cv::equalizeHist(filtered, dst);
 }
 
 inline void smoothSlices(const int startSlice, const int endSlice, std::vector<cv::Mat> & slices, cv::Mat & smoothed) {
     int cols = slices.at(startSlice).cols;
     int rows = slices.at(startSlice).rows;
 
-    cv::Mat mergeMat(cv::Mat::zeros(rows, cols, CV_16UC1));
+    cv::Mat mergeMat(cv::Mat::zeros(rows, cols, CV_32FC1));
     cv::Mat conv16;
 
     for (int i = startSlice; i != endSlice; ++ i) {
-        slices.at(i).convertTo(conv16, CV_16UC1, FROM_8_TO_16);
+        slices.at(i).convertTo(conv16, CV_32FC1, FROM_8_TO_16);
         mergeMat += conv16;
     }
 
     mergeMat /= (endSlice - startSlice);
 
-    mergeMat.convertTo(smoothed, CV_8UC1, FROM_16_TO_8);
+    mergeMat.convertTo(smoothed, CV_16UC1, FROM_16_TO_8);
 }
 
 inline void mergeSlice(const int & startSlice, const int & endSlice, const int & sliceSize,
-                       std::vector<cv::Mat> & slices, std::vector<cv::Mat> & smoothed,
-                       uchar * mergeStartPoint) {
-    int position = startSlice;
+                       std::vector<cv::Mat> & slices, uchar * mergeStartPoint) {
+    cv::Mat smoothed;
 
-    smoothSlices(startSlice, endSlice, slices, smoothed[position]);
-    memcpy(mergeStartPoint, smoothed[position].data, sliceSize);
+    smoothSlices(startSlice, endSlice, slices, smoothed);
+    memcpy(mergeStartPoint, smoothed.data, sliceSize);
 }
 
 inline void checkNeighbours(const int & position, const int & neighbourDiameter,
                             const int & minNeighbour, const int & maxNeighbour,
-                            std::vector<cv::Mat> & filtered, std::vector<cv::Mat> & smoothed,
-                            std::vector<bool> & gradientCalculated,
-                            const int & sliceSize, const int & gradSize,
-                            uchar * mergeStartPoint, uchar * gradientStartPoint) {
+                            std::vector<cv::Mat> & filtered, std::vector<bool> & hasMerged,
+                            const int & sliceSize, uchar * mergeStartPoint) {
     int leftestMergeNeighbour = std::max(minNeighbour, position - neighbourDiameter);
     int rightestMergeNeighbour = std::min(maxNeighbour - neighbourDiameter, position + 1);
 
     int rightCheckNeighbour;
     int currentCheckNeighbour;
 
-    int smoothedSize = smoothed.size() - 1;
-
     bool canMerge;
-
-    int leftGradient;
-    int rightGradient;
 
     for (int leftCheckNeighbour = leftestMergeNeighbour; leftCheckNeighbour != rightestMergeNeighbour; ++ leftCheckNeighbour) {
 
-        if (!smoothed.at(leftCheckNeighbour).empty()) {
+        if (hasMerged[leftCheckNeighbour]) {
             continue;
         }
 
@@ -258,129 +213,26 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
         }
 
         if (canMerge) {
-            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, filtered, smoothed,
-                       mergeStartPoint + sliceSize * leftCheckNeighbour);
-
-            leftGradient = std::max(minNeighbour, leftCheckNeighbour - 1);
-            rightGradient = std::min(smoothedSize, leftCheckNeighbour + 1);
-
-            for (int leftCheckGradient = leftGradient; leftCheckGradient != rightGradient; ++ leftCheckGradient) {
-                if (!gradientCalculated[leftCheckGradient]
-                        && !smoothed.at(std::max(minNeighbour, leftCheckGradient - 1)).empty()
-                        && !smoothed.at(leftCheckGradient).empty()
-                        && !smoothed.at(std::min(smoothedSize, leftCheckGradient + 1)).empty()
-                        ) {
-                    gradientCalculated[leftCheckGradient] = true;
-                    calcGradientSlice(leftCheckGradient, smoothed, gradientStartPoint + gradSize * leftCheckGradient);
-                }
-            }
-
+            hasMerged[leftCheckNeighbour] = true;
+            mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, filtered, mergeStartPoint + sliceSize * leftCheckNeighbour);
             }
     }
 }
 
-typedef struct _FilterData {
-    std::vector<cv::Mat *> * src;
-    std::vector<cv::Mat *> * filtered;
+inline void processSlice(const int & i, std::vector<cv::Mat> & noisy, std::vector<cv::Mat> & filtered,
+                         std::vector<bool> & hasMerged,
+                         const int & sliceSize,
+                         const cv::Mat & dilateMat, const cv::Size & gaussSize,
+                         const int & neighbourDiameter, uchar * mergeLocation) {
+    filterSlice(noisy[i], filtered[i], dilateMat, gaussSize);
 
-    uchar ** mergeLocation;
-
-    uchar ** gradientLocation;
-
-    size_t * rowLenght;
-    int * alignment;
-
-    size_t * rowLenghtGradient;
-    int * alignmentGradient;
-
-    int neighbourRadius;
-
-    int minValue;
-    int maxValue;
-} FilterData;
-
-inline void processSlice(const int & i, std::vector<cv::Mat> & filtered, std::vector<cv::Mat> & smoothed,
-                         std::vector<bool> & gradientCalculated,
-                         const FilterData & filterData,
-                         const int & sliceSize, const int & gradSlice,
-                         const cv::Mat & dilateMat,
-                         const cv::Size & gaussSize, const int & neighbourDiameter) {
-    filterSlice(*(filterData.src->at(i)), filtered[i], filterData.minValue, filterData.maxValue, dilateMat, gaussSize);
-
-    checkNeighbours(i, neighbourDiameter, 0, filtered.size(), filtered, smoothed, gradientCalculated,
-                    sliceSize, gradSlice, *(filterData.mergeLocation), *(filterData.gradientLocation));
-
+    checkNeighbours(i, neighbourDiameter, 0, filtered.size(), filtered, hasMerged, sliceSize, mergeLocation);
 }
-
-class SliceFilter : public cv::ParallelLoopBody {
-protected:
-    FilterData _filterData;
-
-    cv::Mat _dilateMat;
-
-    cv::Size _gaussSize;
-
-    int _neighbourDiameter;
-
-    mutable std::vector<cv::Mat>_filtered;
-    mutable std::vector<cv::Mat>_smoothed;
-
-    mutable std::vector<bool>_gradientCalculated;
-
-    int _sliceSize;
-
-    int _gradSize;
-
-    inline void fetchCvMats(const cv::Size & newSize, const int & newType = CV_8UC1) {
-        int slicesTotalCount = _filterData.src->size();
-        int slicesMergeCount = slicesTotalCount - _neighbourDiameter;
-
-        _filtered.resize(slicesTotalCount);
-        _smoothed.resize(slicesMergeCount);
-
-        _gradientCalculated.resize(slicesMergeCount, false);
-
-        cv::Mat dummyMat(cv::Mat::zeros(newSize, newType));
-        cv::Mat dummyMatGrad(cv::Mat::zeros(GRAD_WIDTH, GRAD_HEIGHT, CV_8UC3));
-
-        _sliceSize = dummyMat.elemSize() * dummyMat.total();
-
-        _gradSize = dummyMatGrad.elemSize() * dummyMat.total();
-
-        *(_filterData.mergeLocation) = new uchar[_sliceSize * slicesMergeCount];
-        *(_filterData.gradientLocation) = new uchar[_gradSize * slicesMergeCount];
-
-        *(_filterData.alignment) = (dummyMat.step & 3) ? 1 : 4;
-        *(_filterData.rowLenght) = dummyMat.step1();
-
-        *(_filterData.alignmentGradient) = (dummyMatGrad.step & 3) ? 1 : 4;
-        *(_filterData.rowLenghtGradient) = dummyMatGrad.step1();
-    }
-
-public:
-    SliceFilter(FilterData & filterData) :
-        _filterData(filterData) {
-
-        _neighbourDiameter = 2 * _filterData.neighbourRadius;
-
-        _dilateMat = cv::Mat(3, 3, CV_8UC1);
-        _gaussSize = cv::Size(3, 3);
-
-        if (_filterData.src->size()) { // it could be uninitialized
-            fetchCvMats(_filterData.src->at(0)->size());
-        }
-    }
-
-    virtual void operator ()(const cv::Range & r) const {
-        for (int i = r.start; i != r.end; ++ i) {
-            processSlice(i, _filtered, _smoothed, _gradientCalculated,
-                         _filterData, _sliceSize, _gradSize, _dilateMat, _gaussSize, _neighbourDiameter);
-        }
-    }
-};
 
 typedef struct _DicomData {
-    std::vector<float> * imageSpacing;
+    std::vector<float> imageSpacings;
+
+    std::vector<char>vbuffer;
 
     int bytesAllocated;
 
@@ -389,14 +241,22 @@ typedef struct _DicomData {
     int depth;
 
     int sliceSize;
+
     char * buffer;
 
     int type;
 
-    int64_t minValue;
-    int64_t maxValue;
-    int64_t windowCenter;
-    int64_t windowWidth;
+    int minValue;
+    int maxValue;
+
+    int minHUPossible;
+    int maxHUPossible;
+
+    int minHU;
+    int maxHU;
+
+    int windowCenter;
+    int windowWidth;
 
     bool isLittleEndian;
     bool inverseNeeded;
@@ -404,83 +264,111 @@ typedef struct _DicomData {
     float slope;
     float intercept;
 
-    bool isRadonNeeded;
+    std::vector<cv::Mat *> * noisy;
+    std::vector<cv::Mat *> * filtered;
+
+    uchar ** mergeLocation;
+
+    size_t * rowLenght;
+    int * alignment;
+
+    int neighbourRadius;
+
+    //bool isRadonNeeded;
 } DicomData;
 
-template <typename T> inline void decodeSlice(const int & position, std::vector<cv::Mat *> * dst,
-                                              const cv::Size scaledSize, const DicomData & dicomData) {
+inline void decodeSlice(const int & position, std::vector<cv::Mat> & dst, const DicomData * dicomData) {
+    cv::Mat dcmToMat(cv::Mat::zeros(dicomData->width, dicomData->height, dicomData->type));
 
-    cv::Mat dcmToMat(cv::Mat::zeros(dicomData.width, dicomData.height, dicomData.type));
+    u_int16_t pixelU;
+    int16_t pixel;
 
-    T pixel;
+    char * posInBuffer = dicomData->buffer + dicomData->sliceSize * position;
 
-    char * posInBuffer = dicomData.buffer + dicomData.sliceSize * position;
-
-    for (int y = 0; y < dicomData.height; ++ y) {
-        for (int x = 0; x < dicomData.width; ++ x) {
+    for (int y = 0; y < dicomData->height; ++ y) {
+        for (int x = 0; x < dicomData->width; ++ x) {
             pixel = 0;
+            pixelU = 0;
 
-            if (dicomData.isLittleEndian) {
-                for (int k = 0; k < dicomData.bytesAllocated; ++ k) {
-                    pixel |= (T)*(posInBuffer + k) << (8 * k);
+            if (dicomData->isLittleEndian) {
+                for (int k = 0; k < dicomData->bytesAllocated; ++ k) {
+                    pixelU |= (u_int16_t)*(posInBuffer + k) << (8 * k);
                 }
             }
             else {
-                for (int k = dicomData.bytesAllocated - 1; k > 0 ; -- k) {
-                    pixel |= (T)*posInBuffer << (8 * (dicomData.bytesAllocated - k + 1));
+                for (int k = dicomData->bytesAllocated - 1; k > 0 ; -- k) {
+                    pixelU |= (u_int16_t)*posInBuffer << (8 * (dicomData->bytesAllocated - k + 1));
                 }
             }
 
-            posInBuffer += dicomData.bytesAllocated;
+            posInBuffer += dicomData->bytesAllocated;
 
             /* see http://www.dabsoft.ch/dicom/3/C.11.2.1.2/*/
-            pixel = dicomData.slope * pixel + dicomData.intercept;
+            pixel = dicomData->slope * pixelU + dicomData->intercept;
 
-            if (pixel <= (dicomData.windowCenter - 0.5 - (dicomData.windowWidth - 1) / 2.0)) {
-                pixel = (T)dicomData.minValue;
-            }
-            else if (pixel > (dicomData.windowCenter - 0.5 + (dicomData.windowWidth - 1) / 2.0)) {
-                pixel = (T)dicomData.maxValue;
-            }
-            else {
-                pixel = ((pixel - dicomData.windowCenter + 0.5) / (dicomData.windowWidth - 1) + 0.5) *
-                        (dicomData.maxValue - dicomData.minValue);
+            if (pixel < dicomData->minHU || pixel > dicomData->maxHU) {
+                dcmToMat.at<u_int16_t>(y, x) = 0;
+                continue;
             }
 
-            //MONOCHROME2 - high value -> brighter, -1 high -> blacker
-            if (dicomData.inverseNeeded) {
-                dcmToMat.at<T>(y, x) = ~pixel;
+            if (pixel <= (dicomData->windowCenter - 0.5 - (dicomData->windowWidth - 1) / 2.0)) {
+                pixelU = (u_int16_t)dicomData->minValue;
+            }
+            else if (pixel > (dicomData->windowCenter - 0.5 + (dicomData->windowWidth - 1) / 2.0)) {
+                pixelU = (u_int16_t)dicomData->maxValue;
             }
             else {
-                dcmToMat.at<T>(y, x) = pixel;
+                pixelU = ((pixel - dicomData->windowCenter + 0.5) / (dicomData->windowWidth - 1) + 0.5) *
+                        (dicomData->maxValue - dicomData->minValue);
             }
+
+            dcmToMat.at<u_int16_t>(y, x) = pixelU;
         }
     }
 
-    cv::resize(dcmToMat, dcmToMat, scaledSize, 0, 0, cv::INTER_LINEAR);
-
-    if (dicomData.type == CV_16UC1) {
-        cv::Mat dcmToMat8(scaledSize, CV_8UC1);
-        dcmToMat.convertTo(dcmToMat8, CV_8UC1, FROM_16_TO_8);
-        dst->at(position) = new cv::Mat(dcmToMat8);
-    }
-    else {
-        dst->at(position) = new cv::Mat(dcmToMat);
-    }
+    dst.at(position) = dcmToMat;
 }
 
-typedef struct _LoaderData {
-    DicomData dicomData;
-    FilterData filterData;
-} LoaderData;
-
-template <typename T>
-class SliceLoader : public SliceFilter {
+class SliceProcessing : public cv::ParallelLoopBody {
 private:
-    DicomData _dicomData;
+    DicomData * _dicomData;
 
-    cv::Size _scaledSize;
+    cv::Mat _dilateMat;
 
+    cv::Size _gaussSize;
+
+    int _neighbourDiameter;
+
+    mutable std::vector<bool>_hasMerged;
+
+    mutable std::vector<cv::Mat> _noisy;
+    mutable std::vector<cv::Mat> _filtered;
+
+    int _sliceSize;
+
+    inline void fetchCvMats(const cv::Size & newSize, const int & depth, const int & newType = CV_16UC1) {
+        int slicesTotalCount = depth;
+        int slicesMergeCount = slicesTotalCount - _neighbourDiameter;
+
+        _noisy.resize(slicesTotalCount);
+        _filtered.resize(slicesTotalCount);
+
+        _dicomData->noisy->resize(slicesTotalCount);
+        _dicomData->filtered->resize(slicesTotalCount);
+
+        _hasMerged.resize(slicesMergeCount, false);
+
+        cv::Mat dummyMat(cv::Mat::zeros(newSize, newType));
+
+        _sliceSize = dummyMat.elemSize() * dummyMat.total();
+
+        *(_dicomData->mergeLocation) = new uchar[_sliceSize * slicesMergeCount];
+
+        *(_dicomData->alignment) = (dummyMat.step & 3) ? 1 : 4;
+        *(_dicomData->rowLenght) = dummyMat.step1();
+    }
+
+/*
     int _pad;
 
     int _widthPad;
@@ -495,26 +383,21 @@ private:
     std::vector<float>_sinTable;
 
     std::vector<float>_dhtCoeffs;
-
+*/
 public:
-    SliceLoader(LoaderData & loaderData) : SliceFilter(loaderData.filterData) {
-        _dicomData = loaderData.dicomData;
-        _filterData = loaderData.filterData;
+    SliceProcessing(DicomData * dicomData) :
+        _dicomData(dicomData) {
 
-        _dicomData.sliceSize = _dicomData.bytesAllocated * _dicomData.width * _dicomData.height;
+        _dicomData->sliceSize = _dicomData->bytesAllocated * _dicomData->width * _dicomData->height;
 
-        float ratioX = 1.0;
-        float ratioY = 1.0;
+        _neighbourDiameter = 2 * _dicomData->neighbourRadius;
 
-        _dicomData.imageSpacing->at(0) *= (1 / ratioX);
-        _dicomData.imageSpacing->at(1) *= (1 / ratioY);
+        _dilateMat = cv::Mat(3, 3, CV_8UC1);
+        _gaussSize = cv::Size(3, 3);
 
-        _scaledSize = cv::Size(_dicomData.width * ratioX, _dicomData.height * ratioY);
+        fetchCvMats(cv::Size(_dicomData->width, _dicomData->height), _dicomData->depth);
 
-        _filterData.src->resize(_dicomData.depth);
-        _filterData.filtered->resize(_dicomData.depth);
-
-        fetchCvMats(_scaledSize);
+        /*
 
         if (_dicomData.isRadonNeeded) {
 
@@ -545,18 +428,17 @@ public:
                 _dhtCoeffs.push_back(std::cos(twoPiN * i) + std::sin(twoPiN * i));
             }
         }
-
+*/
     }
 
     virtual void operator ()(const cv::Range & r) const {
         for (int i = r.start; i != r.end; ++ i) {
-            decodeSlice<T>(i, _filterData.src, _scaledSize, _dicomData);
+            decodeSlice(i, _noisy, _dicomData);
+            processSlice(i, _noisy, _filtered, _hasMerged, _dicomData->sliceSize,
+                         _dilateMat, _gaussSize, _neighbourDiameter, *(_dicomData->mergeLocation));
 
-            processSlice(i, _filtered, _smoothed, _gradientCalculated,
-                         _filterData, _sliceSize, _gradSize,
-                         _dilateMat, _gaussSize, _neighbourDiameter);
-
-            _filterData.filtered->at(i) = new cv::Mat(_filtered.at(i));
+            _dicomData->noisy->at(i) = new cv::Mat(_noisy.at(i));
+            _dicomData->filtered->at(i) = new cv::Mat(_filtered.at(i));
         }
     }
 };

@@ -10,8 +10,10 @@ Item {
     property vector2d tRange: shaderGrid.tRange
     property vector2d pRange: shaderGrid.pRange
 
-    property int minValue: shaderGrid.minValue
-    property int maxValue: shaderGrid.maxValue
+    property vector2d huRange: Qt.vector2d(0, 65536)
+
+    property int minHU: shaderGrid.minHU
+    property int maxHU: shaderGrid.maxHU
 
     property real angleShot: 0.0
 
@@ -22,6 +24,8 @@ Item {
 
         ShaderGrid {
             id: shaderGrid
+
+            huRange: hud.huRange
 
             anchors.left: parent.left
         }

@@ -26,13 +26,13 @@ signals:
     void fileOpened(const QString & fileName);
     void sliceNumberChanged(const int & number);
 
-    void minValueChanged(const int & minValue);
-    void maxValueChanged(const int & maxValue);
+    void minHUChanged(const int & minHU);
+    void maxHUChanged(const int & maxHU);
 
-    void slicesProcessed(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
+    void slicesProcessed(QSharedPointer<uchar> mergedData,
                          const std::vector<float> & scaling, const std::vector<size_t> & size,
                          const int & alignment, const size_t & rowLength,
-                         const int & alignmentGradient, const size_t & rowLengthGradient);
+                         const std::vector<int> & huRange = std::vector<int>());
 };
 
 #endif // APPWINDOW_H

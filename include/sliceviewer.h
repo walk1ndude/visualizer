@@ -34,8 +34,10 @@ class SliceViewer : public OpenGLItem {
     Q_PROPERTY(QVector2D tRange READ tRange WRITE setTRange NOTIFY tRangeChanged)
     Q_PROPERTY(QVector2D pRange READ pRange WRITE setPRange NOTIFY pRangeChanged)
 
-    Q_PROPERTY(int minValue READ minValue WRITE setMinValue NOTIFY minValueChanged)
-    Q_PROPERTY(int maxValue READ maxValue WRITE setMaxValue NOTIFY maxValueChanged)
+    Q_PROPERTY(QVector2D huRange READ huRange WRITE sethuRange NOTIFY huRangeChanged)
+
+    Q_PROPERTY(int minHU READ minHU WRITE setMinHU NOTIFY minHUChanged)
+    Q_PROPERTY(int maxHU READ maxHU WRITE setMaxHU NOTIFY maxHUChanged)
 
 public:
     explicit SliceViewer();
@@ -56,11 +58,14 @@ public:
     QVector2D pRange();
     void setPRange(const QVector2D & pRange);
 
-    int minValue();
-    void setMinValue(const int & minValue);
+    QVector2D huRange();
+    void sethuRange(const QVector2D & huRange);
 
-    int maxValue();
-    void setMaxValue(const int & maxValue);
+    int minHU();
+    void setMinHU(const int & minHU);
+
+    int maxHU();
+    void setMaxHU(const int & maxHU);
 
 protected:
     virtual void initialize();
@@ -76,6 +81,8 @@ private:
     int _shaderView;
     int _shaderProjection;
     int _shaderScale;
+    int _shaderStep;
+
     int _shaderNormalMatrix;
 
     int _shaderSRange;
@@ -89,22 +96,23 @@ private:
     int _shaderLightColor;
     int _shaderLightAmbientIntensity;
 
+    QVector3D _step;
+
     QVector2D _sRange;
     QVector2D _tRange;
     QVector2D _pRange;
 
+    QVector2D _huRange;
+
     qreal _zoomFactor;
 
-    int _minValue;
-    int _maxValue;
+    int64_t _minHU;
+    int64_t _maxHU;
 
     bool _slicesReady;
 
     QOpenGLTexture * _textureHead;
-    QOpenGLTexture * _textureGradient;
-
     QOpenGLPixelTransferOptions _pixelOptionsHead;
-    QOpenGLPixelTransferOptions _pixelOptionsGradient;
 
     GLfloat _ambientIntensity;
 
@@ -116,7 +124,6 @@ private:
     HeadModel _headModel;
 
     QSharedPointer<uchar>_mergedData;
-    QSharedPointer<uchar>_gradientData;
 
     GPU_Driver _gpu_driver;
 
@@ -135,15 +142,17 @@ signals:
     void tRangeChanged();
     void pRangeChanged();
 
-    void minValueChanged(const int & minValue);
-    void maxValueChanged(const int & maxValue);
+    void huRangeChanged();
+
+    void minHUChanged(const int & minHU);
+    void maxHUChanged(const int & maxHU);
 
 public slots:
-    void drawSlices(QSharedPointer<uchar> mergedData, QSharedPointer<uchar> gradientData,
+    void drawSlices(QSharedPointer<uchar> mergedData,
                     const std::vector<float> & scaling = std::vector<float>(),
                     const std::vector<size_t> & size = std::vector<size_t>(),
                     const int & alignment = 0, const size_t & rowLength = 0,
-                    const int & alignmentGradient = 0, const size_t & rowLengthGradient = 0);
+                    const std::vector<int> & huInterval = std::vector<int>());
 
     virtual void cleanup();
 };
