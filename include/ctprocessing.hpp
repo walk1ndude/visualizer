@@ -281,7 +281,7 @@ inline void decodeSlice(const int & position, std::vector<cv::Mat> & dst, const 
     cv::Mat dcmToMat(cv::Mat::zeros(dicomData->width, dicomData->height, dicomData->type));
 
     u_int16_t pixelU;
-    int16_t pixel;
+    int32_t pixel;
 
     char * posInBuffer = dicomData->buffer + dicomData->sliceSize * position;
 
@@ -310,6 +310,11 @@ inline void decodeSlice(const int & position, std::vector<cv::Mat> & dst, const 
                 dcmToMat.at<u_int16_t>(y, x) = 0;
                 continue;
             }
+/*
+            if (pixel >= 1300 && pixel <= 32000) {
+                dcmToMat.at<u_int16_t>(y, x) = (u_int16_t)dicomData->maxValue;
+                continue;
+            }*/
 
             if (pixel <= (dicomData->windowCenter - 0.5 - (dicomData->windowWidth - 1) / 2.0)) {
                 pixelU = (u_int16_t)dicomData->minValue;

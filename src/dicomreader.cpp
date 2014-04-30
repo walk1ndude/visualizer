@@ -13,8 +13,8 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU 400
-#define MAX_HU 1600
+#define MIN_HU 800
+#define MAX_HU 3600
 
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
@@ -213,7 +213,7 @@ void DicomReader::changeSliceNumber(const int & ds) {
 }
 
 void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_NOISY, *(_filtered[imageNumber]));
+    cv::imshow(WINDOW_NOISY, *(_noisy[imageNumber]));
     cv::waitKey(1);
 }
 

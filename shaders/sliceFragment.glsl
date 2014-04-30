@@ -130,11 +130,12 @@ void main(void) {
 
             fragColor = (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
 
-            if (headColor.r > 0.8) {
-                fragColor.a *= 10.0;
+            //if (headColor.r > 0.75 && headColor.r < 0.85 && fragPos.p > 0.45 && fragPos.p < 0.8) {
+            if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
+                fragColor.a *= 5.0;
             }
             else {
-                fragColor.a *= 0.01;
+                fragColor.a *= 0.02;
             }
         }
         else {
