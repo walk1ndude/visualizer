@@ -39,22 +39,16 @@ void OpenGLItem::setTakeShot(const bool & takeShot) {
     _takeShot = takeShot;
 }
 
-QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
+QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * data) {
     QOpenGLContext * savedContext = window()->openglContext();
 
     if (_needsInitialize) {
         _context = new QOpenGLContext;
 
         QSurfaceFormat format;
-        format.setVersion(3, 3);
-        format.setSamples(16);
-        format.setRedBufferSize(8);
-        format.setGreenBufferSize(8);
-        format.setBlueBufferSize(8);
-        format.setDepthBufferSize(16);
+        format.setVersion(4, 1);
         format.setRenderableType(QSurfaceFormat::OpenGL);
         format.setProfile(QSurfaceFormat::CoreProfile);
-        format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
 
         _context->setFormat(format);
         _context->create();
@@ -75,7 +69,13 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
     }
 
     QSGSimpleTextureNode * texNode = static_cast<QSGSimpleTextureNode *>(node);
-
+/*
+    QMatrix4x4 retinaRescale;
+    retinaRescale.translate(width()*0.5, width()*0.5);
+    //retinaRescale.scale(window()->devicePixelRatio(), window()->devicePixelRatio());
+    retinaRescale.translate(-width()*0.5, -width()*0.5);
+    data->transformNode->setMatrix(retinaRescale);
+*/
     if (!texNode) {
         texNode = new QSGSimpleTextureNode;
     }
@@ -90,6 +90,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         }
 
         _fbo = new QOpenGLFramebufferObject(viewportWidth, viewportHeight);
+
         _fbo->bind();
 
         _context->makeCurrent(window());
@@ -115,6 +116,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * ) {
         _fbo->bindDefault();
 
         texNode->setTexture(window()->createTextureFromId(_fbo->texture(), _fbo->size()));
+
         texNode->setRect(boundingRect());
     }
     else {

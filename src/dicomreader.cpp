@@ -142,7 +142,7 @@ void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
 
     fetchDicomData(_dicomData, dFile, dImage);
 
-    cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
+    cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE | CV_WINDOW_OPENGL);
 
     runSliceProcessing(true);
 }
@@ -198,6 +198,7 @@ void DicomReader::readFile(const QString & dicomFile) {
 #else
     dIReader.SetFileName(dicomFile.mid(7).toStdString().c_str());
 #endif
+
     if (dIReader.Read()) {
         readImage(dIReader.GetFile(), dIReader.GetImage());
     }

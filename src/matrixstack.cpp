@@ -1,3 +1,5 @@
+#include "math.h"
+
 #include "matrixstack.h"
 
 MatrixStack::MatrixStack(ProjectionType projectionType) :
@@ -38,7 +40,7 @@ QMatrix3x3 MatrixStack::normalM() {
 void MatrixStack::zoom(const qreal & zoomFactor) {
     _pMatrix.setToIdentity();
     if (_projectionType == MatrixStack::PERSPECTIVE) {
-        _pMatrix.perspective(_fov / fabs(_eye.z() / zoomFactor), _aspectRatio, _nearVal, _farVal);
+        _pMatrix.perspective(_fov / (_eye.z() / zoomFactor), _aspectRatio, _nearVal, _farVal);
     }
     else {
         _pMatrix.ortho(-zoomFactor / 2, zoomFactor / 2, -zoomFactor / 2, zoomFactor / 2, _nearVal, _farVal);

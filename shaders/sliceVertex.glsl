@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 in highp vec4 vertex;
 in highp vec4 tex;
 

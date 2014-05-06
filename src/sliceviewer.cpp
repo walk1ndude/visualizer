@@ -1,5 +1,7 @@
 #include <QtQuick/QQuickWindow>
 
+#include <iostream>
+
 #include "sliceviewer.h"
 
 void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage) {
@@ -128,53 +130,26 @@ void SliceViewer::setMaxHU(const int & maxHU) {
 }
 
 void SliceViewer::initializeViewPorts() {
-    int halfWidth = width() / 2;
-    int halfHeight = height() / 2;
-
     QVector<QPair<QRectF, ViewPort::ProjectionType> > viewPorts;
 
     viewPorts.push_back(
                 QPair<QRectF, ViewPort::ProjectionType>(
-                    QRectF(
-                        (halfWidth + 5) / (qreal) width(),
-                        0,
-                        (halfWidth - 5) / (qreal) width(),
-                        (halfHeight - 5) / (qreal) height()
-                        ),
-                    ViewPort::PERSPECTIVE)
+                    QRectF(0.5, 0, 0.5, 0.5), ViewPort::PERSPECTIVE)
                 );
 
     viewPorts.push_back(
                 QPair<QRectF, ViewPort::ProjectionType>(
-                    QRectF(
-                        0,
-                        0,
-                        (halfWidth - 5) / (qreal) width(),
-                        (halfHeight - 5) / (qreal) height()
-                        ),
-                    ViewPort::BOTTOM)
+                    QRectF(0, 0, 0.5, 0.5), ViewPort::BOTTOM)
                 );
 
     viewPorts.push_back(
                 QPair<QRectF, ViewPort::ProjectionType>(
-                    QRectF(
-                        0,
-                        (halfHeight + 5) / (qreal) height(),
-                        (halfWidth - 5) / (qreal) width(),
-                        (halfHeight - 5) / (qreal) height()
-                        ),
-                    ViewPort::FRONT)
+                    QRectF(0, 0.5, 0.5, 0.5), ViewPort::FRONT)
                 );
 
     viewPorts.push_back(
                 QPair<QRectF, ViewPort::ProjectionType>(
-                    QRectF(
-                        (halfWidth + 5) / (qreal) width(),
-                        (halfHeight + 5) / (qreal) height(),
-                        (halfWidth - 5) / (qreal) width(),
-                        (halfHeight - 5) / (qreal) height()
-                        ),
-                    ViewPort::LEFT)
+                    QRectF(0.5, 0.5, 0.5, 0.5), ViewPort::LEFT)
                 );
 
     _viewPorts.setViewPorts(viewPorts, window()->size());
@@ -235,7 +210,7 @@ void SliceViewer::initialize() {
     _shaderView = _program->uniformLocation("view");
     _shaderProjection = _program->uniformLocation("projection");
     _shaderScale = _program->uniformLocation("scale");
-    _shaderStep = _program->uniformLocation("step");
+    _shaderStep = _program->uniformLocation("stepSlices");
 
     _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
 
@@ -248,7 +223,6 @@ void SliceViewer::initialize() {
     _shaderPRange = _program->uniformLocation("ranges.pRange");
 
     _shaderTexHead = _program->uniformLocation("texHead");
-    _shaderTexGradient = _program->uniformLocation("texGradient");
 
     glEnable(GL_CULL_FACE);
 
@@ -273,9 +247,13 @@ void SliceViewer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-    _viewPorts.resize(window()->size());
+    QSize sizeW = window()->size();
+    sizeW.setHeight(sizeW.height() * window()->devicePixelRatio());
+    sizeW.setWidth(sizeW.width() * window()->devicePixelRatio());
 
-    _textureHead->bind(0);
+    _viewPorts.resize(sizeW);
+
+    _textureHead->bind();
 
     _program->bind();
 
@@ -303,7 +281,6 @@ void SliceViewer::render() {
         _program->setUniformValue(_shaderLightAmbientIntensity, _lightSource.ambientIntensity);
 
         _program->setUniformValue(_shaderTexHead, 0);
-        _program->setUniformValue(_shaderTexGradient, 1);
 
         _program->setUniformValue(_shaderSRange, _sRange);
         _program->setUniformValue(_shaderTRange, _tRange);
@@ -313,6 +290,8 @@ void SliceViewer::render() {
     }
 
     _program->release();
+
+    qDebug() << _program->log();
 
     gpu_profiling(_gpu_driver, "actual drawing");
 
@@ -335,6 +314,8 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uc
                                     const QOpenGLTexture::TextureFormat & textureFormat,
                                     const QOpenGLTexture::PixelFormat & pixelFormat,
                                     const QOpenGLPixelTransferOptions * pixelOptions) {
+
+
     QOpenGLTexture * tex = *texture;
 
     if (!tex) {
@@ -342,9 +323,13 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uc
 
         tex->create();
 
-        if (textureFormat == QOpenGLTexture::R16_UNorm) {
+        if (textureFormat == QOpenGLTexture::RGB16_UNorm) {
+            QString versionString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+            qDebug() << "Driver Version String:" << versionString;
+
             tex->setSize(_size[0], _size[1], _size[2]);
-            tex->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
+
+            //tex->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
         }
         else {
             tex->setSize(256, 256, _size[2]);
@@ -369,5 +354,5 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uc
 }
 
 void SliceViewer::initializeTextures() {
-    initializeTexture(&_textureHead, _mergedData, QOpenGLTexture::R16_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
+    initializeTexture(&_textureHead, _mergedData, QOpenGLTexture::RGB16_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
 }

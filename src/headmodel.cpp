@@ -40,7 +40,7 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     _vao.bind();
 
     _vboVert.create();
-    _vboVert.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
+    _vboVert.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
 
     int vertexCount = 4 * zCount;
     int indexCount = 6 * zCount;
@@ -88,7 +88,7 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     program->setAttributeBuffer(_shaderTex, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     _vboInd.create();
-    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
+    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
 
     _vboInd.bind();
     _vboInd.allocate(indices, indexCount * sizeof(GLushort));

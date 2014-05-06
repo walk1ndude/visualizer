@@ -14,15 +14,15 @@ ApplicationWindow {
 
     menuBar: MenuBar {
         Menu {
-            title: '<font color="black">File</font>'
+            title: 'File'
             MenuItem {
-                text: '<font color="black">Open</font>'
+                text: 'Open'
                 onTriggered: {
                     openFileDialog.visible = true
                 }
             }
             MenuItem {
-                text: '<font color="black">Quit</font>'
+                text: 'Quit'
                 onTriggered: Qt.quit()
             }
         }
@@ -31,10 +31,6 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialog
         title: 'Choose DICOM file'
-        selectMultiple: false
-        selectFolder: false
-        nameFilters: ['application/dicom']
-        selectedNameFilter: 'application/dicom'
         onAccepted: fileOpened(fileUrl);
     }
 

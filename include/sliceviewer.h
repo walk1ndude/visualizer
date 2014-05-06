@@ -90,7 +90,6 @@ private:
     int _shaderPRange;
 
     int _shaderTexHead;
-    int _shaderTexGradient;
 
     int _shaderLightPosition;
     int _shaderLightColor;

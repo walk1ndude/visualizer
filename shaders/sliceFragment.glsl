@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 smooth in highp vec4 fragPos;
 
 struct Ranges {
@@ -34,7 +34,7 @@ struct LightSource {
 
 uniform highp LightSource light;
 
-uniform highp vec3 step;
+uniform highp vec3 stepSlices;
 
 out highp vec4 fragColor;
 
@@ -44,15 +44,15 @@ vec4 sobel3(vec3 position) {
 
     float fragElem[27];
 
-    fragElem[0] = -1 * texture(texHead, position + vec3(-step.x, -step.y, -step.z)).r;
-    fragElem[1] = -3 * texture(texHead, position + vec3(-step.x, 0, -step.z)).r;
-    fragElem[2] = -1 * texture(texHead, position + vec3(-step.x, step.y, -step.z)).r;
-    fragElem[3] = -3 * texture(texHead, position + vec3(-step.x, -step.y, 0)).r;
-    fragElem[4] = -6 * texture(texHead, position + vec3(-step.x, 0, 0)).r;
-    fragElem[5] = -3 * texture(texHead, position + vec3(-step.x, step.y, 0)).r;
-    fragElem[6] = -1 * texture(texHead, position + vec3(-step.x, -step.y, step.z)).r;
-    fragElem[7] = -3 * texture(texHead, position + vec3(-step.x, 0, step.z)).r;
-    fragElem[8] = -1 * texture(texHead, position + vec3(-step.x, step.y, step.z)).r;
+    fragElem[0] = -1 * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, -stepSlices.z)).r;
+    fragElem[1] = -3 * texture(texHead, position + vec3(-stepSlices.x, 0, -stepSlices.z)).r;
+    fragElem[2] = -1 * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, -stepSlices.z)).r;
+    fragElem[3] = -3 * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, 0)).r;
+    fragElem[4] = -6 * texture(texHead, position + vec3(-stepSlices.x, 0, 0)).r;
+    fragElem[5] = -3 * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, 0)).r;
+    fragElem[6] = -1 * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, stepSlices.z)).r;
+    fragElem[7] = -3 * texture(texHead, position + vec3(-stepSlices.x, 0, stepSlices.z)).r;
+    fragElem[8] = -1 * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, stepSlices.z)).r;
 
     fragElem[9] = 0.0;
     fragElem[10] = 0.0;
@@ -64,15 +64,15 @@ vec4 sobel3(vec3 position) {
     fragElem[16] = 0.0;
     fragElem[17] = 0.0;
 
-    fragElem[18] = 1 * texture(texHead, position + vec3(step.x, -step.y, -step.z)).r;
-    fragElem[19] = 3 * texture(texHead, position + vec3(step.x, 0, -step.z)).r;
-    fragElem[20] = 1 * texture(texHead, position + vec3(step.x, step.y, -step.z)).r;
-    fragElem[21] = 3 * texture(texHead, position + vec3(step.x, -step.y, 0)).r;
-    fragElem[22] = 6 * texture(texHead, position + vec3(step.x, 0, 0)).r;
-    fragElem[23] = 3 * texture(texHead, position + vec3(step.x, step.y, 0)).r;
-    fragElem[24] = 1 * texture(texHead, position + vec3(step.x, -step.y, step.z)).r;
-    fragElem[25] = 3 * texture(texHead, position + vec3(step.x, 0, step.z)).r;
-    fragElem[26] = 1 * texture(texHead, position + vec3(step.x, step.y, step.z)).r;
+    fragElem[18] = 1 * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, -stepSlices.z)).r;
+    fragElem[19] = 3 * texture(texHead, position + vec3(stepSlices.x, 0, -stepSlices.z)).r;
+    fragElem[20] = 1 * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, -stepSlices.z)).r;
+    fragElem[21] = 3 * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, 0)).r;
+    fragElem[22] = 6 * texture(texHead, position + vec3(stepSlices.x, 0, 0)).r;
+    fragElem[23] = 3 * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, 0)).r;
+    fragElem[24] = 1 * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, stepSlices.z)).r;
+    fragElem[25] = 3 * texture(texHead, position + vec3(stepSlices.x, 0, stepSlices.z)).r;
+    fragElem[26] = 1 * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, stepSlices.z)).r;
 
     for (int i = 0; i != 27; ++ i) {
         if (i / 9 == 0) {
@@ -108,8 +108,10 @@ void main(void) {
             && fragPos.t >= ranges.tRange[0] && fragPos.t <= ranges.tRange[1]
             && fragPos.p >= ranges.pRange[0] && fragPos.p <= ranges.pRange[1]) {
 
-        vec4 headColor = texture(texHead, fragPos.stp);
+        vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
+        fragColor = headColor;
+/*
         if (headColor.r > 0.01) {
             vec4 normal = sobel3(fragPos.stp);
 
@@ -140,9 +142,10 @@ void main(void) {
         }
         else {
             discard;
-        }
+        }*/
     }
     else {
         discard;
     }
+
 }

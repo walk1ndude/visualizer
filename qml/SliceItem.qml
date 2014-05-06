@@ -14,7 +14,7 @@ Item {
             objectName: "sliceHud"
 
             width: sliceItem.width
-            height: sliceItem.height * 0.25
+            height: sliceItem.height * 0.45
 
             huRange: sliceViewer.huRange
 
@@ -54,8 +54,8 @@ Item {
 
             anchors.right: parent.right
 
-            width: 640
-            height: 640
+            width: sliceItem.width
+            height: sliceItem.height
             z: -2
 
             sRange: sliceHud.sRange

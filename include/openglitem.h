@@ -5,12 +5,12 @@
 
 #include <QtQuick/QQuickItem>
 
-#include <QtGui/QOpenGLFunctions_3_3_Core>
+#include <QtGui/QOpenGLFunctions_4_1_Core>
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFramebufferObject>
 #include <QtGui/QVector3D>
 
-class OpenGLItem : public QQuickItem, protected QOpenGLFunctions_3_3_Core {
+class OpenGLItem : public QQuickItem, protected QOpenGLFunctions_4_1_Core {
     Q_OBJECT
 
     Q_PROPERTY(bool takeShot READ takeShot WRITE setTakeShot NOTIFY takeShotChanged)
@@ -37,7 +37,7 @@ protected:
     virtual void render();
     virtual void cleanup();
 
-    QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
+    QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *data);
 
 private:
     QOpenGLContext * _context;
