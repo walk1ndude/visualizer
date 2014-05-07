@@ -42,6 +42,7 @@ protected:
 
 private:
     QOpenGLContext * _context;
+    QOpenGLContext * _savedContext;
 
     QOpenGLFramebufferObject * _fbo;
 

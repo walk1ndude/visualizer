@@ -39,8 +39,6 @@ void OpenGLItem::setTakeShot(const bool & takeShot) {
 }
 
 QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData *) {
-    QOpenGLContext * savedContext = window()->openglContext();
-
     if (_needsInitialize) {
         _context = new QOpenGLContext;
 
@@ -53,6 +51,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData *) {
         _context->setFormat(format);
         _context->create();
 
+        _savedContext = window()->openglContext();
         _context->makeCurrent(window());
 
         QObject::connect(window(), SIGNAL(closing(QQuickCloseEvent *)), _context, SIGNAL(aboutToBeDestroyed()));
@@ -65,7 +64,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData *) {
 
         emit initialized();
 
-        savedContext->makeCurrent(window());
+        _savedContext->makeCurrent(window());
     }
 
     QSGSimpleTextureNode * texNode = static_cast<QSGSimpleTextureNode *>(node);
@@ -83,7 +82,12 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData *) {
             _fbo = 0;
         }
 
-        _fbo = new QOpenGLFramebufferObject(viewportWidth, viewportHeight);
+        QOpenGLFramebufferObjectFormat format;
+        format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        format.setMipmap(true);
+        format.setInternalTextureFormat(GL_RGBA);
+
+        _fbo = new QOpenGLFramebufferObject(QSize(viewportWidth, viewportHeight), format);
 
         _fbo->bind();
 
@@ -105,10 +109,11 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData *) {
                         ).save((_rotation.y() > 99 ? "" : (_rotation.y() > 9 ? "0" : "00")) + QString::number(_rotation.y()) + ".png",
                                "png");
         }
+        else {
+            _context->swapBuffers(window());
+        }
 
-        _context->swapBuffers(window());
-
-        savedContext->makeCurrent(window());
+        _savedContext->makeCurrent(window());
 
         _fbo->bindDefault();
 
@@ -143,10 +148,8 @@ void OpenGLItem::cleanup() {
 }
 
 void OpenGLItem::cleaningUp() {
-    QOpenGLContext * savedContext = window()->openglContext();
-
     _context->makeCurrent(&_cleanUpHelper);
     cleanup();
 
-    savedContext->makeCurrent(&_cleanUpHelper);
+    _savedContext->doneCurrent();
 }

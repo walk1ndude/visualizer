@@ -229,9 +229,6 @@ void SliceViewer::initialize() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-
     initializeTextures();
 
     _headModel.init(_program, _size[2]);
@@ -244,8 +241,10 @@ void SliceViewer::render() {
         return;
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     QSize sizeW = window()->size();
     sizeW.setHeight(sizeW.height() * window()->devicePixelRatio());
