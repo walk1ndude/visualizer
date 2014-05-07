@@ -8,6 +8,7 @@
 #include <QtGui/QOpenGLFunctions_4_1_Core>
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFramebufferObject>
+#include <QtGui/QOffscreenSurface>
 #include <QtGui/QVector3D>
 
 class OpenGLItem : public QQuickItem, protected QOpenGLFunctions_4_1_Core {
@@ -37,12 +38,14 @@ protected:
     virtual void render();
     virtual void cleanup();
 
-    QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *data);
+    QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 
 private:
     QOpenGLContext * _context;
 
     QOpenGLFramebufferObject * _fbo;
+
+    QOffscreenSurface _cleanUpHelper;
 
     bool _takeShot;
     void cleaningUp();

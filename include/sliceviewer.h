@@ -131,6 +131,7 @@ private:
     void initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
                            const QOpenGLTexture::TextureFormat & textureFormat,
                            const QOpenGLTexture::PixelFormat & pixelFormat,
+                           const QOpenGLTexture::PixelType & pixelType,
                            const QOpenGLPixelTransferOptions * pixelOptions);
 
 signals:

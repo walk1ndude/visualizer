@@ -1,9 +1,6 @@
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QSGSimpleTextureNode>
 
-#include <QtGui/QOpenGLFramebufferObject>
-#include <QtGui/QOffscreenSurface>
-
 #include "openglitem.h"
 
 OpenGLItem::OpenGLItem() :
@@ -16,6 +13,8 @@ OpenGLItem::OpenGLItem() :
 
     setFlag(QQuickItem::ItemHasContents);
     QObject::connect(this, &OpenGLItem::windowChanged, this, &OpenGLItem::handleWindowChanged, Qt::DirectConnection);
+
+    _cleanUpHelper.create();
 }
 
 void OpenGLItem::handleWindowChanged(QQuickWindow * window) {
@@ -39,7 +38,7 @@ void OpenGLItem::setTakeShot(const bool & takeShot) {
     _takeShot = takeShot;
 }
 
-QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * data) {
+QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData *) {
     QOpenGLContext * savedContext = window()->openglContext();
 
     if (_needsInitialize) {
@@ -49,6 +48,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * data
         format.setVersion(4, 1);
         format.setRenderableType(QSurfaceFormat::OpenGL);
         format.setProfile(QSurfaceFormat::CoreProfile);
+        format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
 
         _context->setFormat(format);
         _context->create();
@@ -69,13 +69,7 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * data
     }
 
     QSGSimpleTextureNode * texNode = static_cast<QSGSimpleTextureNode *>(node);
-/*
-    QMatrix4x4 retinaRescale;
-    retinaRescale.translate(width()*0.5, width()*0.5);
-    //retinaRescale.scale(window()->devicePixelRatio(), window()->devicePixelRatio());
-    retinaRescale.translate(-width()*0.5, -width()*0.5);
-    data->transformNode->setMatrix(retinaRescale);
-*/
+
     if (!texNode) {
         texNode = new QSGSimpleTextureNode;
     }
@@ -108,15 +102,17 @@ QSGNode * OpenGLItem::updatePaintNode(QSGNode * node, UpdatePaintNodeData * data
                         _screenSaveRect.y(),
                         _screenSaveRect.width(),
                         _screenSaveRect.height()
-                        ).save((_rotation.y() > 99 ? "" : (_rotation.y() > 9 ? "0" : "00")) + QString::number(_rotation.y()) + ".png");
+                        ).save((_rotation.y() > 99 ? "" : (_rotation.y() > 9 ? "0" : "00")) + QString::number(_rotation.y()) + ".png",
+                               "png");
         }
+
+        _context->swapBuffers(window());
 
         savedContext->makeCurrent(window());
 
         _fbo->bindDefault();
 
         texNode->setTexture(window()->createTextureFromId(_fbo->texture(), _fbo->size()));
-
         texNode->setRect(boundingRect());
     }
     else {
@@ -147,14 +143,10 @@ void OpenGLItem::cleanup() {
 }
 
 void OpenGLItem::cleaningUp() {
-    QOffscreenSurface cleanUpHelper;
-    cleanUpHelper.create();
-
     QOpenGLContext * savedContext = window()->openglContext();
 
-    _context->makeCurrent(&cleanUpHelper);
-
+    _context->makeCurrent(&_cleanUpHelper);
     cleanup();
 
-    savedContext->makeCurrent(&cleanUpHelper);
+    savedContext->makeCurrent(&_cleanUpHelper);
 }

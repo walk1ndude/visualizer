@@ -199,7 +199,7 @@ void SliceViewer::initialize() {
         return;
     }
 
-    gpu_profiling(_gpu_driver, "initialization begin");
+    //gpu_profiling(_gpu_driver, "initialization begin");
 
     _program = new QOpenGLShaderProgram;
     _program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":shaders/sliceVertex.glsl");
@@ -236,7 +236,7 @@ void SliceViewer::initialize() {
 
     _headModel.init(_program, _size[2]);
 
-    gpu_profiling(_gpu_driver, "initialization end");
+    //gpu_profiling(_gpu_driver, "initialization end");
 }
 
 void SliceViewer::render() {
@@ -291,9 +291,7 @@ void SliceViewer::render() {
 
     _program->release();
 
-    qDebug() << _program->log();
-
-    gpu_profiling(_gpu_driver, "actual drawing");
+    //gpu_profiling(_gpu_driver, "actual drawing");
 
     _textureHead->release();
 }
@@ -313,38 +311,26 @@ void SliceViewer::cleanup() {
 void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
                                     const QOpenGLTexture::TextureFormat & textureFormat,
                                     const QOpenGLTexture::PixelFormat & pixelFormat,
+                                    const QOpenGLTexture::PixelType & pixelType,
                                     const QOpenGLPixelTransferOptions * pixelOptions) {
 
 
     QOpenGLTexture * tex = *texture;
-
     if (!tex) {
         tex = new QOpenGLTexture(QOpenGLTexture::Target3D);
 
         tex->create();
 
-        if (textureFormat == QOpenGLTexture::RGB16_UNorm) {
-            QString versionString(QLatin1String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
-            qDebug() << "Driver Version String:" << versionString;
-
-            tex->setSize(_size[0], _size[1], _size[2]);
-
-            //tex->setSwizzleMask(QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue, QOpenGLTexture::RedValue);
-        }
-        else {
-            tex->setSize(256, 256, _size[2]);
-        }
-
+        tex->setSize(_size[0], _size[1], _size[2]);
         tex->setFormat(textureFormat);
 
         tex->allocateStorage();
-
-        tex->setMinificationFilter(QOpenGLTexture::LinearMipMapNearest);
-        tex->setMagnificationFilter(QOpenGLTexture::Linear);
-        tex->setWrapMode(QOpenGLTexture::ClampToBorder);
     }
 
-    tex->setData(pixelFormat, QOpenGLTexture::UInt16, (void *) textureData.data(), pixelOptions);
+    tex->setData(pixelFormat, pixelType, (void *) textureData.data(), pixelOptions);
+
+    tex->setMinMagFilters(QOpenGLTexture::LinearMipMapNearest, QOpenGLTexture::Linear);
+    tex->setWrapMode(QOpenGLTexture::ClampToBorder);
 
     tex->generateMipMaps();
 
@@ -354,5 +340,6 @@ void SliceViewer::initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uc
 }
 
 void SliceViewer::initializeTextures() {
-    initializeTexture(&_textureHead, _mergedData, QOpenGLTexture::RGB16_UNorm, QOpenGLTexture::Red, &_pixelOptionsHead);
+    initializeTexture(&_textureHead, _mergedData, QOpenGLTexture::R16_UNorm,
+                      QOpenGLTexture::Red, QOpenGLTexture::UInt16, &_pixelOptionsHead);
 }

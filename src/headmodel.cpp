@@ -1,8 +1,12 @@
 #include "headmodel.h"
 
 typedef struct _VertexData {
-    QVector3D position;
-    QVector3D texCoord;
+    GLfloat x;
+    GLfloat y;
+    GLfloat z;
+    GLfloat tx;
+    GLfloat ty;
+    GLfloat tz;
 } VertexData;
 
 HeadModel::HeadModel() :
@@ -40,7 +44,7 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     _vao.bind();
 
     _vboVert.create();
-    _vboVert.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
+    _vboVert.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
 
     int vertexCount = 4 * zCount;
     int indexCount = 6 * zCount;
@@ -58,10 +62,10 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     int currentIndex = 0;
 
     for (int i = 0; i != zCount; ++ i) {
-        vertices[currentVert ++] = {QVector3D(-1.0, -1.0,  zCurrent), QVector3D(0.0, 1.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(-1.0, 1.0,  zCurrent), QVector3D(0.0, 0.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(1.0, 1.0,  zCurrent), QVector3D(1.0, 0.0, zCurrentTexture)};
-        vertices[currentVert ++] = {QVector3D(1.0, -1.0,  zCurrent), QVector3D(1.0, 1.0, zCurrentTexture)};
+        vertices[currentVert ++] = {-1.0, -1.0, zCurrent, 0.0, 1.0, zCurrentTexture};
+        vertices[currentVert ++] = {-1.0, 1.0, zCurrent, 0.0, 0.0, zCurrentTexture};
+        vertices[currentVert ++] = {1.0, 1.0, zCurrent, 1.0, 0.0, zCurrentTexture};
+        vertices[currentVert ++] = {1.0, -1.0, zCurrent, 1.0, 1.0, zCurrentTexture};
 
         indices[currentIndex ++] = 4 * i;
         indices[currentIndex ++] = 4 * i + 2;
@@ -82,13 +86,13 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
     program->enableAttributeArray(_shaderVertex);
     program->setAttributeBuffer(_shaderVertex, GL_FLOAT, offset, 3, sizeof(VertexData));
 
-    offset += sizeof(QVector3D);
+    offset += sizeof(GLfloat) * 3;
 
     program->enableAttributeArray(_shaderTex);
     program->setAttributeBuffer(_shaderTex, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     _vboInd.create();
-    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::DynamicDraw);
+    _vboInd.setUsagePattern(QOpenGLBuffer::UsagePattern::StaticDraw);
 
     _vboInd.bind();
     _vboInd.allocate(indices, indexCount * sizeof(GLushort));

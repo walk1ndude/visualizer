@@ -7,9 +7,6 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
-uniform highp vec4 specular;
-uniform highp float shininess;
-
 smooth out highp vec4 fragPos;
 
 void main(void) {

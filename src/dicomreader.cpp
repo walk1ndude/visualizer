@@ -13,7 +13,7 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU 800
+#define MIN_HU 1000
 #define MAX_HU 3600
 
 DicomReader::DicomReader(QObject * parent) :

@@ -15,7 +15,7 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
-uniform highp mat4 normalMatrix;
+uniform highp mat3 normalMatrix;
 
 struct Material {
     vec4 emissive;
@@ -110,12 +110,10 @@ void main(void) {
 
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
-        fragColor = headColor;
-/*
-        if (headColor.r > 0.01) {
+        if (headColor.r > 0.05) {
             vec4 normal = sobel3(fragPos.stp);
 
-            vec4 N = normalize(normalMatrix * normal);
+            vec4 N = normalize(mat4(normalMatrix) * normal);
             vec4 L = normalize(light.direction - fragPos);
 
             float NdotL = max(dot(N, L), 0);
@@ -133,19 +131,18 @@ void main(void) {
             fragColor = (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
 
             //if (headColor.r > 0.75 && headColor.r < 0.85 && fragPos.p > 0.45 && fragPos.p < 0.8) {
-           if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
-                fragColor.a *= (0.05 * headColor.r);
+            if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
+                fragColor.a *= (0.5 * headColor.r);
             }
             else {
-                fragColor.a *= 0.02;
+                fragColor.a *= 0.2;
             }
         }
         else {
             discard;
-        }*/
+        }
     }
     else {
         discard;
     }
-
 }

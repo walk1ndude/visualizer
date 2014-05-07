@@ -14,7 +14,7 @@ Item {
             objectName: "sliceHud"
 
             width: sliceItem.width
-            height: sliceItem.height * 0.45
+            height: sliceItem.height * 0.35
 
             huRange: sliceViewer.huRange
 
@@ -39,7 +39,7 @@ Item {
             id: verticalSeparator
 
             color: "#FF888888"
-            y: sliceItem.height / 2 - 22
+            y: sliceItem.height / 2 - 15
             height: 10
             width: sliceItem.width
 
