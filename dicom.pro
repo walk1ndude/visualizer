@@ -4,7 +4,6 @@
 #
 #-------------------------------------------------
 
-QT_QUICK_CORE_PROFILE=1
 greaterThan(QT_MAJOR_VERSION, 4): QT += quick
 
 TARGET = dicom

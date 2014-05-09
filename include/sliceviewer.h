@@ -1,5 +1,5 @@
-#ifndef OPENGLITEM_H
-#define OPENGLITEM_H
+#ifndef SLICEVIEWER_H
+#define SLICEVIEWER_H
 
 #include <QtCore/QDebug>
 
@@ -115,4 +115,4 @@ public slots:
                     const std::vector<int> & huRange = std::vector<int>());
 };
 
-#endif // OPENGLITEM_H
+#endif // SLICEVIEWER_H

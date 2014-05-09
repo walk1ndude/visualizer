@@ -1,5 +1,5 @@
-#ifndef SLICEVIEWER_H
-#define SLICEVIEWER_H
+#ifndef SLICERENDERER_H
+#define SLICERENDERER_H
 
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QOpenGLPixelTransferOptions>
@@ -111,4 +111,4 @@ public slots:
     void setPRange(const QVector2D & pRange);
 };
 
-#endif // SLICEVIEWER_H
+#endif // SLICERENDERER_H
