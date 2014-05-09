@@ -32,8 +32,6 @@ void AppWindow::fetchConnections() {
     _appWindow->setPersistentOpenGLContext(true);
     _appWindow->setPersistentSceneGraph(true);
 
-    _appWindow->setClearBeforeRendering(false);
-
     foreach (QObject * sliceItem, _appWindow->findChild<QQuickItem *>("sliceRow")->children()) {
         SliceViewer * sliceViewer = sliceItem->findChild<SliceViewer *>("sliceViewer");
 

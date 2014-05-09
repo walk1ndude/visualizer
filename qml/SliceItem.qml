@@ -39,7 +39,7 @@ Item {
             id: verticalSeparator
 
             color: "#FF888888"
-            y: sliceItem.height / 2 - 15
+            y: sliceItem.height / 2 - 5
             height: 10
             width: sliceItem.width
 
