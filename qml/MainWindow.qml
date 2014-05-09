@@ -9,6 +9,8 @@ ApplicationWindow {
 
     title: "sliceViewer"
 
+    color: "orange"
+
     signal fileOpened(string fileName);
     signal sliceNumberChanged(int ds);
 

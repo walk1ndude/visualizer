@@ -1,5 +1,5 @@
-#version 410 core
-smooth in highp vec4 fragPos;
+#version 410
+in highp vec4 fragPos;
 
 struct Ranges {
    vec2 sRange;
@@ -132,11 +132,13 @@ void main(void) {
 
             //if (headColor.r > 0.75 && headColor.r < 0.85 && fragPos.p > 0.45 && fragPos.p < 0.8) {
             if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
-                fragColor.a *= (0.5 * headColor.r);
+                fragColor.a *= (0.05 * headColor.r);
             }
             else {
-                fragColor.a *= 0.2;
+                fragColor.a *= 0.02;
             }
+
+            //fragColor.a = clamp(fragColor.a, 0.0, 1.0);
         }
         else {
             discard;

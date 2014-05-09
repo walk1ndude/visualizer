@@ -21,6 +21,18 @@ void AppWindow::fetchConnections() {
     QObject * appWindow = _engine->rootObjects().at(0);
 
     _appWindow = qobject_cast<QQuickWindow *>(appWindow);
+/*
+    QSurfaceFormat surfaceFormat = _appWindow->format();
+    surfaceFormat.setVersion(4, 1);
+    surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+
+    _appWindow->setFormat(surfaceFormat);
+*/
+    _appWindow->setPersistentOpenGLContext(true);
+    _appWindow->setPersistentSceneGraph(true);
+
+    _appWindow->setClearBeforeRendering(false);
 
     foreach (QObject * sliceItem, _appWindow->findChild<QQuickItem *>("sliceRow")->children()) {
         SliceViewer * sliceViewer = sliceItem->findChild<SliceViewer *>("sliceViewer");
@@ -30,8 +42,8 @@ void AppWindow::fetchConnections() {
 
         QObject::connect(this, &AppWindow::slicesProcessed, sliceViewer, &SliceViewer::drawSlices);
 
-        QObject::connect(sliceViewer, &SliceViewer::minHUChanged, this, &AppWindow::minHUChanged);
-        QObject::connect(sliceViewer, &SliceViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
+        //QObject::connect(sliceViewer, &SliceViewer::minHUChanged, this, &AppWindow::minHUChanged);
+        //QObject::connect(sliceViewer, &SliceViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
 
         QObject::connect(sliceViewer, SIGNAL(initialized()), sliceItem, SLOT(show()));
 
@@ -51,6 +63,8 @@ void AppWindow::fetchConnections() {
             }
         });
     }
+
+
 }
 
 void AppWindow::registerQmlTypes() {

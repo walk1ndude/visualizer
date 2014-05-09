@@ -13,7 +13,7 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU 1000
+#define MIN_HU 900
 #define MAX_HU 3600
 
 DicomReader::DicomReader(QObject * parent) :
@@ -171,8 +171,8 @@ void DicomReader::runSliceProcessing(const bool & tellAboutHURange) {
 
     int depth = _dicomData.depth - _dicomData.neighbourRadius * 2;
 
-    scaling.push_back(_dicomData.width * _dicomData.imageSpacings[0] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.7);
-    scaling.push_back(_dicomData.height * _dicomData.imageSpacings[1] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.7);
+    scaling.push_back(_dicomData.width * _dicomData.imageSpacings[0] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.5);
+    scaling.push_back(_dicomData.height * _dicomData.imageSpacings[1] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.5);
     scaling.push_back(depth * _dicomData.imageSpacings[2] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.7);
 
     size.push_back(_dicomData.width);

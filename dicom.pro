@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += quick gui
+QT_QUICK_CORE_PROFILE=1
+greaterThan(QT_MAJOR_VERSION, 4): QT += quick
 
 TARGET = dicom
 TEMPLATE = app
@@ -72,21 +73,23 @@ win32 {
 SOURCES += src/main.cpp\
            src/dicomreader.cpp\
            src/matrixstack.cpp \
-           src/openglitem.cpp \
-           src/sliceviewer.cpp \
            src/appwindow.cpp \
            src/headmodel.cpp \
            src/viewport.cpp \
-           src/viewports.cpp
+           src/viewports.cpp \
+    src/renderthread.cpp \
+    src/slicerenderer.cpp \
+    src/sliceviewer.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
             include/matrixstack.h \
-            include/openglitem.h \
-            include/sliceviewer.h \
             include/appwindow.h \
             include/headmodel.h \
             include/viewport.h \
-            include/viewports.h
+            include/viewports.h \
+    include/renderthread.h \
+    include/slicerenderer.h \
+    include/sliceviewer.h
 
 RESOURCES += resources.qrc

@@ -1,31 +1,23 @@
-#ifndef SLICEVIEWER_H
-#define SLICEVIEWER_H
+#ifndef OPENGLITEM_H
+#define OPENGLITEM_H
 
-#include <QtGui/QOpenGLTexture>
-#include <QtGui/QOpenGLPixelTransferOptions>
+#include <QtCore/QDebug>
 
-#include "openglitem.h"
-#include "headmodel.h"
-#include "viewports.h"
+#include <QtQuick/QQuickItem>
 
-typedef enum _GPU_Driver {
-    NVidia_binary,
-    AMD_binary,
-    AMD_opensource,
-    NVidia_opensourse,
-    Intel_opensource
-} GPU_Driver;
+#include <QtGui/QOpenGLFunctions_4_1_Core>
+#include <QtGui/QOpenGLContext>
+#include <QtGui/QOpenGLFramebufferObject>
+#include <QtGui/QOffscreenSurface>
+#include <QtGui/QVector3D>
+#include <QtGui/QImage>
 
-typedef struct _LightSource {
-    QVector4D position;
-    QVector4D color;
-    float ambientIntensity;
-} LightSource;
+#include "slicerenderer.h"
 
-void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage = "");
-
-class SliceViewer : public OpenGLItem {
+class SliceViewer : public QQuickItem {
     Q_OBJECT
+
+    Q_PROPERTY(bool takeShot READ takeShot WRITE setTakeShot NOTIFY takeShotChanged)
 
     Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
     Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor NOTIFY zoomFactorChanged)
@@ -40,8 +32,11 @@ class SliceViewer : public OpenGLItem {
     Q_PROPERTY(int maxHU READ maxHU WRITE setMaxHU NOTIFY maxHUChanged)
 
 public:
-    explicit SliceViewer();
+    SliceViewer();
     virtual ~SliceViewer();
+
+    bool takeShot();
+    void setTakeShot(const bool & takeShot);
 
     QVector3D rotation();
     void setRotation(const QVector3D & rotation);
@@ -68,32 +63,14 @@ public:
     void setMaxHU(const int & maxHU);
 
 protected:
-    virtual void initialize();
-    virtual void initializeTextures();
-    virtual void render();
+    bool _needsInitialize;
+
+    QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
 
 private:
-    QOpenGLShaderProgram * _program;
+    SliceRenderer * _sliceRenderer;
 
-    ViewPorts _viewPorts;
-
-    int _shaderModel;
-    int _shaderView;
-    int _shaderProjection;
-    int _shaderScale;
-    int _shaderStep;
-
-    int _shaderNormalMatrix;
-
-    int _shaderSRange;
-    int _shaderTRange;
-    int _shaderPRange;
-
-    int _shaderTexHead;
-
-    int _shaderLightPosition;
-    int _shaderLightColor;
-    int _shaderLightAmbientIntensity;
+    bool _takeShot;
 
     QVector3D _step;
 
@@ -108,53 +85,34 @@ private:
     int64_t _minHU;
     int64_t _maxHU;
 
-    bool _slicesReady;
-
-    QOpenGLTexture * _textureHead;
-    QOpenGLPixelTransferOptions _pixelOptionsHead;
-
-    GLfloat _ambientIntensity;
-
-    std::vector<float>_scaling;
-    std::vector<size_t>_size;
-
-    LightSource _lightSource;
-
-    HeadModel _headModel;
-
-    QSharedPointer<uchar>_mergedData;
-
-    GPU_Driver _gpu_driver;
-
-    void initializeViewPorts();
-
-    void initializeTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
-                           const QOpenGLTexture::TextureFormat & textureFormat,
-                           const QOpenGLTexture::PixelFormat & pixelFormat,
-                           const QOpenGLTexture::PixelType & pixelType,
-                           const QOpenGLPixelTransferOptions * pixelOptions);
+    QVector3D _rotation;
 
 signals:
-    void rotationChanged();
-    void zoomFactorChanged();
+    void initialized();
 
-    void sRangeChanged();
-    void tRangeChanged();
-    void pRangeChanged();
+    void takeShotChanged(const bool & takeShot);
+    void rotationChanged(const QVector3D & rotation);
+    void zoomFactorChanged(const qreal & zoomFactor);
+
+    void sRangeChanged(const QVector2D & sRange);
+    void tRangeChanged(const QVector2D & tRange);
+    void pRangeChanged(const QVector2D & pRange);
 
     void huRangeChanged();
 
     void minHUChanged(const int & minHU);
     void maxHUChanged(const int & maxHU);
 
+    void slicesProcessed(QSharedPointer<uchar> mergedData,
+                         const std::vector<float> & scaling, const std::vector<size_t> & size,
+                         const int & alignment, const size_t & rowLength);
+
 public slots:
     void drawSlices(QSharedPointer<uchar> mergedData,
                     const std::vector<float> & scaling = std::vector<float>(),
                     const std::vector<size_t> & size = std::vector<size_t>(),
                     const int & alignment = 0, const size_t & rowLength = 0,
-                    const std::vector<int> & huInterval = std::vector<int>());
-
-    virtual void cleanup();
+                    const std::vector<int> & huRange = std::vector<int>());
 };
 
-#endif // SLICEVIEWER_H
+#endif // OPENGLITEM_H

@@ -26,8 +26,6 @@ HeadModel::~HeadModel() {
 }
 
 void HeadModel::init(QOpenGLShaderProgram * program, const int & zCount) {
-    initializeOpenGLFunctions();
-
     _shaderVertex = program->attributeLocation("vertex");
     _shaderTex = program->attributeLocation("tex");
 

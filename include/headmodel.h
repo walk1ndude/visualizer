@@ -1,7 +1,6 @@
 #ifndef HEADMODEL_H
 #define HEADMODEL_H
 
-#include <QtGui/QOpenGLFunctions_4_1_Core>
 #include <QtGui/QOpenGLShaderProgram>
 #include <QtGui/QOpenGLBuffer>
 #include <QtGui/QOpenGLVertexArrayObject>
@@ -13,7 +12,7 @@ typedef struct _Material {
     float shininess;
 } Material;
 
-class HeadModel : protected QOpenGLFunctions_4_1_Core {
+class HeadModel {
 
 public:
     HeadModel();

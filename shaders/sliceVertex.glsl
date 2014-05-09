@@ -1,4 +1,4 @@
-#version 410 core
+#version 410
 in highp vec4 vertex;
 in highp vec4 tex;
 
@@ -7,7 +7,7 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
-smooth out highp vec4 fragPos;
+out vec4 fragPos;
 
 void main(void) {
     gl_Position = projection * view * vertex;

@@ -52,8 +52,6 @@ Item {
             id: sliceViewer
             objectName: "sliceViewer"
 
-            anchors.right: parent.right
-
             width: sliceItem.width
             height: sliceItem.height
             z: -2
