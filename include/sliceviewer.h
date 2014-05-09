@@ -32,7 +32,7 @@ class SliceViewer : public QQuickItem {
     Q_PROPERTY(int maxHU READ maxHU WRITE setMaxHU NOTIFY maxHUChanged)
 
 public:
-    SliceViewer();
+    explicit SliceViewer();
     virtual ~SliceViewer();
 
     bool takeShot();

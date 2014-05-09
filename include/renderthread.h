@@ -8,10 +8,16 @@
 #include <QtGui/QOpenGLFramebufferObject>
 #include <QtGui/QOffscreenSurface>
 
+class FBOSaver : public QThread {
+    Q_OBJECT
+public:
+    void saveToDisk(const QImage & fboContent, const QRect &saveArea, const qreal & angle);
+};
+
 class RenderThread : public QThread {
     Q_OBJECT
 public:
-    RenderThread(QOpenGLContext * context, const QSize & surfaceSize);
+    explicit RenderThread(QOpenGLContext * context, const QSize & surfaceSize);
     virtual ~RenderThread();
 
     void setSurface(QOffscreenSurface * surface);
@@ -48,8 +54,11 @@ private:
 
     QOpenGLContext * _context;
 
+    FBOSaver * _fboSaver;
+
 signals:
     void textureReady(const QImage & image, const QSize & size);
+    void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
     void needToRedraw();
     void initialized();
 

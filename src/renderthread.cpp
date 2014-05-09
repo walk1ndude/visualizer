@@ -3,6 +3,10 @@
 #include <QtGui/QGuiApplication>
 #include <QtGui/QImage>
 
+void FBOSaver::saveToDisk(const QImage & fboContent, const QRect & saveArea, const qreal & angle) {
+    fboContent.copy(saveArea).save((angle > 99 ? "" : (angle > 9 ? "0" : "00")) + QString::number(angle) + ".png");
+}
+
 RenderThread::RenderThread(QOpenGLContext * context, const QSize & surfaceSize) :
     _surfaceSize(surfaceSize),
     _rotation(QVector3D(0, 0, 0)),
@@ -11,9 +15,7 @@ RenderThread::RenderThread(QOpenGLContext * context, const QSize & surfaceSize) 
     _textureUpdateNeeded(false),
     _contentInitializeNeeded(false),
     _fboRender(0),
-    _fboDisplay(0),
-    _surface(0),
-    _context(context) {
+    _fboDisplay(0) {
 
     _context = new QOpenGLContext;
 
@@ -32,11 +34,22 @@ RenderThread::RenderThread(QOpenGLContext * context, const QSize & surfaceSize) 
     _surface->setFormat(surfaceFormat);
     _surface->create();
 
+    _fboSaver = new FBOSaver;
+    QThread * fboSaverThread = new QThread;
+
+    _fboSaver->moveToThread(fboSaverThread);
+
+    QObject::connect(this, &RenderThread::contentToSaveRendered, _fboSaver, &FBOSaver::saveToDisk);
+    QObject::connect(_fboSaver, &FBOSaver::destroyed, fboSaverThread, &QThread::quit);
+    QObject::connect(fboSaverThread, &QThread::finished, fboSaverThread, &QThread::deleteLater);
+
+    fboSaverThread->start();
+
     QObject::connect(this, &RenderThread::needToRedraw, this, &RenderThread::renderNext);
 }
 
 RenderThread::~RenderThread() {
-
+    delete _fboSaver;
 }
 
 bool RenderThread::updateContent() {
@@ -61,6 +74,7 @@ void RenderThread::renderNext() {
     if (!_fboRender) {
         QOpenGLFramebufferObjectFormat format;
         format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+        format.setInternalTextureFormat(GL_RGB16);
         _fboRender = new QOpenGLFramebufferObject(_surfaceSize, format);
         _fboDisplay = new QOpenGLFramebufferObject(_surfaceSize, format);
     }
@@ -89,7 +103,9 @@ void RenderThread::renderNext() {
     _fboRender->bindDefault();
     qSwap(_fboRender, _fboDisplay);
 
-    //_fboDisplay->toImage().save("fbo.png");
+    emit contentToSaveRendered(_fboDisplay->toImage(),
+                               QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
+                               _rotation.y());
 
     emit textureReady(_fboDisplay->toImage(), _surfaceSize);
 }

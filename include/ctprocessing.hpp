@@ -185,6 +185,8 @@ inline void mergeSlice(const int & startSlice, const int & endSlice, const int &
     memcpy(mergeStartPoint, smoothed.data, sliceSize);
 }
 
+static cv::Mutex sliceMutex;
+
 inline void checkNeighbours(const int & position, const int & neighbourDiameter,
                             const int & minNeighbour, const int & maxNeighbour,
                             std::vector<cv::Mat> & filtered, std::vector<bool> & hasMerged,
@@ -206,6 +208,8 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
         rightCheckNeighbour = leftCheckNeighbour + neighbourDiameter + 1;
         currentCheckNeighbour = leftCheckNeighbour;
 
+        sliceMutex.lock();
+
         canMerge = true;
 
         while (canMerge && currentCheckNeighbour != rightCheckNeighbour) {
@@ -214,8 +218,13 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
 
         if (canMerge) {
             hasMerged[leftCheckNeighbour] = true;
+            sliceMutex.unlock();
+
             mergeSlice(leftCheckNeighbour, rightCheckNeighbour, sliceSize, filtered, mergeStartPoint + sliceSize * leftCheckNeighbour);
-            }
+        }
+        else {
+            sliceMutex.unlock();
+        }
     }
 }
 
