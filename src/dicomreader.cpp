@@ -18,7 +18,7 @@
 
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
-    _imageNumber(0) {
+    _sliceNumber(0) {
 
 }
 
@@ -36,8 +36,8 @@ void DicomReader::resetV(std::vector<cv::Mat *> & vec, const int & newSize) {
 
 void DicomReader::reset(const int & newSize) {
     resetV(_noisy, newSize);
+    resetV(_filtered, newSize);
 }
-
 
 void DicomReader::fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage) {
     gdcm::StringFilter dStringFilter;
@@ -208,13 +208,13 @@ void DicomReader::readFile(const QString & dicomFile) {
 }
 
 void DicomReader::changeSliceNumber(const int & ds) {
-    _imageNumber += ds;
-    _imageNumber %= _noisy.size();
-    showImageWithNumber(_imageNumber);
+    _sliceNumber += ds;
+    _sliceNumber %= _noisy.size();
+    showSliceWithNumber(_sliceNumber);
 }
 
-void DicomReader::showImageWithNumber(const size_t & imageNumber) {
-    cv::imshow(WINDOW_NOISY, *(_noisy[imageNumber]));
+void DicomReader::showSliceWithNumber(const size_t & sliceNumber) {
+    cv::imshow(WINDOW_NOISY, *(_noisy.at(sliceNumber)));
     cv::waitKey(1);
 }
 

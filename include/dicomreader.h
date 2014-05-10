@@ -19,14 +19,14 @@ public:
   void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
 
 private:
-  size_t _imageNumber;
+  size_t _sliceNumber;
 
   std::vector<cv::Mat *> _noisy;
   std::vector<cv::Mat *> _filtered;
 
   DicomData _dicomData;
 
-  void showImageWithNumber(const size_t & imageNumber);
+  void showSliceWithNumber(const size_t & sliceNumber);
   void readImage(gdcm::File &dFile, const gdcm::Image & dImage);
 
   void fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage);
