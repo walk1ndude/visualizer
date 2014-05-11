@@ -3,6 +3,8 @@
 #include <QtGui/QGuiApplication>
 #include <QtGui/QImage>
 
+#include <QtCore/QDebug>
+
 void FBOSaver::saveToDisk(const QImage & fboContent, const QRect & saveArea, const qreal & angle) {
     fboContent.copy(saveArea).save((angle > 99 ? "" : (angle > 9 ? "0" : "00")) + QString::number(angle) + ".png");
 }
@@ -103,9 +105,11 @@ void RenderThread::renderNext() {
     _fboRender->bindDefault();
     qSwap(_fboRender, _fboDisplay);
 
-    emit contentToSaveRendered(_fboDisplay->toImage(),
-                               QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
-                               _rotation.y());
+    if (_takeShot) {
+        emit contentToSaveRendered(_fboDisplay->toImage(),
+                                   QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
+                                   _rotation.y());
+    }
 
     emit textureReady(_fboDisplay->toImage(), _surfaceSize);
 }
