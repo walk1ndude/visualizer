@@ -93,7 +93,7 @@ Item {
         onTriggered: {
             sliceHud.angleShot += 1.0;
 
-            if (sliceHud.angleShot >= 180.0) {
+            if (sliceHud.angleShot > 180.0) {
                 angleShotTimer.running = false;
                 sliceHud.angleShot = 0.0;
 
