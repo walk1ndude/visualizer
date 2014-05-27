@@ -5,6 +5,9 @@
 
 #include "sliceviewer.h"
 
+#define FBO_WIDTH 512
+#define FBO_HEIGHT 512
+
 class TextureNode : public QObject, public QSGSimpleTextureNode {
     Q_OBJECT
 public:
@@ -159,7 +162,7 @@ QSGNode * SliceViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *)
         QOpenGLContext * current = window()->openglContext();
         current->doneCurrent();
 
-        _sliceRenderer = new SliceRenderer(current, QSize(512, 512));
+        _sliceRenderer = new SliceRenderer(current, QSize(FBO_WIDTH, FBO_HEIGHT));
 
         current->makeCurrent(window());
 
@@ -211,16 +214,13 @@ QSGNode * SliceViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *)
     return node;
 }
 
-void SliceViewer::drawSlices(QSharedPointer<uchar> mergedData,
-                             const std::vector<float> & scaling, const std::vector<size_t> & size,
-                             const int & alignment, const size_t & rowLength,
-                             const std::vector<int> & huRange) {
-    if (huRange.size()) {
-        _huRange = QVector2D(huRange[0], huRange[1]);
+void SliceViewer::drawSlices(SliceInfo::SliceSettings sliceSettings) {
+    if (sliceSettings.huRange.size()) {
+        _huRange = QVector2D(sliceSettings.huRange[0], sliceSettings.huRange[1]);
         emit huRangeChanged();
     }
 
-    emit slicesProcessed(mergedData, scaling, size, alignment, rowLength);
+    emit slicesProcessed(sliceSettings);
 }
 
 #include "sliceviewer.moc"

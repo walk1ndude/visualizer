@@ -12,17 +12,28 @@ ApplicationWindow {
     color: "black"
 
     signal fileOpened(string fileName);
+    signal filesOpened(variant fileName);
+
     signal sliceNumberChanged(int ds);
 
     menuBar: MenuBar {
         Menu {
             title: 'File'
+
             MenuItem {
-                text: 'Open'
+                text: 'Open dicom'
                 onTriggered: {
-                    openFileDialog.visible = true
+                    openFileDialogDicom.visible = true
                 }
             }
+
+            MenuItem {
+                text: 'Open reconstructor'
+                onTriggered: {
+                    openFileDialogReconstructor.visible = true
+                }
+            }
+
             MenuItem {
                 text: 'Quit'
                 onTriggered: Qt.quit()
@@ -31,9 +42,16 @@ ApplicationWindow {
     }
 
     FileDialog {
-        id: openFileDialog
+        id: openFileDialogDicom
         title: 'Choose DICOM file'
         onAccepted: fileOpened(fileUrl);
+    }
+
+    FileDialog {
+        id: openFileDialogReconstructor
+        title: 'Choose image files'
+        selectMultiple: true
+        onAccepted: filesOpened(fileUrls);
     }
 
     FocusScope {

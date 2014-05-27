@@ -15,7 +15,7 @@ Item {
     property int minHU: shaderGrid.minHU
     property int maxHU: shaderGrid.maxHU
 
-    property real angleShot: 0.0
+    property real angleShot: -180.0
 
     Rectangle {
         color: "#71888888"

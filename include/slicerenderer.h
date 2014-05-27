@@ -4,11 +4,10 @@
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
-#include <QtCore/QSharedPointer>
-
 #include "renderthread.h"
 #include "headmodel.h"
 #include "viewports.h"
+#include "sliceinfo.h"
 
 typedef enum _GPU_Driver {
     NVidia_binary,
@@ -74,8 +73,8 @@ private:
 
     GLfloat _ambientIntensity;
 
-    std::vector<float>_scaling;
-    std::vector<size_t>_size;
+    QVector<float>_scaling;
+    QVector<size_t>_size;
 
     LightSource _lightSource;
 
@@ -84,6 +83,8 @@ private:
     QSharedPointer<uchar>_mergedData;
 
     GPU_Driver _gpu_driver;
+
+    SliceInfo::SliceDataType _sliceDataType;
 
     void initializeViewPorts();
     void cleanUp();
@@ -95,10 +96,7 @@ private:
                            const QOpenGLPixelTransferOptions * pixelOptions);
 
 public slots:
-    void drawSlices(QSharedPointer<uchar> mergedData,
-                    const std::vector<float> & scaling = std::vector<float>(),
-                    const std::vector<size_t> & size = std::vector<size_t>(),
-                    const int & alignment = 0, const size_t & rowLength = 0);
+    void drawSlices(SliceInfo::SliceSettings sliceSettings);
 
     void setTakeShot(const bool & takeShot);
 

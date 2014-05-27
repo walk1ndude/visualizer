@@ -103,16 +103,10 @@ signals:
     void minHUChanged(const int & minHU);
     void maxHUChanged(const int & maxHU);
 
-    void slicesProcessed(QSharedPointer<uchar> mergedData,
-                         const std::vector<float> & scaling, const std::vector<size_t> & size,
-                         const int & alignment, const size_t & rowLength);
+    void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
 
 public slots:
-    void drawSlices(QSharedPointer<uchar> mergedData,
-                    const std::vector<float> & scaling = std::vector<float>(),
-                    const std::vector<size_t> & size = std::vector<size_t>(),
-                    const int & alignment = 0, const size_t & rowLength = 0,
-                    const std::vector<int> & huRange = std::vector<int>());
+    void drawSlices(SliceInfo::SliceSettings sliceSettings);
 };
 
 #endif // SLICEVIEWER_H

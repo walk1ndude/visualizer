@@ -5,7 +5,6 @@
 #include <gdcmException.h>
 
 #include <QtCore/QDebug>
-#include <QtCore/QDateTime>
 
 #include "dicomreader.h"
 
@@ -15,6 +14,8 @@
 
 #define MIN_HU 900
 #define MAX_HU 3600
+
+#define SCALE_COEFF ((float) 0.7)
 
 DicomReader::DicomReader(QObject * parent) :
     QObject(parent),
@@ -158,35 +159,34 @@ void DicomReader::runSliceProcessing(const bool & tellAboutHURange) {
 
     _dicomData.mergeLocation = &mergedData;
 
-    qint64 procTime = QDateTime::currentMSecsSinceEpoch();
+    float startTime = cv::getTickCount() / cv::getTickFrequency();
 
     cv::parallel_for_(cv::Range(0, _dicomData.depth), SliceProcessing(&_dicomData));
 
-    procTime = QDateTime::currentMSecsSinceEpoch() - procTime;
+    qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
 
-    qDebug() << "finished" << procTime;
+    size_t depth = _dicomData.depth - _dicomData.neighbourRadius * 2;
 
-    std::vector<float>scaling;
-    std::vector<size_t>size;
+    SliceInfo::SliceSettings sliceSettings;
 
-    int depth = _dicomData.depth - _dicomData.neighbourRadius * 2;
+    sliceSettings.mergedData = QSharedPointer<uchar>(mergedData);
+    sliceSettings.scaling = {
+            _dicomData.width * _dicomData.imageSpacings[0] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF,
+            _dicomData.height * _dicomData.imageSpacings[1] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF,
+            depth * _dicomData.imageSpacings[2] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF
+    };
 
-    scaling.push_back(_dicomData.width * _dicomData.imageSpacings[0] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.5);
-    scaling.push_back(_dicomData.height * _dicomData.imageSpacings[1] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.5);
-    scaling.push_back(depth * _dicomData.imageSpacings[2] / (_dicomData.height * _dicomData.imageSpacings[0]) / 0.7);
-
-    size.push_back(_dicomData.width);
-    size.push_back(_dicomData.height);
-    size.push_back(depth);
-
-    std::vector<int>huRange;
+    sliceSettings.size = {_dicomData.width, _dicomData.height, depth};
+    sliceSettings.alignment = alignment;
+    sliceSettings.rowLength = rowLength;
 
     if (tellAboutHURange) {
-        huRange.push_back(_dicomData.minHUPossible);
-        huRange.push_back(_dicomData.maxHUPossible);
+        sliceSettings.huRange = {_dicomData.minHUPossible, _dicomData.maxHUPossible};
     }
 
-    emit slicesProcessed(QSharedPointer<uchar>(mergedData), scaling, size, alignment, rowLength, huRange);
+    sliceSettings.sliceDataType = SliceInfo::Int16;
+
+    emit slicesProcessed(sliceSettings);
 }
 
 void DicomReader::readFile(const QString & dicomFile) {

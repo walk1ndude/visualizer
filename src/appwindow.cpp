@@ -23,6 +23,8 @@ void AppWindow::fetchConnections() {
     _appWindow = qobject_cast<QQuickWindow *>(appWindow);
 
     QObject::connect(appWindow, SIGNAL(fileOpened(const QString &)), this, SIGNAL(fileOpened(const QString &)));
+    QObject::connect(appWindow, SIGNAL(filesOpened(QVariant)), this, SLOT(readFiles(QVariant)));
+
     QObject::connect(appWindow, SIGNAL(sliceNumberChanged(const int &)), this, SIGNAL(sliceNumberChanged(const int &)));
 
     foreach (QObject * sliceItem, _appWindow->findChild<QQuickItem *>("sliceRow")->children()) {
@@ -51,8 +53,20 @@ void AppWindow::fetchConnections() {
             }
         });
     }
+}
 
+void AppWindow::readFiles(QVariant fileNames) {
+    QStringList fileNamesStr;
 
+    foreach (QVariant item, fileNames.value<QList<QUrl> >()) {
+#if defined(_WIN32)
+        fileNamesStr.append(item.toUrl().toString().mid(8));
+#else
+        fileNamesStr.append(item.toUrl().toString().mid(7));
+#endif
+    }
+
+    emit filesOpened(fileNamesStr);
 }
 
 void AppWindow::registerQmlTypes() {

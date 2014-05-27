@@ -2,12 +2,12 @@
 #define DICOMREADER_H
 
 #include <QtCore/QObject>
-#include <QtCore/QSharedPointer>
 
 #include <gdcmImage.h>
 #include <gdcmFile.h>
 
 #include "ctprocessing.hpp"
+#include "sliceinfo.h"
 
 class DicomReader : public QObject {
   Q_OBJECT
@@ -33,11 +33,7 @@ private:
   void runSliceProcessing(const bool & tellAboutHURange = false);
   void updateDicomData();
 signals:
-  void slicesProcessed(QSharedPointer<uchar> mergedData,
-                       const std::vector<float> & scaling = std::vector<float>(),
-                       const std::vector<size_t> & size = std::vector<size_t>(),
-                       const int & alignment = 0, const size_t & rowLength = 0,
-                       const std::vector<int> & huRange = std::vector<int>());
+  void slicesProcessed(SliceInfo::SliceSettings & sliceSettings);
 
 public slots:
   void readFile(const QString & dicomFile);

@@ -245,9 +245,9 @@ typedef struct _DicomData {
 
     int bytesAllocated;
 
-    int width;
-    int height;
-    int depth;
+    size_t width;
+    size_t height;
+    size_t depth;
 
     int sliceSize;
 
@@ -294,8 +294,8 @@ inline void decodeSlice(const int & position, std::vector<cv::Mat> & dst, const 
 
     char * posInBuffer = dicomData->buffer + dicomData->sliceSize * position;
 
-    for (int y = 0; y < dicomData->height; ++ y) {
-        for (int x = 0; x < dicomData->width; ++ x) {
+    for (size_t y = 0; y < dicomData->height; ++ y) {
+        for (size_t x = 0; x < dicomData->width; ++ x) {
             pixel = 0;
             pixelU = 0;
 

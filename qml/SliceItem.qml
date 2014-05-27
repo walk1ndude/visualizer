@@ -95,7 +95,7 @@ Item {
 
             if (sliceHud.angleShot > 180.0) {
                 angleShotTimer.running = false;
-                sliceHud.angleShot = 0.0;
+                sliceHud.angleShot = -180.0;
 
                 sliceItem.takeShot = false;
             }

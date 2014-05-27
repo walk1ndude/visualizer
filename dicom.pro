@@ -26,6 +26,8 @@ unix:macx {
                             -lopencv_core \
                             -lopencv_imgproc \
                             -lopencv_highgui
+
+    LIBS += -framework OpenCL
 }
 
 unix:!macx {
@@ -40,6 +42,8 @@ unix:!macx {
             -lgdcmMSFF \
             -lgdcmDSED \
             -lgdcmIOD
+
+    LIBS += -lOpenCL
 }
 
 win32 {
@@ -67,18 +71,21 @@ win32 {
             -lgdcmMSFF \
             -lgdcmDSED \
             -lgdcmIOD
+
+    LIBS += -lOpenCL
 }
 
 SOURCES += src/main.cpp\
-           src/dicomreader.cpp\
+           src/dicomreader.cpp \
+           src/reconstructor.cpp \
            src/matrixstack.cpp \
            src/appwindow.cpp \
            src/headmodel.cpp \
            src/viewport.cpp \
            src/viewports.cpp \
-    src/renderthread.cpp \
-    src/slicerenderer.cpp \
-    src/sliceviewer.cpp
+           src/renderthread.cpp \
+           src/slicerenderer.cpp \
+           src/sliceviewer.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
@@ -87,8 +94,10 @@ HEADERS  += include/dicomreader.h \
             include/headmodel.h \
             include/viewport.h \
             include/viewports.h \
-    include/renderthread.h \
-    include/slicerenderer.h \
-    include/sliceviewer.h
+            include/renderthread.h \
+            include/slicerenderer.h \
+            include/sliceviewer.h \
+            include/reconstructor.h \
+            include/sliceinfo.h
 
 RESOURCES += resources.qrc

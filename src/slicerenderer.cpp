@@ -42,7 +42,8 @@ SliceRenderer::SliceRenderer(QOpenGLContext * context, const QSize & size) :
     _textureHead(0),
     _ambientIntensity((GLfloat) 3.9),
     _mergedData(0),
-    _gpu_driver(NVidia_binary) {
+    _gpu_driver(NVidia_binary),
+    _sliceDataType(SliceInfo::Int16) {
 
     _lightSource.color = QVector4D(1.0, 1.0, 1.0, 1.0);
     _lightSource.position = QVector4D(10.0, 10.0, -10.0, 0.0);
@@ -111,25 +112,23 @@ void SliceRenderer::initializeViewPorts() {
     _viewPorts.setViewPorts(viewPorts, _surfaceSize);
 }
 
-void SliceRenderer::drawSlices(QSharedPointer<uchar> mergedData,
-                               const std::vector<float> & scaling, const std::vector<size_t> & size,
-                               const int & alignment, const size_t & rowLength) {
-
-    _mergedData = mergedData;
+void SliceRenderer::drawSlices(SliceInfo::SliceSettings sliceSettings) {
+    _mergedData = sliceSettings.mergedData;
+    _sliceDataType = sliceSettings.sliceDataType;
 
     if (updateContent()) {
         emit needToRedraw();
         return;
     }
 
-    _scaling = scaling;
-    _size = size;
+    _scaling = sliceSettings.scaling;
+    _size = sliceSettings.size;
 
     _step = QVector3D(1.0 / _size[0], 1.0 / _size[1], 1.0 / _size[2]);
 
-    if (rowLength) {
-        _pixelOptionsHead.setAlignment(alignment);
-        _pixelOptionsHead.setRowLength(rowLength);
+    if (sliceSettings.rowLength) {
+        _pixelOptionsHead.setAlignment(sliceSettings.alignment);
+        _pixelOptionsHead.setRowLength(sliceSettings.rowLength);
     }
 
     _viewPorts.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
@@ -263,8 +262,16 @@ void SliceRenderer::updateTexture(QOpenGLTexture ** texture, QSharedPointer<ucha
 }
 
 void SliceRenderer::updateTextures() {
-    updateTexture(&_textureHead, _mergedData, QOpenGLTexture::R16_UNorm,
-                      QOpenGLTexture::Red, QOpenGLTexture::UInt16, &_pixelOptionsHead);
+    switch (_sliceDataType) {
+    case SliceInfo::Int8:
+        updateTexture(&_textureHead, _mergedData, QOpenGLTexture::R8_UNorm,
+                          QOpenGLTexture::Red, QOpenGLTexture::UInt8, &_pixelOptionsHead);
+        break;
+    default:
+        updateTexture(&_textureHead, _mergedData, QOpenGLTexture::R16_UNorm,
+                          QOpenGLTexture::Red, QOpenGLTexture::UInt16, &_pixelOptionsHead);
+        break;
+    }
 }
 
 void SliceRenderer::cleanUp() {

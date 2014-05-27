@@ -9,5 +9,6 @@
         <file>qml/SliceItem.qml</file>
         <file>qml/Range.qml</file>
         <file>js/helperfuncs.js</file>
+        <file>cl/reconstructor.cl</file>
     </qresource>
 </RCC>
