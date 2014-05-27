@@ -22,6 +22,8 @@ int main(int argc, char * argv[]) {
     QObject::connect(&dicomReader, &DicomReader::slicesProcessed, &appWindow, &AppWindow::slicesProcessed);
     QObject::connect(&reconstructor, &Reconstructor::slicesProcessed, &appWindow, &AppWindow::slicesProcessed);
 
+    QObject::connect(&appWindow, &AppWindow::sliceNumberChanged, &reconstructor, &Reconstructor::changeSliceNumber);
+
     appWindow.show();
 
     return a.exec();

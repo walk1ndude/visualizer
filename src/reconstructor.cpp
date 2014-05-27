@@ -255,7 +255,8 @@ void Reconstructor::reconstruct() {
         helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (sliceData + i * slicePitchDst));
 
         minMaxLoc(helperMat, &minVal, &maxVal, &minLoc, &maxLoc);
-        cv::convertScaleAbs(helperMat, _slicesOCL.at(i), 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
+        cv::convertScaleAbs(helperMat, helperMat, 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
+        cv::threshold(helperMat, _slicesOCL.at(i), 60, 255, CV_THRESH_BINARY);
     }
 
     showSliceWithNumber(0);
@@ -363,9 +364,11 @@ void Reconstructor::readFiles(QStringList fileNames) {
 }
 
 void Reconstructor::changeSliceNumber(const int & ds) {
-    _sliceNumber += ds;
-    _sliceNumber %= _slicesOCL.size();
-    showSliceWithNumber(_sliceNumber);
+    if (_slicesOCL.size()) {
+        _sliceNumber += ds;
+        _sliceNumber %= _slicesOCL.size();
+        showSliceWithNumber(_sliceNumber);
+    }
 }
 
 void Reconstructor::showSliceWithNumber(const int & sliceNumber) {

@@ -208,9 +208,11 @@ void DicomReader::readFile(const QString & dicomFile) {
 }
 
 void DicomReader::changeSliceNumber(const int & ds) {
-    _sliceNumber += ds;
-    _sliceNumber %= _noisy.size();
-    showSliceWithNumber(_sliceNumber);
+    if (_noisy.size()) {
+        _sliceNumber += ds;
+        _sliceNumber %= _noisy.size();
+        showSliceWithNumber(_sliceNumber);
+    }
 }
 
 void DicomReader::showSliceWithNumber(const size_t & sliceNumber) {
