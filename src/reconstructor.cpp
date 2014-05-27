@@ -269,7 +269,10 @@ void Reconstructor::reconstruct() {
     clReleaseMemObject(srcImage);
     clReleaseMemObject(fourier2dImageA);
     clReleaseMemObject(fourier2dImageB);
+
     clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, NULL, NULL);
+    clFinish(_queue);
+
     clReleaseMemObject(sliceImage);
     clReleaseMemObject(casBuf);
     clReleaseMemObject(cosBuf);
