@@ -5,8 +5,8 @@
 
 #include "sliceviewer.h"
 
-#define FBO_WIDTH 512
-#define FBO_HEIGHT 512
+#define FBO_WIDTH 768
+#define FBO_HEIGHT 768
 
 class TextureNode : public QObject, public QSGSimpleTextureNode {
     Q_OBJECT

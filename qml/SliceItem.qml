@@ -85,7 +85,7 @@ Item {
 
     Timer {
         id: angleShotTimer
-        interval: 200
+        interval: 400
 
         repeat: true
         running: false

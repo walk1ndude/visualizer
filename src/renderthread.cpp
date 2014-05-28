@@ -8,13 +8,13 @@
 #include <cmath>
 
 void FBOSaver::saveToDisk(const QImage & fboContent, const QRect & saveArea, const qreal & angle) {
-    fboContent.copy(saveArea).save((angle > 99 ? "" : (angle > 9 ? "0" : "00")) + QString::number(angle) + ".png");
+    fboContent.copy(saveArea).save((angle > 99 ? "" : (angle > 9 ? "0" : "00")) + QString::number(angle * 10) + ".png");
 }
 
 RenderThread::RenderThread(QOpenGLContext * context, const QSize & surfaceSize) :
     _surfaceSize(surfaceSize),
     _rotation(QVector3D(0, 0, 0)),
-    _takeShot(true),
+    _takeShot(false),
     _canRenderContent(false),
     _textureUpdateNeeded(false),
     _contentInitializeNeeded(false),
@@ -108,11 +108,12 @@ void RenderThread::renderNext() {
     qSwap(_fboRender, _fboDisplay);
 
     if (_takeShot) {
-        if (_rotation.y() - trunc(_rotation.y()) == 0) {
+        qDebug() << "here";
+        //if (_rotation.y() - trunc(_rotation.y()) == 0.5) {
             emit contentToSaveRendered(_fboDisplay->toImage(),
                                        QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
                                        _rotation.y() + 180.0);
-        }
+        //}
     }
 
     emit textureReady(_fboDisplay->toImage(), _surfaceSize);

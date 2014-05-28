@@ -3,6 +3,8 @@
 
 #include <QtCore/QSharedPointer>
 
+#include <QtCore/QVector>
+
 namespace SliceInfo {
     typedef enum _SliceDataType {
         Int8,

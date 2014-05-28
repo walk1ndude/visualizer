@@ -13,7 +13,7 @@
 #define SLICE_POSITION "position"
 
 #define toRad(x) ((x) * CV_PI / 180.0)
-#define PADDED_INCREASE 2
+#define PADDED_INCREASE 1
 
 #define SCALE_COEFF ((float) 0.7)
 
@@ -191,12 +191,15 @@ void Reconstructor::reconstruct() {
     clSetKernelArg(_calcCasKernel, 1, sizeof(size_t), (void *) &paddedWidth);
     clSetKernelArg(_calcCasKernel, 2, sizeof(float), (void *) &twoPiN);
 
+    float coeffTrig = depth / 360.0;
+
     clSetKernelArg(_calcTrigKernel, 0, sizeof(cl_mem), (void *) &cosBuf);
     clSetKernelArg(_calcTrigKernel, 1, sizeof(cl_mem), (void *) &sinBuf);
-
+    clSetKernelArg(_calcTrigKernel, 2, sizeof(float), (void *) &coeffTrig);
+    
     size_t globalThreadsCalcCas[2] = {paddedWidth, paddedWidth};
     clEnqueueNDRangeKernel(_queue, _calcCasKernel, 2, NULL, globalThreadsCalcCas, NULL, 0, NULL, eventList);
-    clEnqueueNDRangeKernel(_queue, _calcTrigKernel, 1, NULL, &depth, NULL, 0, NULL, eventList + 1);
+    clEnqueueNDRangeKernel(_queue, _calcTrigKernel, 2, NULL, globalThreadsCalcCas, NULL, 0, NULL, eventList + 1);
 
     clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
     clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -245,6 +248,7 @@ void Reconstructor::reconstruct() {
     _slicesOCL.resize(height);
 
     cv::Mat helperMat;
+    cv::Mat mask;
 
     double minVal;
     double maxVal;
@@ -255,8 +259,20 @@ void Reconstructor::reconstruct() {
         helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (sliceData + i * slicePitchDst));
 
         minMaxLoc(helperMat, &minVal, &maxVal, &minLoc, &maxLoc);
+
+        qDebug() << minVal << maxVal;
         cv::convertScaleAbs(helperMat, helperMat, 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
-        cv::threshold(helperMat, _slicesOCL.at(i), 60, 255, CV_THRESH_BINARY);
+        //cv::threshold(helperMat, _slicesOCL.at(i), 60, 255, CV_THRESH_BINARY);
+        //cv::GaussianBlur(helperMat, helperMat, cv::Size(5, 5), 1.4);
+        //cv::erode(helperMat, helperMat, cv::Mat(5, 5, CV_8UC1));
+
+        cv::threshold(helperMat, mask, 60, 255, CV_THRESH_BINARY);
+        cv::bitwise_and(helperMat, helperMat, _slicesOCL.at(i), mask);
+
+        //cv::GaussianBlur(_slicesOCL.at(i), _slicesOCL.at(i), cv::Size(3, 3), 1.4);
+
+        //cv::dilate(_slicesOCL.at(i), _slicesOCL.at(i), cv::Mat(3, 3, CV_8UC1));
+        //helperMat.convertTo(_slicesOCL.at(i), CV_8UC1, 256.0);
     }
 
     showSliceWithNumber(0);
