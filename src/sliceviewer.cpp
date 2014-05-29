@@ -33,10 +33,10 @@ public slots:
     // This function gets called on the FBO rendering thread and will store the
     // texture id and size and schedule an update on the window.
     void newTexture(const QImage & image, const QSize & size) {
-        _mutex.lock();
+        _textureMutex.lock();
         _image = image;
         _size = size;
-        _mutex.unlock();
+        _textureMutex.unlock();
 
         // We cannot call QQuickWindow::update directly here, as this is only allowed
         // from the rendering thread or GUI thread.
@@ -44,9 +44,11 @@ public slots:
     }
 
     void prepareNode() {
-            delete _texture;
-            _texture = _window->createTextureFromImage(_image);
-            setTexture(_texture);
+        _textureMutex.lock();
+        delete _texture;
+        _texture = _window->createTextureFromImage(_image);
+        setTexture(_texture);
+        _textureMutex.unlock();
     }
 
 private:
@@ -54,7 +56,7 @@ private:
 
     QImage _image;
 
-    QMutex _mutex;
+    QMutex _textureMutex;
 
     QSGTexture *_texture;
     QQuickWindow *_window;

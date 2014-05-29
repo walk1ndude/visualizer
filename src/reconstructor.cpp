@@ -353,27 +353,35 @@ void Reconstructor::reconstruct() {
 
     double minVal;
     double maxVal;
-    cv::Point minLoc;
-    cv::Point maxLoc;
+    
+    double minValVolume;
+    double maxValVolume;
+    
+    helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (sliceData + slicePitchDst));
+    cv::minMaxLoc(helperMat, &minValVolume, &maxValVolume, NULL, NULL);
+    helperMat.copyTo(_slicesOCL.at(0));
 
-    for (size_t i = 0; i != _slicesOCL.size(); ++ i) {
+    for (size_t i = 1; i != _slicesOCL.size(); ++ i) {
         helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (sliceData + i * slicePitchDst));
 
-        minMaxLoc(helperMat, &minVal, &maxVal, &minLoc, &maxLoc);
-
-        //qDebug() << minVal << maxVal;
-        cv::convertScaleAbs(helperMat, helperMat, 2 * 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
-        //cv::threshold(helperMat, _slicesOCL.at(i), 60, 255, CV_THRESH_BINARY);
-        //cv::GaussianBlur(helperMat, helperMat, cv::Size(5, 5), 1.4);
-        //cv::erode(helperMat, helperMat, cv::Mat(5, 5, CV_8UC1));
-
-        cv::threshold(helperMat, mask, 150, 255, CV_THRESH_BINARY);
-        cv::bitwise_and(helperMat, helperMat, _slicesOCL.at(i), mask);
-
-        //cv::GaussianBlur(_slicesOCL.at(i), _slicesOCL.at(i), cv::Size(3, 3), 1.4);
-
-        //cv::dilate(_slicesOCL.at(i), _slicesOCL.at(i), cv::Mat(3, 3, CV_8UC1));
-        //helperMat.convertTo(_slicesOCL.at(i), CV_8UC1, 256.0);
+        cv::minMaxLoc(helperMat, &minVal, &maxVal, NULL, NULL);
+        helperMat.copyTo(_slicesOCL.at(i));
+        
+        maxValVolume = std::max(maxValVolume, maxVal);
+        minValVolume = std::min(minValVolume, minVal);
+    }
+    
+    for (size_t i = 0; i != _slicesOCL.size(); ++ i) {
+        cv::convertScaleAbs(_slicesOCL.at(i),
+                            _slicesOCL.at(i),
+                            256.0 / (maxValVolume - minValVolume),
+                            minValVolume / (minValVolume - maxValVolume));
+        
+        cv::threshold(_slicesOCL.at(i), mask, 40, 255, CV_THRESH_BINARY);
+        
+        helperMat = cv::Scalar(0);
+        cv::bitwise_and(_slicesOCL.at(i), _slicesOCL.at(i), helperMat, mask);
+        helperMat.copyTo(_slicesOCL.at(i));
     }
 
     showSliceWithNumber(0);

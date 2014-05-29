@@ -53,6 +53,8 @@ private:
     QOffscreenSurface * _surface;
 
     QOpenGLContext * _context;
+    
+    QMutex _renderMutex;
 
     FBOSaver * _fboSaver;
 

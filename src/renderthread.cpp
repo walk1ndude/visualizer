@@ -73,6 +73,8 @@ void RenderThread::setSurface(QOffscreenSurface * surface) {
 }
 
 void RenderThread::renderNext() {
+    _renderMutex.lock();
+    
     _context->makeCurrent(_surface);
 
     if (!_fboRender) {
@@ -117,6 +119,8 @@ void RenderThread::renderNext() {
     }
 
     emit textureReady(_fboDisplay->toImage(), _surfaceSize);
+    
+    _renderMutex.unlock();
 }
 
 void RenderThread::shutDown() {
