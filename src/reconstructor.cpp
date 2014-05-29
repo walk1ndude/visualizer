@@ -15,6 +15,9 @@
 #define toRad(x) ((x) * CV_PI / 180.0)
 #define PADDED_INCREASE 1
 
+#define SIGMA_GAUSS 0.3
+#define KERN_SIZE_GAUSS 5
+
 #define SCALE_COEFF ((float) 0.7)
 
 Reconstructor::Reconstructor(QObject * parent) :
@@ -78,6 +81,7 @@ void Reconstructor::initOpenCL() {
 
     qDebug() << "Building OpenCL Program, error: " << clBuildProgram(_programSlice, 1, &_device_id, NULL, NULL, NULL);
 
+    _gauss1dKernel = clCreateKernel(_programSlice, "gauss1d", NULL);
     _calcTablesKernel = clCreateKernel(_programSlice, "calcTables", NULL);
     _fourier2dKernel = clCreateKernel(_programSlice, "fourier2d", NULL);
     _dht1dTransposeKernel = clCreateKernel(_programSlice, "dht1dTranspose", NULL);
@@ -106,6 +110,23 @@ void Reconstructor::reconstruct() {
     for (size_t i = 0; i != depth; ++ i) {
         memcpy(srcData + slicePitchSrc * i, _src.at(i).data, slicePitchSrc);
     }
+    
+    float r;
+    float s = 2.0 * SIGMA_GAUSS * SIGMA_GAUSS;
+    
+    float sum = 0.0;
+    float gaussTab[KERN_SIZE_GAUSS];
+    
+    for (int x = - KERN_SIZE_GAUSS / 2; x <= KERN_SIZE_GAUSS / 2; x++) {
+        r = x * x;
+        gaussTab[x + 2] = (exp(-r / s)) / (CV_PI * s);
+        sum += gaussTab[x + 2];
+    }
+    
+    // normalize the Kernel
+    for(int i = 0; i < 5; ++i) {
+        gaussTab[i] /= sum;
+    }
 
     cl_image_format image_format;
     image_format.image_channel_data_type = CL_FLOAT;
@@ -122,7 +143,18 @@ void Reconstructor::reconstruct() {
     image_desc_src.image_row_pitch = rowPitchSrc;
     image_desc_src.image_slice_pitch = slicePitchSrc;
     image_desc_src.num_samples = 0;
-
+    
+    cl_image_desc image_desc_gauss;
+    image_desc_gauss.image_type = CL_MEM_OBJECT_IMAGE3D;
+    image_desc_gauss.image_width = width;
+    image_desc_gauss.image_height = height;
+    image_desc_gauss.image_depth = depth;
+    image_desc_gauss.buffer = NULL;
+    image_desc_gauss.num_mip_levels = 0;
+    image_desc_gauss.image_row_pitch = 0;
+    image_desc_gauss.image_slice_pitch = 0;
+    image_desc_gauss.num_samples = 0;
+    
     cl_image_desc image_desc_fourier2d;
     image_desc_fourier2d.image_type = CL_MEM_OBJECT_IMAGE3D;
     image_desc_fourier2d.image_width = paddedWidth;
@@ -151,31 +183,80 @@ void Reconstructor::reconstruct() {
     cl_event eventList[6];
 
     int errNo;
+    
 #ifdef CL_VERSION_1_2
-    cl_mem srcImage = clCreateImage(_context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+    cl_mem srcImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
                                       &image_format, &image_desc_src, (void *) srcData, NULL);
-
-    cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                             &image_format, &image_desc_fourier2d, NULL, &errNo);
-
-    cl_mem fourier2dImageB = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                             &image_format, &image_desc_fourier2d, NULL, NULL);
-
-    cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                &image_format, &image_desc_slices, NULL, NULL);
+    
+    cl_mem gaussImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+                                      &image_format, &image_desc_gauss, NULL, NULL);
+    
 #else
-    cl_mem srcImage = clCreateImage3D(_context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+    cl_mem srcImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
                                       &image_format, width, height, depth,
                                       rowPitchSrc, slicePitchSrc, (void *) srcData, NULL);
-
+    
+    cl_mem gaussImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+                                      &image_format, width, height, depth,
+                                      NULL, NULL, NULL, NULL);
+    
+#endif
+    
+    uint dir0 = 0;
+    uint dir1 = 1;
+    
+    uint kernGaussSize = KERN_SIZE_GAUSS;
+    
+    cl_mem gaussBuf = clCreateBuffer(_context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float) * KERN_SIZE_GAUSS, (void *) &gaussTab, NULL);
+    
+    clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
+    clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &gaussImage);
+    clSetKernelArg(_gauss1dKernel, 2, sizeof(cl_mem), (void *) &gaussBuf);
+    clSetKernelArg(_gauss1dKernel, 3, sizeof(uint), (void *) &dir1);
+    clSetKernelArg(_gauss1dKernel, 4, sizeof(uint), (void *) &dir0);
+    clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir0);
+    clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
+    
+    size_t globalThreadsGauss1d[3] = {width, height, depth};
+    clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, NULL, globalThreadsGauss1d, NULL, 0, NULL, eventList);
+    
+    clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
+    clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &srcImage);
+    clSetKernelArg(_gauss1dKernel, 2, sizeof(cl_mem), (void *) &gaussBuf);
+    clSetKernelArg(_gauss1dKernel, 3, sizeof(uint), (void *) &dir0);
+    clSetKernelArg(_gauss1dKernel, 4, sizeof(uint), (void *) &dir1);
+    clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir0);
+    clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
+    
+    clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, NULL, globalThreadsGauss1d, NULL, 1, eventList, eventList + 1);
+    
+    clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
+    clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &gaussImage);
+    clSetKernelArg(_gauss1dKernel, 2, sizeof(cl_mem), (void *) &gaussBuf);
+    clSetKernelArg(_gauss1dKernel, 3, sizeof(uint), (void *) &dir0);
+    clSetKernelArg(_gauss1dKernel, 4, sizeof(uint), (void *) &dir0);
+    clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir1);
+    clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
+    
+    clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, NULL, globalThreadsGauss1d, NULL, 1, eventList + 1, eventList + 2);
+    
+    clWaitForEvents(1, eventList + 2);
+    
+    delete [] srcData;
+    
+    clReleaseMemObject(srcImage);
+    clReleaseMemObject(gaussBuf);
+    
+    for (int i = 0; i != 3; ++ i) {
+        clReleaseEvent(eventList[i]);
+    }
+    
+#ifdef CL_VERSION_1_2
+    cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+                                             &image_format, &image_desc_fourier2d, NULL, &errNo);
+#else
     cl_mem fourier2dImageA = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                              &image_format, paddedWidth, paddedWidth, height, 0, 0, NULL, NULL);
-
-    cl_mem fourier2dImageB = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                             &image_format, paddedWidth, paddedWidth, height, 0, 0, NULL, NULL);
-
-    cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                  &image_format, width, width, height, 0, 0, NULL, NULL);
 #endif
 
     cl_mem casBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, NULL, NULL);
@@ -191,17 +272,29 @@ void Reconstructor::reconstruct() {
     clSetKernelArg(_calcTablesKernel, 4, sizeof(size_t), (void *) &paddedWidth);
     clSetKernelArg(_calcTablesKernel, 5, sizeof(float), (void *) &twoPiN);
     
-    size_t globalThreadsCalcCas[2] = {paddedWidth, paddedWidth};
-    clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, NULL, globalThreadsCalcCas, NULL, 0, NULL, eventList);
+    size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
+    clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, NULL, globalThreadsCalcTables, NULL, 0, NULL, eventList);
 
-    clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
+    clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
     clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
     clSetKernelArg(_fourier2dKernel, 2, sizeof(cl_mem), (void *) &casBuf);
     clSetKernelArg(_fourier2dKernel, 3, sizeof(cl_mem), (void *) &tanBuf);
     clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &radBuf);
-
+    
     size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
     clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, NULL, globalThreadsFourier2d, NULL, 1, eventList, eventList + 1);
+    
+    clWaitForEvents(1, eventList + 1);
+    
+    clReleaseMemObject(gaussImage);
+    
+#ifdef CL_VERSION_1_2
+    cl_mem fourier2dImageB = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+                                           &image_format, &image_desc_fourier2d, NULL, NULL);
+#else
+    cl_mem fourier2dImageB = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+                                             &image_format, paddedWidth, paddedWidth, height, 0, 0, NULL, NULL);
+#endif
 
     const float coeff = 1.0 / paddedWidth;
 
@@ -221,6 +314,21 @@ void Reconstructor::reconstruct() {
 
     clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, NULL, globalThreadsDht1dTranspose,
                                        NULL, 1, eventList + 2, eventList + 3);
+    
+    clWaitForEvents(1, eventList + 3);
+    
+    clReleaseMemObject(fourier2dImageB);
+    clReleaseMemObject(casBuf);
+    clReleaseMemObject(tanBuf);
+    clReleaseMemObject(radBuf);
+    
+#ifdef CL_VERSION_1_2
+    cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+                                      &image_format, &image_desc_slices, NULL, NULL);
+#else
+    cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+                                        &image_format, width, width, height, 0, 0, NULL, NULL);
+#endif
 
     clSetKernelArg(_butterflyDht2dKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
     clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
@@ -254,12 +362,12 @@ void Reconstructor::reconstruct() {
         minMaxLoc(helperMat, &minVal, &maxVal, &minLoc, &maxLoc);
 
         //qDebug() << minVal << maxVal;
-        cv::convertScaleAbs(helperMat, helperMat, 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
+        cv::convertScaleAbs(helperMat, helperMat, 2 * 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
         //cv::threshold(helperMat, _slicesOCL.at(i), 60, 255, CV_THRESH_BINARY);
         //cv::GaussianBlur(helperMat, helperMat, cv::Size(5, 5), 1.4);
         //cv::erode(helperMat, helperMat, cv::Mat(5, 5, CV_8UC1));
 
-        cv::threshold(helperMat, mask, 60, 255, CV_THRESH_BINARY);
+        cv::threshold(helperMat, mask, 150, 255, CV_THRESH_BINARY);
         cv::bitwise_and(helperMat, helperMat, _slicesOCL.at(i), mask);
 
         //cv::GaussianBlur(_slicesOCL.at(i), _slicesOCL.at(i), cv::Size(3, 3), 1.4);
@@ -270,23 +378,16 @@ void Reconstructor::reconstruct() {
 
     showSliceWithNumber(0);
 
-    delete [] srcData;
-
     for (int i = 0; i != 6; ++ i) {
         clReleaseEvent(eventList[i]);
     }
 
-    clReleaseMemObject(srcImage);
     clReleaseMemObject(fourier2dImageA);
-    clReleaseMemObject(fourier2dImageB);
 
     clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, NULL, NULL);
     clFinish(_queue);
 
     clReleaseMemObject(sliceImage);
-    clReleaseMemObject(casBuf);
-    clReleaseMemObject(tanBuf);
-    clReleaseMemObject(radBuf);
 
     SliceInfo::SliceSettings sliceSettings;
 

@@ -10,12 +10,42 @@ float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, floa
     float elem = 0.0f;
     for (int i = 0; i != width; ++ i) {
         elem += (
-                 read_imagef(src, sampler, (float4) ((float) i, pos.y, pos.z, 0.0)).x *
+                 read_imagef(src, sampler, (float4) ((float) i, pos.y, pos.z, 0.0f)).x *
                  cas[(int) pos.x * width + offset + i]
                  );
     }
 
     return elem * coeff;
+}
+
+int reflect(int maxDir, int curP) {
+    if (curP < 0) {
+        return - curP - 1;
+    }
+    if (curP >= maxDir) {
+        return 2 * maxDir - curP - 1;
+    }
+    return curP;
+}
+
+__kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
+                      __constant float * gaussTab,
+                      __private uint dirX, __private uint dirY, __private uint dirZ,
+                      __private uint kernGaussSize) {
+    int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    float sum = 0.0f;
+    
+    int4 posR = (int4) (0);
+    
+    for (int i = - kernGaussSize; i != kernGaussSize; ++ i) {
+        posR.x = reflect(get_image_width(src), pos.x + dirX * i);
+        posR.y = reflect(get_image_height(src), pos.y + dirY * i);
+        posR.z = reflect(get_image_depth(src), pos.z + dirZ * i);
+        
+        sum += (gaussTab[kernGaussSize + i] * read_imagef(src, sampler, posR).x);
+    }
+                
+    write_imagef(dst, pos, sum);
 }
 
 __kernel void calcTables(__global float * cas, __global float * tanTable,
@@ -52,10 +82,10 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     const int heightSrc = get_image_depth(src);
     const int heightDst = get_image_height(dst);
 
-    const float centerXDst = widthDst / 2.0;
-    const float centerYDst = heightDst / 2.0;
+    const float centerXDst = widthDst / 2.0f;
+    const float centerYDst = heightDst / 2.0f;
 
-    const float centerXSrc = widthSrc / 2.0;
+    const float centerXSrc = widthSrc / 2.0f;
 
     const int offset = centerXDst - widthSrc / 2;
 
@@ -72,7 +102,7 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     const float theta = tanTable[posT];
     const float rad = radTable[posT];
 
-    if (theta < 0.0) {
+    if (theta < 0.0f) {
         sinoX = (centerXDst - rad) * ratioPad;
         swappedSinoX = centerXSrc - sinoX;
     }
@@ -81,7 +111,7 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
         swappedSinoX = centerXSrc + widthSrc - sinoX;
     }
 
-    const float sinoY = min(theta + 180.0, 360.0) * (heightSrc / 360.0);
+    const float sinoY = min(theta + 180.0f, 360.0f) * (heightSrc / 360.0f);
 
     if (rad <= centerXDst) {
         write_imagef(dst,
@@ -90,7 +120,7 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
                     pos.z,
                     0),
             (float4) (((int) sinoX % 2 ? -1 : 1) * calcElem(src, cas,
-                                                            (float4) (swappedSinoX, pos.z, sinoY, 0.0),
+                                                            (float4) (swappedSinoX, pos.z, sinoY, 0.0f),
                                                             offset, 1)));
            }
 }
