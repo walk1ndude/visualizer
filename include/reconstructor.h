@@ -32,8 +32,7 @@ private:
     cl_device_id _device_id;
     cl_program _programSlice;
 
-    cl_kernel _calcCasKernel;
-    cl_kernel _calcTrigKernel;
+    cl_kernel _calcTablesKernel;
     cl_kernel _dht1dTransposeKernel;
     cl_kernel _fourier2dKernel;
     cl_kernel _butterflyDht2dKernel;

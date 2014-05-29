@@ -27,8 +27,7 @@ Reconstructor::Reconstructor(QObject * parent) :
 Reconstructor::~Reconstructor() {
     reset();
 
-    clReleaseKernel(_calcTrigKernel);
-    clReleaseKernel(_calcCasKernel);
+    clReleaseKernel(_calcTablesKernel);
     clReleaseKernel(_butterflyDht2dKernel);
     clReleaseKernel(_fourier2dKernel);
     clReleaseKernel(_dht1dTransposeKernel);
@@ -79,8 +78,7 @@ void Reconstructor::initOpenCL() {
 
     qDebug() << "Building OpenCL Program, error: " << clBuildProgram(_programSlice, 1, &_device_id, NULL, NULL, NULL);
 
-    _calcCasKernel = clCreateKernel(_programSlice, "calcCas", NULL);
-    _calcTrigKernel = clCreateKernel(_programSlice, "calcTrig", NULL);
+    _calcTablesKernel = clCreateKernel(_programSlice, "calcTables", NULL);
     _fourier2dKernel = clCreateKernel(_programSlice, "fourier2d", NULL);
     _dht1dTransposeKernel = clCreateKernel(_programSlice, "dht1dTranspose", NULL);
     _butterflyDht2dKernel = clCreateKernel(_programSlice, "butterflyDht2d", NULL);
@@ -150,7 +148,7 @@ void Reconstructor::reconstruct() {
     size_t origin[3] = {0, 0, 0};
     size_t regionSlice[3] = {width, width, height};
 
-    cl_event eventList[7];
+    cl_event eventList[6];
 
     int errNo;
 #ifdef CL_VERSION_1_2
@@ -181,34 +179,29 @@ void Reconstructor::reconstruct() {
 #endif
 
     cl_mem casBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, NULL, NULL);
-
-    cl_mem cosBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, sizeof(float) * depth, NULL, &errNo);
-    cl_mem sinBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, sizeof(float) * depth, NULL, &errNo);
+    cl_mem tanBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, NULL, NULL);
+    cl_mem radBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, NULL, NULL);
 
     float twoPiN = (2 * CV_PI) / paddedWidth;
 
-    clSetKernelArg(_calcCasKernel, 0, sizeof(cl_mem), (void *) &casBuf);
-    clSetKernelArg(_calcCasKernel, 1, sizeof(size_t), (void *) &paddedWidth);
-    clSetKernelArg(_calcCasKernel, 2, sizeof(float), (void *) &twoPiN);
-
-    float coeffTrig = depth / 360.0;
-
-    clSetKernelArg(_calcTrigKernel, 0, sizeof(cl_mem), (void *) &cosBuf);
-    clSetKernelArg(_calcTrigKernel, 1, sizeof(cl_mem), (void *) &sinBuf);
-    clSetKernelArg(_calcTrigKernel, 2, sizeof(float), (void *) &coeffTrig);
+    clSetKernelArg(_calcTablesKernel, 0, sizeof(cl_mem), (void *) &casBuf);
+    clSetKernelArg(_calcTablesKernel, 1, sizeof(cl_mem), (void *) &tanBuf);
+    clSetKernelArg(_calcTablesKernel, 2, sizeof(cl_mem), (void *) &radBuf);
+    clSetKernelArg(_calcTablesKernel, 3, sizeof(size_t), (void *) &paddedWidth);
+    clSetKernelArg(_calcTablesKernel, 4, sizeof(size_t), (void *) &paddedWidth);
+    clSetKernelArg(_calcTablesKernel, 5, sizeof(float), (void *) &twoPiN);
     
     size_t globalThreadsCalcCas[2] = {paddedWidth, paddedWidth};
-    clEnqueueNDRangeKernel(_queue, _calcCasKernel, 2, NULL, globalThreadsCalcCas, NULL, 0, NULL, eventList);
-    clEnqueueNDRangeKernel(_queue, _calcTrigKernel, 2, NULL, globalThreadsCalcCas, NULL, 0, NULL, eventList + 1);
+    clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, NULL, globalThreadsCalcCas, NULL, 0, NULL, eventList);
 
     clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
     clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
     clSetKernelArg(_fourier2dKernel, 2, sizeof(cl_mem), (void *) &casBuf);
-    clSetKernelArg(_fourier2dKernel, 3, sizeof(cl_mem), (void *) &cosBuf);
-    clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &sinBuf);
+    clSetKernelArg(_fourier2dKernel, 3, sizeof(cl_mem), (void *) &tanBuf);
+    clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &radBuf);
 
-    size_t globalThreadsFourier2d[3] = {width, height, depth};
-    clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, NULL, globalThreadsFourier2d, NULL, 2, eventList, eventList + 2);
+    size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
+    clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, NULL, globalThreadsFourier2d, NULL, 1, eventList, eventList + 1);
 
     const float coeff = 1.0 / paddedWidth;
 
@@ -219,7 +212,7 @@ void Reconstructor::reconstruct() {
 
     size_t globalThreadsDht1dTranspose[3] = {paddedWidth, paddedWidth, height};
     clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, NULL, globalThreadsDht1dTranspose,
-                                       NULL, 1, eventList + 2, eventList + 3);
+                                       NULL, 1, eventList + 1, eventList + 2);
 
     clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageB);
     clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -227,21 +220,21 @@ void Reconstructor::reconstruct() {
     clSetKernelArg(_dht1dTransposeKernel, 3, sizeof(cl_mem), (void *) &coeff);
 
     clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, NULL, globalThreadsDht1dTranspose,
-                                       NULL, 1, eventList + 3, eventList + 4);
+                                       NULL, 1, eventList + 2, eventList + 3);
 
     clSetKernelArg(_butterflyDht2dKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
     clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
 
     size_t globalThreadsButterfly[3] = {paddedWidth / 2, paddedWidth / 2, height};
     clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, NULL, globalThreadsButterfly,
-                                       NULL, 1, eventList + 4, eventList + 5);
+                                       NULL, 1, eventList + 3, eventList + 4);
 
     uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
                                              CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                              &rowPitchDst, &slicePitchDst,
-                                             1, eventList + 5, eventList + 6, &errNo);
+                                             1, eventList + 4, eventList + 5, &errNo);
 
-    clWaitForEvents(1, eventList + 6);
+    clWaitForEvents(1, eventList + 5);
 
     qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData;
 
@@ -260,7 +253,7 @@ void Reconstructor::reconstruct() {
 
         minMaxLoc(helperMat, &minVal, &maxVal, &minLoc, &maxLoc);
 
-        qDebug() << minVal << maxVal;
+        //qDebug() << minVal << maxVal;
         cv::convertScaleAbs(helperMat, helperMat, 256.0 / (maxVal - minVal), - minVal / (maxVal - minVal));
         //cv::threshold(helperMat, _slicesOCL.at(i), 60, 255, CV_THRESH_BINARY);
         //cv::GaussianBlur(helperMat, helperMat, cv::Size(5, 5), 1.4);
@@ -279,7 +272,7 @@ void Reconstructor::reconstruct() {
 
     delete [] srcData;
 
-    for (int i = 0; i != 7; ++ i) {
+    for (int i = 0; i != 6; ++ i) {
         clReleaseEvent(eventList[i]);
     }
 
@@ -292,8 +285,8 @@ void Reconstructor::reconstruct() {
 
     clReleaseMemObject(sliceImage);
     clReleaseMemObject(casBuf);
-    clReleaseMemObject(cosBuf);
-    clReleaseMemObject(sinBuf);
+    clReleaseMemObject(tanBuf);
+    clReleaseMemObject(radBuf);
 
     SliceInfo::SliceSettings sliceSettings;
 
