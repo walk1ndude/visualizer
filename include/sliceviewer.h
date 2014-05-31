@@ -82,8 +82,8 @@ private:
 
     qreal _zoomFactor;
 
-    int64_t _minHU;
-    int64_t _maxHU;
+    int _minHU;
+    int _maxHU;
 
     QVector3D _rotation;
 

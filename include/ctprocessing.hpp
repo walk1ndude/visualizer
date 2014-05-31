@@ -177,7 +177,7 @@ inline void smoothSlices(const int startSlice, const int endSlice, std::vector<c
     mergeMat.convertTo(smoothed, CV_16UC1, FROM_16_TO_8);
 }
 
-inline void mergeSlice(const int & startSlice, const int & endSlice, const int & sliceSize,
+inline void mergeSlice(const int & startSlice, const int & endSlice, const size_t & sliceSize,
                        std::vector<cv::Mat> & slices, uchar * mergeStartPoint) {
     cv::Mat smoothed;
 
@@ -190,7 +190,7 @@ static cv::Mutex sliceMutex;
 inline void checkNeighbours(const int & position, const int & neighbourDiameter,
                             const int & minNeighbour, const int & maxNeighbour,
                             std::vector<cv::Mat> & filtered, std::vector<bool> & hasMerged,
-                            const int & sliceSize, uchar * mergeStartPoint) {
+                            const size_t & sliceSize, uchar * mergeStartPoint) {
     int leftestMergeNeighbour = std::max(minNeighbour, position - neighbourDiameter);
     int rightestMergeNeighbour = std::min(maxNeighbour - neighbourDiameter, position + 1);
 
@@ -230,12 +230,12 @@ inline void checkNeighbours(const int & position, const int & neighbourDiameter,
 
 inline void processSlice(const int & i, std::vector<cv::Mat> & noisy, std::vector<cv::Mat> & filtered,
                          std::vector<bool> & hasMerged,
-                         const int & sliceSize,
+                         const size_t & sliceSize,
                          const cv::Mat & dilateMat, const cv::Size & gaussSize,
                          const int & neighbourDiameter, uchar * mergeLocation) {
     filterSlice(noisy[i], filtered[i], dilateMat, gaussSize);
 
-    checkNeighbours(i, neighbourDiameter, 0, filtered.size(), filtered, hasMerged, sliceSize, mergeLocation);
+    checkNeighbours(i, neighbourDiameter, 0, (int) filtered.size(), filtered, hasMerged, sliceSize, mergeLocation);
 }
 
 typedef struct _DicomData {
@@ -249,7 +249,7 @@ typedef struct _DicomData {
     size_t height;
     size_t depth;
 
-    int sliceSize;
+    size_t sliceSize;
 
     char * buffer;
 
@@ -287,15 +287,15 @@ typedef struct _DicomData {
 } DicomData;
 
 inline void decodeSlice(const int & position, std::vector<cv::Mat> & dst, const DicomData * dicomData) {
-    cv::Mat dcmToMat(cv::Mat::zeros(dicomData->width, dicomData->height, dicomData->type));
+    cv::Mat dcmToMat(cv::Mat::zeros((int) dicomData->width, (int) dicomData->height, dicomData->type));
 
     u_int16_t pixelU;
     int32_t pixel;
 
     char * posInBuffer = dicomData->buffer + dicomData->sliceSize * position;
 
-    for (size_t y = 0; y < dicomData->height; ++ y) {
-        for (size_t x = 0; x < dicomData->width; ++ x) {
+    for (int y = 0; y != (int) dicomData->height; ++ y) {
+        for (int x = 0; x != (int) dicomData->width; ++ x) {
             pixel = 0;
             pixelU = 0;
 
@@ -358,7 +358,7 @@ private:
     mutable std::vector<cv::Mat> _noisy;
     mutable std::vector<cv::Mat> _filtered;
 
-    int _sliceSize;
+    size_t _sliceSize;
 
     inline void fetchCvMats(const cv::Size & newSize, const int & depth, const int & newType = CV_16UC1) {
         int slicesTotalCount = depth;
@@ -374,7 +374,7 @@ private:
 
         cv::Mat dummyMat(cv::Mat::zeros(newSize, newType));
 
-        _sliceSize = dummyMat.elemSize() * dummyMat.total();
+        _sliceSize = (size_t) (dummyMat.elemSize() * dummyMat.total());
 
         *(_dicomData->mergeLocation) = new uchar[_sliceSize * slicesMergeCount];
 
@@ -409,7 +409,7 @@ public:
         _dilateMat = cv::Mat(3, 3, CV_8UC1);
         _gaussSize = cv::Size(3, 3);
 
-        fetchCvMats(cv::Size(_dicomData->width, _dicomData->height), _dicomData->depth);
+        fetchCvMats(cv::Size((int) _dicomData->width, (int) _dicomData->height), (int) _dicomData->depth);
 
         /*
 

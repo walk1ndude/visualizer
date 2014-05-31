@@ -104,6 +104,7 @@ vec4 sobel3(vec3 position) {
 }
 
 void main(void) {
+    
     if (fragPos.s >= ranges.sRange[0] && fragPos.s <= ranges.sRange[1]
             && fragPos.t >= ranges.tRange[0] && fragPos.t <= ranges.tRange[1]
             && fragPos.p >= ranges.pRange[0] && fragPos.p <= ranges.pRange[1]) {

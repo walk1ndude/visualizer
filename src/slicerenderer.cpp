@@ -172,7 +172,7 @@ void SliceRenderer::initialize() {
 
     updateTextures();
 
-    _headModel.init(_program, _size[2]);
+    _headModel.init(_program, (int) _size[2]);
 
     //gpu_profiling(_gpu_driver, "initialization end");
 }
@@ -243,7 +243,7 @@ void SliceRenderer::updateTexture(QOpenGLTexture ** texture, QSharedPointer<ucha
 
         tex->create();
 
-        tex->setSize(_size[0], _size[1], _size[2]);
+        tex->setSize((int) _size[0],(int) _size[1],(int) _size[2]);
         tex->setFormat(textureFormat);
 
         tex->allocateStorage();

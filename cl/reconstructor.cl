@@ -3,6 +3,7 @@
 __constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_LINEAR;
 
 float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, float coeff);
+int reflect(int maxDir, int curP);
 
 float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, float coeff) {
     int width = get_image_width(src);
@@ -32,12 +33,12 @@ __kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
                       __constant float * gaussTab,
                       __private uint dirX, __private uint dirY, __private uint dirZ,
                       __private uint kernGaussSize) {
-    int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
     float sum = 0.0f;
     
     int4 posR = (int4) (0);
     
-    for (int i = - kernGaussSize; i != kernGaussSize; ++ i) {
+    for (int i = - kernGaussSize + 1; i != kernGaussSize; ++ i) {
         posR.x = reflect(get_image_width(src), pos.x + dirX * i);
         posR.y = reflect(get_image_height(src), pos.y + dirY * i);
         posR.z = reflect(get_image_depth(src), pos.z + dirZ * i);
@@ -45,7 +46,7 @@ __kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
         sum += (gaussTab[kernGaussSize + i] * read_imagef(src, sampler, posR).x);
     }
                 
-    write_imagef(dst, pos, sum);
+    write_imagef(dst, pos, (float4) (sum));
 }
 
 __kernel void calcTables(__global float * cas, __global float * tanTable,
@@ -53,9 +54,12 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
                          __private size_t width, __private size_t height,
                          __private float twoPiN) {
     const int2 pos = {get_global_id(0), get_global_id(1)};
-
-    const float xc = height / 2.0 - pos.x;
-    const float yc = width / 2.0 - pos.y;
+    
+    const float centerX = width / 2.0;
+    const float centerY = height / 2.0;
+    
+    const float xc = pos.x - centerX;
+    const float yc = pos.y - centerY;
 
     const float xyPiN = pos.x * pos.y * twoPiN;
 
@@ -64,6 +68,11 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
     cas[posT] = sin(xyPiN) + cos(xyPiN);
     tanTable[posT] = - atan2(yc, xc) * 180.0 / M_PI_F;
     radTable[posT] = sqrt(yc * yc + xc * xc);
+    
+    if (tanTable[posT] < 0.0f) {
+        tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
+        radTable[posT] = - radTable[posT];
+    }
 }
 
 __kernel void dht1dTranspose(__read_only image3d_t src, __write_only image3d_t dst,
@@ -91,29 +100,18 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
 
     const float ratioPad = widthSrc / (float) widthDst;
 
-    const float xc = centerXDst - pos.x;
-    const float yc = centerYDst - pos.y;
-
-    float sinoX;
-    float swappedSinoX;
-
+    const float xc = pos.x - centerXDst;
+    const float yc = pos.y - centerYDst;
+    
     const int posT = pos.y * widthDst + pos.x;
 
-    const float theta = tanTable[posT];
+    const float sinoY = tanTable[posT];
     const float rad = radTable[posT];
-
-    if (theta < 0.0f) {
-        sinoX = (centerXDst - rad) * ratioPad;
-        swappedSinoX = centerXSrc - sinoX;
-    }
-    else {
-        sinoX = (centerXDst + rad) * ratioPad;
-        swappedSinoX = centerXSrc + widthSrc - sinoX;
-    }
-
-    const float sinoY = min(theta + 180.0f, 360.0f) * (heightSrc / 360.0f);
-
-    if (rad <= centerXDst) {
+    
+    const float sinoX = (centerXDst + rad) * ratioPad;
+    const float swappedSinoX = centerXSrc + (yc > 0 ? 0 : 1) * widthSrc - sinoX;
+    
+    if (fabs(rad) <= centerXDst) {
         write_imagef(dst,
             (int4) (pos.x + (pos.x < centerXDst ? 1 : -1) * centerXDst,
                     pos.y + (pos.y < centerYDst ? 1 : -1) * centerYDst,

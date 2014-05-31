@@ -122,8 +122,8 @@ void DicomReader::fetchDicomData(DicomData & dicomData, gdcm::File & dFile, cons
         dicomData.intercept = 0.0;
     }
 
-    dicomData.minValue = pixelFormat.GetMin();
-    dicomData.maxValue = pixelFormat.GetMax();
+    dicomData.minValue = (int) pixelFormat.GetMin();
+    dicomData.maxValue = (int) pixelFormat.GetMax();
 
     dicomData.minHUPossible = dicomData.slope * dicomData.minValue + dicomData.intercept;
     dicomData.maxHUPossible = dicomData.slope * dicomData.maxValue + dicomData.intercept;
@@ -161,7 +161,7 @@ void DicomReader::runSliceProcessing(const bool & tellAboutHURange) {
 
     float startTime = cv::getTickCount() / cv::getTickFrequency();
 
-    cv::parallel_for_(cv::Range(0, _dicomData.depth), SliceProcessing(&_dicomData));
+    cv::parallel_for_(cv::Range(0, (int) _dicomData.depth), SliceProcessing(&_dicomData));
 
     qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
 
@@ -178,7 +178,7 @@ void DicomReader::runSliceProcessing(const bool & tellAboutHURange) {
 
     sliceSettings.size = {_dicomData.width, _dicomData.height, depth};
     sliceSettings.alignment = alignment;
-    sliceSettings.rowLength = rowLength;
+    sliceSettings.rowLength = (int) rowLength;
 
     if (tellAboutHURange) {
         sliceSettings.huRange = {_dicomData.minHUPossible, _dicomData.maxHUPossible};

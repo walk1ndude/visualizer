@@ -39,7 +39,7 @@ public slots:
   void readFile(const QString & dicomFile);
   void changeSliceNumber(const int & ds);
 
-  void updateMinHU(const int &minHU);
+  void updateMinHU(const int & minHU);
   void updateMaxHU(const int & maxHU);
 };
 

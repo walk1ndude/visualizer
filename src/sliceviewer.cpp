@@ -140,7 +140,7 @@ void SliceViewer::sethuRange(const QVector2D & huRange) {
 }
 
 int SliceViewer::minHU() {
-    return _minHU;
+    return (int) _minHU;
 }
 
 void SliceViewer::setMinHU(const int & minHU) {

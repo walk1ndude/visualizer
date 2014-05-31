@@ -22,7 +22,7 @@ namespace SliceInfo {
 
         int alignment;
 
-        size_t rowLength;
+        int rowLength;
 
         SliceDataType sliceDataType;
     } SliceSettings;
