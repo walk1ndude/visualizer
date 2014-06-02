@@ -274,17 +274,9 @@ void Reconstructor::reconstruct() {
     
     size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
     clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, NULL, globalThreadsCalcTables, NULL, 0, NULL, eventList);
-    
-#ifdef CL_VERSION_1_2
-    cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                      &image_format, &image_desc_slices, NULL, NULL);
-#else
-    cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                        &image_format, width, width, height, 0, 0, NULL, NULL);
-#endif
 
     clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
-    clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
+    clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
     clSetKernelArg(_fourier2dKernel, 2, sizeof(cl_mem), (void *) &casBuf);
     clSetKernelArg(_fourier2dKernel, 3, sizeof(cl_mem), (void *) &tanBuf);
     clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &radBuf);
@@ -325,14 +317,21 @@ void Reconstructor::reconstruct() {
     
     clWaitForEvents(1, eventList + 3);
 
+    clReleaseMemObject(fourier2dImageB);
     clReleaseMemObject(casBuf);
     clReleaseMemObject(tanBuf);
     clReleaseMemObject(radBuf);
-    
-
+   
+#ifdef CL_VERSION_1_2
+    cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+                                      &image_format, &image_desc_slices, NULL, NULL);
+#else
+    cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+                                        &image_format, width, width, height, 0, 0, NULL, NULL);
+#endif
 
     clSetKernelArg(_butterflyDht2dKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
-    clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageB);
+    clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
 
     size_t globalThreadsButterfly[3] = {paddedWidth / 2, paddedWidth / 2, height};
     clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, NULL, globalThreadsButterfly,
@@ -341,10 +340,9 @@ void Reconstructor::reconstruct() {
     uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
                                              CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                              &rowPitchDst, &slicePitchDst,
-                                             1, eventList + 4, eventList + 5, &errNo);
+                                             1, eventList + 4, eventList + 5, NULL);
 
     
-    clReleaseMemObject(fourier2dImageB);
     clWaitForEvents(1, eventList + 5);
 
     qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData;
@@ -381,7 +379,9 @@ void Reconstructor::reconstruct() {
                             4 * 256.0 / (maxValVolume - minValVolume),
                             minValVolume / (minValVolume - maxValVolume));
         
-        cv::threshold(_slicesOCL.at(i), mask, 40, 255, CV_THRESH_BINARY);
+        //cv::adaptiveThreshold(_slicesOCL.at(i), mask, 200, cv::ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 5, 1.2);
+        cv::threshold(_slicesOCL.at(i), mask, 150, 255, CV_THRESH_BINARY);
+        
         
         helperMat = cv::Scalar(0);
         cv::bitwise_and(_slicesOCL.at(i), _slicesOCL.at(i), helperMat, mask);
@@ -494,9 +494,6 @@ void Reconstructor::changeSliceNumber(const int & ds) {
 }
 
 void Reconstructor::showSliceWithNumber(const int & sliceNumber) {
-    
-    qDebug() << sliceNumber;
-    
     cv::imshow(SLICES_IMAGE_WINDOW, _slicesOCL.at(sliceNumber));
 
     cv::Mat slicePosition(_src.at(sliceNumber % _src.size()));

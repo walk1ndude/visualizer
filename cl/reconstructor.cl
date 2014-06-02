@@ -1,6 +1,6 @@
 #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable
 
-__constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_LINEAR;
+__constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
 float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, float coeff);
 int reflect(int maxDir, int curP);
@@ -12,7 +12,7 @@ float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, floa
     for (int i = 0; i != width; ++ i) {
         elem += (
                  read_imagef(src, sampler, (float4) ((float) i, pos.y, pos.z, 0.0f)).x *
-                 cas[(int) pos.x * width + offset + i]
+                 cas[(int) (pos.x) * width + offset + i]
                  );
     }
 
@@ -66,13 +66,21 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
     const int posT = pos.y * width + pos.x;
 
     cas[posT] = sin(xyPiN) + cos(xyPiN);
+    
     tanTable[posT] = - atan2(yc, xc) * 180.0 / M_PI_F;
     radTable[posT] = sqrt(yc * yc + xc * xc);
+
+//    tanTable[posT] = min(tanTable[posT] + 180.0f, 360.0f);
+    
+//    if (tanTable[posT] > 180.0f && tanTable[posT] < 270.0f) {
+//        radTable[posT] = - radTable[posT];
+//    }
     
     if (tanTable[posT] < 0.0f) {
         tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
         radTable[posT] = - radTable[posT];
     }
+
 }
 
 __kernel void dht1dTranspose(__read_only image3d_t src, __write_only image3d_t dst,
@@ -109,9 +117,10 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     const float rad = radTable[posT];
     
     const float sinoX = (centerXDst + rad) * ratioPad;
-    const float swappedSinoX = centerXSrc + (yc > 0 ? 0 : 1) * widthSrc - sinoX;
+    const float swappedSinoX = centerXSrc + (rad < 0 ? 0 : 1) * widthSrc - sinoX;
     
     if (fabs(rad) <= centerXDst) {
+        
         write_imagef(dst,
             (int4) (pos.x + (pos.x < centerXDst ? 1 : -1) * centerXDst,
                     pos.y + (pos.y < centerYDst ? 1 : -1) * centerYDst,
@@ -160,7 +169,6 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
 
         mCol -= (centerXSrc - centerXDst);
         mRow -= (centerYSrc - centerYDst);
-
 
         write_imagef(dst, pos, (float4) (A - E));
         write_imagef(dst, (int4) (pos.x, mRow, pos.z, 0), (float4) (B + E));
