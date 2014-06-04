@@ -25,8 +25,10 @@ private:
     void fetchConnections();
 
 signals:
-    void fileOpened(const QString & fileName);
-    void filesOpened(QStringList fileNames);
+    void fileOpenedDcm(const QUrl & fileName);
+    void fileOpenedStl(const QUrl & fileName);
+
+    void filesOpened(const QStringList & fileNames);
 
     void sliceNumberChanged(const int & number);
 

@@ -52,7 +52,7 @@ signals:
     void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
 
 public slots:
-    void readFiles(QStringList fileNames);
+    void readFiles(const QStringList & fileNames);
     void changeSliceNumber(const int & ds);
 };
 

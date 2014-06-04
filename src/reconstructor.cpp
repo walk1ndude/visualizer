@@ -443,7 +443,7 @@ void Reconstructor::reset(const int & newSize) {
     resetV(_slices, newSize);
 }
 
-void Reconstructor::readFiles(QStringList fileNames) {
+void Reconstructor::readFiles(const QStringList & fileNames) {
     reset();
 
     QStringListIterator it(fileNames);

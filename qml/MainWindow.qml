@@ -11,8 +11,9 @@ ApplicationWindow {
 
     color: "black"
 
-    signal fileOpened(string fileName);
+    signal fileOpenedDcm(url fileName);
     signal filesOpened(variant fileName);
+    signal fileOpenedStl(url fileName);
 
     signal sliceNumberChanged(int ds);
 
@@ -35,6 +36,13 @@ ApplicationWindow {
             }
 
             MenuItem {
+                text: 'Open Stl file'
+                onTriggered: {
+                    openFileDialogStl.visible = true
+                }
+            }
+
+            MenuItem {
                 text: 'Quit'
                 onTriggered: Qt.quit()
             }
@@ -44,7 +52,7 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogDicom
         title: 'Choose DICOM file'
-        onAccepted: fileOpened(fileUrl);
+        onAccepted: fileOpenedDcm(fileUrl);
     }
 
     FileDialog {
@@ -52,6 +60,12 @@ ApplicationWindow {
         title: 'Choose image files'
         selectMultiple: true
         onAccepted: filesOpened(fileUrls);
+    }
+
+    FileDialog {
+        id: openFileDialogStl
+        title: 'Choose stl files'
+        onAccepted: fileOpenedStl(fileUrl);
     }
 
     FocusScope {

@@ -22,7 +22,9 @@ void AppWindow::fetchConnections() {
 
     _appWindow = qobject_cast<QQuickWindow *>(appWindow);
 
-    QObject::connect(appWindow, SIGNAL(fileOpened(const QString &)), this, SIGNAL(fileOpened(const QString &)));
+    QObject::connect(appWindow, SIGNAL(fileOpenedDcm(const QUrl &)), this, SIGNAL(fileOpenedDcm(const QUrl &)));
+    QObject::connect(appWindow, SIGNAL(fileOpenedStl(const QUrl &)), this, SIGNAL(fileOpenedStl(const QUrl &)));
+
     QObject::connect(appWindow, SIGNAL(filesOpened(QVariant)), this, SLOT(readFiles(QVariant)));
 
     QObject::connect(appWindow, SIGNAL(sliceNumberChanged(const int &)), this, SIGNAL(sliceNumberChanged(const int &)));
@@ -59,11 +61,7 @@ void AppWindow::readFiles(QVariant fileNames) {
     QStringList fileNamesStr;
 
     foreach (QVariant item, fileNames.value<QList<QUrl> >()) {
-#if defined(_WIN32)
-        fileNamesStr.append(item.toUrl().toString().mid(8));
-#else
-        fileNamesStr.append(item.toUrl().toString().mid(7));
-#endif
+        fileNamesStr.append(item.toUrl().toLocalFile());
     }
 
     emit filesOpened(fileNamesStr);

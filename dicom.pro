@@ -85,7 +85,8 @@ SOURCES += src/main.cpp\
            src/viewports.cpp \
            src/renderthread.cpp \
            src/slicerenderer.cpp \
-           src/sliceviewer.cpp
+           src/sliceviewer.cpp \
+    src/stlreader.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
@@ -98,6 +99,8 @@ HEADERS  += include/dicomreader.h \
             include/slicerenderer.h \
             include/sliceviewer.h \
             include/reconstructor.h \
-            include/sliceinfo.h
+            include/sliceinfo.h \
+    include/stlreader.h \
+    include/modelinfo.h
 
 RESOURCES += resources.qrc

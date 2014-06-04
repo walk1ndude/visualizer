@@ -36,7 +36,7 @@ signals:
   void slicesProcessed(SliceInfo::SliceSettings & sliceSettings);
 
 public slots:
-  void readFile(const QString & dicomFile);
+  void readFile(const QUrl & fileUrl);
   void changeSliceNumber(const int & ds);
 
   void updateMinHU(const int & minHU);

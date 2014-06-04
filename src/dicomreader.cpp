@@ -5,6 +5,7 @@
 #include <gdcmException.h>
 
 #include <QtCore/QDebug>
+#include <QtCore/QUrl>
 
 #include "dicomreader.h"
 
@@ -189,15 +190,10 @@ void DicomReader::runSliceProcessing(const bool & tellAboutHURange) {
     emit slicesProcessed(sliceSettings);
 }
 
-void DicomReader::readFile(const QString & dicomFile) {
+void DicomReader::readFile(const QUrl & fileUrl) {
     gdcm::ImageReader dIReader;
 
-    // dicomFile = "file:///...", we must cut protocol, so no "file://" <- start with 7th char
-#if defined(_WIN32)
-    dIReader.SetFileName(dicomFile.mid(8).toStdString().c_str());
-#else
-    dIReader.SetFileName(dicomFile.mid(7).toStdString().c_str());
-#endif
+    dIReader.SetFileName(fileUrl.toLocalFile().toStdString().c_str());
 
     if (dIReader.Read()) {
         readImage(dIReader.GetFile(), dIReader.GetImage());
