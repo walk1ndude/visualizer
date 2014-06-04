@@ -87,6 +87,19 @@ void StlReader::readASCII(QFile & stlFile) {
             }
             else if (!facetNotClosed && readStr.indexOf("facet") == 0) {
                 facetNotClosed = !facetNotClosed;
+
+                if (readStr.indexOf("normal") == 6) {
+                    floatStr = readStr.mid(13);
+                    QTextStream normalStream(&floatStr);
+
+                    normalStream >> x >> y >> z;
+
+                    vertex.nx = (GLfloat) x;
+                    vertex.ny = (GLfloat) y;
+                    vertex.nz = (GLfloat) z;
+
+                    continue;
+                }
             }
             else if (facetNotClosed && readStr.indexOf("endfacet") == 0) {
                 facetNotClosed = !facetNotClosed;
@@ -97,21 +110,7 @@ void StlReader::readASCII(QFile & stlFile) {
             }
         }
 
-        qDebug() << readStr;
-
-        if (readStr.indexOf("normal") == 6) {
-            floatStr = readStr.mid(13);
-            QTextStream normalStream(&floatStr);
-
-            normalStream >> x >> y >> z;
-
-            vertex.nx = (GLfloat) x;
-            vertex.ny = (GLfloat) y;
-            vertex.nz = (GLfloat) z;
-
-            continue;
-        }
-        else if (readStr.indexOf("vertex") == 0) {
+        if (vertexNumber % 3 == 0 || readStr.indexOf("vertex") == 0) {
             floatStr = readStr.mid(7);
             QTextStream vertexStream(&floatStr);
 
@@ -122,8 +121,7 @@ void StlReader::readASCII(QFile & stlFile) {
             vertex.z = (GLfloat) z;
         }
         else {
-            emit readingErrorHappened();
-            return;
+            break;
         }
 
         vertices.push_back(vertex);
