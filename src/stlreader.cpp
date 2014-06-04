@@ -1,5 +1,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <QtCore/QDataStream>
 #include <QtCore/QUrl>
 
 #include <QtCore/QDebug>
@@ -20,11 +21,13 @@ void StlReader::readFile(const QUrl & fileUrl) {
 
     QFile stlFile(fileName);
 
+    QString fileNameLower = fileName.toLower();
+
     if (stlFile.open(QIODevice::ReadOnly)) {
-        if (fileName.at(fileName.length() - 4) == 's' &&
-            fileName.at(fileName.length() - 3) == 't' &&
-            fileName.at(fileName.length() - 2) == 'l' &&
-            fileName.at(fileName.length() - 1) == 'a'
+        if (fileNameLower.at(fileName.length() - 4) == 's' &&
+            fileNameLower.at(fileName.length() - 3) == 't' &&
+            fileNameLower.at(fileName.length() - 2) == 'l' &&
+            fileNameLower.at(fileName.length() - 1) == 'a'
         ) {
             readASCII(stlFile);
         }
@@ -71,11 +74,11 @@ void StlReader::readASCII(QFile & stlFile) {
     bool outerLoopNotClosed = false;
     bool facetNotClosed = false;
 
-    while (readStr.length() != 0) {
+    while (readStr.length()) {
         readStr = fileStream.readLine();
         readStr = removeWhitespaes(readStr);
 
-        if (readStr.length() == 0) {
+        if (!readStr.length()) {
             continue;
         }
 
@@ -125,7 +128,8 @@ void StlReader::readASCII(QFile & stlFile) {
         }
 
         vertices.push_back(vertex);
-        indices.push_back(vertexNumber ++);
+
+        vertexNumber ++;
     }
 
     if (outerLoopNotClosed || facetNotClosed || readStr.indexOf("endsolid") != 0) {
@@ -136,16 +140,71 @@ void StlReader::readASCII(QFile & stlFile) {
     ModelInfo::ModelBuffers modelBuffers;
 
     //modelBuffers.vertices = QSharedPointer<QVector<ModelInfo::ModelVertex> >(&vertices);
-    //modelBuffers.indices = QSharedPointer<QVector<GLuint> >(&indices);
 
-    for (uint i = 0; i != vertexNumber; ++ i) {
+    for (quint32 i = 0; i != vertexNumber; ++ i) {
         qDebug() << vertices[i].x << vertices[i].y << vertices[i].z
-                 << vertices[i].nx << vertices[i].ny << vertices[i].nz << indices[i] << " ";
+                 << vertices[i].nx << vertices[i].ny << vertices[i].nz
+                 << " ";
     }
 
     emit modelRead(modelBuffers);
 }
 
-void StlReader::readBinary(QFile & fileName) {
+void StlReader::readBinary(QFile & stlFile) {
+    ModelInfo::ModelVertex vertex;
 
+    QVector<ModelInfo::ModelVertex> vertices;
+
+    float triangle[12];
+    float normals[3];
+
+    QByteArray buffer = stlFile.readAll();
+    stlFile.close();
+
+    if (!buffer.size()) {
+        emit readingErrorHappened();
+        return;
+    }
+
+    char * bufferPos = buffer.data() + 80;
+
+    quint32 indexCount;
+    memcpy(&indexCount, bufferPos, 4);
+
+    bufferPos += 4;
+
+    if (buffer.size() - 84 != (int) indexCount * 50) {
+        emit readingErrorHappened();
+        return;
+    }
+
+    for (quint32 t = 0; t != indexCount; ++ t) {
+        memcpy(normals, bufferPos, 12);
+        bufferPos += 12;
+
+        memcpy(triangle, bufferPos, 36);
+        bufferPos += 36;
+
+        for (int i = 0; i != 3; ++ i) {
+            vertex.x = (GLfloat) triangle[3 * i];
+            vertex.y = (GLfloat) triangle[3 * i + 1];
+            vertex.z = (GLfloat) triangle[3 * i + 2];
+
+            vertex.nx = (GLfloat) normals[0];
+            vertex.ny = (GLfloat) normals[1];
+            vertex.nz = (GLfloat) normals[2];
+
+            vertices.push_back(vertex);
+        }
+
+        bufferPos += 2;
+    }
+
+    for (quint32 i = 0; i != indexCount; ++ i) {
+        qDebug() << vertices[i].x << vertices[i].y << vertices[i].z
+                 << vertices[i].nx << vertices[i].ny << vertices[i].nz
+                 << " ";
+    }
+    qDebug() << indexCount;
 }
+

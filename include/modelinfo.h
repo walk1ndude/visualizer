@@ -19,7 +19,6 @@ namespace ModelInfo {
 
     typedef struct _ModelBuffers {
         QSharedPointer<QVector<ModelVertex> > vertices;
-        QSharedPointer<QVector<GLuint> > indices;
     } ModelBuffers;
 }
 

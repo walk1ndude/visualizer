@@ -12,8 +12,8 @@ public:
     ~StlReader();
 
 private:
-    void readASCII(QFile & fileName);
-    void readBinary(QFile & fileName);
+    void readASCII(QFile & stlFile);
+    void readBinary(QFile & stlFile);
 
     QString removeWhitespaes(QString & str);
 
