@@ -6,7 +6,7 @@
         <file>qml/GeometryGrid.qml</file>
         <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
-        <file>qml/SliceItem.qml</file>
+        <file>qml/ModelItem.qml</file>
         <file>qml/Range.qml</file>
         <file>js/helperfuncs.js</file>
         <file>cl/reconstructor.cl</file>

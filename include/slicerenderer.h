@@ -4,7 +4,7 @@
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
-#include "renderthread.h"
+#include "abstractrenderer.h"
 #include "headmodel.h"
 #include "viewports.h"
 #include "sliceinfo.h"
@@ -25,7 +25,7 @@ typedef struct _LightSource {
 
 void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage = "");
 
-class SliceRenderer : public RenderThread {
+class SliceRenderer : public AbstractRenderer {
     Q_OBJECT
 
 public:

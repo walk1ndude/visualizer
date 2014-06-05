@@ -83,12 +83,12 @@ SOURCES += src/main.cpp\
            src/headmodel.cpp \
            src/viewport.cpp \
            src/viewports.cpp \
-           src/renderthread.cpp \
            src/slicerenderer.cpp \
-           src/sliceviewer.cpp \
            src/stlreader.cpp \
-    src/abstractmodel.cpp \
-    src/stlmodel.cpp
+           src/abstractmodel.cpp \
+           src/stlmodel.cpp \
+           src/abstractrenderer.cpp \
+           src/modelviewer.cpp
 
 HEADERS  += include/dicomreader.h \
             include/ctprocessing.hpp \
@@ -97,14 +97,14 @@ HEADERS  += include/dicomreader.h \
             include/headmodel.h \
             include/viewport.h \
             include/viewports.h \
-            include/renderthread.h \
             include/slicerenderer.h \
-            include/sliceviewer.h \
             include/reconstructor.h \
             include/sliceinfo.h \
             include/stlreader.h \
             include/modelinfo.h \
-    include/abstractmodel.h \
-    include/stlmodel.h
+            include/abstractmodel.h \
+            include/stlmodel.h \
+            include/abstractrenderer.h \
+            include/modelviewer.h
 
 RESOURCES += resources.qrc

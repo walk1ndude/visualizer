@@ -1,5 +1,3 @@
-#include "renderthread.h"
-
 #include <QtGui/QGuiApplication>
 #include <QtGui/QImage>
 
@@ -7,11 +5,13 @@
 
 #include <cmath>
 
+#include "abstractrenderer.h"
+
 void FBOSaver::saveToDisk(const QImage & fboContent, const QRect & saveArea, const qreal & angle) {
     fboContent.copy(saveArea).save((angle > 99 ? "" : (angle > 9 ? "0" : "00")) + QString::number(angle * 10) + ".png");
 }
 
-RenderThread::RenderThread(QOpenGLContext * context, const QSize & surfaceSize) :
+AbstractRenderer::AbstractRenderer(QOpenGLContext * context, const QSize & surfaceSize) :
     _surfaceSize(surfaceSize),
     _rotation(QVector3D(0, 0, 0)),
     _takeShot(false),
@@ -43,20 +43,20 @@ RenderThread::RenderThread(QOpenGLContext * context, const QSize & surfaceSize) 
 
     _fboSaver->moveToThread(fboSaverThread);
 
-    QObject::connect(this, &RenderThread::contentToSaveRendered, _fboSaver, &FBOSaver::saveToDisk);
+    QObject::connect(this, &AbstractRenderer::contentToSaveRendered, _fboSaver, &FBOSaver::saveToDisk);
     QObject::connect(_fboSaver, &FBOSaver::destroyed, fboSaverThread, &QThread::quit);
     QObject::connect(fboSaverThread, &QThread::finished, fboSaverThread, &QThread::deleteLater);
 
     fboSaverThread->start();
 
-    QObject::connect(this, &RenderThread::needToRedraw, this, &RenderThread::renderNext);
+    QObject::connect(this, &AbstractRenderer::needToRedraw, this, &AbstractRenderer::renderNext);
 }
 
-RenderThread::~RenderThread() {
+AbstractRenderer::~AbstractRenderer() {
     delete _fboSaver;
 }
 
-bool RenderThread::updateContent() {
+bool AbstractRenderer::updateContent() {
     if (_canRenderContent) {
         _textureUpdateNeeded = true;
         return true;
@@ -68,11 +68,11 @@ bool RenderThread::updateContent() {
     }
 }
 
-void RenderThread::setSurface(QOffscreenSurface * surface) {
+void AbstractRenderer::setSurface(QOffscreenSurface * surface) {
     _surface = surface;
 }
 
-void RenderThread::renderNext() {
+void AbstractRenderer::renderNext() {
     _renderMutex.lock();
     
     _context->makeCurrent(_surface);
@@ -110,12 +110,9 @@ void RenderThread::renderNext() {
     qSwap(_fboRender, _fboDisplay);
 
     if (_takeShot) {
-        qDebug() << "here";
-        //if (_rotation.y() - trunc(_rotation.y()) == 0.5) {
-            emit contentToSaveRendered(_fboDisplay->toImage(),
-                                       QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
-                                       _rotation.y() + 180.0);
-        //}
+        emit contentToSaveRendered(_fboDisplay->toImage(),
+                                   QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
+                                   _rotation.y() + 180.0);
     }
 
     emit textureReady(_fboDisplay->toImage(), _surfaceSize);
@@ -123,7 +120,7 @@ void RenderThread::renderNext() {
     _renderMutex.unlock();
 }
 
-void RenderThread::shutDown() {
+void AbstractRenderer::shutDown() {
     _context->makeCurrent(_surface);
 
     delete _fboRender;

@@ -1,9 +1,7 @@
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QSGSimpleTextureNode>
 
-#include <QtCore/QThread>
-
-#include "sliceviewer.h"
+#include "modelviewer.h"
 
 #define FBO_WIDTH 768
 #define FBO_HEIGHT 768
@@ -62,102 +60,102 @@ private:
     QQuickWindow *_window;
 };
 
-SliceViewer::SliceViewer() :
+ModelViewer::ModelViewer() :
     _sliceRenderer(0),
     _takeShot(false) {
 
     setFlag(QQuickItem::ItemHasContents);
 }
 
-SliceViewer::~SliceViewer() {
+ModelViewer::~ModelViewer() {
     if (_sliceRenderer->isRunning()) {
         _sliceRenderer->wait();
         delete _sliceRenderer;
     }
 }
 
-bool SliceViewer::takeShot() {
+bool ModelViewer::takeShot() {
     return _takeShot;
 }
 
-void SliceViewer::setTakeShot(const bool & takeShot) {
+void ModelViewer::setTakeShot(const bool & takeShot) {
     _takeShot = takeShot;
     emit takeShotChanged(_takeShot);
 }
 
-QVector3D SliceViewer::rotation() {
+QVector3D ModelViewer::rotation() {
     return _rotation;
 }
 
-void SliceViewer::setRotation(const QVector3D & rotation) {
+void ModelViewer::setRotation(const QVector3D & rotation) {
     _rotation = rotation;
     emit rotationChanged(_rotation);
 }
 
-qreal SliceViewer::zoomFactor() {
+qreal ModelViewer::zoomFactor() {
     return _zoomFactor;
 }
 
-void SliceViewer::setZoomFactor(const qreal & zoomFactor) {
+void ModelViewer::setZoomFactor(const qreal & zoomFactor) {
     _zoomFactor = zoomFactor;
     emit zoomFactorChanged(_zoomFactor);
 }
 
-QVector2D SliceViewer::sRange() {
+QVector2D ModelViewer::sRange() {
     return _sRange;
 }
 
-void SliceViewer::setSRange(const QVector2D & sRange) {
+void ModelViewer::setSRange(const QVector2D & sRange) {
     _sRange = sRange;
     emit sRangeChanged(_sRange);
 }
 
-QVector2D SliceViewer::tRange() {
+QVector2D ModelViewer::tRange() {
     return _tRange;
 }
 
-void SliceViewer::setTRange(const QVector2D & tRange) {
+void ModelViewer::setTRange(const QVector2D & tRange) {
     _tRange = tRange;
     emit tRangeChanged(_tRange);
 }
 
-QVector2D SliceViewer::pRange() {
+QVector2D ModelViewer::pRange() {
     return _pRange;
 }
 
-void SliceViewer::setPRange(const QVector2D & pRange) {
+void ModelViewer::setPRange(const QVector2D & pRange) {
     _pRange = pRange;
     emit pRangeChanged(_pRange);
 }
 
-QVector2D SliceViewer::huRange() {
+QVector2D ModelViewer::huRange() {
     return _huRange;
 }
 
-void SliceViewer::sethuRange(const QVector2D & huRange) {
+void ModelViewer::sethuRange(const QVector2D & huRange) {
     _huRange = huRange;
     emit huRangeChanged();
 }
 
-int SliceViewer::minHU() {
+int ModelViewer::minHU() {
     return (int) _minHU;
 }
 
-void SliceViewer::setMinHU(const int & minHU) {
+void ModelViewer::setMinHU(const int & minHU) {
     _minHU = minHU;
     emit minHUChanged(_minHU);
 }
 
-int SliceViewer::maxHU() {
+int ModelViewer::maxHU() {
     return _maxHU;
 }
 
-void SliceViewer::setMaxHU(const int & maxHU) {
+void ModelViewer::setMaxHU(const int & maxHU) {
     _maxHU = maxHU;
     emit maxHUChanged(_maxHU);
 }
 
-QSGNode * SliceViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *) {
+QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *) {
     TextureNode * node = static_cast<TextureNode *>(oldNode);
 
     if (!_sliceRenderer) {
@@ -168,19 +166,19 @@ QSGNode * SliceViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *)
 
         current->makeCurrent(window());
 
-        QObject::connect(this, &SliceViewer::slicesProcessed, _sliceRenderer, &SliceRenderer::drawSlices, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::slicesProcessed, _sliceRenderer, &SliceRenderer::drawSlices, Qt::DirectConnection);
 
-        QObject::connect(this, &SliceViewer::rotationChanged, _sliceRenderer, &SliceRenderer::setRotation, Qt::DirectConnection);
-        QObject::connect(this, &SliceViewer::takeShotChanged, _sliceRenderer, &SliceRenderer::setTakeShot, Qt::DirectConnection);
-        QObject::connect(this, &SliceViewer::zoomFactorChanged, _sliceRenderer, &SliceRenderer::setZoomFactor, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::rotationChanged, _sliceRenderer, &SliceRenderer::setRotation, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::takeShotChanged, _sliceRenderer, &SliceRenderer::setTakeShot, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::zoomFactorChanged, _sliceRenderer, &SliceRenderer::setZoomFactor, Qt::DirectConnection);
 
-        QObject::connect(this, &SliceViewer::sRangeChanged, _sliceRenderer, &SliceRenderer::setSRange, Qt::DirectConnection);
-        QObject::connect(this, &SliceViewer::tRangeChanged, _sliceRenderer, &SliceRenderer::setTRange, Qt::DirectConnection);
-        QObject::connect(this, &SliceViewer::pRangeChanged, _sliceRenderer, &SliceRenderer::setPRange, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::sRangeChanged, _sliceRenderer, &SliceRenderer::setSRange, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::tRangeChanged, _sliceRenderer, &SliceRenderer::setTRange, Qt::DirectConnection);
+        QObject::connect(this, &ModelViewer::pRangeChanged, _sliceRenderer, &SliceRenderer::setPRange, Qt::DirectConnection);
 
-        QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _sliceRenderer, &RenderThread::shutDown);
+        QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _sliceRenderer, &AbstractRenderer::shutDown);
 
-        QObject::connect(_sliceRenderer, &SliceRenderer::initialized, this, &SliceViewer::initialized);
+        QObject::connect(_sliceRenderer, &SliceRenderer::initialized, this, &ModelViewer::initialized);
 
         _sliceRenderer->moveToThread(_sliceRenderer);
         _sliceRenderer->start();
@@ -203,7 +201,7 @@ QSGNode * SliceViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *)
          *
          * This FBO rendering pipeline is throttled by vsync on the scene graph rendering thread.
          */
-        QObject::connect(_sliceRenderer, &RenderThread::textureReady, node, &TextureNode::newTexture, Qt::DirectConnection);
+        QObject::connect(_sliceRenderer, &AbstractRenderer::textureReady, node, &TextureNode::newTexture, Qt::DirectConnection);
         QObject::connect(node, &TextureNode::pendingNewTexture, window(), &QQuickWindow::update);
         QObject::connect(window(), &QQuickWindow::beforeRendering, node, &TextureNode::prepareNode, Qt::DirectConnection);
     }
@@ -216,7 +214,7 @@ QSGNode * SliceViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *)
     return node;
 }
 
-void SliceViewer::drawSlices(SliceInfo::SliceSettings sliceSettings) {
+void ModelViewer::drawSlices(SliceInfo::SliceSettings sliceSettings) {
     if (sliceSettings.huRange.size()) {
         _huRange = QVector2D(sliceSettings.huRange[0], sliceSettings.huRange[1]);
         emit huRangeChanged();

@@ -1,22 +1,22 @@
 import QtQuick 2.2
 
-import TomographyTools 1.0
+import RenderTools 1.0
 
 Item {
-    id: sliceItem
+    id: modelItem
 
     property bool takeShot: false
 
     Rectangle {
 
         Hud {
-            id: sliceHud
+            id: modelHud
             objectName: "sliceHud"
 
-            width: sliceItem.width
-            height: sliceItem.height * 0.35
+            width: modelItem.width
+            height: modelItem.height * 0.35
 
-            huRange: sliceViewer.huRange
+            huRange: modelViewer.huRange
 
             visible: false
         }
@@ -25,10 +25,10 @@ Item {
             id: horizontalSeparator
 
             color: "#FF888888"
-            anchors.top: sliceHud.top
-            x: sliceItem.width / 2 - 5
+            anchors.top: modelHud.top
+            x: modelItem.width / 2 - 5
             width: 10
-            height: sliceItem.height
+            height: modelItem.height
 
             visible: false
 
@@ -39,35 +39,35 @@ Item {
             id: verticalSeparator
 
             color: "#FF888888"
-            y: sliceItem.height / 2 - 5
+            y: modelItem.height / 2 - 5
             height: 10
-            width: sliceItem.width
+            width: modelItem.width
 
             visible: false
 
             z: -1
         }
 
-        SliceViewer {
-            id: sliceViewer
-            objectName: "sliceViewer"
+        ModelViewer {
+            id: modelViewer
+            objectName: "modelViewer"
 
-            width: sliceItem.width
-            height: sliceItem.height
+            width: modelItem.width
+            height: modelItem.height
             z: -2
 
-            sRange: sliceHud.sRange
-            tRange: sliceHud.tRange
-            pRange: sliceHud.pRange
+            sRange: modelHud.sRange
+            tRange: modelHud.tRange
+            pRange: modelHud.pRange
 
-            rotation: sliceHud.angle
+            rotation: modelHud.angle
 
-            zoomFactor: sliceHud.zoomFactor
+            zoomFactor: modelHud.zoomFactor
 
-            minHU: sliceHud.minHU
-            maxHU: sliceHud.maxHU
+            minHU: modelHud.minHU
+            maxHU: modelHud.maxHU
 
-            takeShot: sliceItem.takeShot
+            takeShot: modelItem.takeShot
         }
     }
 
@@ -78,7 +78,7 @@ Item {
     }
 
     function show() {
-        sliceHud.visible = !sliceHud.visible;
+        modelHud.visible = !modelHud.visible;
         horizontalSeparator.visible = !horizontalSeparator.visible;
         verticalSeparator.visible = !verticalSeparator.visible;
     }
@@ -95,7 +95,7 @@ Item {
 
             if (sliceHud.angleShot > 180.0) {
                 angleShotTimer.running = false;
-                sliceHud.angleShot = -180.0;
+                sliceHud.angleShot = 0.0;
 
                 sliceItem.takeShot = false;
             }

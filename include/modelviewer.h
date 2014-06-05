@@ -14,7 +14,7 @@
 
 #include "slicerenderer.h"
 
-class SliceViewer : public QQuickItem {
+class ModelViewer : public QQuickItem {
     Q_OBJECT
 
     Q_PROPERTY(bool takeShot READ takeShot WRITE setTakeShot NOTIFY takeShotChanged)
@@ -32,8 +32,8 @@ class SliceViewer : public QQuickItem {
     Q_PROPERTY(int maxHU READ maxHU WRITE setMaxHU NOTIFY maxHUChanged)
 
 public:
-    explicit SliceViewer();
-    virtual ~SliceViewer();
+    explicit ModelViewer();
+    virtual ~ModelViewer();
 
     bool takeShot();
     void setTakeShot(const bool & takeShot);

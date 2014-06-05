@@ -24,7 +24,7 @@ struct Material {
     float shininess;
 };
 
-uniform highp Material stlMaterial;
+uniform highp Material headMaterial;
 
 struct LightSource {
     vec4 direction;

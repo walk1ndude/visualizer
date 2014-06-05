@@ -1,7 +1,7 @@
 #include <QtQuick/QQuickWindow>
 
 #include "appwindow.h"
-#include "sliceviewer.h"
+#include "modelviewer.h"
 
 AppWindow::AppWindow(const QString & qmlSource, QObject * parent) :
     QObject(parent) {
@@ -29,29 +29,29 @@ void AppWindow::fetchConnections() {
 
     QObject::connect(appWindow, SIGNAL(sliceNumberChanged(const int &)), this, SIGNAL(sliceNumberChanged(const int &)));
 
-    foreach (QObject * sliceItem, _appWindow->findChild<QQuickItem *>("sliceRow")->children()) {
-        SliceViewer * sliceViewer = sliceItem->findChild<SliceViewer *>("sliceViewer");
+    foreach (QObject * modelItem, _appWindow->findChild<QQuickItem *>("modelRow")->children()) {
+        ModelViewer * modelViewer = modelItem->findChild<ModelViewer *>("modelViewer");
 
-        QObject::connect(this, &AppWindow::slicesProcessed, sliceViewer, &SliceViewer::drawSlices);
+        QObject::connect(this, &AppWindow::slicesProcessed, modelViewer, &ModelViewer::drawSlices);
 
-        QObject::connect(sliceViewer, &SliceViewer::minHUChanged, this, &AppWindow::minHUChanged);
-        QObject::connect(sliceViewer, &SliceViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
+        QObject::connect(modelViewer, &ModelViewer::minHUChanged, this, &AppWindow::minHUChanged);
+        QObject::connect(modelViewer, &ModelViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
 
-        QObject::connect(sliceViewer, SIGNAL(initialized()), sliceItem, SLOT(show()));
+        QObject::connect(modelViewer, SIGNAL(initialized()), modelItem, SLOT(show()));
 
         QObject::connect(_appWindow, &QQuickWindow::heightChanged, [=](const int & height) {
-            sliceViewer->setHeight(height);
-            sliceViewer->update();
+            modelViewer->setHeight(height);
+            modelViewer->update();
         });
 
         QObject::connect(_appWindow, &QQuickWindow::widthChanged, [=](const int & width) {
-            sliceViewer->setWidth(width);
-            sliceViewer->update();
+            modelViewer->setWidth(width);
+            modelViewer->update();
         });
 
         QObject::connect(_appWindow, &QQuickWindow::visibilityChanged, [=](const QWindow::Visibility & visibility) {
             if (visibility != (QWindow::Minimized || QWindow::Hidden)) {
-                sliceViewer->update();
+                modelViewer->update();
             }
         });
     }
@@ -68,7 +68,7 @@ void AppWindow::readFiles(QVariant fileNames) {
 }
 
 void AppWindow::registerQmlTypes() {
-    qmlRegisterType<SliceViewer>("TomographyTools", 1, 0, "SliceViewer");
+    qmlRegisterType<ModelViewer>("RenderTools", 1, 0, "ModelViewer");
 }
 
 void AppWindow::show() {

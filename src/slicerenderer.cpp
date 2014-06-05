@@ -33,7 +33,7 @@ void gpu_profiling(const GPU_Driver & gpu_driver, const QString & debugMessage) 
 }
 
 SliceRenderer::SliceRenderer(QOpenGLContext * context, const QSize & size) :
-    RenderThread(context, size),
+    AbstractRenderer(context, size),
     _program(0),
     _sRange(QVector2D(0.0, 1.0)),
     _tRange(QVector2D(0.0, 1.0)),

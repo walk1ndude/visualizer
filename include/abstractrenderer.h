@@ -14,11 +14,11 @@ public:
     void saveToDisk(const QImage & fboContent, const QRect &saveArea, const qreal & angle);
 };
 
-class RenderThread : public QThread {
+class AbstractRenderer : public QThread {
     Q_OBJECT
 public:
-    explicit RenderThread(QOpenGLContext * context, const QSize & surfaceSize);
-    virtual ~RenderThread();
+    explicit AbstractRenderer(QOpenGLContext * context, const QSize & surfaceSize);
+    virtual ~AbstractRenderer();
 
     void setSurface(QOffscreenSurface * surface);
 
@@ -40,7 +40,7 @@ protected:
 
     virtual void cleanUp() = 0;
 
-    bool updateContent();
+    virtual bool updateContent() final;
 
 private:
     bool _canRenderContent;
@@ -65,8 +65,8 @@ signals:
     void initialized();
 
 public slots:
-    void renderNext();
-    void shutDown();
+    virtual void renderNext() final;
+    virtual void shutDown() final;
 };
 
 #endif // RENDERTHREAD_H
