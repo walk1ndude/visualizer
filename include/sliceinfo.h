@@ -6,12 +6,12 @@
 #include <QtCore/QVector>
 
 namespace SliceInfo {
-    typedef enum _SliceDataType {
+    enum SliceDataType {
         Int8,
         Int16
-    } SliceDataType;
+    };
 
-    typedef struct _SliceSettings {
+    struct SliceSettings {
         QSharedPointer<uchar> mergedData;
 
         QVector<int> huRange;
@@ -25,7 +25,7 @@ namespace SliceInfo {
         int rowLength;
 
         SliceDataType sliceDataType;
-    } SliceSettings;
+    };
 }
 
 #endif // SLICEINFO_H

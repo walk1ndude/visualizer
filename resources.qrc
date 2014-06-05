@@ -10,5 +10,7 @@
         <file>qml/Range.qml</file>
         <file>js/helperfuncs.js</file>
         <file>cl/reconstructor.cl</file>
+        <file>shaders/stlVertex.glsl</file>
+        <file>shaders/stlFragment.glsl</file>
     </qresource>
 </RCC>

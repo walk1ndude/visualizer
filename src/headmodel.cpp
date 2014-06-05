@@ -99,9 +99,6 @@ void HeadModel::initGeometry(QOpenGLShaderProgram * program, const int & zCount)
 
     _vao.release();
 
-    _vboVert.release();
-    _vboInd.release();
-
     delete [] vertices;
     delete [] indices;
 }

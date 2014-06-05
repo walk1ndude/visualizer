@@ -19,7 +19,7 @@ private:
 
 signals:
     void readingErrorHappened();
-    void modelRead(const ModelInfo::ModelBuffers & modelBuffers);
+    void modelRead(const ModelInfo::ModelVertexVN & modelBuffers);
 
 public slots:
     void readFile(const QUrl & fileUrl);

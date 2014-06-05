@@ -50,9 +50,9 @@ QString StlReader::removeWhitespaes(QString & str) {
 void StlReader::readASCII(QFile & stlFile) {
     QTextStream fileStream(&stlFile);
 
-    ModelInfo::ModelVertex vertex;
+    ModelInfo::ModelVertexVN vertex;
 
-    QVector<ModelInfo::ModelVertex> vertices;
+    QVector<ModelInfo::ModelVertexVN> vertices;
     QVector<GLuint> indices;
 
     QString readStr = fileStream.readLine();
@@ -137,7 +137,7 @@ void StlReader::readASCII(QFile & stlFile) {
         return;
     }
 
-    ModelInfo::ModelBuffers modelBuffers;
+    ModelInfo::ModelVertexVN modelBuffers;
 
     //modelBuffers.vertices = QSharedPointer<QVector<ModelInfo::ModelVertex> >(&vertices);
 
@@ -151,9 +151,9 @@ void StlReader::readASCII(QFile & stlFile) {
 }
 
 void StlReader::readBinary(QFile & stlFile) {
-    ModelInfo::ModelVertex vertex;
+    ModelInfo::ModelVertexVN vertex;
 
-    QVector<ModelInfo::ModelVertex> vertices;
+    QVector<ModelInfo::ModelVertexVN> vertices;
 
     float triangle[12];
     float normals[3];
