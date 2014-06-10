@@ -75,36 +75,41 @@ win32 {
     LIBS += -lOpenCL
 }
 
-SOURCES += src/main.cpp\
-           src/dicomreader.cpp \
-           src/reconstructor.cpp \
-           src/matrixstack.cpp \
-           src/appwindow.cpp \
-           src/headmodel.cpp \
-           src/viewport.cpp \
-           src/viewports.cpp \
-           src/slicerenderer.cpp \
-           src/stlreader.cpp \
-           src/abstractmodel.cpp \
-           src/stlmodel.cpp \
-           src/abstractrenderer.cpp \
-           src/modelviewer.cpp
+SOURCES +=  src/Gui/main.cpp \
+            src/Gui/AppWindow.cpp \
+            src/Quick/ModelViewer.cpp \
+            src/Parser/DicomReader.cpp \
+            src/Parser/Reconstructor.cpp \
+            src/Parser/StlReader.cpp \
+            src/Render/MatrixStack.cpp \
+            src/Render/AbstractRenderer.cpp \
+            src/Render/ModelRenderer.cpp \
+            src/Render/ViewPort.cpp \
+            src/Render/ViewPortArray.cpp \
+            src/Model/AbstractModel.cpp \
+            src/Model/HeadModel.cpp \
+            src/Model/StlModel.cpp
 
-HEADERS  += include/dicomreader.h \
-            include/ctprocessing.hpp \
-            include/matrixstack.h \
-            include/appwindow.h \
-            include/headmodel.h \
-            include/viewport.h \
-            include/viewports.h \
-            include/slicerenderer.h \
-            include/reconstructor.h \
-            include/sliceinfo.h \
-            include/stlreader.h \
-            include/modelinfo.h \
-            include/abstractmodel.h \
-            include/stlmodel.h \
-            include/abstractrenderer.h \
-            include/modelviewer.h
+HEADERS  += include/Gui/AppWindow.h \
+            include/Quick/ModelViewer.h \
+            include/Parser/ctprocessing.hpp \
+            include/Parser/DicomReader.h \
+            include/Parser/Reconstructor.h \
+            include/Parser/StlReader.h \
+            include/Render/MatrixStack.h \
+            include/Render/AbstractRenderer.h \
+            include/Render/ModelRenderer.h \
+            include/Render/ViewPort.h \
+            include/Render/ViewPortArray.h \
+            include/Model/AbstractModel.h \
+            include/Model/HeadModel.h \
+            include/Model/StlModel.h \
+            include/Info/SliceInfo.h \
+            include/Info/ModelInfo.h \
+            include/Info/MaterialInfo.h \
+            include/Info/LightInfo.h \
+            include/Info/Info.h \
+    include/Info/TextureInfo.h \
+    include/Info/ShaderInfo.h
 
 RESOURCES += resources.qrc
