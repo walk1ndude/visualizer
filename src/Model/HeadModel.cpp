@@ -1,8 +1,8 @@
 #include "Model/HeadModel.h"
 
 namespace Model {
-    HeadModel::HeadModel() :
-        AbstractModel() {
+    HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles) :
+        AbstractModel(shaderFiles) {
 
     }
 
@@ -41,15 +41,10 @@ namespace Model {
         buffers.vertices = ModelInfo::VerticesVTPointer(&vertices);
         buffers.indices = ModelInfo::IndicesPointer(&indices);
 
-        createModel(ModelInfo::ShaderFiles(
-                        ModelInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
-                        ModelInfo::FramentShaderFile(":shaders/sliceFragment.glsl")
-                        ),
-                    buffers,
-                    QOpenGLBuffer::UsagePattern::StaticDraw);
+        createModel(buffers);
     }
 
-    void HeadModel::initModel(ModelInfo::BuffersV & buffers) {
+    void HeadModel::initShaderVariables() {
         _shaderVertex = _program->attributeLocation("vertex");
         _shaderTexHead = _program->attributeLocation("texHead");
 
@@ -58,13 +53,15 @@ namespace Model {
         _shaderProjection = _program->uniformLocation("projection");
         _shaderScale = _program->uniformLocation("scale");
         _shaderStep = _program->uniformLocation("step");
+    }
 
+    void HeadModel::initModel(ModelInfo::BuffersV & buffers) {
         _program->enableAttributeArray(_shaderVertex);
         _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(buffers.vertices->at(0)));
 
         _program->enableAttributeArray(_shaderTexHead);
         _program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(buffers.vertices->at(0)));
-
+/*
         addMaterial(MaterialInfo::Emissive(0.1, 0.1, 0.1, 0.1),
                     MaterialInfo::Diffuse(0.1, 0.1, 0.1, 0.1),
                     MaterialInfo::Specular(0.5, 0.8, 0.7, 1.0),
@@ -75,6 +72,6 @@ namespace Model {
         addLightSource(LightInfo::Position(10.0, 10.0, -10.0, 0.0),
                        LightInfo::Color(1.0, 1.0, 1.0, 1.0),
                        LightInfo::AmbientIntensity((GLfloat) 4.3),
-                       QStringList() << "light.position" << "light.color" << "light.ambientIntensity");
+                       QStringList() << "light.position" << "light.color" << "light.ambientIntensity");*/
     }
 }

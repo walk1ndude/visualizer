@@ -1,12 +1,14 @@
 #include "Model/AbstractModel.h"
 
 namespace Model {
-    AbstractModel::AbstractModel() :
+    AbstractModel::AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(0),
         _indexCount(0),
-        _vertexCount(0) {
+        _vertexCount(0),
+        _shaderFiles(shaderFiles) {
+
     }
 
     AbstractModel::~AbstractModel() {
@@ -25,20 +27,10 @@ namespace Model {
         _vboVert.destroy();
         _vboInd.destroy();
 
-        QMapIterator<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> itM (_materials);
-
-        while (itM.hasNext()) {
-            delete itM.next().value();
-        }
-
+        qDeleteAll(_materials.begin(), _materials.end());
         _materials.clear();
 
-        QMapIterator<LightInfo::LightSource *, LightInfo::LightProgram *> itL (_lightSources);
-
-        while (itL.hasNext()) {
-            delete itL.next().value();
-        }
-
+        qDeleteAll(_lightSources.begin(), _lightSources.end());
         _lightSources.clear();
     }
 
@@ -167,14 +159,14 @@ namespace Model {
             programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderFiles.vertexShaderFile);
             programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderFiles.framentShaderFile);
 
-            if (shaderFiles.geometryShaderFile) {
+            if (shaderFiles.geometryShaderFile.length()) {
                 programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Geometry, shaderFiles.geometryShaderFile);
             }
 
-            if (shaderFiles.tesselationEvaluationShaderFile) {
+            if (shaderFiles.tesselationEvaluationShaderFile.length()) {
                 programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, shaderFiles.tesselationEvaluationShaderFile);
 
-                if (shaderFiles.tesselationControlShaderFile) {
+                if (shaderFiles.tesselationControlShaderFile.length()) {
                     programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::TessellationControl, shaderFiles.tesselationControlShaderFile);
                 }
             }
@@ -185,10 +177,9 @@ namespace Model {
 
             programIsInited &= _program->link();
 
-            _shaderModel = _program->uniformLocation("model");
-            _shaderView = _program->uniformLocation("view");
-            _shaderProjection = _program->uniformLocation("projection");
-            _shaderScale = _program->uniformLocation("scale");
+            if (!programIsInited) {
+                return false;
+            }
 
             initShaderVariables();
         }
@@ -199,9 +190,9 @@ namespace Model {
         return true;
     }
 
-    void AbstractModel::createModel(const ShaderInfo::ShaderFiles & shaderFiles, ModelInfo::BuffersV & buffers,
+    void AbstractModel::createModel(ModelInfo::BuffersV & buffers,
                                     const QOpenGLBuffer::UsagePattern usagePattern) {
-        if (!initShaderProgram(shaderFiles)) {
+        if (!initShaderProgram(_shaderFiles)) {
             emit shaderProgramInitErrorHappened();
             return;
         }

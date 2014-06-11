@@ -109,7 +109,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Info/MaterialInfo.h \
             include/Info/LightInfo.h \
             include/Info/Info.h \
-    include/Info/TextureInfo.h \
-    include/Info/ShaderInfo.h
+            include/Info/TextureInfo.h \
+            include/Info/ShaderInfo.h
 
 RESOURCES += resources.qrc

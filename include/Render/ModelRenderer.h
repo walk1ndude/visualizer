@@ -19,7 +19,18 @@ namespace Render {
 
         void addTexture(TextureInfo::Texture & textureInfo);
 
-        void addMaterial();
+        // some constants here
+        void initMaterials();
+        void initLightSources();
+
+        void addMaterial(const MaterialInfo::Emissive & emissive,
+                         const MaterialInfo::Diffuse & diffuse,
+                         const MaterialInfo::Specular & specular,
+                         const MaterialInfo::Shininess & shininess);
+
+        void addLightSource(const LightInfo::Position & position,
+                            const LightInfo::Color & color,
+                            const LightInfo::AmbientIntensity & ambientIntensity);
 
     protected:
         QHash<QOpenGLTexture *, TextureInfo::Texture> _textures;
@@ -27,8 +38,8 @@ namespace Render {
         QMultiHash<Model::AbstractModel *, QOpenGLTexture *> _models;
         QMultiHash<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
 
-        QVector<MaterialInfo::Material> _materials;
-        QVector<LightInfo::LightSource> _lightSources;
+        QVector<MaterialInfo::Material *> _materials;
+        QVector<LightInfo::LightSource *> _lightSources;
 
         Model::AbstractModel * _selectedModel;
         QOpenGLTexture * _selectedTexture;
@@ -48,7 +59,9 @@ namespace Render {
         void cleanUp();
 
         void bindTextures(Model::AbstractModel * model);
-        void releaseTextures(Model::AbstractModel * model);
+        void releaseTextures();
+
+        QList<QOpenGLTexture *> _bindedTextures;
 
         void updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
                                const QOpenGLTexture::TextureFormat & textureFormat,
@@ -60,7 +73,7 @@ namespace Render {
     public slots:
         void drawSlices(SliceInfo::SliceSettings sliceSettings);
 
-        void addStlModel(const ModelInfo::BuffersVN & buffers);
+        void addStlModel(ModelInfo::BuffersVN &buffers);
 
         // to take shots of the rotated model
         void setTakeShot(const bool & takeShot);

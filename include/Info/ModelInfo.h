@@ -195,7 +195,7 @@ namespace ModelInfo {
         }
     };
 
-    class BuffersVN : BuffersV {
+    class BuffersVN : public BuffersV {
     public:
         VerticesVNPointer vertices;
 
@@ -207,7 +207,7 @@ namespace ModelInfo {
         }
     };
 
-    class BuffersVC : BuffersV {
+    class BuffersVC : public BuffersV {
     public:
         VerticesVCPointer vertices;
 
@@ -219,7 +219,7 @@ namespace ModelInfo {
         }
     };
 
-    class BuffersVNC : BuffersV {
+    class BuffersVNC : public BuffersV {
     public:
         VerticesVNCPointer vertices;
 
@@ -231,7 +231,7 @@ namespace ModelInfo {
         }
     };
 
-    class BuffersVT : BuffersV {
+    class BuffersVT : public BuffersV {
     public:
         VerticesVTPointer vertices;
 
@@ -243,7 +243,7 @@ namespace ModelInfo {
         }
     };
 
-    class BuffersVNT : BuffersV {
+    class BuffersVNT : public BuffersV {
     public:
         VerticesVNTPointer vertices;
 

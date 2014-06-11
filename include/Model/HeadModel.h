@@ -5,9 +5,15 @@
 
 namespace Model {
     class HeadModel : public AbstractModel {
-
+        Q_OBJECT
     public:
-        explicit HeadModel();
+        explicit HeadModel(const ShaderInfo::ShaderFiles & shaderFiles =
+                ShaderInfo::ShaderFiles(
+                              ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
+                              ShaderInfo::FramentShaderFile(":shaders/sliceFragment.glsl")
+                              ));
+
+        void initShaderVariables();
 
         void init(const int & depth);
         void initModel(ModelInfo::BuffersV & buffers);

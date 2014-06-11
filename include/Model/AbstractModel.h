@@ -11,9 +11,10 @@
 #include "Info/ShaderInfo.h"
 
 namespace Model {
-    class AbstractModel {
+    class AbstractModel : public QObject {
+        Q_OBJECT
     public:
-        AbstractModel();
+        explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles);
         virtual ~AbstractModel();
 
         virtual void initModel(ModelInfo::BuffersV & buffers) = 0;
@@ -25,8 +26,8 @@ namespace Model {
 
         virtual void drawModel() final;
 
-        virtual void addMaterial(MaterialInfo::Material * material, const QStringList & shaderVariables);
-        virtual void addLightSource(LightInfo::LightSource * lightSource, const QStringList & shaderVariables);
+        virtual void addMaterial(MaterialInfo::Material * material, const QStringList & shaderVariables) final;
+        virtual void addLightSource(LightInfo::LightSource * lightSource, const QStringList & shaderVariables) final;
 
         virtual void setTexelRange(const ModelInfo::TexelRange & texelRange,
                                    const QStringList & shaderVariables) final;
@@ -39,7 +40,7 @@ namespace Model {
         virtual void setTexelAxisRange(const ModelInfo::TexelAxisRange & texelAxisRange,
                                        const ModelInfo::TexelAxis texelAxis = ModelInfo::SAXIS) final;
 
-        virtual uint modelID();
+        virtual uint modelID() final;
 
     protected:
         QOpenGLBuffer _vboVert;
@@ -59,6 +60,8 @@ namespace Model {
 
         QMutex _modelMutex;
 
+        ShaderInfo::ShaderFiles _shaderFiles;
+
     private:
         uint _modelID;
 
@@ -75,8 +78,7 @@ namespace Model {
         void shaderProgramSetVariableErrorHappened();
 
     public slots:
-        virtual void createModel(const ShaderInfo::ShaderFiles & shaderFiles,
-                                 ModelInfo::BuffersV & buffers,
+        virtual void createModel(ModelInfo::BuffersV & buffers,
                                  const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) final;
 
         virtual void updateModel(ModelInfo::BuffersV & buffers,

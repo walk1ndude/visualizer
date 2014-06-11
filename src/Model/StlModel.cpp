@@ -1,9 +1,8 @@
 #include "Model/StlModel.h"
 
 namespace Model {
-    StlModel::StlModel() :
-        AbstractModel() {
-
+    StlModel::StlModel(const ShaderInfo::ShaderFiles & shaderFiles) :
+        AbstractModel(shaderFiles) {
     }
 
     void StlModel::initModel(ModelInfo::BuffersV & buffers) {
@@ -21,7 +20,10 @@ namespace Model {
         _program->setAttributeBuffer(_shaderNormal, GL_FLOAT, offset, 3, sizeof(buffers.vertices->at(0)));
     }
 
-    void StlModel::setShaderVariables() {
-
+    void StlModel::initShaderVariables() {
+        _shaderModel = _program->uniformLocation("model");
+        _shaderView = _program->uniformLocation("view");
+        _shaderProjection = _program->uniformLocation("projection");
+        _shaderScale = _program->uniformLocation("scale");
     }
 }

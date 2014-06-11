@@ -12,6 +12,10 @@ namespace Render {
 
     }
 
+    ModelRenderer::~ModelRenderer() {
+        cleanUp();
+    }
+
     void ModelRenderer::setTakeShot(const bool & takeShot) {
         _takeShot = takeShot;
     }
@@ -41,6 +45,28 @@ namespace Render {
     void ModelRenderer::setPRange(const ModelInfo::TexelAxisRange & pRange) {
         _selectedModel->setTexelAxisRange(pRange, ModelInfo::PAXIS);
         emit needToRedraw();
+    }
+
+    // need some good defaults here
+    void ModelRenderer::initMaterials() {
+
+    }
+
+    void ModelRenderer::initLightSources() {
+
+    }
+
+    void ModelRenderer::addMaterial(const MaterialInfo::Emissive & emissive,
+                                    const MaterialInfo::Diffuse & diffuse,
+                                    const MaterialInfo::Specular & specular,
+                                    const MaterialInfo::Shininess & shininess) {
+        _materials.push_back(new MaterialInfo::Material(emissive, diffuse, specular, shininess));
+    }
+
+    void ModelRenderer::addLightSource(const LightInfo::Position & position,
+                                       const LightInfo::Color & color,
+                                       const LightInfo::AmbientIntensity & ambientIntensity) {
+        _lightSources.push_back(new LightInfo::LightSource(position, color, ambientIntensity));
     }
 
     void ModelRenderer::initializeViewPorts() {
@@ -86,20 +112,23 @@ namespace Render {
         // bind all textures, associatiated with given model
         while (it != _models.end() && it.key() == model) {
             it.value()->bind(number ++);
+            _bindedTextures.push_back(it.value());
         }
     }
 
-    void ModelRenderer::releaseTextures(Model::AbstractModel * model) {
+    void ModelRenderer::releaseTextures() {
         QMutexLocker locker(&_renderMutex);
 
-        QMultiHash<Model::AbstractModel *, QOpenGLTexture *>::iterator it = _models.find(model);
+        QListIterator<QOpenGLTexture *> it (_bindedTextures);
 
         uint number = 0;
 
         // release all textures, associatiated with given model
-        while (it != _models.end() && it.key() == model) {
-            it.value()->release(number ++);
+        while (it.hasNext()) {
+            it.next()->release(number ++);
         }
+
+        _bindedTextures.clear();
     }
 
     void ModelRenderer::drawSlices(SliceInfo::SliceSettings sliceSettings) {/*
@@ -136,9 +165,11 @@ namespace Render {
         glDepthFunc(GL_LEQUAL);
     }
 
-    void ModelRenderer::addStlModel(const ModelInfo::BuffersVN & buffers) {
+    void ModelRenderer::addStlModel(ModelInfo::BuffersVN & buffers) {
         Model::StlModel * model = new Model::StlModel;
-        //model->
+        model->createModel(buffers);
+
+        _models.insert(model, nullptr);
     }
 
     void ModelRenderer::render() {
@@ -171,7 +202,7 @@ namespace Render {
 
                 bindTextures(model);
                 model->drawModel();
-                releaseTextures(model);
+                releaseTextures();
             }
 
             itM.toFront();
@@ -226,20 +257,20 @@ namespace Render {
     void ModelRenderer::cleanUp() {
         QMutexLocker locker(&_renderMutex);
 
-        QOpenGLTexture * texture;
-        QListIterator<QOpenGLTexture *> itT (_textures.keys());
-
-        while (itT.hasNext()) {
-            texture = itT.next();
-            if (texture->isCreated()) {
-                texture->destroy();
-            }
-        }
+        qDeleteAll(_textures.keys().begin(), _textures.keys().end());
+        _textures.clear();
 
         QListIterator<Model::AbstractModel *> itM (_models.keys());
 
         while (itM.hasNext()) {
             delete itM.next();
         }
+        _models.clear();
+
+        qDeleteAll(_materials.begin(), _materials.end());
+        _materials.clear();
+
+        qDeleteAll(_lightSources.begin(), _lightSources.end());
+        _lightSources.clear();
     }
 }
