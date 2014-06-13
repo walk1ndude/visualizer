@@ -12,6 +12,8 @@ namespace ShaderInfo {
 
     using ShaderVariable = int;
 
+    using ShaderVariables = QStringList;
+
     class ShaderFiles {
     public:
         VertexShaderFile vertexShaderFile;

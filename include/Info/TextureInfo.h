@@ -4,7 +4,7 @@
 #include <QtGui/QOpenGLTexture>
 #include <QtGui/QOpenGLPixelTransferOptions>
 
-#include "Info/Info.h"
+#include "Info/ShaderInfo.h"
 
 namespace TextureInfo {
     using MergedData = quint8;
@@ -46,6 +46,22 @@ namespace TextureInfo {
             this->pixelType = pixelType;
 
             this->textureDataUpdated = true;
+        }
+    };
+
+    class TextureProgram {
+    private:
+        ShaderInfo::ShaderVariable _sampler;
+
+    public:
+        TextureProgram(QOpenGLShaderProgram * program,
+                       const ShaderInfo::ShaderVariables & shaderVariables) {
+            _sampler = program->uniformLocation(shaderVariables.at(0));
+        }
+
+        void setUniform(QOpenGLShaderProgram * program,
+                        const uint samplerNum) {
+            program->setUniformValue(_sampler, samplerNum);
         }
     };
 }

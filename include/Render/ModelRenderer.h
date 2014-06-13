@@ -17,8 +17,6 @@ namespace Render {
         explicit ModelRenderer(QOpenGLContext * context, const QSize & size);
         ~ModelRenderer();
 
-        void addTexture(TextureInfo::Texture & textureInfo);
-
         // some constants here
         void initMaterials();
         void initLightSources();
@@ -32,11 +30,15 @@ namespace Render {
                             const LightInfo::Color & color,
                             const LightInfo::AmbientIntensity & ambientIntensity);
 
-    protected:
-        QHash<QOpenGLTexture *, TextureInfo::Texture> _textures;
+        void addTexture(TextureInfo::Texture & textureInfo);
 
-        QMultiHash<Model::AbstractModel *, QOpenGLTexture *> _models;
-        QMultiHash<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
+
+    protected:
+        QMap<QOpenGLTexture *, TextureInfo::Texture> _textures;
+        QVector<Model::AbstractModel *> _models;
+
+        QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
+        QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
 
         QVector<MaterialInfo::Material *> _materials;
         QVector<LightInfo::LightSource *> _lightSources;
@@ -58,11 +60,6 @@ namespace Render {
         void initializeViewPorts();
         void cleanUp();
 
-        void bindTextures(Model::AbstractModel * model);
-        void releaseTextures();
-
-        QList<QOpenGLTexture *> _bindedTextures;
-
         void updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
                                const QOpenGLTexture::TextureFormat & textureFormat,
                                const QOpenGLTexture::PixelFormat & pixelFormat,
@@ -73,7 +70,7 @@ namespace Render {
     public slots:
         void drawSlices(SliceInfo::SliceSettings sliceSettings);
 
-        void addStlModel(ModelInfo::BuffersVN &buffers);
+        void addStlModel(ModelInfo::BuffersVN buffers);
 
         // to take shots of the rotated model
         void setTakeShot(const bool & takeShot);
@@ -85,9 +82,9 @@ namespace Render {
         void setZoomFactor(const qreal & zoomFactor);
 
         // to clip selected model
-        void setSRange(const ModelInfo::TexelAxisRange & sRange);
-        void setTRange(const ModelInfo::TexelAxisRange & tRange);
-        void setPRange(const ModelInfo::TexelAxisRange &pRange);
+        void setSRange(const ModelInfo::ViewAxisRange & xRange);
+        void setTRange(const ModelInfo::ViewAxisRange & yRange);
+        void setPRange(const ModelInfo::ViewAxisRange & zRange);
     };
 }
 #endif // SLICERENDERER_H

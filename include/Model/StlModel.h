@@ -14,6 +14,7 @@ namespace Model {
                               ));
 
         void initShaderVariables();
+        void setShaderVariables(Render::ViewPort & viewPort);
 
         void initModel(ModelInfo::BuffersV & buffers);
 
@@ -21,10 +22,12 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderNormal;
 
+        // assume that this have uniform color
+        ShaderInfo::ShaderVariable _shaderColorU;
+
         ShaderInfo::ShaderVariable _shaderModel;
         ShaderInfo::ShaderVariable _shaderView;
         ShaderInfo::ShaderVariable _shaderProjection;
-        ShaderInfo::ShaderVariable _shaderScale;
     };
 }
 #endif // STLMODEL_H

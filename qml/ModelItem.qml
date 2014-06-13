@@ -78,9 +78,9 @@ Item {
     }
 
     function show() {
-        modelHud.visible = !modelHud.visible;
-        horizontalSeparator.visible = !horizontalSeparator.visible;
-        verticalSeparator.visible = !verticalSeparator.visible;
+        modelHud.visible = true;
+        horizontalSeparator.visible = true;
+        verticalSeparator.visible = true;
     }
 
     Timer {

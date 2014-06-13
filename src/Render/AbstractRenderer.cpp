@@ -33,6 +33,8 @@ namespace Render {
         _context->create();
         _context->moveToThread(this);
 
+        _context->doneCurrent();
+
         _surface = new QOffscreenSurface;
         _surface->setFormat(surfaceFormat);
         _surface->create();
@@ -67,14 +69,18 @@ namespace Render {
         }
     }
 
+    void AbstractRenderer::activateContext() {
+        _context->makeCurrent(_surface);
+    }
+
     void AbstractRenderer::setSurface(QOffscreenSurface * surface) {
         _surface = surface;
     }
 
     void AbstractRenderer::renderNext() {
-        _renderMutex.lock();
+        QMutexLocker locker (&_renderMutex);
 
-        _context->makeCurrent(_surface);
+        activateContext();
 
         if (!_fboRender) {
             QOpenGLFramebufferObjectFormat format;
@@ -86,22 +92,7 @@ namespace Render {
 
         _fboRender->bind();
 
-        if (_canRenderContent) {
-            if (_contentInitializeNeeded) {
-                initialize();
-                initializeViewPorts();
-                _contentInitializeNeeded = false;
-
-                emit initialized();
-            }
-
-            if (_textureUpdateNeeded) {
-                updateTextures();
-                _textureUpdateNeeded = false;
-            }
-
-            render();
-        }
+        render();
 
         glFlush();
 
@@ -115,8 +106,6 @@ namespace Render {
         }
 
         emit textureReady(_fboDisplay->toImage(), _surfaceSize);
-
-        _renderMutex.unlock();
     }
 
     void AbstractRenderer::shutDown() {

@@ -48,6 +48,7 @@ namespace Render {
         virtual void cleanUp() = 0;
 
         virtual bool updateContent() final;
+        virtual void activateContext() final;
 
     private:
         bool _canRenderContent;
@@ -66,7 +67,7 @@ namespace Render {
         void textureReady(const QImage & image, const QSize & size);
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void needToRedraw();
-        void initialized();
+        void appearedSmthToDraw();
 
     public slots:
         virtual void renderNext() final;

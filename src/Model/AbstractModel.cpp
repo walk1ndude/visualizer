@@ -34,79 +34,90 @@ namespace Model {
         _lightSources.clear();
     }
 
-    void AbstractModel::addMaterial(MaterialInfo::Material * material, const QStringList & shaderVariables) {
+    void AbstractModel::addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariables & shaderVariables) {
+        addToMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram>(_materials, material, shaderVariables);
+    }
+
+    void AbstractModel::addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariables & shaderVariables) {
+        addToMap<LightInfo::LightSource *, LightInfo::LightProgram>(_lightSources, lightSource, shaderVariables);
+    }
+
+    void AbstractModel::addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariables & shaderVariables) {
+        addToMap<QOpenGLTexture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
+    }
+
+    void AbstractModel::setViewRange(const ModelInfo::ViewAxisRange & xRange,
+                                     const ModelInfo::ViewAxisRange & yRange,
+                                     const ModelInfo::ViewAxisRange & zRange,
+                                     const ShaderInfo::ShaderVariables & shaderVariables) {
         QMutexLocker locker(&_modelMutex);
 
         if (_program) {
-            _materials.insert(material, new MaterialInfo::MaterialProgram(_program, shaderVariables));
+            _viewRange = new ModelInfo::ViewRange(xRange, yRange, zRange, _program, shaderVariables);
         }
         else {
             emit shaderProgramSetVariableErrorHappened();
         }
     }
 
-    void AbstractModel::addLightSource(LightInfo::LightSource * lightSource, const QStringList & shaderVariables) {
-        QMutexLocker locker(&_modelMutex);
-
-        if (_program) {
-            _lightSources.insert(lightSource, new LightInfo::LightProgram(_program, shaderVariables));
-        }
-        else {
-            emit shaderProgramSetVariableErrorHappened();
-        }
-    }
-
-    void AbstractModel::setTexelRange(const ModelInfo::TexelRange & texelRange,
-                                      const QStringList & shaderVariables) {
-        setTexelRange(texelRange.sRange, texelRange.tRange, texelRange.pRange, shaderVariables);
-    }
-
-    void AbstractModel::setTexelRange(const ModelInfo::TexelAxisRange & sRange,
-                                      const ModelInfo::TexelAxisRange & tRange,
-                                      const ModelInfo::TexelAxisRange & pRange,
-                                      const QStringList & shaderVariables) {
-        QMutexLocker locker(&_modelMutex);
-
-        if (_program) {
-            if (_texelRange) {
-                delete _texelRange;
-            }
-            _texelRange = new ModelInfo::TexelRange(sRange, tRange, pRange, _program, shaderVariables);
-        }
-        else {
-            emit shaderProgramSetVariableErrorHappened();
-        }
-    }
-
-    void AbstractModel::setTexelAxisRange(const ModelInfo::TexelAxisRange & texelAxisRange,
-                           const ModelInfo::TexelAxis texelAxis) {
-        _texelRange->setTexelAxisRange(texelAxisRange, texelAxis);
+    void AbstractModel::setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
+                                         const ModelInfo::ViewAxis viewAxis) {
+        _viewRange->setViewAxisRange(viewAxisRange, viewAxis);
     }
 
     bool AbstractModel::bindShaderProgram() {
+        QMutexLocker locker(&_modelMutex);
+
         return _program->bind();
     }
 
     void AbstractModel::releaseShaderProgram() {
+        QMutexLocker locker(&_modelMutex);
+
         return _program->release();
+    }
+
+    void AbstractModel::bindTextures() {
+        QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
+        uint samplerNum = 0;
+
+        while (it.hasNext()) {
+            it.next();
+            it.key()->bind(samplerNum);
+            it.value()->setUniform(_program, samplerNum);
+
+            ++ samplerNum;
+        }
+    }
+
+    void AbstractModel::releaseTextures() {
+        QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
+        uint samplerNum = 0;
+
+        while (it.hasNext()) {
+            it.next().key()->release(samplerNum ++);
+        }
     }
 
     uint AbstractModel::modelID() {
         return _modelID;
     }
 
-    void AbstractModel::drawModel() {
+    void AbstractModel::drawModel(Render::ViewPort & viewPort) {
+        QMutexLocker locker(&_modelMutex);
+
         if (_hasIndices) {
-            drawModelWithoutIndices();
+            drawModelWithoutIndices(viewPort);
         }
         else {
-            drawModelWithoutIndices();
+            drawModelWithoutIndices(viewPort);
         }
     }
 
-    void AbstractModel::drawModelWithIndices() {
+    void AbstractModel::drawModelWithIndices(Render::ViewPort & viewPort) {
         bindShaderProgram();
         setShaderVariables();
+        setShaderVariables(viewPort);
 
         _vao.bind();
 
@@ -115,11 +126,13 @@ namespace Model {
         _vao.release();
 
         releaseShaderProgram();
+        releaseTextures();
     }
 
-    void AbstractModel::drawModelWithoutIndices() {
+    void AbstractModel::drawModelWithoutIndices(Render::ViewPort & viewPort) {
         bindShaderProgram();
         setShaderVariables();
+        setShaderVariables(viewPort);
 
         _vao.bind();
 
@@ -128,11 +141,10 @@ namespace Model {
         _vao.release();
 
         releaseShaderProgram();
+        releaseTextures();
     }
 
     void AbstractModel::setShaderVariables() {
-        QMutexLocker locker(&_modelMutex);
-
         QMapIterator<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> itM (_materials);
 
         while (itM.hasNext()) {
@@ -147,7 +159,9 @@ namespace Model {
             itL.value()->setUniformValue(_program, itL.key());
         }
 
-        _texelRange->setUniformValue(_program);
+        _viewRange->setUniformValue(_program);
+
+        bindTextures();
     }
 
     bool AbstractModel::initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles) {
@@ -188,55 +202,5 @@ namespace Model {
         }
 
         return true;
-    }
-
-    void AbstractModel::createModel(ModelInfo::BuffersV & buffers,
-                                    const QOpenGLBuffer::UsagePattern usagePattern) {
-        if (!initShaderProgram(_shaderFiles)) {
-            emit shaderProgramInitErrorHappened();
-            return;
-        }
-
-        updateModel(buffers, usagePattern);
-    }
-
-    void AbstractModel::updateModel(ModelInfo::BuffersV & buffers, const QOpenGLBuffer::UsagePattern usagePattern) {
-        bindShaderProgram();
-
-        _vao.create();
-        _vao.bind();
-
-        _vboVert.create();
-        _vboVert.setUsagePattern(usagePattern);
-
-        _vertexCount = buffers.vertices.data()->size();
-
-        _vboVert.bind();
-        _vboVert.allocate(buffers.vertices.data(), _vertexCount * sizeof(buffers.vertices->at(0)));
-
-        if (buffers.indices.data()) {
-            _vboInd.create();
-            _vboInd.setUsagePattern(usagePattern);
-
-            _indexCount = buffers.indices.data()->size();
-
-            _vboInd.bind();
-            _vboInd.allocate(buffers.indices.data(), _indexCount * sizeof(GLushort));
-
-            buffers.indices.clear();
-
-            _hasIndices = true;
-        }
-        else {
-            _hasIndices = false;
-        }
-
-        initModel(buffers);
-
-        _vao.release();
-
-        releaseShaderProgram();
-
-        buffers.vertices.clear();
     }
 }

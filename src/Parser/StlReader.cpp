@@ -5,41 +5,13 @@
 
 #include <QtCore/QDebug>
 
+#include <cmath>
+
 #include "Parser/StlReader.h"
 
-StlReader::StlReader(QObject * parent) :
-    QObject(parent) {
+#include <opencv2/core/core.hpp>
 
-}
-
-StlReader::~StlReader() {
-
-}
-
-void StlReader::readFile(const QUrl & fileUrl) {
-    QString fileName = fileUrl.toLocalFile();
-
-    QFile stlFile(fileName);
-
-    QString fileNameLower = fileName.toLower();
-
-    if (stlFile.open(QIODevice::ReadOnly)) {
-        if (fileNameLower.at(fileName.length() - 4) == 's' &&
-            fileNameLower.at(fileName.length() - 3) == 't' &&
-            fileNameLower.at(fileName.length() - 2) == 'l' &&
-            fileNameLower.at(fileName.length() - 1) == 'a'
-        ) {
-            readASCII(stlFile);
-        }
-        else {
-            readBinary(stlFile);
-        }
-
-        stlFile.close();
-    }
-}
-
-QString StlReader::removeWhitespaes(QString & str) {
+inline QString removeWhitespaes(QString & str) {
     while (str.length() > 0 && (str[0] == ' ' || str[0] == '\t')) {
         str.remove(0, 1);
     }
@@ -47,163 +19,334 @@ QString StlReader::removeWhitespaes(QString & str) {
     return str;
 }
 
-void StlReader::readASCII(QFile & stlFile) {
-    QTextStream fileStream(&stlFile);
+class BufferData {
+public:
+    char * src;
+    ModelInfo::VerticesVNPtr * dst;
 
-    ModelInfo::VertexVN vertex;
-    ModelInfo::VerticesVN vertices;
+    QScopedPointer<ModelInfo::VertexV> * minV;
+    QScopedPointer<ModelInfo::VertexV> * maxV;
 
-    QString readStr = fileStream.readLine();
-    readStr = removeWhitespaes(readStr);
+    quint32 vertexCount;
+};
 
-    QString floatStr;
+class BufferParallelReading : public cv::ParallelLoopBody {
+private:
+    BufferData _bufferData;
 
-    float x;
-    float y;
-    float z;
+    mutable cv::Mutex _mutex;
 
-    if (readStr.indexOf("solid ") != 0) {
-        emit readingErrorHappened();
-        return;
+public:
+    BufferParallelReading(BufferData & bufferData) {
+        _bufferData.src = bufferData.src;
+        _bufferData.dst = bufferData.dst;
+
+        _bufferData.minV = bufferData.minV;
+        _bufferData.maxV = bufferData.maxV;
+
+        (*_bufferData.dst)->resize(bufferData.vertexCount);
     }
 
-    uint vertexNumber = 0;
+    virtual void operator ()(const cv::Range & r) const {
+        for (int i = r.start; i != r.end; ++ i) {
+            char * currentPos = _bufferData.src + i * 50;
 
-    bool outerLoopNotClosed = false;
-    bool facetNotClosed = false;
+            GLfloat triangle[12];
+            GLfloat normals[3];
 
-    while (readStr.length()) {
-        readStr = fileStream.readLine();
+            GLfloat x;
+            GLfloat y;
+            GLfloat z;
+
+            memcpy((GLfloat *) normals, currentPos, 12);
+            memcpy((GLfloat *) triangle, currentPos + 12, 36);
+
+            for (int v = 0; v != 3; ++ v) {
+                x = triangle[3 * v];
+                y = triangle[3 * v + 1];
+                z = triangle[3 * v + 2];
+
+                ModelInfo::VertexVN vertex(x, y, z, normals[0], normals[1], normals[2]);
+
+                _mutex.lock();
+
+                if (_bufferData.minV->isNull()) {
+                    (*(_bufferData.minV)).reset(new ModelInfo::VertexV(x, y, z));
+                }
+                else {
+                    _bufferData.minV->data()->x = std::min(x, _bufferData.minV->data()->x);
+                    _bufferData.minV->data()->y = std::min(y, _bufferData.minV->data()->y);
+                    _bufferData.minV->data()->z = std::min(z, _bufferData.minV->data()->z);
+                }
+
+                if (_bufferData.maxV->isNull()) {
+                    (*(_bufferData.maxV)).reset(new ModelInfo::VertexV(x, y, z));
+                }
+                else {
+                    _bufferData.maxV->data()->x = std::max(x, _bufferData.maxV->data()->x);
+                    _bufferData.maxV->data()->y = std::max(y, _bufferData.maxV->data()->y);
+                    _bufferData.maxV->data()->z = std::max(z, _bufferData.maxV->data()->z);
+                }
+
+                _mutex.unlock();
+
+                (**_bufferData.dst)[3 * i + v] = vertex;
+            }
+        }
+    }
+};
+
+inline GLfloat normalize(GLfloat & x, const GLfloat & minV, const GLfloat & maxV) {
+    return (x - minV) / (minV - maxV);
+}
+
+class NormData {
+public:
+    ModelInfo::VerticesVNPtr * data;
+
+    ModelInfo::VertexV minV;
+    ModelInfo::VertexV maxV;
+};
+
+class ParallelNormalizing : public cv::ParallelLoopBody {
+private:
+    NormData _normData;
+
+public:
+    ParallelNormalizing(NormData & normData) {
+        _normData.data = normData.data;
+
+        _normData.minV = normData.minV;
+        _normData.maxV = normData.maxV;
+    }
+
+    virtual void operator ()(const cv::Range & r) const {
+        for (int i = r.start; i != r.end; ++ i) {
+            ModelInfo::VertexVN vertex = (*_normData.data)->at(i);
+
+            vertex.x = normalize(vertex.x, _normData.minV.x, _normData.maxV.x);
+            vertex.y = normalize(vertex.y, _normData.minV.y, _normData.maxV.y);
+            vertex.z = normalize(vertex.z, _normData.minV.z, _normData.maxV.z);
+
+            (**_normData.data)[i] = vertex;
+        }
+    }
+};
+
+namespace Parser {
+    StlReader::StlReader(QObject * parent) :
+        QObject(parent) {
+
+    }
+
+    StlReader::~StlReader() {
+
+    }
+
+    void StlReader::readFile(const QUrl & fileUrl) {
+        QString fileName = fileUrl.toLocalFile();
+
+        QFile stlFile(fileName);
+
+        QString fileNameLower = fileName.toLower();
+
+        if (stlFile.open(QIODevice::ReadOnly)) {
+            if (fileNameLower.at(fileName.length() - 4) == 's' &&
+                fileNameLower.at(fileName.length() - 3) == 't' &&
+                fileNameLower.at(fileName.length() - 2) == 'l' &&
+                fileNameLower.at(fileName.length() - 1) == 'a'
+            ) {
+                readASCII(stlFile);
+            }
+            else {
+                readBinary(stlFile);
+            }
+
+            stlFile.close();
+        }
+    }
+
+    void StlReader::readASCII(QFile & stlFile) {
+        QTextStream fileStream(&stlFile);
+
+        ModelInfo::VertexVN vertex;
+        ModelInfo::VerticesVNPtr vertices = new ModelInfo::VerticesVN;
+
+        QString readStr = fileStream.readLine();
         readStr = removeWhitespaes(readStr);
 
-        if (!readStr.length()) {
-            continue;
+        QString floatStr;
+
+        float x;
+        float y;
+        float z;
+
+        if (readStr.indexOf("solid ") != 0) {
+            emit readingErrorHappened();
+            return;
         }
 
-        if (vertexNumber % 3 == 0) {
-            if ((!outerLoopNotClosed && readStr.indexOf("outer loop") == 0) ||
-                (outerLoopNotClosed && readStr.indexOf("endloop") == 0)) {
-                outerLoopNotClosed = !outerLoopNotClosed;
+        uint vertexNumber = 0;
+
+        bool outerLoopNotClosed = false;
+        bool facetNotClosed = false;
+
+        QScopedPointer<ModelInfo::VertexV> minV;
+        QScopedPointer<ModelInfo::VertexV> maxV;
+
+        while (readStr.length()) {
+            readStr = fileStream.readLine();
+            readStr = removeWhitespaes(readStr);
+
+            if (!readStr.length()) {
                 continue;
             }
-            else if (!facetNotClosed && readStr.indexOf("facet") == 0) {
-                facetNotClosed = !facetNotClosed;
 
-                if (readStr.indexOf("normal") == 6) {
-                    floatStr = readStr.mid(13);
-                    QTextStream normalStream(&floatStr);
-
-                    normalStream >> x >> y >> z;
-
-                    vertex.nx = (GLfloat) x;
-                    vertex.ny = (GLfloat) y;
-                    vertex.nz = (GLfloat) z;
-
+            if (vertexNumber % 3 == 0) {
+                if ((!outerLoopNotClosed && readStr.indexOf("outer loop") == 0) ||
+                    (outerLoopNotClosed && readStr.indexOf("endloop") == 0)) {
+                    outerLoopNotClosed = !outerLoopNotClosed;
                     continue;
                 }
+                else if (!facetNotClosed && readStr.indexOf("facet") == 0) {
+                    facetNotClosed = !facetNotClosed;
+
+                    if (readStr.indexOf("normal") == 6) {
+                        floatStr = readStr.mid(13);
+                        QTextStream normalStream(&floatStr);
+
+                        normalStream >> x >> y >> z;
+
+                        vertex.nx = (GLfloat) x;
+                        vertex.ny = (GLfloat) y;
+                        vertex.nz = (GLfloat) z;
+
+                        continue;
+                    }
+                }
+                else if (facetNotClosed && readStr.indexOf("endfacet") == 0) {
+                    facetNotClosed = !facetNotClosed;
+                    continue;
+                }
+                else if (readStr.indexOf("vertex") != 0) {
+                    break;
+                }
             }
-            else if (facetNotClosed && readStr.indexOf("endfacet") == 0) {
-                facetNotClosed = !facetNotClosed;
-                continue;
+
+            if (vertexNumber % 3 == 0 || readStr.indexOf("vertex") == 0) {
+                floatStr = readStr.mid(7);
+                QTextStream vertexStream(&floatStr);
+
+                vertexStream >> x >> y >> z;
+
+                vertex.x = (GLfloat) x;
+                vertex.y = (GLfloat) y;
+                vertex.z = (GLfloat) z;
+
+                if (minV) {
+                    minV->x = std::min(minV->x, vertex.x);
+                    minV->y = std::min(minV->y, vertex.y);
+                    minV->z = std::min(minV->z, vertex.z);
+                }
+                else {
+                    minV.reset(new ModelInfo::VertexV(vertex.x, vertex.y, vertex.z));
+                }
+
+                if (maxV) {
+                    maxV->x = std::max(maxV->x, vertex.x);
+                    maxV->y = std::max(maxV->y, vertex.y);
+                    maxV->z = std::max(maxV->z, vertex.z);
+                }
+                else {
+                    maxV.reset(new ModelInfo::VertexV(vertex.x, vertex.y, vertex.z));
+                }
             }
-            else if (readStr.indexOf("vertex") != 0) {
+            else {
                 break;
             }
+
+            vertices->push_back(vertex);
+
+            vertexNumber ++;
         }
 
-        if (vertexNumber % 3 == 0 || readStr.indexOf("vertex") == 0) {
-            floatStr = readStr.mid(7);
-            QTextStream vertexStream(&floatStr);
-
-            vertexStream >> x >> y >> z;
-
-            vertex.x = (GLfloat) x;
-            vertex.y = (GLfloat) y;
-            vertex.z = (GLfloat) z;
-        }
-        else {
-            break;
+        if (outerLoopNotClosed || facetNotClosed || readStr.indexOf("endsolid") != 0) {
+            emit readingErrorHappened();
+            return;
         }
 
-        vertices.push_back(vertex);
+        NormData normData;
+        normData.data = &vertices;
+        normData.minV = *minV;
+        normData.maxV = *maxV;
 
-        vertexNumber ++;
+        cv::parallel_for_(cv::Range(0, vertexNumber), ParallelNormalizing(normData));
+
+        ModelInfo::BuffersVN buffers;
+        buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
+
+        emit modelRead(buffers);
     }
 
-    if (outerLoopNotClosed || facetNotClosed || readStr.indexOf("endsolid") != 0) {
-        emit readingErrorHappened();
-        return;
+    void StlReader::readBinary(QFile & stlFile) {
+        ModelInfo::VerticesVNPtr vertices = new ModelInfo::VerticesVN;
+
+        QByteArray buffer = stlFile.readAll();
+
+        if (!buffer.size()) {
+            emit readingErrorHappened();
+            return;
+        }
+
+        char * bufferPos = buffer.data() + 80;
+
+        quint32 triangleCount;
+        memcpy(&triangleCount, bufferPos, 4);
+
+        bufferPos += 4;
+
+        if (buffer.size() - 84 != (int) triangleCount * 50) {
+            emit readingErrorHappened();
+            return;
+        }
+
+        BufferData bufferData;
+
+        bufferData.src = bufferPos;
+        bufferData.dst = &vertices;
+        bufferData.vertexCount = triangleCount * 3;
+
+        QScopedPointer<ModelInfo::VertexV> minV;
+        QScopedPointer<ModelInfo::VertexV> maxV;
+
+        bufferData.minV = &minV;
+        bufferData.maxV = &maxV;
+
+        if (!triangleCount) {
+            return;
+        }
+
+        float startTime = cv::getTickCount() / cv::getTickFrequency();
+
+        cv::parallel_for_(cv::Range(0, triangleCount), BufferParallelReading(bufferData));
+
+        NormData normData;
+        normData.data = &vertices;
+        normData.minV = *minV;
+        normData.maxV = *maxV;
+
+        cv::parallel_for_(cv::Range(0, bufferData.vertexCount), ParallelNormalizing(normData));
+
+        qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
+
+        for (quint32 i = 0; i != vertices->size(); ++ i) {
+            qDebug() << vertices->at(i).x << vertices->at(i).y << vertices->at(i).z
+                     << vertices->at(i).nx << vertices->at(i).ny << vertices->at(i).nz;
+        }
+
+        ModelInfo::BuffersVN buffers;
+        buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
+
+        emit modelRead(buffers);
     }
-
-    ModelInfo::BuffersVN buffers;
-
-    buffers.vertices = ModelInfo::VerticesVNPointer(&vertices);
-
-    //modelBuffers.vertices = QSharedPointer<QVector<ModelInfo::ModelVertex> >(&vertices);
-
-    for (quint32 i = 0; i != vertexNumber; ++ i) {
-        qDebug() << vertices[i].x << vertices[i].y << vertices[i].z
-                 << vertices[i].nx << vertices[i].ny << vertices[i].nz
-                 << " ";
-    }
-
-    emit modelRead(buffers);
 }
-
-void StlReader::readBinary(QFile & stlFile) {
-    ModelInfo::VertexVN vertex;
-    ModelInfo::VerticesVN vertices;
-
-    float triangle[12];
-    float normals[3];
-
-    QByteArray buffer = stlFile.readAll();
-    stlFile.close();
-
-    if (!buffer.size()) {
-        emit readingErrorHappened();
-        return;
-    }
-
-    char * bufferPos = buffer.data() + 80;
-
-    quint32 indexCount;
-    memcpy(&indexCount, bufferPos, 4);
-
-    bufferPos += 4;
-
-    if (buffer.size() - 84 != (int) indexCount * 50) {
-        emit readingErrorHappened();
-        return;
-    }
-
-    for (quint32 t = 0; t != indexCount; ++ t) {
-        memcpy(normals, bufferPos, 12);
-        bufferPos += 12;
-
-        memcpy(triangle, bufferPos, 36);
-        bufferPos += 36;
-
-        for (int i = 0; i != 3; ++ i) {
-            vertex.x = (GLfloat) triangle[3 * i];
-            vertex.y = (GLfloat) triangle[3 * i + 1];
-            vertex.z = (GLfloat) triangle[3 * i + 2];
-
-            vertex.nx = (GLfloat) normals[0];
-            vertex.ny = (GLfloat) normals[1];
-            vertex.nz = (GLfloat) normals[2];
-
-            vertices.push_back(vertex);
-        }
-
-        bufferPos += 2;
-    }
-
-    for (quint32 i = 0; i != indexCount; ++ i) {
-        qDebug() << vertices[i].x << vertices[i].y << vertices[i].z
-                 << vertices[i].nx << vertices[i].ny << vertices[i].nz
-                 << " ";
-    }
-    qDebug() << indexCount;
-}
-

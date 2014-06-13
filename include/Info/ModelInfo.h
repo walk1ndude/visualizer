@@ -173,6 +173,15 @@ namespace ModelInfo {
     using VerticesVT = QVector<VertexVT>;
     using VerticesVNT = QVector<VertexVNT>;
 
+    using IndicesPtr = QVector<GLuint> *;
+
+    using VerticesVPtr = QVector<VertexV> *;
+    using VerticesVNPtr = QVector<VertexVN> *;
+    using VerticesVCPtr = QVector<VertexVC> *;
+    using VerticesVNCPtr = QVector<VertexVNC> *;
+    using VerticesVTPtr = QVector<VertexVT> *;
+    using VerticesVNTPtr = QVector<VertexVNT> *;
+
     using IndicesPointer = QSharedPointer<Indices>;
 
     using VerticesVPointer = QSharedPointer<VerticesV>;
@@ -255,55 +264,55 @@ namespace ModelInfo {
         }
     };
 
-    using TexelAxisRange = QVector2D;
+    using ViewAxisRange = QVector2D;
 
-    enum TexelAxis {
-        SAXIS,
-        TAXIS,
-        PAXIS
+    enum ViewAxis {
+        XAXIS,
+        YAXIS,
+        ZAXIS
     };
 
-    class TexelRange {
+    class ViewRange {
     private:
-        ShaderInfo::ShaderVariable shaderSRange;
-        ShaderInfo::ShaderVariable shaderTRange;
-        ShaderInfo::ShaderVariable shaderPRange;
+        ShaderInfo::ShaderVariable shaderXRange;
+        ShaderInfo::ShaderVariable shaderYRange;
+        ShaderInfo::ShaderVariable shaderZRange;
     public:
-        TexelAxisRange sRange;
-        TexelAxisRange tRange;
-        TexelAxisRange pRange;
+        ViewAxisRange xRange;
+        ViewAxisRange yRange;
+        ViewAxisRange zRange;
 
-        TexelRange(const TexelAxisRange & sRange,
-                   const TexelAxisRange & tRange,
-                   const TexelAxisRange & pRange,
-                   QOpenGLShaderProgram * program,
-                   const QStringList & shaderVariables) {
-            this->sRange = sRange;
-            this->tRange = tRange;
-            this->pRange = pRange;
+        ViewRange(const ViewAxisRange & xRange,
+                  const ViewAxisRange & yRange,
+                  const ViewAxisRange & zRange,
+                  QOpenGLShaderProgram * program,
+                  const ShaderInfo::ShaderVariables & shaderVariables) {
+            this->xRange = xRange;
+            this->yRange = yRange;
+            this->zRange = zRange;
 
-            shaderSRange = program->uniformLocation(shaderVariables.at(0));
-            shaderTRange = program->uniformLocation(shaderVariables.at(1));
-            shaderPRange = program->uniformLocation(shaderVariables.at(2));
+            shaderXRange = program->uniformLocation(shaderVariables.at(0));
+            shaderYRange = program->uniformLocation(shaderVariables.at(1));
+            shaderZRange = program->uniformLocation(shaderVariables.at(2));
         }
 
         void setUniformValue(QOpenGLShaderProgram * program) {
-            program->setUniformValue(shaderSRange, sRange);
-            program->setUniformValue(shaderTRange, tRange);
-            program->setUniformValue(shaderPRange, pRange);
+            program->setUniformValue(shaderXRange, xRange);
+            program->setUniformValue(shaderYRange, yRange);
+            program->setUniformValue(shaderZRange, zRange);
         }
 
-        void setTexelAxisRange(const ModelInfo::TexelAxisRange & texelAxisRange,
-                               const ModelInfo::TexelAxis texelAxis) {
-            switch (texelAxis) {
-            case ModelInfo::SAXIS:
-                sRange = texelAxisRange;
+        void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
+                               const ModelInfo::ViewAxis viewAxis) {
+            switch (viewAxis) {
+            case ModelInfo::XAXIS:
+                xRange = viewAxisRange;
                 break;
-            case ModelInfo::TAXIS:
-                pRange = texelAxisRange;
+            case ModelInfo::YAXIS:
+                yRange = viewAxisRange;
                 break;
-            case ModelInfo::PAXIS:
-                tRange = texelAxisRange;
+            case ModelInfo::ZAXIS:
+                zRange = viewAxisRange;
                 break;
             }
         }

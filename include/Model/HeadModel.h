@@ -14,6 +14,7 @@ namespace Model {
                               ));
 
         void initShaderVariables();
+        void setShaderVariables(Render::ViewPort & viewPort);
 
         void init(const int & depth);
         void initModel(ModelInfo::BuffersV & buffers);

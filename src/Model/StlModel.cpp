@@ -21,9 +21,18 @@ namespace Model {
     }
 
     void StlModel::initShaderVariables() {
+        _shaderModel = _program->uniformLocation("color");
+
         _shaderModel = _program->uniformLocation("model");
         _shaderView = _program->uniformLocation("view");
         _shaderProjection = _program->uniformLocation("projection");
-        _shaderScale = _program->uniformLocation("scale");
+    }
+
+    void StlModel::setShaderVariables(Render::ViewPort & viewPort) {
+        _program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
+
+        _program->setUniformValue(_shaderModel, viewPort.model());
+        _program->setUniformValue(_shaderView, viewPort.view());
+        _program->setUniformValue(_shaderProjection, viewPort.projection());
     }
 }

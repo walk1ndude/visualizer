@@ -167,6 +167,7 @@ namespace Quick {
             current->makeCurrent(window());
 
             QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::drawSlices, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
 
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::takeShotChanged, _modelRenderer, &Render::ModelRenderer::setTakeShot, Qt::DirectConnection);
@@ -178,7 +179,7 @@ namespace Quick {
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::initialized, this, &ModelViewer::initialized);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();

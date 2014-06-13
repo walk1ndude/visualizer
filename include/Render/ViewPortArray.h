@@ -12,8 +12,6 @@ namespace Render {
     public:
         explicit ViewPortArray(const ViewPorts & viewPorts = ViewPorts(), const QSize & windowSize = QSize());
 
-        ViewPort & operator [](int i);
-
         void setViewPorts(const ViewPorts & viewPorts, const QSize & windowSize);
 
         void scale(const QVector3D & scale);

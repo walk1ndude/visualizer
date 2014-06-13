@@ -9,7 +9,8 @@ namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
         AbstractRenderer(context, size),
         _zoomFactor(2.0) {
-
+        initialize();
+        initializeViewPorts();
     }
 
     ModelRenderer::~ModelRenderer() {
@@ -32,18 +33,18 @@ namespace Render {
         emit needToRedraw();
     }
 
-    void ModelRenderer::setSRange(const ModelInfo::TexelAxisRange & sRange) {
-        _selectedModel->setTexelAxisRange(sRange, ModelInfo::SAXIS);
+    void ModelRenderer::setSRange(const ModelInfo::ViewAxisRange & xRange) {
+        _selectedModel->setViewAxisRange(xRange, ModelInfo::XAXIS);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setTRange(const ModelInfo::TexelAxisRange & tRange) {
-        _selectedModel->setTexelAxisRange(tRange, ModelInfo::TAXIS);
+    void ModelRenderer::setTRange(const ModelInfo::ViewAxisRange & yRange) {
+        _selectedModel->setViewAxisRange(yRange, ModelInfo::YAXIS);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setPRange(const ModelInfo::TexelAxisRange & pRange) {
-        _selectedModel->setTexelAxisRange(pRange, ModelInfo::PAXIS);
+    void ModelRenderer::setPRange(const ModelInfo::ViewAxisRange & zRange) {
+        _selectedModel->setViewAxisRange(zRange, ModelInfo::ZAXIS);
         emit needToRedraw();
     }
 
@@ -99,36 +100,7 @@ namespace Render {
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
 
         _textures.insert(texture, textureInfo);
-        _models.insert(_selectedModel, texture);
-    }
-
-    void ModelRenderer::bindTextures(Model::AbstractModel * model) {
-        QMutexLocker locker(&_renderMutex);
-
-        QMultiHash<Model::AbstractModel *, QOpenGLTexture *>::iterator it = _models.find(model);
-
-        uint number = 0;
-
-        // bind all textures, associatiated with given model
-        while (it != _models.end() && it.key() == model) {
-            it.value()->bind(number ++);
-            _bindedTextures.push_back(it.value());
-        }
-    }
-
-    void ModelRenderer::releaseTextures() {
-        QMutexLocker locker(&_renderMutex);
-
-        QListIterator<QOpenGLTexture *> it (_bindedTextures);
-
-        uint number = 0;
-
-        // release all textures, associatiated with given model
-        while (it.hasNext()) {
-            it.next()->release(number ++);
-        }
-
-        _bindedTextures.clear();
+        _texturesInModel.insert(_selectedModel, texture);
     }
 
     void ModelRenderer::drawSlices(SliceInfo::SliceSettings sliceSettings) {/*
@@ -156,6 +128,15 @@ namespace Render {
     }
 
     void ModelRenderer::initialize() {
+        addLightSource(LightInfo::Position(10.0, 10.0, -10.0, 1.0),
+                       LightInfo::Position(1.0, 1.0, 1.0, 1.0),
+                       LightInfo::AmbientIntensity((GLfloat) 4.3));
+
+        addMaterial(MaterialInfo::Emissive(0.8, 0.8, 0.8, 0.8),
+                    MaterialInfo::Diffuse(1.0, 1.0, 1.0, 0.8),
+                    MaterialInfo::Specular(0.7, 0.7, 0.7, 0.7),
+                    MaterialInfo::Shininess(50.0));
+
         glEnable(GL_CULL_FACE);
 
         glEnable(GL_BLEND);
@@ -165,25 +146,51 @@ namespace Render {
         glDepthFunc(GL_LEQUAL);
     }
 
-    void ModelRenderer::addStlModel(ModelInfo::BuffersVN & buffers) {
-        Model::StlModel * model = new Model::StlModel;
-        model->createModel(buffers);
+    void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
+        activateContext();
 
-        _models.insert(model, nullptr);
+        Model::StlModel * model = new Model::StlModel;
+
+        model->createModel<ModelInfo::BuffersVN>(buffers);
+
+        model->addLightSource(_lightSources.at(0),
+                              ShaderInfo::ShaderVariables() << "lightSource.location" << "lightSource.color" <<
+                              "lightSource.ambientIntensity");
+
+        model->addMaterial(_materials.at(0),
+                           ShaderInfo::ShaderVariables() << "stlMaterial.emissive" << "stlMaterial.diffuse" <<
+                           "stlMaterial.specular" << "stlMaterial.shininess");
+
+        model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
+                            ModelInfo::ViewAxisRange(-1.0, 1.0),
+                            ModelInfo::ViewAxisRange(-1.0, 1.0),
+                            ShaderInfo::ShaderVariables() << "xRange" << "yRange" << "zRange");
+
+        _renderMutex.lock();
+        _models.push_back(model);
+        _renderMutex.unlock();
+
+        emit appearedSmthToDraw();
+
+        renderNext();
     }
 
     void ModelRenderer::render() {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        // if no models present -> no need to render
+        if (!_models.size()) {
+            return;
+        }
+
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         _viewPorts.resize(_surfaceSize);
 
         ViewPort viewPort;
         ViewPortRect boundingRect;
-        ViewPortsIterator itV (_viewPorts);
 
-        Model::AbstractModel * model;
-        QListIterator<Model::AbstractModel *> itM (_models.keys());
+        ViewPortsIterator itV (_viewPorts);
+        QVectorIterator<Model::AbstractModel *> itM (_models);
 
         // for each viewport
         while (itV.hasNext()) {
@@ -198,11 +205,7 @@ namespace Render {
 
             // draw each model
             while (itM.hasNext()) {
-                model = itM.next();
-
-                bindTextures(model);
-                model->drawModel();
-                releaseTextures();
+                itM.next()->drawModel(viewPort);
             }
 
             itM.toFront();
@@ -257,14 +260,14 @@ namespace Render {
     void ModelRenderer::cleanUp() {
         QMutexLocker locker(&_renderMutex);
 
-        qDeleteAll(_textures.keys().begin(), _textures.keys().end());
-        _textures.clear();
+        activateContext();
 
-        QListIterator<Model::AbstractModel *> itM (_models.keys());
-
-        while (itM.hasNext()) {
-            delete itM.next();
+        if (_textures.keys().size()) {
+            qDeleteAll(_textures.keys().begin(), _textures.keys().end());
+            _textures.clear();
         }
+
+        qDeleteAll(_models.begin(), _models.end());
         _models.clear();
 
         qDeleteAll(_materials.begin(), _materials.end());

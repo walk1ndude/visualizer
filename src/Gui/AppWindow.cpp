@@ -9,6 +9,7 @@ namespace Gui {
         QObject(parent) {
 
         registerQmlTypes();
+        registerMetaTypes();
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
 
@@ -35,11 +36,12 @@ namespace Gui {
             Quick::ModelViewer * modelViewer = modelItem->findChild<Quick::ModelViewer *>("modelViewer");
 
             QObject::connect(this, &AppWindow::slicesProcessed, modelViewer, &Quick::ModelViewer::drawSlices);
+            QObject::connect(this, &AppWindow::modelRead, modelViewer, &Quick::ModelViewer::modelRead);
 
             QObject::connect(modelViewer, &Quick::ModelViewer::minHUChanged, this, &AppWindow::minHUChanged);
             QObject::connect(modelViewer, &Quick::ModelViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
 
-            QObject::connect(modelViewer, SIGNAL(initialized()), modelItem, SLOT(show()));
+            QObject::connect(modelViewer, SIGNAL(appearedSmthToDraw()), modelItem, SLOT(show()));
 
             QObject::connect(_appWindow, &QQuickWindow::heightChanged, [=](const int & height) {
                 modelViewer->setHeight(height);
@@ -71,6 +73,15 @@ namespace Gui {
 
     void AppWindow::registerQmlTypes() {
         qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
+    }
+
+    void AppWindow::registerMetaTypes() {
+        qRegisterMetaType<ModelInfo::BuffersV>("ModelInfo::BuffersV");
+        qRegisterMetaType<ModelInfo::BuffersVN>("ModelInfo::BuffersVN");
+        qRegisterMetaType<ModelInfo::BuffersVT>("ModelInfo::BuffersVT");
+        qRegisterMetaType<ModelInfo::BuffersVC>("ModelInfo::BuffersVC");
+        qRegisterMetaType<ModelInfo::BuffersVNC>("ModelInfo::BuffersVNC");
+        qRegisterMetaType<ModelInfo::BuffersVNT>("ModelInfo::BuffersVNT");
     }
 
     void AppWindow::show() {

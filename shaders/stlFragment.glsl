@@ -33,7 +33,7 @@ void main(void) {
     float NdotL = max(dot(N, L), 0);
     vec4 diffuse =  NdotL * light.color * headMaterial.diffuse;
 
-    vec4 V = normalize(normal - vertex);
+    vec4 V = normalize(vec4(normal, 1.0) - vertex);
     vec4 H = normalize(L + V);
     vec4 R = reflect(-L, N);
 

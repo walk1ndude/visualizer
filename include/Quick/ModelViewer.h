@@ -87,7 +87,7 @@ namespace Quick {
         QVector3D _rotation;
 
     signals:
-        void initialized();
+        void appearedSmthToDraw();
 
         void takeShotChanged(const bool & takeShot);
         void rotationChanged(const QVector3D & rotation);
@@ -103,6 +103,7 @@ namespace Quick {
         void maxHUChanged(const int & maxHU);
 
         void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
+        void modelRead(ModelInfo::BuffersVN buffers);
 
     public slots:
         void drawSlices(SliceInfo::SliceSettings sliceSettings);

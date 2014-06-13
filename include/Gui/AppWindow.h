@@ -6,6 +6,7 @@
 #include <QtQuick/QQuickWindow>
 
 #include "Info/Sliceinfo.h"
+#include "Info/ModelInfo.h"
 
 namespace Gui {
     class AppWindow : public QObject {
@@ -22,6 +23,7 @@ namespace Gui {
         QQuickWindow * _appWindow;
 
         void registerQmlTypes();
+        void registerMetaTypes();
 
         void fetchConnections();
 
@@ -37,6 +39,7 @@ namespace Gui {
         void maxHUChanged(const int & maxHU);
 
         void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
+        void modelRead(ModelInfo::BuffersVN buffers);
 
     private slots:
          void readFiles(QVariant fileNames);
