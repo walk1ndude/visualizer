@@ -102,46 +102,45 @@ namespace Model {
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
         QMutexLocker locker(&_modelMutex);
 
+        bindShaderProgram();
+
+        glStatesEnable();
+
+        setShaderVariables();
+        setShaderVariables(viewPort);
+
+        bindTextures();
+
         if (_hasIndices) {
-            drawModelWithoutIndices(viewPort);
+            drawModelWithoutIndices();
         }
         else {
-            drawModelWithoutIndices(viewPort);
+            drawModelWithoutIndices();
         }
+
+        releaseTextures();
+        glStatesDisable();
+        releaseShaderProgram();
     }
 
-    void AbstractModel::drawModelWithIndices(ViewPort::ViewPort & viewPort) {
-        bindShaderProgram();
-        setShaderVariables();
-        bindTextures();
-        setShaderVariables(viewPort);
-
+    void AbstractModel::drawModelWithIndices() {
         _vao.bind();
 
-        glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
+        glFinish();
 
         _vao.release();
-
-        releaseShaderProgram();
-        releaseTextures();
     }
 
-    void AbstractModel::drawModelWithoutIndices(ViewPort::ViewPort & viewPort) {
-        bindShaderProgram();
-        setShaderVariables();
-        bindTextures();
-        setShaderVariables(viewPort);
-
+    void AbstractModel::drawModelWithoutIndices() {
         _vao.bind();
 
         glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
+        glFinish();
 
         qDebug() << glGetError();
 
         _vao.release();
-
-        releaseShaderProgram();
-        releaseTextures();
     }
 
     void AbstractModel::setShaderVariables() {

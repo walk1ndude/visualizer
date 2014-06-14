@@ -14,6 +14,22 @@ namespace Model {
         _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
     }
 
+    void StlModel::glStatesEnable() {
+        glEnable(GL_CULL_FACE);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    }
+
+    void StlModel::glStatesDisable() {
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+    }
+
     void StlModel::bindShaderVariablesToBuffers() {
         _program->enableAttributeArray(_shaderVertex);
         _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);

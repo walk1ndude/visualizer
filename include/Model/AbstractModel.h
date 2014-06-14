@@ -24,6 +24,9 @@ namespace Model {
         virtual void setShaderVariables(ViewPort::ViewPort & viewPort) = 0;
         virtual void bindShaderVariablesToBuffers() = 0;
 
+        virtual void glStatesEnable() = 0;
+        virtual void glStatesDisable() = 0;
+
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
@@ -87,7 +90,7 @@ namespace Model {
                 _indexCount = buffers.indices.data()->size();
 
                 _vboInd.bind();
-                _vboInd.allocate(buffers.indices.data(), _indexCount * sizeof(GLushort));
+                _vboInd.allocate(buffers.indices.data(), _indexCount * sizeof(GLuint));
 
                 buffers.indices.clear();
 
@@ -136,8 +139,8 @@ namespace Model {
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void setShaderVariables();
 
-        void drawModelWithIndices(ViewPort::ViewPort & viewPort);
-        void drawModelWithoutIndices(ViewPort::ViewPort & viewPort);
+        void drawModelWithIndices();
+        void drawModelWithoutIndices();
 
         void bindTextures();
         void releaseTextures();

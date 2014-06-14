@@ -65,8 +65,6 @@ namespace Scene {
     private:
         ViewPort::ViewPortArray _viewPorts;
 
-        qreal _zoomFactor;
-
         QVector3D _rotation;
 
         void initializeViewPorts(const QSize & surfaceSize);

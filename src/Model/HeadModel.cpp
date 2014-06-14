@@ -44,6 +44,22 @@ namespace Model {
         initModel<ModelInfo::BuffersVT>(buffers);
     }
 
+    void HeadModel::glStatesEnable() {
+        glEnable(GL_CULL_FACE);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    }
+
+    void HeadModel::glStatesDisable() {
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+    }
+
     void HeadModel::initShaderVariables() {
         _shaderVertex = _program->attributeLocation("vertex");
         _shaderTexHead = _program->attributeLocation("texHead");

@@ -4,8 +4,7 @@
 
 namespace Scene {
     ModelScene::ModelScene() :
-        AbstractScene(),
-        _zoomFactor(2.0) {
+        AbstractScene() {
 
     }
 

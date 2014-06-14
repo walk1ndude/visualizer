@@ -25,12 +25,6 @@ namespace Render {
         surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
         surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
 
-        surfaceFormat.setRedBufferSize(8);
-        surfaceFormat.setGreenBufferSize(8);
-        surfaceFormat.setBlueBufferSize(8);
-        surfaceFormat.setDepthBufferSize(8);
-        surfaceFormat.setStencilBufferSize(8);
-
         //_context->setShareContext(context);
         _context->setFormat(surfaceFormat);
 
@@ -95,7 +89,6 @@ namespace Render {
         _fboRender->bind();
 
         render();
-        glFlush();
 
         QImage texture = _fboRender->toImage();
 

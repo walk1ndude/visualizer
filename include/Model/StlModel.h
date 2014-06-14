@@ -17,6 +17,9 @@ namespace Model {
         void setShaderVariables(ViewPort::ViewPort & viewPort);
         void bindShaderVariablesToBuffers();
 
+        void glStatesEnable();
+        void glStatesDisable();
+
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderNormal;
