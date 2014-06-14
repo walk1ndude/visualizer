@@ -2,9 +2,9 @@
 in highp vec4 fragPos;
 
 struct Ranges {
-   vec2 sRange;
-   vec2 tRange;
-   vec2 pRange;
+   vec2 xRange;
+   vec2 yRange;
+   vec2 zRange;
 };
 
 uniform highp Ranges ranges;
@@ -27,7 +27,7 @@ struct Material {
 uniform highp Material headMaterial;
 
 struct LightSource {
-    vec4 direction;
+    vec4 position;
     vec4 color;
     float ambientIntensity;
 };
@@ -105,9 +105,9 @@ vec4 sobel3(vec3 position) {
 
 void main(void) {
     
-    if (fragPos.s >= ranges.sRange[0] && fragPos.s <= ranges.sRange[1]
-            && fragPos.t >= ranges.tRange[0] && fragPos.t <= ranges.tRange[1]
-            && fragPos.p >= ranges.pRange[0] && fragPos.p <= ranges.pRange[1]) {
+    if (fragPos.s >= ranges.xRange[0] && fragPos.s <= ranges.xRange[1]
+            && fragPos.t >= ranges.yRange[0] && fragPos.t <= ranges.yRange[1]
+            && fragPos.p >= ranges.zRange[0] && fragPos.p <= ranges.zRange[1]) {
 
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
@@ -115,7 +115,7 @@ void main(void) {
             vec4 normal = sobel3(fragPos.stp);
 
             vec4 N = normalize(mat4(normalMatrix) * normal);
-            vec4 L = normalize(light.direction - fragPos);
+            vec4 L = normalize(light.position - fragPos);
 
             float NdotL = max(dot(N, L), 0);
             vec4 diffuse =  NdotL * light.color * headMaterial.diffuse;

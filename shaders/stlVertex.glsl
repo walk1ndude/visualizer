@@ -1,5 +1,4 @@
 #version 410 core
-
 in highp vec4 vertex;
 in highp vec3 normal;
 

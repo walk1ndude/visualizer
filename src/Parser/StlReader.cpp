@@ -339,6 +339,10 @@ namespace Parser {
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
 
+        foreach (ModelInfo::VertexVN vertex, *vertices) {
+            qDebug() << vertex.x << vertex.y << vertex.z << vertex.nx << vertex.ny << vertex.nz;
+        }
+
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 

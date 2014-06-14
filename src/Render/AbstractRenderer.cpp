@@ -16,8 +16,7 @@ namespace Render {
         _canRenderContent(false),
         _textureUpdateNeeded(false),
         _contentInitializeNeeded(false),
-        _fboRender(0),
-        _fboDisplay(0) {
+        _fboRender(nullptr) {
 
         _context = new QOpenGLContext;
 
@@ -25,6 +24,12 @@ namespace Render {
         surfaceFormat.setVersion(4, 1);
         surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
         surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+
+        surfaceFormat.setRedBufferSize(8);
+        surfaceFormat.setGreenBufferSize(8);
+        surfaceFormat.setBlueBufferSize(8);
+        surfaceFormat.setDepthBufferSize(8);
+        surfaceFormat.setStencilBufferSize(8);
 
         //_context->setShareContext(context);
         _context->setFormat(surfaceFormat);
@@ -85,17 +90,16 @@ namespace Render {
             format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
             format.setInternalTextureFormat(GL_RGB16);
             _fboRender = new QOpenGLFramebufferObject(_surfaceSize, format);
-            _fboDisplay = new QOpenGLFramebufferObject(_surfaceSize, format);
         }
 
         _fboRender->bind();
 
         render();
-
         glFlush();
 
+        QImage texture = _fboRender->toImage();
+
         _fboRender->bindDefault();
-        qSwap(_fboRender, _fboDisplay);
 
         if (_takeShot) {/*
             emit contentToSaveRendered(_fboDisplay->toImage(),
@@ -103,14 +107,18 @@ namespace Render {
                                        _rotation.y() + 180.0);*/
         }
 
-        emit textureReady(_fboDisplay->toImage(), _surfaceSize);
+        delete _fboRender;
+        _fboRender = nullptr;
+
+        emit textureReady(texture, _surfaceSize);
     }
 
     void AbstractRenderer::shutDown() {
         _context->makeCurrent(_surface);
 
-        delete _fboRender;
-        delete _fboDisplay;
+        if (_fboRender) {
+            delete _fboRender;
+        }
 
         cleanUp();
 

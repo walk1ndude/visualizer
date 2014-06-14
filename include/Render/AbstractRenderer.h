@@ -53,7 +53,6 @@ namespace Render {
         bool _contentInitializeNeeded;
 
         QOpenGLFramebufferObject * _fboRender;
-        QOpenGLFramebufferObject * _fboDisplay;
 
         QOffscreenSurface * _surface;
 

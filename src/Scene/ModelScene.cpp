@@ -157,7 +157,7 @@ namespace Scene {
         model->initModel<ModelInfo::BuffersVN>(buffers);
 
         model->addLightSource(_lightSources.at(0),
-                              ShaderInfo::ShaderVariables() << "lightSource.location" << "lightSource.color" <<
+                              ShaderInfo::ShaderVariables() << "lightSource.position" << "lightSource.color" <<
                               "lightSource.ambientIntensity");
 
         model->addMaterial(_materials.at(0),
@@ -167,7 +167,7 @@ namespace Scene {
         model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ShaderInfo::ShaderVariables() << "xRange" << "yRange" << "zRange");
+                            ShaderInfo::ShaderVariables() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
 
         _models.push_back(model);
     }

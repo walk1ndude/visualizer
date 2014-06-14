@@ -42,11 +42,11 @@ public slots:
     }
 
     void prepareNode() {
-        _textureMutex.lock();
+        QMutexLocker locker (&_textureMutex);
+
         delete _texture;
         _texture = _window->createTextureFromImage(_image);
         setTexture(_texture);
-        _textureMutex.unlock();
     }
 
 private:

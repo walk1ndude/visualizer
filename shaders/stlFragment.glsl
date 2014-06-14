@@ -3,9 +3,17 @@
 layout(location = 0) out highp vec4 vertex;
 layout(location = 1) out highp vec3 normal;
 
-uniform highp vec4 color;
+uniform highp vec4 colorU;
 
 uniform highp mat3 normalMatrix;
+
+struct Ranges {
+   vec2 xRange;
+   vec2 yRange;
+   vec2 zRange;
+};
+
+uniform highp Ranges ranges;
 
 struct Material {
     vec4 emissive;
@@ -17,7 +25,7 @@ struct Material {
 uniform highp Material stlMaterial;
 
 struct LightSource {
-    vec4 direction;
+    vec4 position;
     vec4 color;
     float ambientIntensity;
 };
@@ -28,7 +36,7 @@ out highp vec4 fragColor;
 
 void main(void) {
     vec4 N = vec4(normalize(normalMatrix * normal), 0.0);
-    vec4 L = normalize(lightSource.direction - vertex);
+    vec4 L = normalize(lightSource.position - vertex);
 
     float NdotL = max(dot(N, L), 0);
     vec4 diffuse =  NdotL * lightSource.color * stlMaterial.diffuse;
@@ -42,6 +50,5 @@ void main(void) {
 
     vec4 specular = pow(RdotV, stlMaterial.shininess) * lightSource.color * stlMaterial.specular;
 
-    //fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * color;
-    fragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * colorU;
 }

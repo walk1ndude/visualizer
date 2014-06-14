@@ -9,7 +9,7 @@ namespace Model {
         _shaderVertex = _program->attributeLocation("vertex");
         _shaderNormal = _program->attributeLocation("normal");
 
-        _shaderColorU = _program->uniformLocation("color");
+        _shaderColorU = _program->uniformLocation("colorU");
         _shaderMPV = _program->uniformLocation("mvp");
         _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
     }
@@ -24,7 +24,7 @@ namespace Model {
 
     void StlModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
         _program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
-        _program->setUniformValue(_shaderMPV, viewPort.model() * viewPort.projection() * viewPort.view());
+        _program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * viewPort.model());
         _program->setUniformValue(_shaderNormalMatrix, viewPort.normalM());
     }
 }
