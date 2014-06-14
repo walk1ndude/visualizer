@@ -3,7 +3,7 @@
 
 #include <QtGui/QMatrix4x4>
 
-namespace Render {
+namespace ViewPort {
     class MatrixStack {
     public:
         enum ProjectionType {

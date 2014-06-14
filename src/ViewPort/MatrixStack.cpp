@@ -1,8 +1,8 @@
 #include <cmath>
 
-#include "Render/MatrixStack.h"
+#include "ViewPort/MatrixStack.h"
 
-namespace Render {
+namespace ViewPort {
     MatrixStack::MatrixStack(ProjectionType projectionType) :
         _projectionType(projectionType) {
         identity();

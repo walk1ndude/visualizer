@@ -5,10 +5,13 @@
 #include <QtGui/QOpenGLPixelTransferOptions>
 
 #include "Render/AbstractRenderer.h"
-#include "Render/ViewPortArray.h"
+
+#include "ViewPort/ViewPortArray.h"
 
 #include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
+
+#include "Scene/ModelScene.h"
 
 namespace Render {
     class ModelRenderer : public AbstractRenderer {
@@ -17,47 +20,21 @@ namespace Render {
         explicit ModelRenderer(QOpenGLContext * context, const QSize & size);
         ~ModelRenderer();
 
-        // some constants here
-        void initMaterials();
-        void initLightSources();
-
-        void addMaterial(const MaterialInfo::Emissive & emissive,
-                         const MaterialInfo::Diffuse & diffuse,
-                         const MaterialInfo::Specular & specular,
-                         const MaterialInfo::Shininess & shininess);
-
-        void addLightSource(const LightInfo::Position & position,
-                            const LightInfo::Color & color,
-                            const LightInfo::AmbientIntensity & ambientIntensity);
-
-        void addTexture(TextureInfo::Texture & textureInfo);
-
+        void selectScene(Scene::AbstractScene * scene = nullptr);
 
     protected:
-        QMap<QOpenGLTexture *, TextureInfo::Texture> _textures;
-        QVector<Model::AbstractModel *> _models;
-
-        QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
-        QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
-
-        QVector<MaterialInfo::Material *> _materials;
-        QVector<LightInfo::LightSource *> _lightSources;
-
-        Model::AbstractModel * _selectedModel;
-        QOpenGLTexture * _selectedTexture;
-
         virtual void initialize();
         virtual void updateTextures();
         virtual void render();
 
     private:
-        ViewPortArray _viewPorts;
+        Scene::AbstractScene * _selectedScene;
 
-        qreal _zoomFactor;
+        // remember all scenes, rendered by this renderer -> for clean up after
+        QSet<Scene::AbstractScene *> _sceneHistory;
 
         SliceInfo::SliceSettings _sliceSettings;
 
-        void initializeViewPorts();
         void cleanUp();
 
         void updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
@@ -82,9 +59,9 @@ namespace Render {
         void setZoomFactor(const qreal & zoomFactor);
 
         // to clip selected model
-        void setSRange(const ModelInfo::ViewAxisRange & xRange);
-        void setTRange(const ModelInfo::ViewAxisRange & yRange);
-        void setPRange(const ModelInfo::ViewAxisRange & zRange);
+        void setXRange(const ModelInfo::ViewAxisRange & xRange);
+        void setYRange(const ModelInfo::ViewAxisRange & yRange);
+        void setZRange(const ModelInfo::ViewAxisRange & zRange);
     };
 }
 #endif // SLICERENDERER_H

@@ -8,9 +8,8 @@
 namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
         AbstractRenderer(context, size),
-        _zoomFactor(2.0) {
+        _selectedScene(nullptr) {
         initialize();
-        initializeViewPorts();
     }
 
     ModelRenderer::~ModelRenderer() {
@@ -21,86 +20,39 @@ namespace Render {
         _takeShot = takeShot;
     }
 
-    void ModelRenderer::setRotation(const QVector3D & rotation) {
-        _rotation = rotation;
+    void ModelRenderer::selectScene(Scene::AbstractScene * scene) {
+        QMutexLocker locker(&_renderMutex);
 
-        _viewPorts.rotate(_rotation.x(), _rotation.y(), _rotation.z());
+        if (!scene->isInitialized()) {
+            scene->initScene(_surfaceSize);
+        }
+        _selectedScene = scene;
+        _sceneHistory.insert(scene);
+    }
+
+    void ModelRenderer::setRotation(const QVector3D & rotation) {
+        _selectedScene->setRotation(rotation);
         emit needToRedraw();
     }
 
     void ModelRenderer::setZoomFactor(const qreal & zoomFactor) {
-        _viewPorts.zoom(zoomFactor);
+        _selectedScene->setZoomFactor(zoomFactor);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setSRange(const ModelInfo::ViewAxisRange & xRange) {
-        _selectedModel->setViewAxisRange(xRange, ModelInfo::XAXIS);
+    void ModelRenderer::setXRange(const ModelInfo::ViewAxisRange & xRange) {
+        _selectedScene->setXRange(xRange);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setTRange(const ModelInfo::ViewAxisRange & yRange) {
-        _selectedModel->setViewAxisRange(yRange, ModelInfo::YAXIS);
+    void ModelRenderer::setYRange(const ModelInfo::ViewAxisRange & yRange) {
+        _selectedScene->setXRange(yRange);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setPRange(const ModelInfo::ViewAxisRange & zRange) {
-        _selectedModel->setViewAxisRange(zRange, ModelInfo::ZAXIS);
+    void ModelRenderer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
+        _selectedScene->setXRange(zRange);
         emit needToRedraw();
-    }
-
-    // need some good defaults here
-    void ModelRenderer::initMaterials() {
-
-    }
-
-    void ModelRenderer::initLightSources() {
-
-    }
-
-    void ModelRenderer::addMaterial(const MaterialInfo::Emissive & emissive,
-                                    const MaterialInfo::Diffuse & diffuse,
-                                    const MaterialInfo::Specular & specular,
-                                    const MaterialInfo::Shininess & shininess) {
-        _materials.push_back(new MaterialInfo::Material(emissive, diffuse, specular, shininess));
-    }
-
-    void ModelRenderer::addLightSource(const LightInfo::Position & position,
-                                       const LightInfo::Color & color,
-                                       const LightInfo::AmbientIntensity & ambientIntensity) {
-        _lightSources.push_back(new LightInfo::LightSource(position, color, ambientIntensity));
-    }
-
-    void ModelRenderer::initializeViewPorts() {
-        ViewPorts viewPorts;
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ProjectionType>(
-                        QRectF(0.5, 0.5, 0.5, 0.5), ViewPort::PERSPECTIVE)
-                    );
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ProjectionType>(
-                        QRectF(0, 0.5, 0.5, 0.5), ViewPort::BOTTOM)
-                    );
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ProjectionType>(
-                        QRectF(0, 0, 0.5, 0.5), ViewPort::FRONT)
-                    );
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ProjectionType>(
-                        QRectF(0.5, 0, 0.5, 0.5), ViewPort::LEFT)
-                    );
-
-        _viewPorts.setViewPorts(viewPorts, _surfaceSize);
-    }
-
-    void ModelRenderer::addTexture(TextureInfo::Texture & textureInfo) {
-        QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
-
-        _textures.insert(texture, textureInfo);
-        _texturesInModel.insert(_selectedModel, texture);
     }
 
     void ModelRenderer::drawSlices(SliceInfo::SliceSettings sliceSettings) {/*
@@ -128,15 +80,6 @@ namespace Render {
     }
 
     void ModelRenderer::initialize() {
-        addLightSource(LightInfo::Position(10.0, 10.0, -10.0, 1.0),
-                       LightInfo::Position(1.0, 1.0, 1.0, 1.0),
-                       LightInfo::AmbientIntensity((GLfloat) 4.3));
-
-        addMaterial(MaterialInfo::Emissive(0.8, 0.8, 0.8, 0.8),
-                    MaterialInfo::Diffuse(1.0, 1.0, 1.0, 0.8),
-                    MaterialInfo::Specular(0.7, 0.7, 0.7, 0.7),
-                    MaterialInfo::Shininess(50.0));
-
         glEnable(GL_CULL_FACE);
 
         glEnable(GL_BLEND);
@@ -147,70 +90,30 @@ namespace Render {
     }
 
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
-        activateContext();
+        QMutexLocker locker(&_renderMutex);
 
-        Model::StlModel * model = new Model::StlModel;
+        if (Scene::ModelScene * selectedModelScene = dynamic_cast<Scene::ModelScene *>(_selectedScene)) {
+            qDebug() << activateContext();
 
-        model->createModel<ModelInfo::BuffersVN>(buffers);
+            selectedModelScene->addStlModel(buffers);
 
-        model->addLightSource(_lightSources.at(0),
-                              ShaderInfo::ShaderVariables() << "lightSource.location" << "lightSource.color" <<
-                              "lightSource.ambientIntensity");
-
-        model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariables() << "stlMaterial.emissive" << "stlMaterial.diffuse" <<
-                           "stlMaterial.specular" << "stlMaterial.shininess");
-
-        model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ShaderInfo::ShaderVariables() << "xRange" << "yRange" << "zRange");
-
-        _renderMutex.lock();
-        _models.push_back(model);
-        _renderMutex.unlock();
-
-        emit appearedSmthToDraw();
-
-        renderNext();
+            emit appearedSmthToDraw();
+            renderNext();
+        }
+        else {
+            // selected scene doesn't seem like modelScene -> don't risk to add to id, free buffers
+            buffers.vertices.clear();
+            buffers.indices.clear();
+        }
     }
 
     void ModelRenderer::render() {
-        // if no models present -> no need to render
-        if (!_models.size()) {
-            return;
-        }
-
         glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        _viewPorts.resize(_surfaceSize);
-
-        ViewPort viewPort;
-        ViewPortRect boundingRect;
-
-        ViewPortsIterator itV (_viewPorts);
-        QVectorIterator<Model::AbstractModel *> itM (_models);
-
-        // for each viewport
-        while (itV.hasNext()) {
-            viewPort = itV.next();
-
-            boundingRect = viewPort.boundingRect();
-            if (viewPort.projectionType() == ViewPort::LEFT) {
-                _screenSaveRect = boundingRect;
-            }
-
-            glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
-
-            // draw each model
-            while (itM.hasNext()) {
-                itM.next()->drawModel(viewPort);
-            }
-
-            itM.toFront();
+        if (_selectedScene) {
+            _selectedScene->renderScene(_surfaceSize);
         }
-
     }
 
     void ModelRenderer::updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
@@ -262,18 +165,10 @@ namespace Render {
 
         activateContext();
 
-        if (_textures.keys().size()) {
-            qDeleteAll(_textures.keys().begin(), _textures.keys().end());
-            _textures.clear();
+        QSetIterator<Scene::AbstractScene *> it (_sceneHistory);
+
+        while (it.hasNext()) {
+            it.next()->cleanUp();
         }
-
-        qDeleteAll(_models.begin(), _models.end());
-        _models.clear();
-
-        qDeleteAll(_materials.begin(), _materials.end());
-        _materials.clear();
-
-        qDeleteAll(_lightSources.begin(), _lightSources.end());
-        _lightSources.clear();
     }
 }

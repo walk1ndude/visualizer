@@ -6,66 +6,68 @@
 #define FBO_WIDTH 768
 #define FBO_HEIGHT 768
 
-namespace Quick {
-    class TextureNode : public QObject, public QSGSimpleTextureNode {
-        Q_OBJECT
-    public:
-        TextureNode(QQuickWindow * window) :
-            _size(0, 0),
-            _texture(0),
-            _window(window) {
+class TextureNode : public QObject, public QSGSimpleTextureNode {
+    Q_OBJECT
+public:
+    TextureNode(QQuickWindow * window) :
+        _size(0, 0),
+        _texture(0),
+        _window(window) {
 
-            // Our texture node must have a texture, so use the default 0 texture.
-            _texture = _window->createTextureFromId(0, QSize(1, 1));
-            setTexture(_texture);
-            setFiltering(QSGTexture::Linear);
-        }
+        // Our texture node must have a texture, so use the default 0 texture.
+        _texture = _window->createTextureFromId(0, QSize(1, 1));
+        setTexture(_texture);
+        setFiltering(QSGTexture::Linear);
+    }
 
-        ~TextureNode() {
-                delete _texture;
-        }
-
-    signals:
-        void pendingNewTexture();
-
-    public slots:
-        // This function gets called on the FBO rendering thread and will store the
-        // texture id and size and schedule an update on the window.
-        void newTexture(const QImage & image, const QSize & size) {
-            _textureMutex.lock();
-            _image = image;
-            _size = size;
-            _textureMutex.unlock();
-
-            // We cannot call QQuickWindow::update directly here, as this is only allowed
-            // from the rendering thread or GUI thread.
-            emit pendingNewTexture();
-        }
-
-        void prepareNode() {
-            _textureMutex.lock();
+    ~TextureNode() {
             delete _texture;
-            _texture = _window->createTextureFromImage(_image);
-            setTexture(_texture);
-            _textureMutex.unlock();
-        }
+    }
 
-    private:
-        QSize _size;
+signals:
+    void pendingNewTexture();
 
-        QImage _image;
+public slots:
+    // This function gets called on the FBO rendering thread and will store the
+    // texture id and size and schedule an update on the window.
+    void newTexture(const QImage & image, const QSize & size) {
+        _textureMutex.lock();
+        _image = image;
+        _size = size;
+        _textureMutex.unlock();
 
-        QMutex _textureMutex;
+        // We cannot call QQuickWindow::update directly here, as this is only allowed
+        // from the rendering thread or GUI thread.
+        emit pendingNewTexture();
+    }
 
-        QSGTexture *_texture;
-        QQuickWindow *_window;
-    };
+    void prepareNode() {
+        _textureMutex.lock();
+        delete _texture;
+        _texture = _window->createTextureFromImage(_image);
+        setTexture(_texture);
+        _textureMutex.unlock();
+    }
 
+private:
+    QSize _size;
+
+    QImage _image;
+
+    QMutex _textureMutex;
+
+    QSGTexture *_texture;
+    QQuickWindow *_window;
+};
+
+namespace Quick {
     ModelViewer::ModelViewer() :
         _modelRenderer(0),
         _takeShot(false) {
 
         setFlag(QQuickItem::ItemHasContents);
+
+        addModelScene();
     }
 
     ModelViewer::~ModelViewer() {
@@ -155,6 +157,10 @@ namespace Quick {
         emit maxHUChanged(_maxHU);
     }
 
+    void ModelViewer::addModelScene() {
+        _scenes.push_back(new Scene::ModelScene);
+    }
+
     QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *) {
         TextureNode * node = static_cast<TextureNode *>(oldNode);
 
@@ -163,15 +169,16 @@ namespace Quick {
             current->doneCurrent();
 
             _modelRenderer = new Render::ModelRenderer(current, QSize(FBO_WIDTH, FBO_HEIGHT));
+            _modelRenderer->selectScene(_scenes.at(0));
 
             current->makeCurrent(window());
 
             QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::drawSlices, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
 
-            QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
+            //QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::takeShotChanged, _modelRenderer, &Render::ModelRenderer::setTakeShot, Qt::DirectConnection);
-            QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
+            //QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
 
             //QObject::connect(this, &ModelViewer::sRangeChanged, _modelRenderer, &Render::ModelRenderer::setSRange, Qt::DirectConnection);
             //QObject::connect(this, &ModelViewer::tRangeChanged, _modelRenderer, &Render::ModelRenderer::setTRange, Qt::DirectConnection);

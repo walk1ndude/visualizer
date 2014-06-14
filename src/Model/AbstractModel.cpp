@@ -103,7 +103,7 @@ namespace Model {
         return _modelID;
     }
 
-    void AbstractModel::drawModel(Render::ViewPort & viewPort) {
+    void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
         QMutexLocker locker(&_modelMutex);
 
         if (_hasIndices) {
@@ -114,7 +114,7 @@ namespace Model {
         }
     }
 
-    void AbstractModel::drawModelWithIndices(Render::ViewPort & viewPort) {
+    void AbstractModel::drawModelWithIndices(ViewPort::ViewPort & viewPort) {
         bindShaderProgram();
         setShaderVariables();
         setShaderVariables(viewPort);
@@ -129,7 +129,7 @@ namespace Model {
         releaseTextures();
     }
 
-    void AbstractModel::drawModelWithoutIndices(Render::ViewPort & viewPort) {
+    void AbstractModel::drawModelWithoutIndices(ViewPort::ViewPort & viewPort) {
         bindShaderProgram();
         setShaderVariables();
         setShaderVariables(viewPort);
@@ -185,10 +185,6 @@ namespace Model {
                 }
             }
 
-            if (!programIsInited) {
-                return false;
-            }
-
             programIsInited &= _program->link();
 
             if (!programIsInited) {
@@ -198,9 +194,9 @@ namespace Model {
             initShaderVariables();
         }
         else {
-            return false;
+            return !programIsInited;
         }
 
-        return true;
+        return programIsInited;
     }
 }

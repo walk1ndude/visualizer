@@ -1,9 +1,9 @@
 #ifndef VIEWPORTS_H
 #define VIEWPORTS_H
 
-#include "Render/ViewPort.h"
+#include "ViewPort/ViewPort.h"
 
-namespace Render {
+namespace ViewPort {
     using ViewPortInfo = QPair<QRectF, ViewPort::ProjectionType>;
     using ViewPorts = QVector<ViewPortInfo>;
     using ViewPortsIterator = QMutableVectorIterator<ViewPort>;
@@ -18,7 +18,7 @@ namespace Render {
         void rotate(qreal xRot, qreal yRot, qreal zRot);
         void zoom(const qreal & zoomFactor);
 
-        void resize(const QSize & windowSize);
+        void resize(const QSize & surfaceSize);
     };
 }
 

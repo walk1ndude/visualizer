@@ -14,7 +14,7 @@ struct Material {
     float shininess;
 };
 
-uniform highp Material headMaterial;
+uniform highp Material stlMaterial;
 
 struct LightSource {
     vec4 direction;
@@ -22,16 +22,16 @@ struct LightSource {
     float ambientIntensity;
 };
 
-uniform highp LightSource light;
+uniform highp LightSource lightSource;
 
 out highp vec4 fragColor;
 
 void main(void) {
     vec4 N = vec4(normalize(normalMatrix * normal), 0.0);
-    vec4 L = normalize(light.direction - vertex);
+    vec4 L = normalize(lightSource.direction - vertex);
 
     float NdotL = max(dot(N, L), 0);
-    vec4 diffuse =  NdotL * light.color * headMaterial.diffuse;
+    vec4 diffuse =  NdotL * lightSource.color * stlMaterial.diffuse;
 
     vec4 V = normalize(vec4(normal, 1.0) - vertex);
     vec4 H = normalize(L + V);
@@ -40,7 +40,7 @@ void main(void) {
     float RdotV = max(dot(R, V), 0);
     float NdotH = max(dot(N, H), 0);
 
-    vec4 specular = pow(RdotV, headMaterial.shininess) * light.color * headMaterial.specular;
+    vec4 specular = pow(RdotV, stlMaterial.shininess) * lightSource.color * stlMaterial.specular;
 
-    fragColor = (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * color;
+    fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * color;
 }

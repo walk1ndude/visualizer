@@ -1,6 +1,6 @@
-#include "Render/ViewPortArray.h"
+#include "ViewPort/ViewPortArray.h"
 
-namespace Render {
+namespace ViewPort {
     ViewPortArray::ViewPortArray(const ViewPorts & viewPorts, const QSize & windowSize) :
         QVector() {
         setViewPorts(viewPorts, windowSize);
@@ -18,11 +18,11 @@ namespace Render {
         }
     }
 
-    void ViewPortArray::resize(const QSize & windowSize) {
+    void ViewPortArray::resize(const QSize & surfaceSize) {
         QMutableVectorIterator<ViewPort> it(*this);
 
         while (it.hasNext()) {
-            it.next().resize(windowSize);
+            it.next().resize(surfaceSize);
         }
     }
 

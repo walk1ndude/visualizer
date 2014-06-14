@@ -52,18 +52,18 @@ namespace Model {
         _shaderStep = _program->uniformLocation("step");
     }
 
-    void HeadModel::setShaderVariables(Render::ViewPort & viewPort) {
+    void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
 
     }
 
-    void HeadModel::initModel(ModelInfo::BuffersV & buffers) {
+    void HeadModel::initModel() {
         _shaderVertex = _program->attributeLocation("vertex");
         _shaderTexHead = _program->attributeLocation("texHead");
 
         _program->enableAttributeArray(_shaderVertex);
-        _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(buffers.vertices->at(0)));
+        _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);
 
         _program->enableAttributeArray(_shaderTexHead);
-        _program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(buffers.vertices->at(0)));
+        _program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(GLfloat) * 6);
     }
 }

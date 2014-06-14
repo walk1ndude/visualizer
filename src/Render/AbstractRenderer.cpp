@@ -12,7 +12,6 @@ namespace Render {
 
     AbstractRenderer::AbstractRenderer(QOpenGLContext * context, const QSize & surfaceSize) :
         _surfaceSize(surfaceSize),
-        _rotation(QVector3D(0, 0, 0)),
         _takeShot(false),
         _canRenderContent(false),
         _textureUpdateNeeded(false),
@@ -69,8 +68,8 @@ namespace Render {
         }
     }
 
-    void AbstractRenderer::activateContext() {
-        _context->makeCurrent(_surface);
+    bool AbstractRenderer::activateContext() {
+        return _context->makeCurrent(_surface);
     }
 
     void AbstractRenderer::setSurface(QOffscreenSurface * surface) {
@@ -99,10 +98,10 @@ namespace Render {
         _fboRender->bindDefault();
         qSwap(_fboRender, _fboDisplay);
 
-        if (_takeShot) {
+        if (_takeShot) {/*
             emit contentToSaveRendered(_fboDisplay->toImage(),
                                        QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
-                                       _rotation.y() + 180.0);
+                                       _rotation.y() + 180.0);*/
         }
 
         emit textureReady(_fboDisplay->toImage(), _surfaceSize);

@@ -32,14 +32,11 @@ namespace Render {
 
         QRectF _screenSaveRect;
 
-        QVector3D _rotation;
-
         bool _takeShot;
 
         QMutex _renderMutex;
 
         virtual void initialize() = 0;
-        virtual void initializeViewPorts() = 0;
 
         virtual void render() = 0;
 
@@ -48,7 +45,7 @@ namespace Render {
         virtual void cleanUp() = 0;
 
         virtual bool updateContent() final;
-        virtual void activateContext() final;
+        virtual bool activateContext() final;
 
     private:
         bool _canRenderContent;

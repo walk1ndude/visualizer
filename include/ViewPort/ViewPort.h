@@ -1,9 +1,9 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
-#include "Render/MatrixStack.h"
+#include "ViewPort/MatrixStack.h"
 
-namespace Render {
+namespace ViewPort {
     using ViewPortRect = QRectF;
 
     class ViewPort {
@@ -18,7 +18,7 @@ namespace Render {
 
         explicit ViewPort();
         explicit ViewPort(const ViewPortRect & boundingRect,
-                          const QSize & windowSize,
+                          const QSize & surfaceSize,
                           const ProjectionType & projectionType = ViewPort::LEFT);
         ~ViewPort();
 
@@ -44,7 +44,7 @@ namespace Render {
     private:
         MatrixStack _matrixStack;
 
-        QSize _windowSize;
+        QSize _surfaceSize;
 
         QRectF _boundingRect;
 

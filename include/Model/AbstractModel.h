@@ -11,7 +11,7 @@
 #include "Info/ShaderInfo.h"
 #include "Info/TextureInfo.h"
 
-#include "Render/ViewPort.h"
+#include "ViewPort/ViewPort.h"
 
 namespace Model {
     class AbstractModel : public QObject {
@@ -20,15 +20,15 @@ namespace Model {
         explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles);
         virtual ~AbstractModel();
 
-        virtual void initModel(ModelInfo::BuffersV & buffers) = 0;
+        virtual void initModel() = 0;
 
         virtual void initShaderVariables() = 0;
-        virtual void setShaderVariables(Render::ViewPort & viewPort) = 0;
+        virtual void setShaderVariables(ViewPort::ViewPort & viewPort) = 0;
 
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
-        virtual void drawModel(Render::ViewPort &viewPort) final;
+        virtual void drawModel(ViewPort::ViewPort & viewPort) final;
 
         virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariables & shaderVariables) final;
         virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariables & shaderVariables) final;
@@ -98,7 +98,7 @@ namespace Model {
                 _hasIndices = false;
             }
 
-            initModel(buffers);
+            initModel();
 
             _vao.release();
 
@@ -138,8 +138,8 @@ namespace Model {
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void setShaderVariables();
 
-        void drawModelWithIndices(Render::ViewPort & viewPort);
-        void drawModelWithoutIndices(Render::ViewPort & viewPort);
+        void drawModelWithIndices(ViewPort::ViewPort & viewPort);
+        void drawModelWithoutIndices(ViewPort::ViewPort & viewPort);
 
         void bindTextures();
         void releaseTextures();

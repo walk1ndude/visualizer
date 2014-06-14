@@ -61,6 +61,9 @@ namespace Quick {
         int maxHU();
         void setMaxHU(const int & maxHU);
 
+        // for now just add empty scene
+        void addModelScene();
+
     protected:
         bool _needsInitialize;
 
@@ -68,6 +71,8 @@ namespace Quick {
 
     private:
         Render::ModelRenderer * _modelRenderer;
+
+        QVector<Scene::AbstractScene *> _scenes;
 
         bool _takeShot;
 

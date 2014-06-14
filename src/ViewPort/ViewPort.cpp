@@ -1,16 +1,16 @@
-#include "Render/ViewPort.h"
+#include "ViewPort/ViewPort.h"
 
-namespace Render {
+namespace ViewPort {
     ViewPort::ViewPort() :
         _matrixStack(MatrixStack::PERSPECTIVE) {
 
     }
 
     ViewPort::ViewPort(const ViewPortRect & boundingRect,
-                       const QSize & windowSize,
+                       const QSize & surfaceSize,
                        const ProjectionType & projectionType) :
         _matrixStack((projectionType == ViewPort::PERSPECTIVE) ? MatrixStack::PERSPECTIVE : MatrixStack::ORTHOGONAL),
-        _windowSize(windowSize),
+        _surfaceSize(surfaceSize),
         _boundingRect(boundingRect),
         _projectionType(projectionType) {
 
@@ -45,16 +45,16 @@ namespace Render {
         return _projectionType;
     }
 
-    void ViewPort::resize(const QSize & windowSize) {
-        _windowSize = windowSize;
+    void ViewPort::resize(const QSize & surfaceSize) {
+        _surfaceSize = surfaceSize;
     }
 
     ViewPortRect ViewPort::boundingRect() {
         return ViewPortRect(
-                    _boundingRect.x() * _windowSize.width(),
-                    _boundingRect.y() * _windowSize.height(),
-                    _boundingRect.width() * _windowSize.width(),
-                    _boundingRect.height() * _windowSize.height()
+                    _boundingRect.x() * _surfaceSize.width(),
+                    _boundingRect.y() * _surfaceSize.height(),
+                    _boundingRect.width() * _surfaceSize.width(),
+                    _boundingRect.height() * _surfaceSize.height()
                     );
     }
 
