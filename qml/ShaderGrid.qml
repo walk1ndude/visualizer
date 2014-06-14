@@ -4,9 +4,9 @@ import QtQuick.Controls 1.1
 Item {
     id: shaderGrid
 
-    property vector2d sRange: sRange.rangeVector
-    property vector2d tRange: tRange.rangeVector
-    property vector2d pRange: pRange.rangeVector
+    property vector2d xRange: xRange.rangeVector
+    property vector2d yRange: yRange.rangeVector
+    property vector2d zRange: zRange.rangeVector
 
     property vector2d huRange: Qt.vector2d(0, 65535)
 
@@ -56,31 +56,31 @@ Item {
     }
 
     Range {
-        id: sRange
+        id: xRange
         objectName: "SRange"
 
-        onRangeVectorChanged: shaderGrid.sRange = rangeVector
+        onRangeVectorChanged: shaderGrid.xRange = rangeVector
 
         anchors.top: grid.bottom
     }
 
 
     Range {
-        id: tRange
+        id: yRange
         objectName: "TRange"
 
-        onRangeVectorChanged: shaderGrid.tRange = rangeVector
+        onRangeVectorChanged: shaderGrid.yRange = rangeVector
 
-        anchors.top: sRange.bottom
+        anchors.top: xRange.bottom
     }
 
 
     Range {
-        id: pRange
+        id: zRange
         objectName: "PRange"
 
-        onRangeVectorChanged: shaderGrid.pRange = rangeVector
+        onRangeVectorChanged: shaderGrid.zRange = rangeVector
 
-        anchors.top: tRange.bottom
+        anchors.top: yRange.bottom
     }
 }

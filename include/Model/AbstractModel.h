@@ -20,10 +20,9 @@ namespace Model {
         explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles);
         virtual ~AbstractModel();
 
-        virtual void initModel() = 0;
-
         virtual void initShaderVariables() = 0;
         virtual void setShaderVariables(ViewPort::ViewPort & viewPort) = 0;
+        virtual void bindShaderVariablesToBuffers() = 0;
 
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
@@ -57,7 +56,7 @@ namespace Model {
         virtual uint modelID() final;
 
         template <class BuffersT>
-        void createModel(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
+        void initModel(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
             if (!initShaderProgram(_shaderFiles)) {
                 emit shaderProgramInitErrorHappened();
                 return;
@@ -98,13 +97,12 @@ namespace Model {
                 _hasIndices = false;
             }
 
-            initModel();
+            bindShaderVariablesToBuffers();
 
             _vao.release();
+            buffers.vertices.clear();
 
             releaseShaderProgram();
-
-            buffers.vertices.clear();
         }
 
 

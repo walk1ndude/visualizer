@@ -5,21 +5,21 @@ namespace Model {
         AbstractModel(shaderFiles) {
     }
 
-    void StlModel::initModel() {
+    void StlModel::initShaderVariables() {
         _shaderVertex = _program->attributeLocation("vertex");
         _shaderNormal = _program->attributeLocation("normal");
 
+        _shaderColorU = _program->uniformLocation("color");
+        _shaderMPV = _program->uniformLocation("mvp");
+        _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
+    }
+
+    void StlModel::bindShaderVariablesToBuffers() {
         _program->enableAttributeArray(_shaderVertex);
         _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);
 
         _program->enableAttributeArray(_shaderNormal);
         _program->setAttributeBuffer(_shaderNormal, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(GLfloat) * 6);
-    }
-
-    void StlModel::initShaderVariables() {
-        _shaderColorU = _program->uniformLocation("color");
-        _shaderMPV = _program->uniformLocation("mvp");
-        _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
     }
 
     void StlModel::setShaderVariables(ViewPort::ViewPort & viewPort) {

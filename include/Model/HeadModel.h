@@ -15,9 +15,9 @@ namespace Model {
 
         void initShaderVariables();
         void setShaderVariables(ViewPort::ViewPort & viewPort);
+        void bindShaderVariablesToBuffers();
 
         void init(const int & depth);
-        void initModel();
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;

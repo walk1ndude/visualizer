@@ -41,10 +41,13 @@ namespace Model {
         buffers.vertices = ModelInfo::VerticesVTPointer(&vertices);
         buffers.indices = ModelInfo::IndicesPointer(&indices);
 
-        createModel<ModelInfo::BuffersVT>(buffers);
+        initModel<ModelInfo::BuffersVT>(buffers);
     }
 
     void HeadModel::initShaderVariables() {
+        _shaderVertex = _program->attributeLocation("vertex");
+        _shaderTexHead = _program->attributeLocation("texHead");
+
         _shaderView = _program->uniformLocation("view");
         _shaderModel = _program->uniformLocation("model");
         _shaderProjection = _program->uniformLocation("projection");
@@ -52,18 +55,15 @@ namespace Model {
         _shaderStep = _program->uniformLocation("step");
     }
 
-    void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
-
-    }
-
-    void HeadModel::initModel() {
-        _shaderVertex = _program->attributeLocation("vertex");
-        _shaderTexHead = _program->attributeLocation("texHead");
-
+    void HeadModel::bindShaderVariablesToBuffers() {
         _program->enableAttributeArray(_shaderVertex);
         _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);
 
         _program->enableAttributeArray(_shaderTexHead);
         _program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(GLfloat) * 6);
+    }
+
+    void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
+
     }
 }

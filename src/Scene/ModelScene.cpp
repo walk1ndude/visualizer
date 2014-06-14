@@ -154,7 +154,7 @@ namespace Scene {
     void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {
         Model::StlModel * model = new Model::StlModel;
 
-        model->createModel<ModelInfo::BuffersVN>(buffers);
+        model->initModel<ModelInfo::BuffersVN>(buffers);
 
         model->addLightSource(_lightSources.at(0),
                               ShaderInfo::ShaderVariables() << "lightSource.location" << "lightSource.color" <<

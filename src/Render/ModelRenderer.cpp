@@ -98,6 +98,8 @@ namespace Render {
             selectedModelScene->addStlModel(buffers);
 
             emit appearedSmthToDraw();
+
+            locker.unlock();
             renderNext();
         }
         else {

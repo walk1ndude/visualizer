@@ -77,7 +77,7 @@ namespace Render {
     }
 
     void AbstractRenderer::renderNext() {
-        //QMutexLocker locker (&_renderMutex);
+        QMutexLocker locker (&_renderMutex);
         activateContext();
 
         if (!_fboRender) {

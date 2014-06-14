@@ -113,6 +113,7 @@ namespace Model {
     void AbstractModel::drawModelWithIndices(ViewPort::ViewPort & viewPort) {
         bindShaderProgram();
         setShaderVariables();
+        bindTextures();
         setShaderVariables(viewPort);
 
         _vao.bind();
@@ -128,11 +129,14 @@ namespace Model {
     void AbstractModel::drawModelWithoutIndices(ViewPort::ViewPort & viewPort) {
         bindShaderProgram();
         setShaderVariables();
+        bindTextures();
         setShaderVariables(viewPort);
 
         _vao.bind();
 
         glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
+
+        qDebug() << glGetError();
 
         _vao.release();
 
@@ -156,8 +160,6 @@ namespace Model {
         }
 
         _viewRange->setUniformValue(_program);
-
-        bindTextures();
     }
 
     bool AbstractModel::initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles) {

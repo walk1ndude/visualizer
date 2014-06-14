@@ -42,5 +42,6 @@ void main(void) {
 
     vec4 specular = pow(RdotV, stlMaterial.shininess) * lightSource.color * stlMaterial.specular;
 
-    fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * color;
+    //fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * color;
+    fragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

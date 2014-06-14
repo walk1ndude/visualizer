@@ -56,9 +56,9 @@ Item {
             height: modelItem.height
             z: -2
 
-            sRange: modelHud.sRange
-            tRange: modelHud.tRange
-            pRange: modelHud.pRange
+            xRange: modelHud.xRange
+            yRange: modelHud.yRange
+            zRange: modelHud.zRange
 
             rotation: modelHud.angle
 

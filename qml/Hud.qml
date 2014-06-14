@@ -6,9 +6,9 @@ Item {
     property vector3d angle: geometryGrid.angle
     property real zoomFactor: geometryGrid.zoomFactor
 
-    property vector2d sRange: shaderGrid.sRange
-    property vector2d tRange: shaderGrid.tRange
-    property vector2d pRange: shaderGrid.pRange
+    property vector2d xRange: shaderGrid.xRange
+    property vector2d yRange: shaderGrid.yRange
+    property vector2d zRange: shaderGrid.zRange
 
     property vector2d huRange: Qt.vector2d(0, 65536)
 

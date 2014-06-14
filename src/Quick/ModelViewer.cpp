@@ -103,31 +103,31 @@ namespace Quick {
         emit zoomFactorChanged(_zoomFactor);
     }
 
-    QVector2D ModelViewer::sRange() {
-        return _sRange;
+    ModelInfo::ViewAxisRange ModelViewer::xRange() {
+        return _xRange;
     }
 
-    void ModelViewer::setSRange(const QVector2D & sRange) {
-        _sRange = sRange;
-        emit sRangeChanged(_sRange);
+    void ModelViewer::setXRange(const ModelInfo::ViewAxisRange & xRange) {
+        _xRange = xRange;
+        emit xRangeChanged(_xRange);
     }
 
-    QVector2D ModelViewer::tRange() {
-        return _tRange;
+    ModelInfo::ViewAxisRange ModelViewer::yRange() {
+        return _yRange;
     }
 
-    void ModelViewer::setTRange(const QVector2D & tRange) {
-        _tRange = tRange;
-        emit tRangeChanged(_tRange);
+    void ModelViewer::setYRange(const ModelInfo::ViewAxisRange & yRange) {
+        _yRange = yRange;
+        emit yRangeChanged(_yRange);
     }
 
-    QVector2D ModelViewer::pRange() {
-        return _pRange;
+    ModelInfo::ViewAxisRange ModelViewer::zRange() {
+        return _zRange;
     }
 
-    void ModelViewer::setPRange(const QVector2D & pRange) {
-        _pRange = pRange;
-        emit pRangeChanged(_pRange);
+    void ModelViewer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
+        _zRange = zRange;
+        emit zRangeChanged(_zRange);
     }
 
     QVector2D ModelViewer::huRange() {
@@ -176,13 +176,13 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::drawSlices, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
 
-            //QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::takeShotChanged, _modelRenderer, &Render::ModelRenderer::setTakeShot, Qt::DirectConnection);
-            //QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
 
-            //QObject::connect(this, &ModelViewer::sRangeChanged, _modelRenderer, &Render::ModelRenderer::setSRange, Qt::DirectConnection);
-            //QObject::connect(this, &ModelViewer::tRangeChanged, _modelRenderer, &Render::ModelRenderer::setTRange, Qt::DirectConnection);
-            //QObject::connect(this, &ModelViewer::pRangeChanged, _modelRenderer, &Render::ModelRenderer::setPRange, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::zRangeChanged, _modelRenderer, &Render::ModelRenderer::setZRange, Qt::DirectConnection);
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 

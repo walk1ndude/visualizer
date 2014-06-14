@@ -21,9 +21,9 @@ namespace Quick {
         Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
         Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor NOTIFY zoomFactorChanged)
 
-        Q_PROPERTY(QVector2D sRange READ sRange WRITE setSRange NOTIFY sRangeChanged)
-        Q_PROPERTY(QVector2D tRange READ tRange WRITE setTRange NOTIFY tRangeChanged)
-        Q_PROPERTY(QVector2D pRange READ pRange WRITE setPRange NOTIFY pRangeChanged)
+        Q_PROPERTY(QVector2D xRange READ xRange WRITE setXRange NOTIFY xRangeChanged)
+        Q_PROPERTY(QVector2D yRange READ yRange WRITE setYRange NOTIFY yRangeChanged)
+        Q_PROPERTY(QVector2D zRange READ zRange WRITE setZRange NOTIFY zRangeChanged)
 
         Q_PROPERTY(QVector2D huRange READ huRange WRITE sethuRange NOTIFY huRangeChanged)
 
@@ -43,14 +43,14 @@ namespace Quick {
         qreal zoomFactor();
         void setZoomFactor(const qreal & zoomFactor);
 
-        QVector2D sRange();
-        void setSRange(const QVector2D & sRange);
+        ModelInfo::ViewAxisRange xRange();
+        void setXRange(const ModelInfo::ViewAxisRange & xRange);
 
-        QVector2D tRange();
-        void setTRange(const QVector2D & tRange);
+        ModelInfo::ViewAxisRange yRange();
+        void setYRange(const ModelInfo::ViewAxisRange & yRange);
 
-        QVector2D pRange();
-        void setPRange(const QVector2D & pRange);
+        ModelInfo::ViewAxisRange zRange();
+        void setZRange(const ModelInfo::ViewAxisRange & zRange);
 
         QVector2D huRange();
         void sethuRange(const QVector2D & huRange);
@@ -78,9 +78,9 @@ namespace Quick {
 
         QVector3D _step;
 
-        QVector2D _sRange;
-        QVector2D _tRange;
-        QVector2D _pRange;
+        ModelInfo::ViewAxisRange _xRange;
+        ModelInfo::ViewAxisRange _yRange;
+        ModelInfo::ViewAxisRange _zRange;
 
         QVector2D _huRange;
 
@@ -98,9 +98,9 @@ namespace Quick {
         void rotationChanged(const QVector3D & rotation);
         void zoomFactorChanged(const qreal & zoomFactor);
 
-        void sRangeChanged(const QVector2D & sRange);
-        void tRangeChanged(const QVector2D & tRange);
-        void pRangeChanged(const QVector2D & pRange);
+        void xRangeChanged(const ModelInfo::ViewAxisRange & xRange);
+        void yRangeChanged(const ModelInfo::ViewAxisRange & yRange);
+        void zRangeChanged(const ModelInfo::ViewAxisRange & zRange);
 
         void huRangeChanged();
 
