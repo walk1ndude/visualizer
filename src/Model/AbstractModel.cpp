@@ -66,14 +66,10 @@ namespace Model {
     }
 
     bool AbstractModel::bindShaderProgram() {
-        QMutexLocker locker(&_modelMutex);
-
         return _program->bind();
     }
 
     void AbstractModel::releaseShaderProgram() {
-        QMutexLocker locker(&_modelMutex);
-
         return _program->release();
     }
 
