@@ -74,7 +74,7 @@ Grid {
         id: zoomSlider
         width: 200
         minimumValue: 0.1
-        maximumValue: 40.0
+        maximumValue: 4.0
         value: 2.0
         onValueChanged: geometryGrid.zoomFactor = value;
     }

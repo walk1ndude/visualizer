@@ -99,7 +99,7 @@ namespace Scene {
 
     void ModelScene::initLightSources() {
         addLightSource(LightInfo::Position(10.0, 10.0, -10.0, 1.0),
-                       LightInfo::Position(1.0, 1.0, 1.0, 1.0),
+                       LightInfo::Position(0.4, 0.5, 0.5, 0.1),
                        LightInfo::AmbientIntensity((GLfloat) 4.3));
     }
 
@@ -152,6 +152,9 @@ namespace Scene {
 
     void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {
         Model::StlModel * model = new Model::StlModel;
+
+        // select newly created model
+        _selectedModel = model;
 
         model->initModel<ModelInfo::BuffersVN>(buffers);
 

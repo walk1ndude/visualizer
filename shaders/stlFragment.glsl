@@ -1,11 +1,9 @@
 #version 410 core
-
-layout(location = 0) out highp vec4 vertex;
-layout(location = 1) out highp vec3 normal;
+layout(location = 0) in highp vec4 pos;
+layout(location = 1) in highp vec3 vertexTest;
+layout(location = 2) in highp vec4 N;
 
 uniform highp vec4 colorU;
-
-uniform highp mat3 normalMatrix;
 
 struct Ranges {
    vec2 xRange;
@@ -32,23 +30,30 @@ struct LightSource {
 
 uniform highp LightSource lightSource;
 
-out highp vec4 fragColor;
+layout(location = 0) out highp vec4 fragColor;
 
 void main(void) {
-    vec4 N = vec4(normalize(normalMatrix * normal), 0.0);
-    vec4 L = normalize(lightSource.position - vertex);
+    if (vertexTest.x >= ranges.xRange.x && vertexTest.x <= ranges.xRange.y &&
+        vertexTest.y >= ranges.yRange.x && vertexTest.y <= ranges.yRange.y &&
+        vertexTest.z >= ranges.zRange.x && vertexTest.z <= ranges.zRange.y) {
 
-    float NdotL = max(dot(N, L), 0);
-    vec4 diffuse =  NdotL * lightSource.color * stlMaterial.diffuse;
+        vec4 L = normalize(lightSource.position - pos);
 
-    vec4 V = normalize(vec4(normal, 1.0) - vertex);
-    vec4 H = normalize(L + V);
-    vec4 R = reflect(-L, N);
+        float NdotL = max(dot(N, L), 0);
+        vec4 diffuse =  NdotL * lightSource.color * stlMaterial.diffuse;
 
-    float RdotV = max(dot(R, V), 0);
-    float NdotH = max(dot(N, H), 0);
+        vec4 V = normalize(N - pos);
+        vec4 H = normalize(L + V);
+        vec4 R = reflect(-L, N);
 
-    vec4 specular = pow(RdotV, stlMaterial.shininess) * lightSource.color * stlMaterial.specular;
+        float RdotV = max(dot(R, V), 0);
+        float NdotH = max(dot(N, H), 0);
 
-    fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * colorU;
+        vec4 specular = pow(RdotV, stlMaterial.shininess) * lightSource.color * stlMaterial.specular;
+
+        fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * colorU;
+    }
+    else {
+        discard;
+    }
 }

@@ -96,8 +96,10 @@ public:
     }
 };
 
-inline GLfloat normalize(GLfloat & x, const GLfloat & minV, const GLfloat & maxV) {
-    return (x - minV) / (minV - maxV);
+inline GLfloat normalize(GLfloat & x,
+                         const GLfloat & minV, const GLfloat & maxV,
+                         const GLfloat & newMinV = (GLfloat) -1.0, const GLfloat & newMaxV = (GLfloat) 1.0) {
+    return (x - minV) * (newMaxV - newMinV) / (maxV - minV) + newMinV;
 }
 
 class NormData {
@@ -322,6 +324,7 @@ namespace Parser {
         bufferData.minV = &minV;
         bufferData.maxV = &maxV;
 
+        // no triangles -> no need to create buffers, etc
         if (!triangleCount) {
             return;
         }
@@ -338,7 +341,11 @@ namespace Parser {
         cv::parallel_for_(cv::Range(0, bufferData.vertexCount), ParallelNormalizing(normData));
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
-
+/*
+        foreach (ModelInfo::VertexVN vertex, *vertices) {
+            qDebug() << vertex.x << vertex.y << vertex.z;
+        }
+*/
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 

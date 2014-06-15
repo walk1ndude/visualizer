@@ -46,12 +46,12 @@ namespace Render {
     }
 
     void ModelRenderer::setYRange(const ModelInfo::ViewAxisRange & yRange) {
-        _selectedScene->setXRange(yRange);
+        _selectedScene->setYRange(yRange);
         emit needToRedraw();
     }
 
     void ModelRenderer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
-        _selectedScene->setXRange(zRange);
+        _selectedScene->setZRange(zRange);
         emit needToRedraw();
     }
 
@@ -80,13 +80,7 @@ namespace Render {
     }
 
     void ModelRenderer::initialize() {
-        glEnable(GL_CULL_FACE);
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
     }
 
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
@@ -100,7 +94,7 @@ namespace Render {
             emit appearedSmthToDraw();
 
             locker.unlock();
-            renderNext();
+            emit needToRedraw();
         }
         else {
             // selected scene doesn't seem like modelScene -> don't risk to add to id, free buffers

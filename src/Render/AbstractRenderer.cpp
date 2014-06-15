@@ -31,8 +31,6 @@ namespace Render {
         _context->create();
         _context->moveToThread(this);
 
-        _context->doneCurrent();
-
         _surface = new QOffscreenSurface;
         _surface->setFormat(surfaceFormat);
         _surface->create();
@@ -82,7 +80,7 @@ namespace Render {
         if (!_fboRender) {
             QOpenGLFramebufferObjectFormat format;
             format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-            format.setInternalTextureFormat(GL_RGB16);
+            format.setInternalTextureFormat(GL_RGBA16);
             _fboRender = new QOpenGLFramebufferObject(_surfaceSize, format);
         }
 
@@ -99,9 +97,6 @@ namespace Render {
                                        QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
                                        _rotation.y() + 180.0);*/
         }
-
-        delete _fboRender;
-        _fboRender = nullptr;
 
         emit textureReady(texture, _surfaceSize);
     }

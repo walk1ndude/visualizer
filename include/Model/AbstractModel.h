@@ -65,6 +65,10 @@ namespace Model {
                 return;
             }
 
+            _vao.create();
+            _vboVert.create();
+            _vboInd.create();
+
             updateModel(buffers, usagePattern);
         }
 
@@ -72,25 +76,22 @@ namespace Model {
         void updateModel(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::DynamicDraw) {
             bindShaderProgram();
 
-            _vao.create();
             _vao.bind();
 
-            _vboVert.create();
             _vboVert.setUsagePattern(usagePattern);
 
             _vertexCount = buffers.vertices.data()->size();
 
             _vboVert.bind();
-            _vboVert.allocate(buffers.vertices.data(), _vertexCount * sizeof(buffers.vertices->at(0)));
+            _vboVert.allocate(buffers.vertices.data()->data(), _vertexCount * sizeof(buffers.vertices->at(0)));
 
             if (buffers.indices.data()) {
-                _vboInd.create();
                 _vboInd.setUsagePattern(usagePattern);
 
                 _indexCount = buffers.indices.data()->size();
 
                 _vboInd.bind();
-                _vboInd.allocate(buffers.indices.data(), _indexCount * sizeof(GLuint));
+                _vboInd.allocate(buffers.indices.data()->data(), _indexCount * sizeof(GLuint));
 
                 buffers.indices.clear();
 

@@ -57,7 +57,7 @@ Item {
 
     Range {
         id: xRange
-        objectName: "SRange"
+        objectName: "XRange"
 
         onRangeVectorChanged: shaderGrid.xRange = rangeVector
 
@@ -67,7 +67,7 @@ Item {
 
     Range {
         id: yRange
-        objectName: "TRange"
+        objectName: "YRange"
 
         onRangeVectorChanged: shaderGrid.yRange = rangeVector
 
@@ -77,7 +77,7 @@ Item {
 
     Range {
         id: zRange
-        objectName: "PRange"
+        objectName: "ZRange"
 
         onRangeVectorChanged: shaderGrid.zRange = rangeVector
 

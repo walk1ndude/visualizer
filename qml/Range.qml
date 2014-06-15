@@ -22,9 +22,9 @@ Grid {
     Slider {
         id: minRangeSlider
         width: 200
-        minimumValue: 0.0
+        minimumValue: -1.0
         maximumValue: 1.0
-        value: 0.0
+        value: -1.0
     }
 
     Text {
@@ -38,7 +38,7 @@ Grid {
     Slider {
         id: maxRangeSlider
         width: 200
-        minimumValue: 0.0
+        minimumValue: -1.0
         maximumValue: 1.0
         value: 1.0
     }

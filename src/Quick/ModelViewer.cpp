@@ -11,7 +11,7 @@ class TextureNode : public QObject, public QSGSimpleTextureNode {
 public:
     TextureNode(QQuickWindow * window) :
         _size(0, 0),
-        _texture(0),
+        _texture(nullptr),
         _window(window) {
 
         // Our texture node must have a texture, so use the default 0 texture.

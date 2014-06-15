@@ -7,7 +7,7 @@ ApplicationWindow {
     width: 640
     height: 670
 
-    title: "sliceViewer"
+    title: "visualizer"
 
     color: "black"
 

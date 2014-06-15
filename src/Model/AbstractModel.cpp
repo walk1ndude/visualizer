@@ -4,7 +4,7 @@ namespace Model {
     AbstractModel::AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
-        _program(0),
+        _program(nullptr),
         _indexCount(0),
         _vertexCount(0),
         _shaderFiles(shaderFiles) {
@@ -100,7 +100,7 @@ namespace Model {
     }
 
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
-        QMutexLocker locker(&_modelMutex);
+        //QMutexLocker locker(&_modelMutex);
 
         bindShaderProgram();
 
@@ -111,6 +111,8 @@ namespace Model {
 
         bindTextures();
 
+        _vao.bind();
+
         if (_hasIndices) {
             drawModelWithoutIndices();
         }
@@ -118,29 +120,20 @@ namespace Model {
             drawModelWithoutIndices();
         }
 
+        glFinish();
+        _vao.release();
+
         releaseTextures();
         glStatesDisable();
         releaseShaderProgram();
     }
 
     void AbstractModel::drawModelWithIndices() {
-        _vao.bind();
-
         glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
-        glFinish();
-
-        _vao.release();
     }
 
     void AbstractModel::drawModelWithoutIndices() {
-        _vao.bind();
-
         glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
-        glFinish();
-
-        qDebug() << glGetError();
-
-        _vao.release();
     }
 
     void AbstractModel::setShaderVariables() {
