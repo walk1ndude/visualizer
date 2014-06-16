@@ -11,8 +11,8 @@ namespace TextureInfo {
     using MergedDataPtr = MergedData *;
     using MergedDataPointer = QSharedPointer<MergedData>;
 
-    using Scaling = QVector<float>;
-    using Size = QVector<size_t>;
+    using Scaling = QVector3D;
+    using Size = QVector3D;
 
     class Texture {
     public:
@@ -24,29 +24,9 @@ namespace TextureInfo {
         QOpenGLPixelTransferOptions pixelTransferOptions;
 
         QOpenGLTexture::PixelType pixelType;
-
-        bool textureDataUpdated;
-
         QOpenGLTexture::Target target;
-
-        Texture(const QOpenGLTexture::Target & target,
-                MergedDataPointer & mergedData,
-                const Size & size,
-                const Scaling & scaling,
-                const QOpenGLPixelTransferOptions & pixelTransferOptions,
-                const QOpenGLTexture::PixelType & pixelType) {
-            this->target = target;
-            this->mergedData = mergedData;
-
-            this->scaling = scaling;
-            this->size = size;
-
-            this->pixelTransferOptions = pixelTransferOptions;
-
-            this->pixelType = pixelType;
-
-            this->textureDataUpdated = true;
-        }
+        QOpenGLTexture::TextureFormat textureFormat;
+        QOpenGLTexture::PixelFormat pixelFormat;
     };
 
     class TextureProgram {

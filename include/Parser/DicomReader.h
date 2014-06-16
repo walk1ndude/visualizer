@@ -33,7 +33,7 @@ namespace Parser {
       void runSliceProcessing(const bool & tellAboutHURange = false);
       void updateDicomData();
     signals:
-      void slicesProcessed(SliceInfo::SliceSettings & sliceSettings);
+      void slicesProcessed(SliceInfo::Slices & slices);
 
     public slots:
       void readFile(const QUrl & fileUrl);

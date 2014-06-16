@@ -1,6 +1,7 @@
 #include "Scene/ModelScene.h"
 
 #include "Model/StlModel.h"
+#include "Model/HeadModel.h"
 
 namespace Scene {
     ModelScene::ModelScene() :
@@ -74,10 +75,15 @@ namespace Scene {
     }
 
     void ModelScene::cleanUp() {
-        if (_textures.keys().size()) {
-            qDeleteAll(_textures.keys().begin(), _textures.keys().end());
-            _textures.clear();
-        }
+        qDeleteAll(_textures.begin(), _textures.end());
+        _textures.clear();
+
+        // it's just map to tex info, so no need to del anything allocated
+        _texturesInModel.clear();
+        _texturesInfo.clear();
+
+        _selectedModel = nullptr;
+        _selectedTexture = nullptr;
 
         qDeleteAll(_models.begin(), _models.end());
         _models.clear();
@@ -144,10 +150,30 @@ namespace Scene {
     }
 
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
+        // strange bug
+        textureInfo.pixelFormat = QOpenGLTexture::Red;
+
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
 
-        _textures.insert(texture, textureInfo);
+        texture->create();
+        texture->setFormat(textureInfo.textureFormat);
+        texture->setSize(textureInfo.size.x(), textureInfo.size.y(), textureInfo.size.z());
+
+        texture->allocateStorage();
+
+        texture->setMinMagFilters(QOpenGLTexture::LinearMipMapNearest, QOpenGLTexture::Linear);
+        texture->setWrapMode(QOpenGLTexture::ClampToBorder);
+
+        texture->setData(textureInfo.pixelFormat, textureInfo.pixelType,
+                         (void *) textureInfo.mergedData.data(), &(textureInfo.pixelTransferOptions));
+
+        texture->generateMipMaps();
+
+        _textures.push_back(texture);
+        _texturesInfo.insert(texture, textureInfo);
         _texturesInModel.insert(_selectedModel, texture);
+
+        textureInfo.mergedData.clear();
     }
 
     void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {
@@ -165,6 +191,35 @@ namespace Scene {
         model->addMaterial(_materials.at(0),
                            ShaderInfo::ShaderVariables() << "stlMaterial.emissive" << "stlMaterial.diffuse" <<
                            "stlMaterial.specular" << "stlMaterial.shininess");
+
+        model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
+                            ModelInfo::ViewAxisRange(-1.0, 1.0),
+                            ModelInfo::ViewAxisRange(-1.0, 1.0),
+                            ShaderInfo::ShaderVariables() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
+
+        _models.push_back(model);
+    }
+
+    void ModelScene::addHeadModel(SliceInfo::Slices slices) {
+        Model::HeadModel * model = new Model::HeadModel;
+
+        _selectedModel = model;
+
+        // depth
+        model->init(slices.texture.size.z());
+
+        addTexture(slices.texture);
+
+        model->addLightSource(_lightSources.at(0),
+                              ShaderInfo::ShaderVariables() << "lightSource.position" << "lightSource.color" <<
+                              "lightSource.ambientIntensity");
+
+        model->addMaterial(_materials.at(0),
+                           ShaderInfo::ShaderVariables() << "headMaterial.emissive" << "headMaterial.diffuse" <<
+                           "headMaterial.specular" << "headMaterial.shininess");
+
+        model->addTexture(_textures.at(0),
+                          ShaderInfo::ShaderVariables() << "texHead");
 
         model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),

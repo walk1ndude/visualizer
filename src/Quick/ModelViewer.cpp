@@ -173,7 +173,7 @@ namespace Quick {
 
             current->makeCurrent(window());
 
-            QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::drawSlices, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::addHeadModel);
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
 
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
@@ -222,13 +222,11 @@ namespace Quick {
         return node;
     }
 
-    void ModelViewer::drawSlices(SliceInfo::SliceSettings sliceSettings) {
-        if (sliceSettings.huRange.size()) {
-            _huRange = QVector2D(sliceSettings.huRange[0], sliceSettings.huRange[1]);
-            emit huRangeChanged();
-        }
+    void ModelViewer::drawSlices(SliceInfo::Slices slices) {
+        _huRange = slices.huRange;
+        emit huRangeChanged();
 
-        emit slicesProcessed(sliceSettings);
+        emit slicesProcessed(slices);
     }
 
 }

@@ -113,8 +113,8 @@ namespace Model {
 
         _vao.bind();
 
-        if (_hasIndices) {
-            drawModelWithoutIndices();
+        if (_indexCount) {
+            drawModelWithIndices();
         }
         else {
             drawModelWithoutIndices();

@@ -55,30 +55,6 @@ namespace Render {
         emit needToRedraw();
     }
 
-    void ModelRenderer::drawSlices(SliceInfo::SliceSettings sliceSettings) {/*
-        _mergedData = sliceSettings.mergedData;
-        _sliceDataType = sliceSettings.sliceDataType;
-
-        if (updateContent()) {
-            emit needToRedraw();
-            return;
-        }
-
-        _scaling = sliceSettings.scaling;
-        _size = sliceSettings.size;
-
-        _step = QVector3D(1.0 / _size[0], 1.0 / _size[1], 1.0 / _size[2]);
-
-        if (sliceSettings.rowLength) {
-            _pixelOptionsHead.setAlignment(sliceSettings.alignment);
-            _pixelOptionsHead.setRowLength(sliceSettings.rowLength);
-        }
-
-        _viewPorts.scale(QVector3D(_scaling[0], _scaling[1], _scaling[2]));
-*/
-        emit needToRedraw();
-    }
-
     void ModelRenderer::initialize() {
 
     }
@@ -91,6 +67,7 @@ namespace Render {
 
             selectedModelScene->addStlModel(buffers);
 
+            // for now just dummy call to show hud
             emit appearedSmthToDraw();
 
             locker.unlock();
@@ -103,6 +80,25 @@ namespace Render {
         }
     }
 
+    void ModelRenderer::addHeadModel(SliceInfo::Slices slices) {
+        QMutexLocker locker(&_renderMutex);
+
+        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(_selectedScene)) {
+            activateContext();
+
+            selectModelScene->addHeadModel(slices);
+
+            emit appearedSmthToDraw();
+
+            locker.unlock();
+            emit needToRedraw();
+        }
+        else {
+            // sorry, different scene
+            slices.texture.mergedData.clear();
+        }
+    }
+
     void ModelRenderer::render() {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -110,37 +106,6 @@ namespace Render {
         if (_selectedScene) {
             _selectedScene->renderScene(_surfaceSize);
         }
-    }
-
-    void ModelRenderer::updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
-                                        const QOpenGLTexture::TextureFormat & textureFormat,
-                                        const QOpenGLTexture::PixelFormat & pixelFormat,
-                                        const QOpenGLTexture::PixelType & pixelType,
-                                        const QOpenGLPixelTransferOptions * pixelOptions) {
-
-
-        QOpenGLTexture * tex = *texture;
-        if (!tex) {
-            tex = new QOpenGLTexture(QOpenGLTexture::Target3D);
-
-            tex->create();
-
-            //tex->setSize((int) _size[0],(int) _size[1],(int) _size[2]);
-            tex->setFormat(textureFormat);
-
-            tex->allocateStorage();
-        }
-
-        tex->setData(pixelFormat, pixelType, (void *) textureData.data(), pixelOptions);
-
-        tex->setMinMagFilters(QOpenGLTexture::LinearMipMapNearest, QOpenGLTexture::Linear);
-        tex->setWrapMode(QOpenGLTexture::ClampToBorder);
-
-        tex->generateMipMaps();
-
-        *texture = tex;
-
-        textureData.clear();
     }
 
     void ModelRenderer::updateTextures() { /*

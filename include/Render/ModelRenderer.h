@@ -33,8 +33,6 @@ namespace Render {
         // remember all scenes, rendered by this renderer -> for clean up after
         QSet<Scene::AbstractScene *> _sceneHistory;
 
-        SliceInfo::SliceSettings _sliceSettings;
-
         void cleanUp();
 
         void updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
@@ -45,9 +43,8 @@ namespace Render {
 
 
     public slots:
-        void drawSlices(SliceInfo::SliceSettings sliceSettings);
-
         void addStlModel(ModelInfo::BuffersVN buffers);
+        void addHeadModel(SliceInfo::Slices slices);
 
         // to take shots of the rotated model
         void setTakeShot(const bool & takeShot);

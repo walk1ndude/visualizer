@@ -5,6 +5,7 @@
 
 #include "Info/LightInfo.h"
 #include "Info/MaterialInfo.h"
+#include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
 
 #include "Model/AbstractModel.h"
@@ -50,7 +51,7 @@ namespace Scene {
         void setZRange(const ModelInfo::ViewAxisRange & zRange);
 
     protected:
-        QMap<QOpenGLTexture *, TextureInfo::Texture> _textures;
+        QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
         QVector<Model::AbstractModel *> _models;
 
         QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
@@ -58,6 +59,7 @@ namespace Scene {
 
         QVector<MaterialInfo::Material *> _materials;
         QVector<LightInfo::LightSource *> _lightSources;
+        QVector<QOpenGLTexture *> _textures;
 
         Model::AbstractModel * _selectedModel;
         QOpenGLTexture * _selectedTexture;
@@ -71,6 +73,7 @@ namespace Scene {
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
+        void addHeadModel(SliceInfo::Slices slices);
     };
 
 }

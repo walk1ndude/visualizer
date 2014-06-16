@@ -5,6 +5,7 @@
 #include <opencv2/core/core.hpp>
 
 #include "Info/SliceInfo.h"
+#include "Info/TextureInfo.h"
 
 #define RADON_DEGREE_RANGE 180
 #define PI_TIMES_2 (2 * CV_PI)
@@ -167,10 +168,9 @@ namespace Parser {
         std::vector<cv::Mat *> * noisy;
         std::vector<cv::Mat *> * filtered;
 
-        SliceInfo::MergedDataPtr * mergeLocation;
+        TextureInfo::MergedDataPtr * mergeLocation;
 
-        SliceInfo::RowLenght * rowLenght;
-        SliceInfo::Alignment * alignment;
+        QOpenGLPixelTransferOptions * pixelTransferOptions;
 
         int neighbourRadius;
     };
@@ -265,10 +265,10 @@ namespace Parser {
 
             _sliceSize = (size_t) (dummyMat.elemSize() * dummyMat.total());
 
-            *(_dicomData->mergeLocation) = new SliceInfo::MergedData[_sliceSize * slicesMergeCount];
+            *(_dicomData->mergeLocation) = new TextureInfo::MergedData[_sliceSize * slicesMergeCount];
 
-            *(_dicomData->alignment) = (dummyMat.step & 3) ? 1 : 4;
-            *(_dicomData->rowLenght) = dummyMat.step1();
+            _dicomData->pixelTransferOptions->setAlignment((dummyMat.step & 3) ? 1 : 4);
+            _dicomData->pixelTransferOptions->setRowLength(dummyMat.step1());
         }
 
     public:

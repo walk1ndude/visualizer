@@ -150,14 +150,11 @@ namespace Parser {
     }
 
     void DicomReader::runSliceProcessing(const bool & tellAboutHURange) {
-        SliceInfo::MergedDataPtr mergedData = 0;
+        TextureInfo::MergedDataPtr mergedData = nullptr;
 
-        SliceInfo::Alignment alignment = 0;
-        SliceInfo::RowLenght rowLength = 0;
+        QOpenGLPixelTransferOptions pixelTransferOptions;
 
-        _dicomData.alignment = &alignment;
-        _dicomData.rowLenght = &rowLength;
-
+        _dicomData.pixelTransferOptions = &pixelTransferOptions;
         _dicomData.mergeLocation = &mergedData;
 
         float startTime = cv::getTickCount() / cv::getTickFrequency();
@@ -168,26 +165,30 @@ namespace Parser {
 
         size_t depth = _dicomData.depth - _dicomData.neighbourRadius * 2;
 
-        SliceInfo::SliceSettings sliceSettings;
+        SliceInfo::Slices slices;
 
-        sliceSettings.mergedData = SliceInfo::MergedDataPointer(mergedData);
-        sliceSettings.scaling = {
+        slices.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
+        slices.texture.scaling = {
                 _dicomData.width * _dicomData.imageSpacings[0] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF,
                 _dicomData.height * _dicomData.imageSpacings[1] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF,
                 depth * _dicomData.imageSpacings[2] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF
         };
 
-        sliceSettings.size = {_dicomData.width, _dicomData.height, depth};
-        sliceSettings.alignment = alignment;
-        sliceSettings.rowLength = rowLength;
+        slices.texture.size.setX(_dicomData.width);
+        slices.texture.size.setY(_dicomData.height);
+        slices.texture.size.setZ(depth);
 
-        if (tellAboutHURange) {
-            sliceSettings.huRange = {_dicomData.minHUPossible, _dicomData.maxHUPossible};
-        }
+        slices.texture.pixelTransferOptions = pixelTransferOptions;
 
-        sliceSettings.sliceDataType = SliceInfo::Int16;
+        slices.huRange.setX(_dicomData.minHUPossible);
+        slices.huRange.setY(_dicomData.maxHUPossible);
 
-        emit slicesProcessed(sliceSettings);
+        slices.texture.pixelType = QOpenGLTexture::UInt16;
+        slices.texture.textureFormat = QOpenGLTexture::R16_UNorm;
+        slices.texture.pixelFormat = QOpenGLTexture::Red;
+        slices.texture.target = QOpenGLTexture::Target3D;
+
+        emit slicesProcessed(slices);
     }
 
     void DicomReader::readFile(const QUrl & fileUrl) {

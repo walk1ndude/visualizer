@@ -402,7 +402,7 @@ namespace Parser {
 
         clReleaseMemObject(sliceImage);
 
-        SliceInfo::SliceSettings sliceSettings;
+        SliceInfo::Slices slices;
 
         cv::Mat slice(_slicesOCL.at(0));
 
@@ -415,21 +415,27 @@ namespace Parser {
             memcpy(mergedData + i * oneSliceSize, _slicesOCL.at(i).data, oneSliceSize);
         }
 
-        sliceSettings.mergedData = QSharedPointer<uchar>(mergedData);
+        slices.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
 
-        sliceSettings.alignment = (slice.step & 3) ? 1 : 4;
-        sliceSettings.rowLength = (int) slice.step1();
+        slices.texture.pixelTransferOptions.setAlignment((slice.step & 3) ? 1 : 4);
+        slices.texture.pixelTransferOptions.setRowLength((int) slice.step1());
 
-        sliceSettings.size = {(size_t) slice.cols, (size_t) slice.rows, sliceCount};
-        sliceSettings.scaling = {
-            sliceSettings.size[0] / (float) sliceSettings.size[1] / SCALE_COEFF,
-            sliceSettings.size[1] / (float) sliceSettings.size[1] / SCALE_COEFF,
-            sliceSettings.size[2] / (float) sliceSettings.size[1] / SCALE_COEFF,
+        slices.texture.size.setX(slice.cols);
+        slices.texture.size.setX(slice.rows);
+        slices.texture.size.setX(sliceCount);
+
+        slices.texture.scaling = {
+            slices.texture.size.x() / slices.texture.size.y() / SCALE_COEFF,
+            slices.texture.size.y() / slices.texture.size.y() / SCALE_COEFF,
+            slices.texture.size.z() / slices.texture.size.y() / SCALE_COEFF,
         };
 
-        sliceSettings.sliceDataType = SliceInfo::Int8;
+        slices.texture.pixelType = QOpenGLTexture::UInt8;
+        slices.texture.textureFormat = QOpenGLTexture::R8_UNorm;
+        slices.texture.pixelFormat = QOpenGLTexture::Red;
+        slices.texture.target = QOpenGLTexture::Target3D;
 
-        emit slicesProcessed(sliceSettings);
+        emit slicesProcessed(slices);
     }
 
     void Reconstructor::resetV(std::vector<cv::Mat *> & vec, const int & newSize) {

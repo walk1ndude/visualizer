@@ -32,7 +32,7 @@ struct LightSource {
     float ambientIntensity;
 };
 
-uniform highp LightSource light;
+uniform highp LightSource lightSource;
 
 uniform highp vec3 stepSlices;
 
@@ -115,10 +115,10 @@ void main(void) {
             vec4 normal = sobel3(fragPos.stp);
 
             vec4 N = normalize(mat4(normalMatrix) * normal);
-            vec4 L = normalize(light.position - fragPos);
+            vec4 L = normalize(lightSource.position - fragPos);
 
             float NdotL = max(dot(N, L), 0);
-            vec4 diffuse =  NdotL * light.color * headMaterial.diffuse;
+            vec4 diffuse =  NdotL * lightSource.color * headMaterial.diffuse;
 
             vec4 V = normalize(normal - fragPos);
             vec4 H = normalize(L + V);
@@ -127,9 +127,9 @@ void main(void) {
             float RdotV = max(dot(R, V), 0);
             float NdotH = max(dot(N, H), 0);
 
-            vec4 specular = pow(RdotV, headMaterial.shininess) * light.color * headMaterial.specular;
+            vec4 specular = pow(RdotV, headMaterial.shininess) * lightSource.color * headMaterial.specular;
 
-            fragColor = (headMaterial.emissive + light.ambientIntensity + diffuse + specular) * headColor;
+            fragColor = (headMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * headColor;
 
             fragColor.a = 1.0;
 

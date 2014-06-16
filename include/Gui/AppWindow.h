@@ -38,7 +38,7 @@ namespace Gui {
         void minHUChanged(const int & minHU);
         void maxHUChanged(const int & maxHU);
 
-        void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
+        void slicesProcessed(SliceInfo::Slices sliceSettings);
         void modelRead(ModelInfo::BuffersVN buffers);
 
     private slots:

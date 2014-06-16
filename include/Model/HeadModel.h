@@ -29,8 +29,11 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderModel;
         ShaderInfo::ShaderVariable _shaderView;
         ShaderInfo::ShaderVariable _shaderProjection;
+        ShaderInfo::ShaderVariable _shaderNormalMatrix;
         ShaderInfo::ShaderVariable _shaderScale;
         ShaderInfo::ShaderVariable _shaderStep;
+
+        GLfloat _step;
     };
 }
 #endif // HEADMODEL_H

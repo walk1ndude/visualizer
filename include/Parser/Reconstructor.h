@@ -49,7 +49,7 @@ namespace Parser {
         void reconstruct();
 
     signals:
-        void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
+        void slicesProcessed(SliceInfo::Slices slices);
 
     public slots:
         void readFiles(const QStringList & fileNames);

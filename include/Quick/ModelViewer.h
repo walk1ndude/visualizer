@@ -107,11 +107,11 @@ namespace Quick {
         void minHUChanged(const int & minHU);
         void maxHUChanged(const int & maxHU);
 
-        void slicesProcessed(SliceInfo::SliceSettings sliceSettings);
+        void slicesProcessed(SliceInfo::Slices slices);
         void modelRead(ModelInfo::BuffersVN buffers);
 
     public slots:
-        void drawSlices(SliceInfo::SliceSettings sliceSettings);
+        void drawSlices(SliceInfo::Slices slices);
     };
 }
 

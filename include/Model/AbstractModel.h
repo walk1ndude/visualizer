@@ -94,11 +94,6 @@ namespace Model {
                 _vboInd.allocate(buffers.indices.data()->data(), _indexCount * sizeof(GLuint));
 
                 buffers.indices.clear();
-
-                _hasIndices = true;
-            }
-            else {
-                _hasIndices = false;
             }
 
             bindShaderVariablesToBuffers();
@@ -134,8 +129,6 @@ namespace Model {
 
     private:
         uint _modelID;
-
-        bool _hasIndices;
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void setShaderVariables();

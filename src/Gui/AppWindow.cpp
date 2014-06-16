@@ -82,6 +82,8 @@ namespace Gui {
         qRegisterMetaType<ModelInfo::BuffersVC>("ModelInfo::BuffersVC");
         qRegisterMetaType<ModelInfo::BuffersVNC>("ModelInfo::BuffersVNC");
         qRegisterMetaType<ModelInfo::BuffersVNT>("ModelInfo::BuffersVNT");
+
+        qRegisterMetaType<SliceInfo::Slices>("SliceInfo::Slices");
     }
 
     void AppWindow::show() {

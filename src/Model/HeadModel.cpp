@@ -10,8 +10,8 @@ namespace Model {
         _vertexCount = 4 * depth;
         _indexCount = 6 * depth;
 
-        ModelInfo::VerticesVT vertices;
-        ModelInfo::Indices indices;
+        ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
+        ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
 
         GLfloat step = 2.0 / (GLfloat) depth;
         GLfloat stepTexture = 1.0 / (GLfloat) depth;
@@ -20,26 +20,28 @@ namespace Model {
         GLfloat zCurrentTexture = 0.0;
 
         for (int i = 0; i != depth; ++ i) {
-            vertices.push_back(ModelInfo::VertexVT(-1.0, -1.0, zCurrent, 0.0, 1.0, zCurrentTexture));
-            vertices.push_back(ModelInfo::VertexVT(-1.0, 1.0, zCurrent, 0.0, 0.0, zCurrentTexture));
-            vertices.push_back(ModelInfo::VertexVT(1.0, 1.0, zCurrent, 1.0, 0.0, zCurrentTexture));
-            vertices.push_back(ModelInfo::VertexVT(1.0, -1.0, zCurrent, 1.0, 1.0, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(-1.0, -1.0, zCurrent, 0.0, 1.0, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(-1.0, 1.0, zCurrent, 0.0, 0.0, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(1.0, 1.0, zCurrent, 1.0, 0.0, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(1.0, -1.0, zCurrent, 1.0, 1.0, zCurrentTexture));
 
-            indices.push_back(4 * i);
-            indices.push_back(4 * i + 2);
-            indices.push_back(4 * i + 1);
-            indices.push_back(4 * i);
-            indices.push_back(4 * i + 3);
-            indices.push_back(4 * i + 2);
+            indices->push_back(4 * i);
+            indices->push_back(4 * i + 2);
+            indices->push_back(4 * i + 1);
+            indices->push_back(4 * i);
+            indices->push_back(4 * i + 3);
+            indices->push_back(4 * i + 2);
 
             zCurrent += step;
             zCurrentTexture += stepTexture;
         };
 
+        _step = 1.0 / depth;
+
         ModelInfo::BuffersVT buffers;
 
-        buffers.vertices = ModelInfo::VerticesVTPointer(&vertices);
-        buffers.indices = ModelInfo::IndicesPointer(&indices);
+        buffers.vertices = ModelInfo::VerticesVTPointer(vertices);
+        buffers.indices = ModelInfo::IndicesPointer(indices);
 
         initModel<ModelInfo::BuffersVT>(buffers);
     }
@@ -62,13 +64,14 @@ namespace Model {
 
     void HeadModel::initShaderVariables() {
         _shaderVertex = _program->attributeLocation("vertex");
-        _shaderTexHead = _program->attributeLocation("texHead");
+        _shaderTexHead = _program->attributeLocation("tex");
 
         _shaderView = _program->uniformLocation("view");
         _shaderModel = _program->uniformLocation("model");
         _shaderProjection = _program->uniformLocation("projection");
+        _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
         _shaderScale = _program->uniformLocation("scale");
-        _shaderStep = _program->uniformLocation("step");
+        _shaderStep = _program->uniformLocation("stepSlices");
     }
 
     void HeadModel::bindShaderVariablesToBuffers() {
@@ -80,6 +83,11 @@ namespace Model {
     }
 
     void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
-
+        _program->setUniformValue(_shaderView, viewPort.view());
+        _program->setUniformValue(_shaderModel, viewPort.model());
+        _program->setUniformValue(_shaderProjection, viewPort.projection());
+        _program->setUniformValue(_shaderNormalMatrix, viewPort.normalM());
+        _program->setUniformValue(_shaderScale, viewPort.scaleM());
+        _program->setUniformValue(_shaderStep, _step);
     }
 }

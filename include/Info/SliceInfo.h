@@ -2,35 +2,23 @@
 #define SLICEINFO_H
 
 #include "Info/Info.h"
+#include "Info/TextureInfo.h"
 
 namespace SliceInfo {
-    enum SliceDataType {
-        Int8,
-        Int16
-    };
+    using HuRange = QVector2D;
 
-    using MergedData = uchar;
-    using MergedDataPtr = MergedData *;
-    using MergedDataPointer = QSharedPointer<MergedData>;
-
-    using HuRange = QVector<int>;
-    using Scaling = QVector<float>;
-    using Size = QVector<size_t>;
-
-    using Alignment = int;
-    using RowLenght = int;
-
-    struct SliceSettings {
-        MergedDataPointer mergedData;
-
+    class Slices {
+    public:
+        TextureInfo::Texture texture;
         HuRange huRange;
-        Scaling scaling;
-        Size size;
 
-        Alignment alignment;
-        RowLenght rowLength;
+        Slices() { }
 
-        SliceDataType sliceDataType;
+        Slices(TextureInfo::Texture texture,
+               const HuRange & huRange) {
+            this->texture = texture;
+            this->huRange = huRange;
+        }
     };
 }
 
