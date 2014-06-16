@@ -421,8 +421,8 @@ namespace Parser {
         slices.texture.pixelTransferOptions.setRowLength((int) slice.step1());
 
         slices.texture.size.setX(slice.cols);
-        slices.texture.size.setX(slice.rows);
-        slices.texture.size.setX(sliceCount);
+        slices.texture.size.setY(slice.rows);
+        slices.texture.size.setZ(sliceCount);
 
         slices.texture.scaling = {
             slices.texture.size.x() / slices.texture.size.y() / SCALE_COEFF,

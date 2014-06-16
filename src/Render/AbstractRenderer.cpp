@@ -94,9 +94,11 @@ namespace Render {
         _fboRender->bindDefault();
 
         if (_takeShot) {
-            emit contentToSaveRendered(_fboRender->toImage(),
-                                       _selectedScene->screenSaveRect(),
-                                       _selectedScene->rotation().y());
+            QRect screenRect = _selectedScene->screenSaveRect();
+            // cause this texture is flipped on y axis
+            screenRect.setY(_surfaceSize.height() / 2);
+            screenRect.setHeight(_surfaceSize.height() / 2);
+            emit contentToSaveRendered(_fboRender->toImage(), screenRect, _selectedScene->rotation().y());
         }
 
         emit textureReady(texture, _surfaceSize);

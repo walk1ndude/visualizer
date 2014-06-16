@@ -105,15 +105,15 @@ namespace Scene {
 
     // need some good defaults here
     void ModelScene::initMaterials() {
-        addMaterial(MaterialInfo::Emissive(0.1, 0.1, 0.1, 0.1),
-                    MaterialInfo::Diffuse(0.2, 0.4, 0.2, 0.8),
-                    MaterialInfo::Specular(0.3, 0.3, 0.3, 0.2),
-                    MaterialInfo::Shininess(10.0));
+        addMaterial(MaterialInfo::Emissive(0.6, 0.6, 0.6, 1.0),
+                    MaterialInfo::Diffuse(0.7, 0.8, 0.6, 1.0),
+                    MaterialInfo::Specular(1.0, 1.0, 1.0, 1.0),
+                    MaterialInfo::Shininess(0.0001));
     }
 
     void ModelScene::initLightSources() {
-        addLightSource(LightInfo::Position(10.0, -10.0, -10.0, 1.0),
-                       LightInfo::Color(0.8, 0.8, 0.8, 1.0),
+        addLightSource(LightInfo::Position(10.0, -10.0, 10.0, 1.0),
+                       LightInfo::Color(0.8, 0.8, 0.8, 0.6),
                        LightInfo::AmbientIntensity((GLfloat) 2.0));
     }
 
