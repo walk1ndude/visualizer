@@ -96,8 +96,11 @@ namespace Render {
         if (_takeShot) {
             QRect screenRect = _selectedScene->screenSaveRect();
             // cause this texture is flipped on y axis
-            screenRect.setY(_surfaceSize.height() / 2);
+            screenRect.setY(0);
             screenRect.setHeight(_surfaceSize.height() / 2);
+            qDebug() << screenRect;
+            //screenRect.setX(_surfaceSize.width() / 2.0);
+            //screenRect.setWidth(_surfaceSize.width() / 2.0);
             emit contentToSaveRendered(_fboRender->toImage(), screenRect, _selectedScene->rotation().y());
         }
 

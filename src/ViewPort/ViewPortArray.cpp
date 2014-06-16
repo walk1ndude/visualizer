@@ -43,7 +43,8 @@ namespace ViewPort {
                     data()[i].rotate(QVector3D(xRot - 90.0, yRot, zRot));
                     break;
                 case ViewPort::BOTTOM:
-                    data()[i].rotate(QVector3D(0.0, 0.0, zRot));
+                    //data()[i].rotate(QVector3D(0.0, 0.0, zRot));
+                    data()[i].rotate(QVector3D(0.0, -90 + yRot, 0.0));
                     break;
                 case ViewPort::FRONT:
                     data()[i].rotate(QVector3D(xRot - 90.0, 0.0, 0.0));

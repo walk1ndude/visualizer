@@ -377,16 +377,16 @@ namespace Parser {
         for (size_t i = 0; i != _slicesOCL.size(); ++ i) {
             cv::convertScaleAbs(_slicesOCL.at(i),
                                 _slicesOCL.at(i),
-                                4 * 256.0 / (maxValVolume - minValVolume),
-                                minValVolume / (minValVolume - maxValVolume));
+                                256.0 / (maxValVolume - minValVolume),
+                                8.0 * minValVolume / (minValVolume - maxValVolume));
 
             //cv::adaptiveThreshold(_slicesOCL.at(i), mask, 200, cv::ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 5, 1.2);
             cv::threshold(_slicesOCL.at(i), mask, 150, 255, CV_THRESH_BINARY);
 
 
             helperMat = cv::Scalar(0);
-            cv::bitwise_and(_slicesOCL.at(i), _slicesOCL.at(i), helperMat, mask);
-            helperMat.copyTo(_slicesOCL.at(i));
+            //cv::bitwise_and(_slicesOCL.at(i), _slicesOCL.at(i), helperMat, mask);
+            //helperMat.copyTo(_slicesOCL.at(i));
         }
 
         showSliceWithNumber(0);

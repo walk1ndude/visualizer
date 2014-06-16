@@ -67,7 +67,7 @@ namespace Scene {
             viewPort = itV.next();
 
             boundingRect = viewPort.boundingRect();
-            if (viewPort.projectionType() == ViewPort::ViewPort::LEFT) {
+            if (viewPort.projectionType() == ViewPort::ViewPort::BOTTOM) {
                 _screenSaveRect = boundingRect;
             }
 
@@ -107,14 +107,14 @@ namespace Scene {
     void ModelScene::initMaterials() {
         addMaterial(MaterialInfo::Emissive(0.6, 0.6, 0.6, 1.0),
                     MaterialInfo::Diffuse(0.7, 0.8, 0.6, 1.0),
-                    MaterialInfo::Specular(1.0, 1.0, 1.0, 1.0),
+                    MaterialInfo::Specular(0.01, 0.02, 0.02, 0.02),
                     MaterialInfo::Shininess(0.0001));
     }
 
     void ModelScene::initLightSources() {
         addLightSource(LightInfo::Position(10.0, -10.0, 10.0, 1.0),
                        LightInfo::Color(0.8, 0.8, 0.8, 0.6),
-                       LightInfo::AmbientIntensity((GLfloat) 2.0));
+                       LightInfo::AmbientIntensity((GLfloat) 0.002));
     }
 
     void ModelScene::initializeViewPorts(const QSize & surfaceSize) {
