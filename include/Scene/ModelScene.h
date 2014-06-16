@@ -25,6 +25,10 @@ namespace Scene {
 
         void cleanUp();
 
+        QVector3D rotation();
+
+        QRect screenSaveRect();
+
         // some constants here
         void initMaterials();
         void initLightSources();
@@ -68,6 +72,8 @@ namespace Scene {
         ViewPort::ViewPortArray _viewPorts;
 
         QVector3D _rotation;
+
+        ViewPort::ViewPortRect _screenSaveRect;
 
         void initializeViewPorts(const QSize & surfaceSize);
 

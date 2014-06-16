@@ -24,6 +24,14 @@ namespace Scene {
         return _models.empty();
     }
 
+    QVector3D ModelScene::rotation() {
+        return _rotation;
+    }
+
+    QRect ModelScene::screenSaveRect() {
+        return QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height());
+    }
+
     void ModelScene::setRotation(const QVector3D & rotation) {
         _rotation = rotation;
         _viewPorts.rotate(_rotation.x(), _rotation.y(), _rotation.z());
@@ -60,7 +68,7 @@ namespace Scene {
 
             boundingRect = viewPort.boundingRect();
             if (viewPort.projectionType() == ViewPort::ViewPort::LEFT) {
-                //_screenSaveRect = boundingRect;
+                _screenSaveRect = boundingRect;
             }
 
             glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
@@ -97,16 +105,16 @@ namespace Scene {
 
     // need some good defaults here
     void ModelScene::initMaterials() {
-        addMaterial(MaterialInfo::Emissive(0.8, 0.8, 0.8, 0.8),
-                    MaterialInfo::Diffuse(1.0, 1.0, 1.0, 0.8),
-                    MaterialInfo::Specular(0.7, 0.7, 0.7, 0.7),
-                    MaterialInfo::Shininess(50.0));
+        addMaterial(MaterialInfo::Emissive(0.1, 0.1, 0.1, 0.1),
+                    MaterialInfo::Diffuse(0.2, 0.4, 0.2, 0.8),
+                    MaterialInfo::Specular(0.3, 0.3, 0.3, 0.2),
+                    MaterialInfo::Shininess(10.0));
     }
 
     void ModelScene::initLightSources() {
-        addLightSource(LightInfo::Position(10.0, 10.0, -10.0, 1.0),
-                       LightInfo::Position(0.4, 0.5, 0.5, 0.1),
-                       LightInfo::AmbientIntensity((GLfloat) 4.3));
+        addLightSource(LightInfo::Position(10.0, -10.0, -10.0, 1.0),
+                       LightInfo::Color(0.8, 0.8, 0.8, 1.0),
+                       LightInfo::AmbientIntensity((GLfloat) 2.0));
     }
 
     void ModelScene::initializeViewPorts(const QSize & surfaceSize) {

@@ -11,8 +11,6 @@
 #include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
 
-#include "Scene/ModelScene.h"
-
 namespace Render {
     class ModelRenderer : public AbstractRenderer {
         Q_OBJECT
@@ -23,24 +21,14 @@ namespace Render {
         void selectScene(Scene::AbstractScene * scene = nullptr);
 
     protected:
-        virtual void initialize();
-        virtual void updateTextures();
-        virtual void render();
+        void initialize();
+        void render();
 
     private:
-        Scene::AbstractScene * _selectedScene;
-
         // remember all scenes, rendered by this renderer -> for clean up after
         QSet<Scene::AbstractScene *> _sceneHistory;
 
         void cleanUp();
-
-        void updateTexture(QOpenGLTexture ** texture, QSharedPointer<uchar> & textureData,
-                               const QOpenGLTexture::TextureFormat & textureFormat,
-                               const QOpenGLTexture::PixelFormat & pixelFormat,
-                               const QOpenGLTexture::PixelType & pixelType,
-                               const QOpenGLPixelTransferOptions * pixelOptions);
-
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);

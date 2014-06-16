@@ -72,7 +72,7 @@ Item {
     }
 
     onTakeShotChanged: {
-        if (sliceItem.takeShot) {
+        if (modelItem.takeShot) {
             angleShotTimer.running = true;
         }
     }
@@ -91,13 +91,13 @@ Item {
         running: false
 
         onTriggered: {
-            sliceHud.angleShot += 1.0;
+            modelHud.angleShot += 1.0;
 
-            if (sliceHud.angleShot > 180.0) {
+            if (modelHud.angleShot > 180.0) {
                 angleShotTimer.running = false;
-                sliceHud.angleShot = 0.0;
+                modelHud.angleShot = 0.0;
 
-                sliceItem.takeShot = false;
+                modelItemItem.takeShot = false;
             }
         }
     }

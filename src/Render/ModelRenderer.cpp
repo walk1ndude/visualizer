@@ -7,8 +7,7 @@
 
 namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
-        AbstractRenderer(context, size),
-        _selectedScene(nullptr) {
+        AbstractRenderer(context, size) {
         initialize();
     }
 
@@ -106,19 +105,6 @@ namespace Render {
         if (_selectedScene) {
             _selectedScene->renderScene(_surfaceSize);
         }
-    }
-
-    void ModelRenderer::updateTextures() { /*
-        switch (_sliceDataType) {
-        case SliceInfo::Int8:
-            updateTexture(&_textureHead, _mergedData, QOpenGLTexture::R8_UNorm,
-                              QOpenGLTexture::Red, QOpenGLTexture::UInt8, &_pixelOptionsHead);
-            break;
-        default:
-            updateTexture(&_textureHead, _mergedData, QOpenGLTexture::R16_UNorm,
-                              QOpenGLTexture::Red, QOpenGLTexture::UInt16, &_pixelOptionsHead);
-            break;
-        } */
     }
 
     void ModelRenderer::cleanUp() {

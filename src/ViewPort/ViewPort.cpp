@@ -23,7 +23,8 @@ namespace ViewPort {
             case ViewPort::LEFT:
                 _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.0001, 10.0);
                 _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-                _matrixStack.rotate(QVector3D(-90.0, -90.0, 0.0));
+                //_matrixStack.rotate(QVector3D(-90.0, -90.0, 0.0));
+                _matrixStack.rotate(QVector3D(90.0, 0.0, 0.0));
                 break;
             case ViewPort::FRONT:
                 _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.0001, 10.0);

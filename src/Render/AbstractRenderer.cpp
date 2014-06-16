@@ -13,6 +13,7 @@ namespace Render {
     AbstractRenderer::AbstractRenderer(QOpenGLContext * context, const QSize & surfaceSize) :
         _surfaceSize(surfaceSize),
         _takeShot(false),
+        _selectedScene(nullptr),
         _canRenderContent(false),
         _textureUpdateNeeded(false),
         _contentInitializeNeeded(false),
@@ -92,10 +93,10 @@ namespace Render {
 
         _fboRender->bindDefault();
 
-        if (_takeShot) {/*
-            emit contentToSaveRendered(_fboDisplay->toImage(),
-                                       QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height()),
-                                       _rotation.y() + 180.0);*/
+        if (_takeShot) {
+            emit contentToSaveRendered(_fboRender->toImage(),
+                                       _selectedScene->screenSaveRect(),
+                                       _selectedScene->rotation().y());
         }
 
         emit textureReady(texture, _surfaceSize);

@@ -49,7 +49,8 @@ namespace ViewPort {
                     data()[i].rotate(QVector3D(xRot - 90.0, 0.0, 0.0));
                     break;
                 case ViewPort::LEFT:
-                    data()[i].rotate(QVector3D(-90.0, yRot - 90.0, 0.0));
+                    //data()[i].rotate(QVector3D(-90.0, yRot -90.0, 0.0));
+                    data()[i].rotate(QVector3D(90.0, 0.0, yRot));
                     break;
             }
         }

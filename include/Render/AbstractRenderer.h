@@ -10,6 +10,8 @@
 
 #include "Model/AbstractModel.h"
 
+#include "Scene/ModelScene.h"
+
 #include "Info/TextureInfo.h"
 
 namespace Render {
@@ -36,11 +38,11 @@ namespace Render {
 
         QMutex _renderMutex;
 
+        Scene::AbstractScene * _selectedScene;
+
         virtual void initialize() = 0;
 
         virtual void render() = 0;
-
-        virtual void updateTextures() = 0;
 
         virtual void cleanUp() = 0;
 

@@ -21,6 +21,10 @@ namespace Scene {
 
         virtual void setRotation(const QVector3D & rotation) = 0;
 
+        virtual QVector3D rotation() = 0;
+
+        virtual QRect screenSaveRect() = 0;
+
         // zoom the whole scene
         virtual void setZoomFactor(const qreal & zoomFactor) = 0;
 
