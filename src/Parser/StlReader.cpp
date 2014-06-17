@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "Parser/StlReader.h"
+#include "Parser/Helpers.hpp"
 
 #include <opencv2/core/core.hpp>
 
@@ -96,12 +97,6 @@ public:
     }
 };
 
-inline GLfloat normalize(GLfloat & x,
-                         const GLfloat & minV, const GLfloat & maxV,
-                         const GLfloat & newMinV = (GLfloat) -1.0, const GLfloat & newMaxV = (GLfloat) 1.0) {
-    return (x - minV) * (newMaxV - newMinV) / (maxV - minV) + newMinV;
-}
-
 class NormData {
 public:
     ModelInfo::VerticesVNPtr * data;
@@ -114,21 +109,27 @@ class ParallelNormalizing : public cv::ParallelLoopBody {
 private:
     NormData _normData;
 
+    QVector3D _scale;
+
 public:
     ParallelNormalizing(NormData & normData) {
         _normData.data = normData.data;
 
         _normData.minV = normData.minV;
         _normData.maxV = normData.maxV;
+
+        _scale = scaleVector<float, QVector3D>(normData.maxV.x - normData.minV.x,
+                                               normData.maxV.y - normData.minV.y,
+                                               normData.maxV.z - normData.minV.z);
     }
 
     virtual void operator ()(const cv::Range & r) const {
         for (int i = r.start; i != r.end; ++ i) {
             ModelInfo::VertexVN vertex = (*_normData.data)->at(i);
 
-            vertex.x = normalize(vertex.x, _normData.minV.x, _normData.maxV.x);
-            vertex.y = normalize(vertex.y, _normData.minV.y, _normData.maxV.y);
-            vertex.z = normalize(vertex.z, _normData.minV.z, _normData.maxV.z);
+            vertex.x = normalize<GLfloat>(vertex.x, _normData.minV.x, _normData.maxV.x, - _scale.x(), _scale.x());
+            vertex.y = normalize<GLfloat>(vertex.y, _normData.minV.y, _normData.maxV.y, - _scale.y(), _scale.y());
+            vertex.z = normalize<GLfloat>(vertex.z, _normData.minV.z, _normData.maxV.z, - _scale.z(), _scale.z());
 
             (**_normData.data)[i] = vertex;
         }

@@ -8,6 +8,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "Parser/Reconstructor.h"
+#include "Parser/Helpers.hpp"
 
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
@@ -17,8 +18,6 @@
 
 #define SIGMA_GAUSS 1.3
 #define KERN_SIZE_GAUSS 3
-
-#define SCALE_COEFF ((float) 0.7)
 
 namespace Parser {
     Reconstructor::Reconstructor(QObject * parent) :
@@ -424,11 +423,10 @@ namespace Parser {
         slices.texture.size.setY(slice.rows);
         slices.texture.size.setZ(sliceCount);
 
-        slices.texture.scaling = {
-            slices.texture.size.x() / slices.texture.size.y() / SCALE_COEFF,
-            slices.texture.size.y() / slices.texture.size.y() / SCALE_COEFF,
-            slices.texture.size.z() / slices.texture.size.y() / SCALE_COEFF,
-        };
+        slices.texture.scaling = scaleVector<float, QVector3D>(
+            slices.texture.size.x(),
+            slices.texture.size.y(),
+            slices.texture.size.z());
 
         slices.texture.pixelType = QOpenGLTexture::UInt8;
         slices.texture.textureFormat = QOpenGLTexture::R8_UNorm;

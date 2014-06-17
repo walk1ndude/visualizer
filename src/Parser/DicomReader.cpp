@@ -9,13 +9,12 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "Parser/DicomReader.h"
+#include "Parser/Helpers.hpp"
 
 #define WINDOW_NOISY "noisy"
 
 #define MIN_HU 900
 #define MAX_HU 3600
-
-#define SCALE_COEFF ((float) 0.7)
 
 namespace Parser {
     DicomReader::DicomReader(QObject * parent) :
@@ -168,11 +167,10 @@ namespace Parser {
         SliceInfo::Slices slices;
 
         slices.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
-        slices.texture.scaling = {
-                _dicomData.width * _dicomData.imageSpacings[0] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF,
-                _dicomData.height * _dicomData.imageSpacings[1] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF,
-                depth * _dicomData.imageSpacings[2] / (_dicomData.height * _dicomData.imageSpacings[0]) / SCALE_COEFF
-        };
+        slices.texture.scaling = scaleVector<float, QVector3D>(
+                _dicomData.width * _dicomData.imageSpacings[0],
+                _dicomData.height * _dicomData.imageSpacings[1],
+                depth * _dicomData.imageSpacings[2]);
 
         slices.texture.size.setX(_dicomData.width);
         slices.texture.size.setY(_dicomData.height);
