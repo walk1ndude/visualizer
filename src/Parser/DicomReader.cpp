@@ -131,7 +131,7 @@ namespace Parser {
 
         dicomData.isLittleEndian = (pixelFormat.GetBitsAllocated() - pixelFormat.GetHighBit() == 1) ? true : false;
 
-        dicomData.neighbourRadius = 2;
+        dicomData.neighbourRadius = 0;
 
         dicomData.noisy = &_noisy;
         dicomData.filtered = &_filtered;
