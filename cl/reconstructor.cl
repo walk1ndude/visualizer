@@ -69,18 +69,11 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
     
     tanTable[posT] = - atan2(yc, xc) * 180.0 / M_PI_F;
     radTable[posT] = sqrt(yc * yc + xc * xc);
-
-//    tanTable[posT] = min(tanTable[posT] + 180.0f, 360.0f);
-    
-//    if (tanTable[posT] > 180.0f && tanTable[posT] < 270.0f) {
-//        radTable[posT] = - radTable[posT];
-//    }
     
     if (tanTable[posT] < 0.0f) {
-        tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
         radTable[posT] = - radTable[posT];
+        tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
     }
-
 }
 
 __kernel void dht1dTranspose(__read_only image3d_t src, __write_only image3d_t dst,
@@ -113,66 +106,58 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     
     const int posT = pos.y * widthDst + pos.x;
 
-    const float sinoY = tanTable[posT];
-    const float rad = radTable[posT];
-    
-    const float sinoX = (centerXDst + rad) * ratioPad;
-    const float swappedSinoX = centerXSrc + (rad < 0 ? 0 : 1) * widthSrc - sinoX;
-    
-    if (fabs(rad) <= centerXDst) {
-        
+    float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
+
+    if (fabs(srcPos.x) <= centerXDst) {
+        const float sinoX = (centerXDst + srcPos.x) * ratioPad;
+        srcPos.x = centerXSrc + (srcPos.x < 0 ? 0 : 1) * widthSrc - sinoX;
+
         write_imagef(dst,
             (int4) (pos.x + (pos.x < centerXDst ? 1 : -1) * centerXDst,
                     pos.y + (pos.y < centerYDst ? 1 : -1) * centerYDst,
                     pos.z,
                     0),
-            (float4) (((int) sinoX % 2 ? -1 : 1) * calcElem(src, cas,
-                                                            (float4) (swappedSinoX, pos.z, sinoY, 0.0f),
-                                                            offset, 1)));
+            (float4) (((int) sinoX % 2 ? -1 : 1) * calcElem(src, cas, srcPos, offset, 1)));
            }
 }
 
 __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t dst) {
     int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
 
-    const int widthSrc = get_image_width(src);
-    const int heightSrc = get_image_height(src);
+    const int4 size = {get_image_width(src), get_image_height(src),
+                       get_image_width(dst), get_image_height(dst)};
 
-    const int widthDst = get_image_width(dst);
-    const int heightDst = get_image_height(dst);
+    const int4 center = {size.x / 2, size.y / 2,
+                         size.z / 2, size.w / 2};
 
-    const int centerXSrc = widthSrc / 2;
-    const int centerYSrc = heightSrc / 2;
+    if (pos.x * pos.x + pos.y * pos.y <= center.z * center.z) {
 
-    const int centerXDst = widthDst / 2;
-    const int centerYDst = heightDst / 2;
+        int4 positions = {pos.x, pos.y, (size.x - pos.x) % size.x, (size.y - pos.y) % size.y};
 
-    if (pos.x * pos.x + pos.y * pos.y <= centerXDst * centerYDst) {
-        int mCol = (widthSrc - pos.x) % widthSrc;
-        int mRow = (heightSrc - pos.y) % heightSrc;
+        const float4 readPixels = {
+                read_imagef(src, sampler, (int4) (positions.x, positions.y, pos.z, 0)).x,
+                read_imagef(src, sampler, (int4) (positions.x, positions.w, pos.z, 0)).x,
+                read_imagef(src, sampler, (int4) (positions.z, positions.y, pos.z, 0)).x,
+                read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
+        };
 
-        const float A = read_imagef(src, sampler, pos).x;
-        const float B = read_imagef(src, sampler, (int4) (pos.x, mRow, pos.z, 0)).x;
-        const float C = read_imagef(src, sampler, (int4) (mCol, pos.y, pos.z, 0)).x;
-        const float D = read_imagef(src, sampler, (int4) (mCol, mRow, pos.z, 0)).x;
+        const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0;
 
-        const float E = ((A + D) - (B + C)) / 2;
+        positions.x += center.x;
+        positions.y += center.y;
 
-        pos.x += centerXSrc;
-        pos.y += centerYSrc;
+        positions.z -= center.x;
+        positions.w -= center.y;
 
-        mCol -= centerXSrc;
-        mRow -= centerYSrc;
+        positions.x -= (center.x - center.z);
+        positions.y -= (center.y - center.w);
 
-        pos.x -= (centerXSrc - centerXDst);
-        pos.y -= (centerYSrc - centerYDst);
+        positions.z -= (center.x - center.z);
+        positions.w -= (center.y - center.w);
 
-        mCol -= (centerXSrc - centerXDst);
-        mRow -= (centerYSrc - centerYDst);
-
-        write_imagef(dst, pos, (float4) (A - E));
-        write_imagef(dst, (int4) (pos.x, mRow, pos.z, 0), (float4) (B + E));
-        write_imagef(dst, (int4) (mCol, pos.y, pos.z, 0), (float4) (C + E));
-        write_imagef(dst, (int4) (mCol, mRow, pos.z, 0), (float4) (D - E));
+        write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
+        write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
+        write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (float4) (readPixels.z + E));
+        write_imagef(dst, (int4) (positions.z, positions.w, pos.z, 0), (float4) (readPixels.w - E));
     }
 }

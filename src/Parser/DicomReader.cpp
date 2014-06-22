@@ -118,8 +118,8 @@ namespace Parser {
             dicomData.intercept = dImage.GetIntercept();
         }
         catch (gdcm::Exception &) {
-            dicomData.slope = 1.0;
-            dicomData.intercept = 0.0;
+            dicomData.slope = 1.0f;
+            dicomData.intercept = 0.0f;
         }
 
         dicomData.minValue = (int) pixelFormat.GetMin();

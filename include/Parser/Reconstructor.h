@@ -21,12 +21,13 @@ namespace Parser {
         explicit Reconstructor(QObject * parent = 0);
         ~Reconstructor();
 
+        void reset();
+
     private:
         int _sliceNumber;
 
-        std::vector<cv::Mat>_src;
-        std::vector<cv::Mat>_slicesOCL;
-        std::vector<cv::Mat *>_slices;
+        QVector<cv::Mat>_src;
+        QVector<cv::Mat *>_slicesOCL;
 
         cl_context _context;
         cl_device_id _device_id;
@@ -39,9 +40,6 @@ namespace Parser {
         cl_kernel _butterflyDht2dKernel;
 
         cl_command_queue _queue;
-
-        void reset(const int & newSize = 0);
-        void resetV(std::vector<cv::Mat *> & vec, const int & newSize = 0);
 
         void showSliceWithNumber(const int & sliceNumber);
 
