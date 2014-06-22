@@ -35,7 +35,7 @@ __kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
                       __private uint kernGaussSize) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
     float sum = 0.0f;
-    
+
     int4 posR = (int4) (0);
     
     for (int i = - kernGaussSize + 1; i != kernGaussSize; ++ i) {
@@ -45,7 +45,7 @@ __kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
         
         sum += (gaussTab[kernGaussSize + i] * read_imagef(src, sampler, posR).x);
     }
-                
+
     write_imagef(dst, pos, (float4) (sum));
 }
 
@@ -55,11 +55,7 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
                          __private float twoPiN) {
     const int2 pos = {get_global_id(0), get_global_id(1)};
     
-    const float centerX = width / 2.0;
-    const float centerY = height / 2.0;
-    
-    const float xc = pos.x - centerX;
-    const float yc = pos.y - centerY;
+    const float2 origin = {pos.x - width / 2.0f, pos.y - height / 2.0f};
 
     const float xyPiN = pos.x * pos.y * twoPiN;
 
@@ -67,11 +63,10 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
 
     cas[posT] = sin(xyPiN) + cos(xyPiN);
     
-    tanTable[posT] = - atan2(yc, xc) * 180.0 / M_PI_F;
-    radTable[posT] = sqrt(yc * yc + xc * xc);
+    tanTable[posT] = - atan2(origin.y, origin.x) * 180.0 / M_PI_F;
+    radTable[posT] = (origin.y > 0 ? 1 : -1) * sqrt(origin.y * origin.y + origin.x * origin.x);
     
     if (tanTable[posT] < 0.0f) {
-        radTable[posT] = - radTable[posT];
         tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
     }
 }
@@ -86,38 +81,29 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
                         __global float * cas, __global float * tanTable, __global float * radTable) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
 
-    const int widthSrc = get_image_width(src);
-    const int widthDst = get_image_width(dst);
+    const int4 size = {get_image_width(src), get_image_depth(src),
+                       get_image_width(dst), get_image_height(dst)};
 
-    const int heightSrc = get_image_depth(src);
-    const int heightDst = get_image_height(dst);
+    const float4 center = {size.x / 2.0f, size.y / 2.0f,
+                           size.z / 2.0f, size.w / 2.0f};
 
-    const float centerXDst = widthDst / 2.0f;
-    const float centerYDst = heightDst / 2.0f;
+    const float4 origin = {pos.x - center.z, pos.y - center.w,
+                           size.x / (float) size.z, size.y / (float) size.w};
 
-    const float centerXSrc = widthSrc / 2.0f;
-
-    const int offset = centerXDst - widthSrc / 2;
-
-    const float ratioPad = widthSrc / (float) widthDst;
-
-    const float xc = pos.x - centerXDst;
-    const float yc = pos.y - centerYDst;
-    
-    const int posT = pos.y * widthDst + pos.x;
+    const int posT = pos.y * size.z + pos.x;
 
     float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
 
-    if (fabs(srcPos.x) <= centerXDst) {
-        const float sinoX = (centerXDst + srcPos.x) * ratioPad;
-        srcPos.x = centerXSrc + (srcPos.x < 0 ? 0 : 1) * widthSrc - sinoX;
+    if (fabs(srcPos.x) <= center.z) {
+        const float sinoX = (center.z + srcPos.x) * origin.z;
+        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
 
         write_imagef(dst,
-            (int4) (pos.x + (pos.x < centerXDst ? 1 : -1) * centerXDst,
-                    pos.y + (pos.y < centerYDst ? 1 : -1) * centerYDst,
+            (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
+                    pos.y + (pos.y < center.w ? 1 : -1) * center.w,
                     pos.z,
                     0),
-            (float4) (((int) sinoX % 2 ? -1 : 1) * calcElem(src, cas, srcPos, offset, 1)));
+            (float4) (((int) sinoX % 2 ? 1 : -1) * calcElem(src, cas, srcPos, (int) center.z - center.x, 1)));
            }
 }
 
