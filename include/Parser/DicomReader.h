@@ -6,7 +6,7 @@
 
 #include "Parser/ctprocessing.hpp"
 
-#include "Info/Sliceinfo.h"
+#include "Info/SliceInfo.h"
 
 namespace Parser {
     class DicomReader : public QObject {
