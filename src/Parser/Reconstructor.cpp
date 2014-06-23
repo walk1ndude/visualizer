@@ -207,7 +207,7 @@ namespace Parser {
 
         cl_mem gaussImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
                                           &image_format, width, height, depth,
-                                          nullptr, nullptr, nullptr, nullptr);
+                                          0, 0, nullptr, nullptr);
 
     #endif
 
@@ -216,7 +216,8 @@ namespace Parser {
 
         uint kernGaussSize = KERN_SIZE_GAUSS / 2;
 
-        cl_mem gaussBuf = clCreateBuffer(_context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR, sizeof(float) * KERN_SIZE_GAUSS, (void *) &gaussTab, nullptr);
+        cl_mem gaussBuf = clCreateBuffer(_context, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
+                                         sizeof(float) * KERN_SIZE_GAUSS, (void *) &gaussTab, nullptr);
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &gaussImage);
