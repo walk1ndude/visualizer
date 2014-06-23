@@ -5,7 +5,7 @@
 
 #include <QtQuick/QQuickWindow>
 
-#include "Info/Sliceinfo.h"
+#include "Info/SliceInfo.h"
 #include "Info/ModelInfo.h"
 
 namespace Gui {

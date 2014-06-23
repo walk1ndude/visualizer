@@ -13,9 +13,9 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 1
+#define PADDED_INCREASE 2
 
-#define SIGMA_GAUSS 1.3
+#define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 3
 
 namespace Parser {
@@ -136,6 +136,10 @@ namespace Parser {
         cl_image_format image_format;
         image_format.image_channel_data_type = CL_FLOAT;
         image_format.image_channel_order = CL_R;
+
+        cl_image_format image_format_half;
+        image_format_half.image_channel_data_type = CL_HALF_FLOAT;
+        image_format_half.image_channel_order = CL_R;
 
     #ifdef CL_VERSION_1_2
         cl_image_desc image_desc_src;
@@ -258,7 +262,7 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                                 &image_format, &image_desc_fourier2d, nullptr, &errNo);
+                                                 &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
     #else
         cl_mem fourier2dImageA = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
@@ -295,7 +299,7 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageB = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                               &image_format, &image_desc_fourier2d, nullptr, nullptr);
+                                               &image_format_half, &image_desc_fourier2d, nullptr, nullptr);
     #else
         cl_mem fourier2dImageB = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
@@ -377,11 +381,29 @@ namespace Parser {
             minValVolume = std::min(minValVolume, minVal);
         }
 
+        cv::Mat result;
         foreach (cv::Mat * slice, _slicesOCL) {
             cv::convertScaleAbs(*slice, *slice,
                                 256.0f / (maxValVolume - minValVolume),
                                 256.0f * minValVolume / (minValVolume - maxValVolume));
-            cv::Canny(*slice, *slice, 20, 70);
+
+            //cv::inRange(*slice, cv::Scalar(160), cv::Scalar(165), *slice);
+
+            cv::Canny(*slice, *slice, 20, 40, 3);
+
+            std::vector<cv::vector<cv::Point> > contours;
+
+            cv::findContours(*slice, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_L1, cv::Point(0, 0));
+
+            helperMat = cv::Mat(slice->rows, slice->cols, CV_8UC1, cv::Scalar(0));
+            for (size_t i = 0; i < contours.size(); ++ i) {
+                if (contours.at(i).size() > 10) {
+                    cv::drawContours(helperMat, contours, i, cv::Scalar(255), 2, 8, cv::noArray(), 0, cv::Point());
+                }
+            }
+            result = cv::Scalar(0);
+            cv::bitwise_and(*slice, *slice, result, helperMat);
+            result.copyTo(*slice);
         }
 
         showSliceWithNumber(0);

@@ -342,11 +342,7 @@ namespace Parser {
         cv::parallel_for_(cv::Range(0, bufferData.vertexCount), ParallelNormalizing(normData));
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
-/*
-        foreach (ModelInfo::VertexVN vertex, *vertices) {
-            qDebug() << vertex.x << vertex.y << vertex.z;
-        }
-*/
+
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 

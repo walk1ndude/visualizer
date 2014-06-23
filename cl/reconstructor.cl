@@ -57,16 +57,16 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
     
     const float2 origin = {pos.x - width / 2.0f, pos.y - height / 2.0f};
 
-    const float xyPiN = pos.x * pos.y * twoPiN;
-
     const int posT = pos.y * width + pos.x;
 
+    const float xyPiN = pos.x * pos.y * twoPiN;
     cas[posT] = sin(xyPiN) + cos(xyPiN);
     
-    tanTable[posT] = - atan2(origin.y, origin.x) * 180.0 / M_PI_F;
-    radTable[posT] = (origin.y > 0 ? 1 : -1) * sqrt(origin.y * origin.y + origin.x * origin.x);
-    
+    tanTable[posT] = - atan2pi(origin.y, origin.x) * 180.0f;
+    radTable[posT] = sqrt(origin.y * origin.y + origin.x * origin.x);
+
     if (tanTable[posT] < 0.0f) {
+        radTable[posT] = - radTable[posT];
         tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
     }
 }
@@ -87,15 +87,14 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     const float4 center = {size.x / 2.0f, size.y / 2.0f,
                            size.z / 2.0f, size.w / 2.0f};
 
-    const float4 origin = {pos.x - center.z, pos.y - center.w,
-                           size.x / (float) size.z, size.y / (float) size.w};
+    const float2 pad = {size.x / (float) size.z, size.y / (float) size.w};
 
     const int posT = pos.y * size.z + pos.x;
 
     float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
 
     if (fabs(srcPos.x) <= center.z) {
-        const float sinoX = (center.z + srcPos.x) * origin.z;
+        const float sinoX = (center.z + srcPos.x) * pad.x;
         srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
 
         write_imagef(dst,
@@ -103,8 +102,8 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
                     pos.y + (pos.y < center.w ? 1 : -1) * center.w,
                     pos.z,
                     0),
-            (float4) (((int) sinoX % 2 ? 1 : -1) * calcElem(src, cas, srcPos, (int) center.z - center.x, 1)));
-           }
+            (float4) (( ((int) sinoX % 2) ? 1 : -1) * calcElem(src, cas, srcPos, (int) (center.z - center.x), 1)));
+    }
 }
 
 __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t dst) {
@@ -118,7 +117,7 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
 
     if (pos.x * pos.x + pos.y * pos.y <= center.z * center.z) {
 
-        int4 positions = {pos.x, pos.y, (size.x - pos.x) % size.x, (size.y - pos.y) % size.y};
+        int4 positions = {pos.x, pos.y, (size.x - pos.x), (size.y - pos.y)};
 
         const float4 readPixels = {
                 read_imagef(src, sampler, (int4) (positions.x, positions.y, pos.z, 0)).x,
@@ -127,7 +126,7 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
                 read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
         };
 
-        const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0;
+        const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
 
         positions.x += center.x;
         positions.y += center.y;
