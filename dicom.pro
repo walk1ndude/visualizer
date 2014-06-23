@@ -75,7 +75,7 @@ win32 {
     LIBS += -lOpenCL
 }
 
-SOURCES +=  src/Gui/main.cpp \
+SOURCES +=  src/main.cpp \
             src/Gui/AppWindow.cpp \
             src/Quick/ModelViewer.cpp \
             src/Parser/DicomReader.cpp \
@@ -114,6 +114,6 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Info/ShaderInfo.h \
             include/Scene/AbstractScene.h \
             include/Scene/ModelScene.h \
-    include/Parser/Helpers.hpp
+            include/Parser/Helpers.hpp
 
 RESOURCES += resources.qrc
