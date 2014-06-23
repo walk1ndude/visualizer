@@ -1,7 +1,7 @@
 #ifndef HEADMODEL_H
 #define HEADMODEL_H
 
-#include "Model/Abstractmodel.h"
+#include "Model/AbstractModel.h"
 
 namespace Model {
     class HeadModel : public AbstractModel {

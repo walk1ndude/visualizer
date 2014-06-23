@@ -1,7 +1,7 @@
 #ifndef STLMODEL_H
 #define STLMODEL_H
 
-#include "Model/Abstractmodel.h"
+#include "Model/AbstractModel.h"
 
 namespace Model {
     class StlModel : public AbstractModel {
