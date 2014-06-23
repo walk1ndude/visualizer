@@ -1,6 +1,8 @@
 #ifndef ABSTRACTMODEL_H
 #define ABSTRACTMODEL_H
 
+#include <QtCore/QMutexLocker>
+
 #include <QtGui/QOpenGLBuffer>
 #include <QtGui/QOpenGLVertexArrayObject>
 #include <QtGui/QOpenGLTexture>
