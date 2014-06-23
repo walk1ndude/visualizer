@@ -3,7 +3,7 @@
 
 #include <QtCore/QFile>
 
-#include "Info/Modelinfo.h"
+#include "Info/ModelInfo.h"
 
 namespace Parser {
     class StlReader : public QObject {
