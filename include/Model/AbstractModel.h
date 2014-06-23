@@ -5,8 +5,8 @@
 #include <QtGui/QOpenGLVertexArrayObject>
 #include <QtGui/QOpenGLTexture>
 
-#include "Info/Modelinfo.h"
-#include "Info/Materialinfo.h"
+#include "Info/ModelInfo.h"
+#include "Info/MaterialInfo.h"
 #include "Info/LightInfo.h"
 #include "Info/ShaderInfo.h"
 #include "Info/TextureInfo.h"
