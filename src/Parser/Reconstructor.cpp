@@ -13,7 +13,7 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 1.2
+#define PADDED_INCREASE 1
 
 #define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 3
@@ -160,8 +160,8 @@ namespace Parser {
         image_desc_gauss.image_depth = depth;
         image_desc_gauss.buffer = nullptr;
         image_desc_gauss.num_mip_levels = 0;
-        image_desc_gauss.image_row_pitch = 0;
-        image_desc_gauss.image_slice_pitch = 0;
+        image_desc_gauss.image_row_pitch = rowPitchSrc;
+        image_desc_gauss.image_slice_pitch = slicePitchSrc;
         image_desc_gauss.num_samples = 0;
 
         cl_image_desc image_desc_fourier2d;
@@ -190,8 +190,6 @@ namespace Parser {
         size_t regionSlice[3] = {width, width, height};
 
         cl_event eventList[9];
-
-        int errNo;
 
     #ifdef CL_VERSION_1_2
         cl_mem srcImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
@@ -259,7 +257,7 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                                 &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
+                                                 &image_format_half, &image_desc_fourier2d, nullptr, nullptr);
     #else
         cl_mem fourier2dImageA = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
@@ -290,7 +288,7 @@ namespace Parser {
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
         clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr, 3, eventList, eventList + 4);
 
-        clWaitForEvents(1, eventList + 4);
+        clWaitForEvents(4, eventList);
 
         clReleaseMemObject(gaussImage);
 
