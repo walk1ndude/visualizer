@@ -38,7 +38,7 @@ __kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
 
     int4 posR = (int4) (0);
     
-    for (int i = - kernGaussSize + 1; i != kernGaussSize; ++ i) {
+    for (int i = - kernGaussSize + 1; i != (int) kernGaussSize; ++ i) {
         posR.x = reflect(get_image_width(src), pos.x + dirX * i);
         posR.y = reflect(get_image_height(src), pos.y + dirY * i);
         posR.z = reflect(get_image_depth(src), pos.z + dirZ * i);
@@ -115,34 +115,32 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
     const int4 center = {size.x / 2, size.y / 2,
                          size.z / 2, size.w / 2};
 
-    if (pos.x * pos.x + pos.y * pos.y <= center.z * center.z) {
 
-        int4 positions = {pos.x, pos.y, (size.x - pos.x), (size.y - pos.y)};
+    int4 positions = {pos.x, pos.y, (size.x - pos.x), (size.y - pos.y)};
 
-        const float4 readPixels = {
-                read_imagef(src, sampler, (int4) (positions.x, positions.y, pos.z, 0)).x,
-                read_imagef(src, sampler, (int4) (positions.x, positions.w, pos.z, 0)).x,
-                read_imagef(src, sampler, (int4) (positions.z, positions.y, pos.z, 0)).x,
-                read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
-        };
+    const float4 readPixels = {
+            read_imagef(src, sampler, (int4) (positions.x, positions.y, pos.z, 0)).x,
+            read_imagef(src, sampler, (int4) (positions.x, positions.w, pos.z, 0)).x,
+            read_imagef(src, sampler, (int4) (positions.z, positions.y, pos.z, 0)).x,
+            read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
+    };
 
-        const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
+    const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
 
-        positions.x += center.x;
-        positions.y += center.y;
+    positions.x += center.x;
+    positions.y += center.y;
 
-        positions.z -= center.x;
-        positions.w -= center.y;
+    positions.z -= center.x;
+    positions.w -= center.y;
 
-        positions.x -= (center.x - center.z);
-        positions.y -= (center.y - center.w);
+    positions.x -= (center.x - center.z);
+    positions.y -= (center.y - center.w);
 
-        positions.z -= (center.x - center.z);
-        positions.w -= (center.y - center.w);
+    positions.z -= (center.x - center.z);
+    positions.w -= (center.y - center.w);
 
-        write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
-        write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
-        write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (float4) (readPixels.z + E));
-        write_imagef(dst, (int4) (positions.z, positions.w, pos.z, 0), (float4) (readPixels.w - E));
-    }
+    write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
+    write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
+    write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (float4) (readPixels.z + E));
+    write_imagef(dst, (int4) (positions.z, positions.w, pos.z, 0), (float4) (readPixels.w - E));
 }

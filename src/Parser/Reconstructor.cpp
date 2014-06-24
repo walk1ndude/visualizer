@@ -13,7 +13,7 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 2
+#define PADDED_INCREASE 1.0
 
 #define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 3
@@ -189,7 +189,7 @@ namespace Parser {
         size_t origin[3] = {0, 0, 0};
         size_t regionSlice[3] = {width, width, height};
 
-        cl_event eventList[6];
+        cl_event eventList[9];
 
         int errNo;
 
@@ -257,10 +257,6 @@ namespace Parser {
         clReleaseMemObject(srcImage);
         clReleaseMemObject(gaussBuf);
 
-        for (int i = 0; i != 3; ++ i) {
-            clReleaseEvent(eventList[i]);
-        }
-
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
@@ -283,7 +279,7 @@ namespace Parser {
         clSetKernelArg(_calcTablesKernel, 5, sizeof(float), (void *) &twoPiN);
 
         size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
-        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr, eventList);
+        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr, eventList + 3);
 
         clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -292,9 +288,9 @@ namespace Parser {
         clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &radBuf);
 
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
-        clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr, 1, eventList, eventList + 1);
+        clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr, 3, eventList, eventList + 4);
 
-        clWaitForEvents(1, eventList + 1);
+        clWaitForEvents(1, eventList + 4);
 
         clReleaseMemObject(gaussImage);
 
@@ -315,7 +311,7 @@ namespace Parser {
 
         size_t globalThreadsDht1dTranspose[3] = {paddedWidth, paddedWidth, height};
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
-                                           nullptr, 1, eventList + 1, eventList + 2);
+                                           nullptr, 4, eventList, eventList + 5);
 
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageB);
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -323,9 +319,9 @@ namespace Parser {
         clSetKernelArg(_dht1dTransposeKernel, 3, sizeof(cl_mem), (void *) &coeff);
 
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
-                                           nullptr, 1, eventList + 2, eventList + 3);
+                                           nullptr, 5, eventList, eventList + 6);
 
-        clWaitForEvents(1, eventList + 3);
+        clWaitForEvents(6, eventList);
 
         clReleaseMemObject(fourier2dImageB);
         clReleaseMemObject(casBuf);
@@ -345,15 +341,15 @@ namespace Parser {
 
         size_t globalThreadsButterfly[3] = {paddedWidth / 2, paddedWidth / 2, height};
         clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
-                                           nullptr, 1, eventList + 3, eventList + 4);
+                                           nullptr, 6, eventList, eventList + 7);
 
         uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
                                                  CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                                  &rowPitchDst, &slicePitchDst,
-                                                 1, eventList + 4, eventList + 5, nullptr);
+                                                 7, eventList, eventList + 8, nullptr);
 
 
-        clWaitForEvents(1, eventList + 5);
+        clWaitForEvents(8, eventList);
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData;
 
@@ -409,7 +405,7 @@ namespace Parser {
 
         showSliceWithNumber(0);
 
-        for (int i = 0; i != 6; ++ i) {
+        for (int i = 0; i != 8; ++ i) {
             clReleaseEvent(eventList[i]);
         }
 
@@ -497,6 +493,7 @@ namespace Parser {
     }
 
     void Reconstructor::showSliceWithNumber(const int & sliceNumber) {
+        qDebug() << sliceNumber;
         cv::imshow(SLICES_IMAGE_WINDOW, *_slicesOCL.at(sliceNumber));
 
         cv::Mat slicePosition(_src.at(sliceNumber % _src.size()));
