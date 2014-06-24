@@ -93,17 +93,19 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
 
     float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
 
-    if (fabs(srcPos.x) <= center.z) {
-        const float sinoX = (center.z + srcPos.x) * pad.x;
-        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
-
-        write_imagef(dst,
-            (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
-                    pos.y + (pos.y < center.w ? 1 : -1) * center.w,
-                    pos.z,
-                    0),
-            (float4) (( ((int) sinoX % 2) ? 1 : -1) * calcElem(src, cas, srcPos, (int) (center.z - center.x), 1)));
+    if (fabs(srcPos.x) > center.z) {
+        return;
     }
+
+    const float sinoX = (center.z + srcPos.x) * pad.x;
+    srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
+
+    write_imagef(dst,
+                (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
+                        pos.y + (pos.y < center.w ? 1 : -1) * center.w,
+                        pos.z,
+                        0),
+                (float4) (( ((int) sinoX % 2) ? 1 : -1) * calcElem(src, cas, srcPos, (int) (center.z - center.x), 1)));
 }
 
 __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t dst) {

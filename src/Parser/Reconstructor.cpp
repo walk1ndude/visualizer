@@ -13,7 +13,7 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 1.0
+#define PADDED_INCREASE 1.2
 
 #define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 3
@@ -403,8 +403,6 @@ namespace Parser {
             result.copyTo(*slice);
         }
 
-        showSliceWithNumber(0);
-
         for (int i = 0; i != 8; ++ i) {
             clReleaseEvent(eventList[i]);
         }
@@ -493,7 +491,6 @@ namespace Parser {
     }
 
     void Reconstructor::showSliceWithNumber(const int & sliceNumber) {
-        qDebug() << sliceNumber;
         cv::imshow(SLICES_IMAGE_WINDOW, *_slicesOCL.at(sliceNumber));
 
         cv::Mat slicePosition(_src.at(sliceNumber % _src.size()));
