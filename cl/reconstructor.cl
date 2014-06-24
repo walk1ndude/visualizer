@@ -136,11 +136,8 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
     positions.z -= center.x;
     positions.w -= center.y;
 
-    positions.x -= (center.x - center.z);
-    positions.y -= (center.y - center.w);
-
-    positions.z -= (center.x - center.z);
-    positions.w -= (center.y - center.w);
+    positions.xz -= (center.x - center.z);
+    positions.yw -= (center.y - center.w);
 
     write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
     write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
