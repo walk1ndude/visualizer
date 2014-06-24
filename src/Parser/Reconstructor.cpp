@@ -191,12 +191,16 @@ namespace Parser {
 
         cl_event eventList[9];
 
+        cl_int errNo;
+
     #ifdef CL_VERSION_1_2
         cl_mem srcImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
                                           &image_format, &image_desc_src, (void *) srcData, nullptr);
 
         cl_mem gaussImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                          &image_format, &image_desc_gauss, nullptr, nullptr);
+                                          &image_format, &image_desc_gauss, nullptr, &errNo);
+
+        qDebug() << errNo;
 
     #else
         cl_mem srcImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
@@ -257,11 +261,13 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                                 &image_format_half, &image_desc_fourier2d, nullptr, nullptr);
+                                                 &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
     #else
         cl_mem fourier2dImageA = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
     #endif
+
+        qDebug() << errNo;
 
         cl_mem casBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, nullptr, nullptr);
         cl_mem tanBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, nullptr, nullptr);
@@ -276,9 +282,6 @@ namespace Parser {
         clSetKernelArg(_calcTablesKernel, 4, sizeof(size_t), (void *) &paddedWidth);
         clSetKernelArg(_calcTablesKernel, 5, sizeof(float), (void *) &twoPiN);
 
-        size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
-        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr, eventList + 3);
-
         clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
         clSetKernelArg(_fourier2dKernel, 2, sizeof(cl_mem), (void *) &casBuf);
@@ -286,6 +289,9 @@ namespace Parser {
         clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &radBuf);
 
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
+        size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
+
+        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr, eventList + 3);
         clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr, 3, eventList, eventList + 4);
 
         clWaitForEvents(4, eventList);
@@ -294,11 +300,13 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageB = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                               &image_format_half, &image_desc_fourier2d, nullptr, nullptr);
+                                               &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
     #else
         cl_mem fourier2dImageB = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
     #endif
+
+        qDebug() << errNo;
 
         const float coeff = 1.0 / paddedWidth;
 
@@ -328,11 +336,13 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                          &image_format, &image_desc_slices, nullptr, nullptr);
+                                          &image_format, &image_desc_slices, nullptr, &errNo);
     #else
         cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
                                             &image_format, width, width, height, 0, 0, nullptr, nullptr);
     #endif
+
+        qDebug() << errNo;
 
         clSetKernelArg(_butterflyDht2dKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
         clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
