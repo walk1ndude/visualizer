@@ -1,5 +1,4 @@
 #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable
-#pragma OPENCL EXTENSION cl_khr_fp16 : enable
 
 __constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
@@ -94,19 +93,18 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
 
     float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
 
-    if (fabs(srcPos.x) > center.z) {
-        return;
+    if (fabs(srcPos.x) <= center.z) {
+
+        const float sinoX = (center.z + srcPos.x) * pad.x;
+        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
+
+        write_imagef(dst,
+                    (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
+                            pos.y + (pos.y < center.w ? 1 : -1) * center.w,
+                            pos.z,
+                            0),
+                    (float4) (( ((int) sinoX % 2) ? 1 : -1) * calcElem(src, cas, srcPos, (int) (center.z - center.x), 1)));
     }
-
-    const float sinoX = (center.z + srcPos.x) * pad.x;
-    srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
-
-    write_imagef(dst,
-                (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
-                        pos.y + (pos.y < center.w ? 1 : -1) * center.w,
-                        pos.z,
-                        0),
-                (float4) (( ((int) sinoX % 2) ? 1 : -1) * calcElem(src, cas, srcPos, (int) (center.z - center.x), 1)));
 }
 
 __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t dst) {
@@ -136,8 +134,8 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
     positions.z -= center.x;
     positions.w -= center.y;
 
-    positions.xz -= (center.x - center.z);
-    positions.yw -= (center.y - center.w);
+    //positions.xz -= (center.x - center.z);
+    //positions.yw -= (center.y - center.w);
 
     write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
     write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));

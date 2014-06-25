@@ -268,7 +268,7 @@ namespace Parser {
             *(_dicomData->mergeLocation) = new TextureInfo::MergedData[_sliceSize * slicesMergeCount];
 
             _dicomData->pixelTransferOptions->setAlignment((dummyMat.step & 3) ? 1 : 4);
-            _dicomData->pixelTransferOptions->setRowLength(dummyMat.step1());
+            _dicomData->pixelTransferOptions->setRowLength((int) dummyMat.step1());
         }
 
     public:

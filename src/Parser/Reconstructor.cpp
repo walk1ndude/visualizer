@@ -13,10 +13,25 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 1
+#define PADDED_INCREASE 1.0
 
 #define SIGMA_GAUSS 1.5
-#define KERN_SIZE_GAUSS 3
+#define KERN_SIZE_GAUSS 5
+
+#define ALL_EVENTS 9
+
+#define GAUSS_1D_COMPLETED_EVENT_X 0
+#define GAUSS_1D_COMPLETED_EVENT_Y 1
+#define GAUSS_1D_COMPLETED_EVENT_Z 2
+#define CALC_TABLES_COMPLETED_EVENT 3
+
+#define DHT_1D_TO_2D_COMPLETED_EVENT 4
+#define DHT_2D_I_FIRST_1D_COMPLETED_EVENT 5
+#define DHT_2D_I_SECOND_1D_COMPLETED_EVENT 6
+#define DHT_2D_I_COMPLETED_EVENT 7
+#define MAP_FINAL_COMPLETED_EVENT 8
+
+#define ALL_EVENTS_COMPLETED 8
 
 namespace Parser {
     Reconstructor::Reconstructor(QObject * parent) :
@@ -75,8 +90,9 @@ namespace Parser {
         _context = clCreateContextFromType(nullptr, CL_DEVICE_TYPE_GPU, nullptr, nullptr, nullptr);
 
         clGetDeviceIDs(nullptr, CL_DEVICE_TYPE_GPU, 1, &_device_id, nullptr);
+        
         _queue = clCreateCommandQueue(_context, _device_id, 0, nullptr);
-
+        
         _programSlice = clCreateProgramWithSource(_context, 1, (const char **) &programText,
                                                   (const size_t *) &programLength, nullptr);
 
@@ -138,7 +154,7 @@ namespace Parser {
         image_format.image_channel_order = CL_R;
 
         cl_image_format image_format_half;
-        image_format_half.image_channel_data_type = CL_HALF_FLOAT;
+        image_format_half.image_channel_data_type = CL_FLOAT;
         image_format_half.image_channel_order = CL_R;
 
     #ifdef CL_VERSION_1_2
@@ -189,7 +205,7 @@ namespace Parser {
         size_t origin[3] = {0, 0, 0};
         size_t regionSlice[3] = {width, width, height};
 
-        cl_event eventList[9];
+        cl_event eventList[ALL_EVENTS];
 
         cl_int errNo;
 
@@ -230,7 +246,8 @@ namespace Parser {
         clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
 
         size_t globalThreadsGauss1d[3] = {width, height, depth};
-        clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr, 0, nullptr, eventList);
+        qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
+                               0, nullptr, eventList + GAUSS_1D_COMPLETED_EVENT_X);
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &srcImage);
@@ -240,7 +257,8 @@ namespace Parser {
         clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir0);
         clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
 
-        clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr, 1, eventList, eventList + 1);
+        qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
+                               GAUSS_1D_COMPLETED_EVENT_Y, eventList, eventList + GAUSS_1D_COMPLETED_EVENT_Y);
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &gaussImage);
@@ -250,9 +268,10 @@ namespace Parser {
         clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir1);
         clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
 
-        clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr, 1, eventList + 1, eventList + 2);
+        clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
+                               GAUSS_1D_COMPLETED_EVENT_Z, eventList, eventList + GAUSS_1D_COMPLETED_EVENT_Z);
 
-        clWaitForEvents(1, eventList + 2);
+        clWaitForEvents(GAUSS_1D_COMPLETED_EVENT_Z, eventList);
 
         delete [] srcData;
 
@@ -291,11 +310,21 @@ namespace Parser {
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
         size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
 
-        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr, eventList + 3);
-        clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr, 3, eventList, eventList + 4);
+        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr,
+                               eventList + CALC_TABLES_COMPLETED_EVENT);
+        clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr,
+                               CALC_TABLES_COMPLETED_EVENT, eventList, eventList + DHT_1D_TO_2D_COMPLETED_EVENT);
 
-        clWaitForEvents(4, eventList);
-
+        clWaitForEvents(DHT_1D_TO_2D_COMPLETED_EVENT, eventList);
+        /*
+        float * test = (float *) clEnqueueMapBuffer(_queue, tanBuf, CL_TRUE, CL_MEM_WRITE_ONLY, 0, sizeof(float) * paddedWidth * paddedWidth, 0, nullptr, nullptr, nullptr);
+        for (size_t i = 0; i != paddedWidth; ++ i) {
+            for (size_t j = 0; j != paddedWidth; ++ j) {
+                if (i == paddedWidth - j)
+                qDebug() << i << j << test[i * paddedWidth + j];
+            }
+        }
+*/
         clReleaseMemObject(gaussImage);
 
     #ifdef CL_VERSION_1_2
@@ -306,8 +335,6 @@ namespace Parser {
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
     #endif
 
-        qDebug() << errNo;
-
         const float coeff = 1.0 / paddedWidth;
 
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -317,7 +344,7 @@ namespace Parser {
 
         size_t globalThreadsDht1dTranspose[3] = {paddedWidth, paddedWidth, height};
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
-                                           nullptr, 4, eventList, eventList + 5);
+                                           nullptr, DHT_1D_TO_2D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_FIRST_1D_COMPLETED_EVENT);
 
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageB);
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -325,9 +352,9 @@ namespace Parser {
         clSetKernelArg(_dht1dTransposeKernel, 3, sizeof(cl_mem), (void *) &coeff);
 
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
-                                           nullptr, 5, eventList, eventList + 6);
+                                           nullptr, DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_SECOND_1D_COMPLETED_EVENT);
 
-        clWaitForEvents(6, eventList);
+        clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
 
         clReleaseMemObject(fourier2dImageB);
         clReleaseMemObject(casBuf);
@@ -349,15 +376,14 @@ namespace Parser {
 
         size_t globalThreadsButterfly[3] = {paddedWidth / 2, paddedWidth / 2, height};
         clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
-                                           nullptr, 6, eventList, eventList + 7);
+                                           nullptr, DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_COMPLETED_EVENT);
 
         uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
                                                  CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                                  &rowPitchDst, &slicePitchDst,
-                                                 7, eventList, eventList + 8, nullptr);
+                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, nullptr);
 
-
-        clWaitForEvents(8, eventList);
+        clWaitForEvents(ALL_EVENTS_COMPLETED, eventList);
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData;
 
@@ -370,7 +396,7 @@ namespace Parser {
         double minValVolume = 1000.0f;
         double maxValVolume = -1000.0f;
 
-        _slicesOCL.resize(height);
+        _slicesOCL.resize((int) height);
         posSlice = sliceData;
         QMutableVectorIterator<cv::Mat *>it(_slicesOCL);
 
@@ -403,7 +429,7 @@ namespace Parser {
             helperMat = cv::Mat(slice->rows, slice->cols, CV_8UC1, cv::Scalar(0));
             for (size_t i = 0; i < contours.size(); ++ i) {
                 if (contours.at(i).size() > 10) {
-                    cv::drawContours(helperMat, contours, i, cv::Scalar(255), 2, 8, cv::noArray(), 0, cv::Point());
+                    cv::drawContours(helperMat, contours, (int) i, cv::Scalar(255), 2, 8, cv::noArray(), 0, cv::Point());
                 }
             }
             result = cv::Scalar(0);
@@ -411,12 +437,11 @@ namespace Parser {
             result.copyTo(*slice);
         }
 
-        for (int i = 0; i != 8; ++ i) {
+        for (int i = 0; i != ALL_EVENTS_COMPLETED; ++ i) {
             clReleaseEvent(eventList[i]);
         }
 
         clReleaseMemObject(fourier2dImageA);
-
         clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
         clFinish(_queue);
 
