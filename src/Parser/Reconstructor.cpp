@@ -13,7 +13,7 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 1.0
+#define PADDED_INCREASE 1.1f
 
 #define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 5
@@ -90,6 +90,10 @@ namespace Parser {
         _context = clCreateContextFromType(nullptr, CL_DEVICE_TYPE_GPU, nullptr, nullptr, nullptr);
 
         clGetDeviceIDs(nullptr, CL_DEVICE_TYPE_GPU, 1, &_device_id, nullptr);
+        
+        size_t size[3];
+        clGetDeviceInfo(_device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t) * 3, size, nullptr);
+        qDebug () << size[0] << size[1] << size[2];
         
         _queue = clCreateCommandQueue(_context, _device_id, 0, nullptr);
         
@@ -211,12 +215,14 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem srcImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-                                          &image_format, &image_desc_src, (void *) srcData, nullptr);
+                                          &image_format, &image_desc_src, (void *) srcData, &errNo);
+        
+        qDebug() << "srcImage" << errNo;
 
         cl_mem gaussImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                           &image_format, &image_desc_gauss, nullptr, &errNo);
 
-        qDebug() << errNo;
+        qDebug() << "gaussImage" << errNo;
 
     #else
         cl_mem srcImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
@@ -251,32 +257,23 @@ namespace Parser {
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &srcImage);
-        clSetKernelArg(_gauss1dKernel, 2, sizeof(cl_mem), (void *) &gaussBuf);
         clSetKernelArg(_gauss1dKernel, 3, sizeof(uint), (void *) &dir0);
         clSetKernelArg(_gauss1dKernel, 4, sizeof(uint), (void *) &dir1);
         clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir0);
-        clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
 
         qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
                                GAUSS_1D_COMPLETED_EVENT_Y, eventList, eventList + GAUSS_1D_COMPLETED_EVENT_Y);
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &gaussImage);
-        clSetKernelArg(_gauss1dKernel, 2, sizeof(cl_mem), (void *) &gaussBuf);
         clSetKernelArg(_gauss1dKernel, 3, sizeof(uint), (void *) &dir0);
         clSetKernelArg(_gauss1dKernel, 4, sizeof(uint), (void *) &dir0);
         clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir1);
-        clSetKernelArg(_gauss1dKernel, 6, sizeof(uint), (void *) &kernGaussSize);
 
         clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
                                GAUSS_1D_COMPLETED_EVENT_Z, eventList, eventList + GAUSS_1D_COMPLETED_EVENT_Z);
 
-        clWaitForEvents(GAUSS_1D_COMPLETED_EVENT_Z, eventList);
-
         delete [] srcData;
-
-        clReleaseMemObject(srcImage);
-        clReleaseMemObject(gaussBuf);
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
@@ -286,7 +283,7 @@ namespace Parser {
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
     #endif
 
-        qDebug() << errNo;
+        qDebug() << "fourier2dImageA" << errNo;
 
         cl_mem casBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, nullptr, nullptr);
         cl_mem tanBuf = clCreateBuffer(_context, CL_MEM_READ_WRITE, slicePitchFourier2d, nullptr, nullptr);
@@ -312,10 +309,10 @@ namespace Parser {
 
         clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr,
                                eventList + CALC_TABLES_COMPLETED_EVENT);
-        clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr,
+        qDebug() << clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr,
                                CALC_TABLES_COMPLETED_EVENT, eventList, eventList + DHT_1D_TO_2D_COMPLETED_EVENT);
 
-        clWaitForEvents(DHT_1D_TO_2D_COMPLETED_EVENT, eventList);
+        //clWaitForEvents(DHT_1D_TO_2D_COMPLETED_EVENT, eventList);
         /*
         float * test = (float *) clEnqueueMapBuffer(_queue, tanBuf, CL_TRUE, CL_MEM_WRITE_ONLY, 0, sizeof(float) * paddedWidth * paddedWidth, 0, nullptr, nullptr, nullptr);
         for (size_t i = 0; i != paddedWidth; ++ i) {
@@ -325,7 +322,7 @@ namespace Parser {
             }
         }
 */
-        clReleaseMemObject(gaussImage);
+
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageB = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
@@ -348,18 +345,11 @@ namespace Parser {
 
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageB);
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
-        clSetKernelArg(_dht1dTransposeKernel, 2, sizeof(cl_mem), (void *) &casBuf);
-        clSetKernelArg(_dht1dTransposeKernel, 3, sizeof(cl_mem), (void *) &coeff);
 
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
                                            nullptr, DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_SECOND_1D_COMPLETED_EVENT);
 
-        clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
-
-        clReleaseMemObject(fourier2dImageB);
-        clReleaseMemObject(casBuf);
-        clReleaseMemObject(tanBuf);
-        clReleaseMemObject(radBuf);
+        //clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
 
     #ifdef CL_VERSION_1_2
         cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
@@ -381,10 +371,9 @@ namespace Parser {
         uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
                                                  CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                                  &rowPitchDst, &slicePitchDst,
-                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, nullptr);
+                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, &errNo);
 
-        clWaitForEvents(ALL_EVENTS_COMPLETED, eventList);
-
+        
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData;
 
         cv::Mat helperMat;
@@ -399,12 +388,17 @@ namespace Parser {
         _slicesOCL.resize((int) height);
         posSlice = sliceData;
         QMutableVectorIterator<cv::Mat *>it(_slicesOCL);
+        
+        clWaitForEvents(ALL_EVENTS_COMPLETED, eventList);
+        clFinish(_queue);
 
         while (it.hasNext()) {
             helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (posSlice));
             posSlice += slicePitchDst;
 
             cv::minMaxLoc(helperMat, &minVal, &maxVal, nullptr, nullptr);
+            
+            qDebug() << minVal << maxVal;
 
             it.next() = new cv::Mat(helperMat);
 
@@ -440,10 +434,18 @@ namespace Parser {
         for (int i = 0; i != ALL_EVENTS_COMPLETED; ++ i) {
             clReleaseEvent(eventList[i]);
         }
+        
+        clReleaseMemObject(srcImage);
+        clReleaseMemObject(gaussBuf);
 
+        clReleaseMemObject(gaussImage);
         clReleaseMemObject(fourier2dImageA);
+        clReleaseMemObject(fourier2dImageB);
+        clReleaseMemObject(casBuf);
+        clReleaseMemObject(tanBuf);
+        clReleaseMemObject(radBuf);
         clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
-        clFinish(_queue);
+        
 
         clReleaseMemObject(sliceImage);
 

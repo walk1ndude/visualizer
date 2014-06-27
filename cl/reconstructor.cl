@@ -1,4 +1,5 @@
 #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable
+#pragma OPENCL EXTENSION cl_intel_printf
 
 __constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
@@ -60,7 +61,7 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
     const int posT = pos.y * width + pos.x;
 
     const float xyPiN = pos.x * pos.y * twoPiN;
-    cas[posT] = sin(xyPiN) + cos(xyPiN);
+    cas[posT] = native_sin(xyPiN) + native_cos(xyPiN);
     
     tanTable[posT] = - atan2pi(origin.y, origin.x) * 180.0f;
     radTable[posT] = sqrt(origin.y * origin.y + origin.x * origin.x);
@@ -80,6 +81,10 @@ __kernel void dht1dTranspose(__read_only image3d_t src, __write_only image3d_t d
 __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
                         __global float * cas, __global float * tanTable, __global float * radTable) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    
+    if (pos.z > 140) {
+        printf("|%d|", pos.z);
+    }
 
     const int4 size = {get_image_width(src), get_image_depth(src),
                        get_image_width(dst), get_image_height(dst)};
@@ -92,18 +97,20 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     const int posT = pos.y * size.z + pos.x;
 
     float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
-
+    
     if (fabs(srcPos.x) <= center.z) {
 
         const float sinoX = (center.z + srcPos.x) * pad.x;
         srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
 
+        const float dhtValue = calcElem(src, cas, srcPos, 0.0, 1);
+        
         write_imagef(dst,
                     (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
                             pos.y + (pos.y < center.w ? 1 : -1) * center.w,
                             pos.z,
                             0),
-                    (float4) (( ((int) sinoX % 2) ? 1 : -1) * calcElem(src, cas, srcPos, (int) (center.z - center.x), 1)));
+                    (float4) (( ((int) sinoX % 2) ? 1 : -1) * dhtValue));
     }
 }
 
@@ -117,7 +124,7 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
                          size.z / 2, size.w / 2};
 
 
-    int4 positions = {pos.x, pos.y, (size.x - pos.x), (size.y - pos.y)};
+    int4 positions = {pos.x, pos.y, (size.x - pos.x) % size.x, (size.y - pos.y) % size.y};
 
     const float4 readPixels = {
             read_imagef(src, sampler, (int4) (positions.x, positions.y, pos.z, 0)).x,
@@ -126,7 +133,7 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
             read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
     };
 
-    const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
+    const float E = 0;//((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
 
     positions.x += center.x;
     positions.y += center.y;
@@ -134,8 +141,8 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
     positions.z -= center.x;
     positions.w -= center.y;
 
-    //positions.xz -= (center.x - center.z);
-    //positions.yw -= (center.y - center.w);
+    positions.xz -= (center.x - center.z);
+    positions.yw -= (center.y - center.w);
 
     write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
     write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
