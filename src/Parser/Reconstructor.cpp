@@ -13,7 +13,7 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-#define PADDED_INCREASE 1.1f
+#define PADDED_INCREASE 1.0f
 
 #define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 5
@@ -254,6 +254,8 @@ namespace Parser {
         size_t globalThreadsGauss1d[3] = {width, height, depth};
         qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
                                0, nullptr, eventList + GAUSS_1D_COMPLETED_EVENT_X);
+        
+        clWaitForEvents(GAUSS_1D_COMPLETED_EVENT_X, eventList);
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &srcImage);
@@ -263,6 +265,8 @@ namespace Parser {
 
         qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, nullptr,
                                GAUSS_1D_COMPLETED_EVENT_Y, eventList, eventList + GAUSS_1D_COMPLETED_EVENT_Y);
+        
+        clWaitForEvents(GAUSS_1D_COMPLETED_EVENT_Y, eventList);
 
         clSetKernelArg(_gauss1dKernel, 0, sizeof(cl_mem), (void *) &srcImage);
         clSetKernelArg(_gauss1dKernel, 1, sizeof(cl_mem), (void *) &gaussImage);
@@ -297,6 +301,12 @@ namespace Parser {
         clSetKernelArg(_calcTablesKernel, 3, sizeof(size_t), (void *) &paddedWidth);
         clSetKernelArg(_calcTablesKernel, 4, sizeof(size_t), (void *) &paddedWidth);
         clSetKernelArg(_calcTablesKernel, 5, sizeof(float), (void *) &twoPiN);
+        
+        size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
+        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr,
+                               eventList + CALC_TABLES_COMPLETED_EVENT);
+        
+        clWaitForEvents(CALC_TABLES_COMPLETED_EVENT, eventList);
 
         clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
@@ -305,10 +315,6 @@ namespace Parser {
         clSetKernelArg(_fourier2dKernel, 4, sizeof(cl_mem), (void *) &radBuf);
 
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
-        size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
-
-        clEnqueueNDRangeKernel(_queue, _calcTablesKernel, 2, nullptr, globalThreadsCalcTables, nullptr, 0, nullptr,
-                               eventList + CALC_TABLES_COMPLETED_EVENT);
         qDebug() << clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, nullptr,
                                CALC_TABLES_COMPLETED_EVENT, eventList, eventList + DHT_1D_TO_2D_COMPLETED_EVENT);
 
@@ -333,6 +339,8 @@ namespace Parser {
     #endif
 
         const float coeff = 1.0 / paddedWidth;
+        
+        clWaitForEvents(DHT_1D_TO_2D_COMPLETED_EVENT, eventList);
 
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageB);
@@ -343,13 +351,13 @@ namespace Parser {
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
                                            nullptr, DHT_1D_TO_2D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_FIRST_1D_COMPLETED_EVENT);
 
+        clWaitForEvents(DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList);
+        
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageB);
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
 
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
                                            nullptr, DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_SECOND_1D_COMPLETED_EVENT);
-
-        //clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
 
     #ifdef CL_VERSION_1_2
         cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
@@ -360,6 +368,7 @@ namespace Parser {
     #endif
 
         qDebug() << errNo;
+        clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
 
         clSetKernelArg(_butterflyDht2dKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
         clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
