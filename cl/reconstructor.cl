@@ -3,10 +3,20 @@
 
 __constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
-float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, float coeff);
-int reflect(int maxDir, int curP);
+float calcElem(image3d_t src,
+               __global float * cas,
+               float4 pos,
+               int offset,
+               float coeff);
 
-float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, float coeff) {
+int reflect(int maxDir,
+            int curP);
+
+float calcElem(image3d_t src,
+               __global float * cas,
+               float4 pos,
+               int offset,
+               float coeff) {
     int width = get_image_width(src);
 
     float elem = 0.0f;
@@ -20,7 +30,8 @@ float calcElem(image3d_t src, __global float * cas, float4 pos, int offset, floa
     return elem * coeff;
 }
 
-int reflect(int maxDir, int curP) {
+int reflect(int maxDir,
+            int curP) {
     if (curP < 0) {
         return - curP - 1;
     }
@@ -30,13 +41,16 @@ int reflect(int maxDir, int curP) {
     return curP;
 }
 
-__kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
+__kernel void gauss1d(__read_only image3d_t src,
+                      __write_only image3d_t dst,
                       __constant float * gaussTab,
-                      __private uint dirX, __private uint dirY, __private uint dirZ,
-                      __private uint kernGaussSize) {
+                      uint dirX,
+                      uint dirY,
+                      uint dirZ,
+                      uint kernGaussSize) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    
     float sum = 0.0f;
-
     int4 posR = (int4) (0);
     
     for (int i = - kernGaussSize + 1; i != (int) kernGaussSize; ++ i) {
@@ -50,18 +64,19 @@ __kernel void gauss1d(__read_only image3d_t src, __write_only image3d_t dst,
     write_imagef(dst, pos, (float4) (sum));
 }
 
-__kernel void calcTables(__global float * cas, __global float * tanTable,
+__kernel void calcTables(__global float * cas,
+                         __global float * tanTable,
                          __global float * radTable,
-                         __private size_t width, __private size_t height,
-                         __private float twoPiN) {
+                         size_t width,
+                         size_t height,
+                         float twoPiN) {
     const int2 pos = {get_global_id(0), get_global_id(1)};
-    
     const float2 origin = {pos.x - width / 2.0f, pos.y - height / 2.0f};
 
     const int posT = pos.y * width + pos.x;
 
     const float xyPiN = pos.x * pos.y * twoPiN;
-    cas[posT] = native_sin(xyPiN) + native_cos(xyPiN);
+    cas[posT] = sin(xyPiN) + cos(xyPiN);
     
     tanTable[posT] = - atan2pi(origin.y, origin.x) * 180.0f;
     radTable[posT] = sqrt(origin.y * origin.y + origin.x * origin.x);
@@ -72,19 +87,20 @@ __kernel void calcTables(__global float * cas, __global float * tanTable,
     }
 }
 
-__kernel void dht1dTranspose(__read_only image3d_t src, __write_only image3d_t dst,
-                             __global float * cas, __private float coeff) {
+__kernel void dht1dTranspose(__read_only image3d_t src,
+                             __write_only image3d_t dst,
+                             __global float * cas,
+                             __private float coeff) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
     write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), (float4) (calcElem(src, cas, (float4) (pos.x, pos.y, pos.z, 0), 0, coeff)));
 }
 
-__kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
-                        __global float * cas, __global float * tanTable, __global float * radTable) {
+__kernel void fourier2d(__read_only image3d_t src,
+                        __write_only image3d_t dst,
+                        __global float * cas,
+                        __global float * tanTable,
+                        __global float * radTable) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-    
-    if (pos.z > 140) {
-        printf("|%d|", pos.z);
-    }
 
     const int4 size = {get_image_width(src), get_image_depth(src),
                        get_image_width(dst), get_image_height(dst)};
@@ -114,8 +130,9 @@ __kernel void fourier2d(__read_only image3d_t src, __write_only image3d_t dst,
     }
 }
 
-__kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t dst) {
-    int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+__kernel void butterflyDht2d(__read_only image3d_t src,
+                             __write_only image3d_t dst) {
+    const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
 
     const int4 size = {get_image_width(src), get_image_height(src),
                        get_image_width(dst), get_image_height(dst)};
@@ -133,7 +150,7 @@ __kernel void butterflyDht2d(__read_only image3d_t src, __write_only image3d_t d
             read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
     };
 
-    const float E = 0;//((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
+    const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
 
     positions.x += center.x;
     positions.y += center.y;
