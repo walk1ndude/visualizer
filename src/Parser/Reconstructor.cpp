@@ -15,7 +15,8 @@
 #define SLICE_POSITION "position"
 
 // opencl settings for Iris 5200
-#define IRIS_5200
+//#define IRIS_5200
+#define AMD_BARTS
 
 #ifdef IRIS_5200
 #define WORK_GROUP_WIDTH 8
@@ -23,6 +24,16 @@
 #define WORK_GROUP_DEPTH 8
 
 #define PADDED_INCREASE 1.0f
+#endif
+
+#ifdef AMD_BARTS
+#define WORK_GROUP_WIDTH 4
+#define WORK_GROUP_HEIGHT 4
+#define WORK_GROUP_DEPTH 4
+
+#define CL_CONTEXT_OFFLINE_DEVICES_AMD 0x403F
+
+#define PADDED_INCREASE 1.5f
 #endif
 
 #define SIGMA_GAUSS 1.5
@@ -97,10 +108,24 @@ namespace Parser {
 
         programFile.close();
 
-        _context = clCreateContextFromType(nullptr, CL_DEVICE_TYPE_GPU, nullptr, nullptr, nullptr);
+        cl_int errNo;
 
-        clGetDeviceIDs(nullptr, CL_DEVICE_TYPE_GPU, 1, &_device_id, nullptr);
-        
+        cl_platform_id * platforms;
+        cl_uint platforms_n;
+
+        clGetPlatformIDs(0, nullptr, &platforms_n);
+        platforms = (cl_platform_id *) malloc(sizeof(cl_platform_id) * (platforms_n + 1));
+        clGetPlatformIDs(platforms_n, platforms, &platforms_n);
+
+        qDebug() << clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_GPU, 1, &_device_id, nullptr);
+
+#ifdef AMD_BARTS
+        _context = clCreateContext(0, 1, &_device_id, nullptr, nullptr, &errNo);
+#else
+        _context = clCreateContextFromType(nullptr, CL_DEVICE_TYPE_GPU, nullptr, nullptr, &errNo);
+#endif
+        qDebug() << errNo;
+
         size_t size[3];
         clGetDeviceInfo(_device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t) * 3, size, nullptr);
         qDebug () << size[0] << size[1] << size[2];
@@ -111,6 +136,7 @@ namespace Parser {
                                                   (const size_t *) &programLength, nullptr);
 
         free(programText);
+        free(platforms);
 
         qDebug() << "Building OpenCL Program, error: " << clBuildProgram(_programSlice, 1, &_device_id, nullptr, nullptr, nullptr);
 
@@ -303,11 +329,13 @@ namespace Parser {
 
         float twoPiN = (2 * CV_PI) / paddedWidth;
 
+        int paddedWidthKernelArg = (int) paddedWidth;
+
         clSetKernelArg(_calcTablesKernel, 0, sizeof(cl_mem), (void *) &casBuf);
         clSetKernelArg(_calcTablesKernel, 1, sizeof(cl_mem), (void *) &tanBuf);
         clSetKernelArg(_calcTablesKernel, 2, sizeof(cl_mem), (void *) &radBuf);
-        clSetKernelArg(_calcTablesKernel, 3, sizeof(size_t), (void *) &paddedWidth);
-        clSetKernelArg(_calcTablesKernel, 4, sizeof(size_t), (void *) &paddedWidth);
+        clSetKernelArg(_calcTablesKernel, 3, sizeof(int), (void *) &paddedWidthKernelArg);
+        clSetKernelArg(_calcTablesKernel, 4, sizeof(int), (void *) &paddedWidthKernelArg);
         clSetKernelArg(_calcTablesKernel, 5, sizeof(float), (void *) &twoPiN);
         
         size_t globalThreadsCalcTables[2] = {paddedWidth, paddedWidth};
@@ -549,8 +577,8 @@ namespace Parser {
            _src.push_back(readerMat);
         }
 
-        //reconstruct();
-        reconstructCPU();
+        reconstruct();
+        //reconstructCPU();
 
         cv::namedWindow(SLICES_IMAGE_WINDOW);
         cv::namedWindow(SLICE_POSITION);

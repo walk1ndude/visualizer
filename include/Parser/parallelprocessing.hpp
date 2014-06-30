@@ -19,7 +19,7 @@ inline void calcSinogram(const int & row, const int & paddedSize,
 
     int startPoint = (paddedSize - rowWidth) / 2;
 
-    for (size_t i = 0; i != src->size(); ++ i) {
+    for (int i = 0; i != src->size(); ++ i) {
         (src->at(i)(cv::Rect(0, row, rowWidth, 1))).copyTo(sinogramRow(cv::Rect(startPoint, 0, rowWidth, 1)));
 
         sinogram.push_back(sinogramRow);
@@ -181,7 +181,7 @@ public:
 
         _reconstructorData->slices->resize(_reconstructorData->sliceCount);
 
-        for (size_t angle = 0; angle != _reconstructorData->src->size(); ++ angle) {
+        for (int angle = 0; angle != _reconstructorData->src->size(); ++ angle) {
             _cosTable.push_back(std::cos(toRad(angle)));
             _sinTable.push_back(std::sin(toRad(angle)));
         }

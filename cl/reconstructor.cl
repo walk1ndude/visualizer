@@ -1,5 +1,5 @@
 #pragma OPENCL EXTENSION cl_khr_3d_image_writes : enable
-#pragma OPENCL EXTENSION cl_intel_printf
+//#pragma OPENCL EXTENSION cl_intel_printf
 
 __constant sampler_t sampler = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_CLAMP_TO_EDGE | CLK_FILTER_NEAREST;
 
@@ -67,8 +67,8 @@ __kernel void gauss1d(__read_only image3d_t src,
 __kernel void calcTables(__global float * cas,
                          __global float * tanTable,
                          __global float * radTable,
-                         size_t width,
-                         size_t height,
+                         int width,
+                         int height,
                          float twoPiN) {
     const int2 pos = {get_global_id(0), get_global_id(1)};
     const float2 origin = {pos.x - width / 2.0f, pos.y - height / 2.0f};
@@ -118,9 +118,9 @@ __kernel void fourier2d(__read_only image3d_t src,
     if (fabs(srcPos.x) <= center.z) {
 
         const float sinoX = (center.z + srcPos.x) * pad.x;
-        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * (size.x - 1.0) - sinoX;
+        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * (size.x - 1.0f) - sinoX;
 
-        const float dhtValue = calcElem(src, cas, srcPos, (int) center.z - center.x, 1.0);
+        const float dhtValue = calcElem(src, cas, srcPos, (int) center.z - center.x, 1.0f);
         
         write_imagef(dst,
                     (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
