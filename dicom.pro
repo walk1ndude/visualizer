@@ -94,6 +94,7 @@ SOURCES +=  src/main.cpp \
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
             include/Parser/ctprocessing.hpp \
+            include/Parser/parallelprocessing.hpp \
             include/Parser/DicomReader.h \
             include/Parser/Reconstructor.h \
             include/Parser/StlReader.h \

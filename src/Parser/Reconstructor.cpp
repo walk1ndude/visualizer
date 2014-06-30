@@ -8,6 +8,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "Parser/Reconstructor.h"
+#include "Parser/parallelprocessing.hpp"
 #include "Parser/Helpers.hpp"
 
 #define SLICES_IMAGE_WINDOW "slices"
@@ -21,7 +22,7 @@
 #define WORK_GROUP_HEIGHT 8
 #define WORK_GROUP_DEPTH 8
 
-#define PADDED_INCREASE 1.5f
+#define PADDED_INCREASE 1.0f
 #endif
 
 #define SIGMA_GAUSS 1.5
@@ -338,7 +339,7 @@ namespace Parser {
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
         size_t localThreadsFourier2d[3] = {WORK_GROUP_WIDTH, WORK_GROUP_HEIGHT, WORK_GROUP_DEPTH};
         
-        qDebug() << clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, localThreadsFourier2d,
+        qDebug() << "tables" << clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, localThreadsFourier2d,
                                CALC_TABLES_COMPLETED_EVENT, eventList, eventList + DHT_1D_TO_2D_COMPLETED_EVENT);
 
         clWaitForEvents(DHT_1D_TO_2D_COMPLETED_EVENT, eventList);
@@ -349,7 +350,9 @@ namespace Parser {
                 qDebug() << i << j << test[i * paddedWidth + j];
             }
         }
-*/
+        */
+        //free(test);
+
         clReleaseMemObject(gaussImage);
 
     #ifdef CL_VERSION_1_2
@@ -372,7 +375,7 @@ namespace Parser {
         qDebug() << globalThreadsFourier2d[0] << globalThreadsFourier2d[1] << globalThreadsFourier2d[2];
 
         qDebug() << clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
-                                           localThreadsDht1dTranspose, DHT_1D_TO_2D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_FIRST_1D_COMPLETED_EVENT);
+                                          localThreadsDht1dTranspose, DHT_1D_TO_2D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_FIRST_1D_COMPLETED_EVENT);
 
         clWaitForEvents(DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList);
         
@@ -404,7 +407,7 @@ namespace Parser {
         qDebug() << globalThreadsButterfly[0] << globalThreadsButterfly[1] << globalThreadsButterfly[2];
         qDebug() << localThreadsButterfly[0] << localThreadsButterfly[1] << localThreadsButterfly[2];
 
-        qDebug() << clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
+        qDebug() << "butterfly" << clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
                                localThreadsButterfly, DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_COMPLETED_EVENT);
 
         uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
@@ -447,11 +450,11 @@ namespace Parser {
         cv::Mat result;
         foreach (cv::Mat * slice, _slicesOCL) {
             cv::convertScaleAbs(*slice, *slice,
-                                256.0f / (maxValVolume - minValVolume),
-                                256.0f * minValVolume / (minValVolume - maxValVolume));
+                                32 * 256.0f / (maxValVolume - minValVolume),
+                                minValVolume / (minValVolume - maxValVolume));
 
             //cv::inRange(*slice, cv::Scalar(160), cv::Scalar(165), *slice);
-
+/*
             cv::Canny(*slice, *slice, 20, 40, 3);
 
             std::vector<cv::vector<cv::Point> > contours;
@@ -466,7 +469,7 @@ namespace Parser {
             }
             result = cv::Scalar(0);
             cv::bitwise_and(*slice, *slice, result, helperMat);
-            result.copyTo(*slice);
+            result.copyTo(*slice);*/
         }
 
         for (int i = 0; i != ALL_EVENTS_COMPLETED; ++ i) {
@@ -479,10 +482,13 @@ namespace Parser {
         clReleaseMemObject(tanBuf);
         clReleaseMemObject(radBuf);
         clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
-        
 
         clReleaseMemObject(sliceImage);
 
+        visualize();
+    }
+
+    void Reconstructor::visualize() {
         SliceInfo::Slices slices;
 
         cv::Mat slice(*_slicesOCL.at(0));
@@ -491,7 +497,7 @@ namespace Parser {
         size_t sliceCount = _slicesOCL.size();
 
         uchar * mergedData = new uchar[oneSliceSize * sliceCount];
-        posSlice = mergedData;
+        uchar * posSlice = mergedData;
 
         foreach (const cv::Mat * slice, _slicesOCL) {
             memcpy(posSlice, slice->data, oneSliceSize);
@@ -543,12 +549,26 @@ namespace Parser {
            _src.push_back(readerMat);
         }
 
-        reconstruct();
+        //reconstruct();
+        reconstructCPU();
 
         cv::namedWindow(SLICES_IMAGE_WINDOW);
         cv::namedWindow(SLICE_POSITION);
 
         showSliceWithNumber(0);
+    }
+
+    void Reconstructor::reconstructCPU() {
+        ReconstructionData reconstructionData;
+
+        reconstructionData.src = &_src;
+        reconstructionData.slices = &_slicesOCL;
+
+        reconstructionData.sliceCount = _src.at(0).rows;
+
+        cv::parallel_for_(cv::Range(0, reconstructionData.sliceCount), ReconstructorLoop(&reconstructionData));
+
+        visualize();
     }
 
     void Reconstructor::changeSliceNumber(const int & ds) {

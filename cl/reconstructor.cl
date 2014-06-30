@@ -92,6 +92,7 @@ __kernel void dht1dTranspose(__read_only image3d_t src,
                              __global float * cas,
                              __private float coeff) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    //write_imagef(dst, pos, read_imagef(src, sampler, pos));
     write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), (float4) (calcElem(src, cas, (float4) (pos.x, pos.y, pos.z, 0), 0, coeff)));
 }
 
@@ -117,9 +118,9 @@ __kernel void fourier2d(__read_only image3d_t src,
     if (fabs(srcPos.x) <= center.z) {
 
         const float sinoX = (center.z + srcPos.x) * pad.x;
-        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
+        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * (size.x - 1.0) - sinoX;
 
-        const float dhtValue = calcElem(src, cas, srcPos, 0.0, 1);
+        const float dhtValue = calcElem(src, cas, srcPos, (int) center.z - center.x, 1.0);
         
         write_imagef(dst,
                     (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
@@ -160,7 +161,7 @@ __kernel void butterflyDht2d(__read_only image3d_t src,
 
     positions.xz -= (center.x - center.z);
     positions.yw -= (center.y - center.w);
-
+ 
     write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
     write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
     write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (float4) (readPixels.z + E));

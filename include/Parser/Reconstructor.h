@@ -44,7 +44,11 @@ namespace Parser {
         void showSliceWithNumber(const int & sliceNumber);
 
         void initOpenCL();
+
         void reconstruct();
+        void reconstructCPU();
+
+        void visualize();
 
     signals:
         void slicesProcessed(SliceInfo::Slices slices);
