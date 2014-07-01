@@ -90,7 +90,7 @@ __kernel void calcTables(__global float * cas,
 __kernel void dht1dTranspose(__read_only image3d_t src,
                              __write_only image3d_t dst,
                              __global float * cas,
-                             __private float coeff) {
+                             float coeff) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
     //write_imagef(dst, pos, read_imagef(src, sampler, pos));
     write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), (float4) (calcElem(src, cas, (float4) (pos.x, pos.y, pos.z, 0), 0, coeff)));
@@ -118,8 +118,8 @@ __kernel void fourier2d(__read_only image3d_t src,
     if (fabs(srcPos.x) <= center.z) {
 
         const float sinoX = (center.z + srcPos.x) * pad.x;
-        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * (size.x - 1.0f) - sinoX;
-
+        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
+        
         const float dhtValue = calcElem(src, cas, srcPos, (int) center.z - center.x, 1.0f);
         
         write_imagef(dst,
@@ -127,7 +127,7 @@ __kernel void fourier2d(__read_only image3d_t src,
                             pos.y + (pos.y < center.w ? 1 : -1) * center.w,
                             pos.z,
                             0),
-                    (float4) (( ((int) sinoX % 2) ? 1 : -1) * dhtValue));
+                    (float4) (( ((int) sinoX % 2 ? 1 : -1) * dhtValue)));
     }
 }
 

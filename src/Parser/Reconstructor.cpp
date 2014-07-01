@@ -15,8 +15,8 @@
 #define SLICE_POSITION "position"
 
 // opencl settings for Iris 5200
-//#define IRIS_5200
-#define AMD_BARTS
+#define IRIS_5200
+//#define AMD_BARTS
 
 #ifdef IRIS_5200
 #define WORK_GROUP_WIDTH 8
@@ -476,10 +476,12 @@ namespace Parser {
         }
 
         cv::Mat result;
-        foreach (cv::Mat * slice, _slicesOCL) {
+        foreach (cv::Mat * slice, _slicesOCL) {/*
             cv::convertScaleAbs(*slice, *slice,
-                                32 * 256.0f / (maxValVolume - minValVolume),
-                                minValVolume / (minValVolume - maxValVolume));
+                                256.0f / (maxValVolume - minValVolume),
+                                256.0f * minValVolume / (minValVolume - maxValVolume));*/
+            
+            slice->convertTo(*slice, CV_8UC1, 256 * 256);
 
             //cv::inRange(*slice, cv::Scalar(160), cv::Scalar(165), *slice);
 /*
