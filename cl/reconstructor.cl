@@ -18,13 +18,16 @@ float calcElem(image3d_t src,
                int offset,
                float coeff) {
     int width = get_image_width(src);
-
+    
+    int casPos = (int) pos.x * width + offset;
+    float i = 0.0f;
+    
     float elem = 0.0f;
-    for (int i = 0; i != width; ++ i) {
-        elem += (
-                 read_imagef(src, sampler, (float4) ((float) i, pos.y, pos.z, 0.0f)).x *
-                 cas[(int) (pos.x) * width + offset + i]
-                 );
+    
+    while (i < width) {
+        elem += (read_imagef(src, sampler, (float4) (i, pos.y, pos.z, 0.0f)).x *
+                 cas[casPos ++]);
+        i += 1.0f;
     }
 
     return elem * coeff;
@@ -47,13 +50,13 @@ __kernel void gauss1d(__read_only image3d_t src,
                       uint dirX,
                       uint dirY,
                       uint dirZ,
-                      uint kernGaussSize) {
+                      int kernGaussSize) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
     
     float sum = 0.0f;
     int4 posR = (int4) (0);
     
-    for (int i = - kernGaussSize + 1; i != (int) kernGaussSize; ++ i) {
+    for (int i = - kernGaussSize + 1; i != kernGaussSize; ++ i) {
         posR.x = reflect(get_image_width(src), pos.x + dirX * i);
         posR.y = reflect(get_image_height(src), pos.y + dirY * i);
         posR.z = reflect(get_image_depth(src), pos.z + dirZ * i);
@@ -61,7 +64,8 @@ __kernel void gauss1d(__read_only image3d_t src,
         sum += (gaussTab[kernGaussSize + i] * read_imagef(src, sampler, posR).x);
     }
 
-    write_imagef(dst, pos, (float4) (sum));
+    //write_imagef(dst, pos, (float4) (sum));
+    write_imagef(dst, pos, read_imagef(src, sampler, pos));
 }
 
 __kernel void calcTables(__global float * cas,
@@ -85,15 +89,6 @@ __kernel void calcTables(__global float * cas,
         radTable[posT] = - radTable[posT];
         tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
     }
-}
-
-__kernel void dht1dTranspose(__read_only image3d_t src,
-                             __write_only image3d_t dst,
-                             __global float * cas,
-                             float coeff) {
-    const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-    //write_imagef(dst, pos, read_imagef(src, sampler, pos));
-    write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), (float4) (calcElem(src, cas, (float4) (pos.x, pos.y, pos.z, 0), 0, coeff)));
 }
 
 __kernel void fourier2d(__read_only image3d_t src,
@@ -131,6 +126,14 @@ __kernel void fourier2d(__read_only image3d_t src,
     }
 }
 
+__kernel void dht1dTranspose(__read_only image3d_t src,
+                             __write_only image3d_t dst,
+                             __global float * cas,
+                             float coeff) {
+    const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), (float4) (calcElem(src, cas, convert_float4(pos), 0, coeff)));
+}
+
 __kernel void butterflyDht2d(__read_only image3d_t src,
                              __write_only image3d_t dst) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
@@ -141,7 +144,6 @@ __kernel void butterflyDht2d(__read_only image3d_t src,
     const int4 center = {size.x / 2, size.y / 2,
                          size.z / 2, size.w / 2};
 
-
     int4 positions = {pos.x, pos.y, (size.x - pos.x) % size.x, (size.y - pos.y) % size.y};
 
     const float4 readPixels = {
@@ -151,13 +153,13 @@ __kernel void butterflyDht2d(__read_only image3d_t src,
             read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
     };
 
-    const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
+    const float E = 0.0f;//((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
 
-    positions.x += center.x;
-    positions.y += center.y;
+    //positions.x += center.x;
+    //positions.y += center.y;
 
-    positions.z -= center.x;
-    positions.w -= center.y;
+    //positions.z -= center.x;
+    //positions.w -= center.y;
 
     positions.xz -= (center.x - center.z);
     positions.yw -= (center.y - center.w);
