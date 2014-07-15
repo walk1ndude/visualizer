@@ -38,6 +38,7 @@ namespace Parser {
         cl_kernel _dht1dTransposeKernel;
         cl_kernel _fourier2dKernel;
         cl_kernel _butterflyDht2dKernel;
+        cl_kernel _threshKernel;
 
         cl_command_queue _queue;
 

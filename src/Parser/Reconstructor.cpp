@@ -14,7 +14,7 @@
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
-//#define GAUSS
+#define GAUSS
 // opencl settings for Iris 5200
 #define IRIS_5200
 //#define AMD_BARTS
@@ -129,7 +129,6 @@ namespace Parser {
 
         size_t size[3];
         clGetDeviceInfo(_device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t) * 3, size, nullptr);
-        qDebug () << size[0] << size[1] << size[2];
         
         _queue = clCreateCommandQueue(_context, _device_id, 0, nullptr);
         
@@ -146,6 +145,7 @@ namespace Parser {
         _fourier2dKernel = clCreateKernel(_programSlice, "fourier2d", nullptr);
         _dht1dTransposeKernel = clCreateKernel(_programSlice, "dht1dTranspose", nullptr);
         _butterflyDht2dKernel = clCreateKernel(_programSlice, "butterflyDht2d", nullptr);
+        _threshKernel = clCreateKernel(_programSlice, "thresh", nullptr);
     }
 
     void Reconstructor::reconstruct() {
@@ -260,13 +260,9 @@ namespace Parser {
     #ifdef CL_VERSION_1_2
         cl_mem srcImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
                                           &image_format, &image_desc_src, (void *) srcData, &errNo);
-        
-        qDebug() << "srcImage" << errNo;
 
         cl_mem gaussImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                           &image_format, &image_desc_gauss, nullptr, &errNo);
-
-        qDebug() << "gaussImage" << errNo;
 
     #else
         cl_mem srcImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
@@ -298,7 +294,7 @@ namespace Parser {
         clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir0);
         clSetKernelArg(_gauss1dKernel, 6, sizeof(int), (void *) &kernGaussSize);
         
-        qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, localThreadsGauss1d,
+        clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, localThreadsGauss1d,
                                0, nullptr, eventList + GAUSS_1D_COMPLETED_EVENT_X);
         
         clWaitForEvents(GAUSS_1D_COMPLETED_EVENT_X, eventList);
@@ -309,9 +305,7 @@ namespace Parser {
         clSetKernelArg(_gauss1dKernel, 4, sizeof(uint), (void *) &dir1);
         clSetKernelArg(_gauss1dKernel, 5, sizeof(uint), (void *) &dir0);
         
-        qDebug() << globalThreadsGauss1d[0] << globalThreadsGauss1d[1] << globalThreadsGauss1d[2];
-
-        qDebug() << clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, localThreadsGauss1d,
+        clEnqueueNDRangeKernel(_queue, _gauss1dKernel, 3, nullptr, globalThreadsGauss1d, localThreadsGauss1d,
                                GAUSS_1D_COMPLETED_EVENT_Y, eventList, eventList + GAUSS_1D_COMPLETED_EVENT_Y);
         
         clWaitForEvents(GAUSS_1D_COMPLETED_EVENT_Y, eventList);
@@ -364,8 +358,6 @@ namespace Parser {
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
 #endif
         
-        qDebug() << "fourier2dImageA" << errNo;
-
         clSetKernelArg(_fourier2dKernel, 0, sizeof(cl_mem), (void *) &gaussImage);
         clSetKernelArg(_fourier2dKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
         clSetKernelArg(_fourier2dKernel, 2, sizeof(cl_mem), (void *) &casBuf);
@@ -375,19 +367,10 @@ namespace Parser {
         size_t globalThreadsFourier2d[3] = {paddedWidth, paddedWidth, height};
         size_t localThreadsFourier2d[3] = {WORK_GROUP_WIDTH, WORK_GROUP_HEIGHT, WORK_GROUP_DEPTH};
         
-        qDebug() << "tables" << clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, localThreadsFourier2d,
+        clEnqueueNDRangeKernel(_queue, _fourier2dKernel, 3, nullptr, globalThreadsFourier2d, localThreadsFourier2d,
                                CALC_TABLES_COMPLETED_EVENT, eventList, eventList + DHT_1D_TO_2D_COMPLETED_EVENT);
 
         clWaitForEvents(DHT_1D_TO_2D_COMPLETED_EVENT, eventList);
-  /*
-        float * test = (float *) clEnqueueMapBuffer(_queue, tanBuf, CL_TRUE, CL_MEM_WRITE_ONLY, 0, sizeof(float) * paddedWidth * paddedWidth, 0, nullptr, nullptr, nullptr);
-        for (size_t i = 0; i != paddedWidth; ++ i) {
-            for (size_t j = 0; j != paddedWidth; ++ j) {
-                qDebug() << i << j << test[i * paddedWidth + j];
-            }
-        }
-        */
-        //free(test);
 
         clReleaseMemObject(gaussImage);
 
@@ -408,9 +391,7 @@ namespace Parser {
         clSetKernelArg(_dht1dTransposeKernel, 2, sizeof(cl_mem), (void *) &casBuf);
         clSetKernelArg(_dht1dTransposeKernel, 3, sizeof(float), (void *) &coeff);
         
-        qDebug() << globalThreadsFourier2d[0] << globalThreadsFourier2d[1] << globalThreadsFourier2d[2];
-
-        qDebug() << clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
+        clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
                                           localThreadsDht1dTranspose, DHT_1D_TO_2D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_FIRST_1D_COMPLETED_EVENT);
 
         clWaitForEvents(DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList);
@@ -418,111 +399,138 @@ namespace Parser {
         clSetKernelArg(_dht1dTransposeKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageB);
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
         
-        qDebug() << clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
+        clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
                                            localThreadsDht1dTranspose, DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_SECOND_1D_COMPLETED_EVENT);
 
         clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
 
-        clReleaseMemObject(fourier2dImageB);
+        
 
 #ifdef CL_VERSION_1_2
-        cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+        cl_mem sliceImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                           &image_format, &image_desc_slices, nullptr, &errNo);
 #else
-        cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+        cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                             &image_format, width, width, height, 0, 0, nullptr, nullptr);
 #endif
 
-        qDebug() << errNo;
         size_t globalThreadsButterfly[3] = {paddedWidth / 2 + 1, paddedWidth / 2 + 1, height};
-        size_t localThreadsButterfly[3] = {WORK_GROUP_WIDTH, WORK_GROUP_HEIGHT, WORK_GROUP_DEPTH};
 
         clSetKernelArg(_butterflyDht2dKernel, 0, sizeof(cl_mem), (void *) &fourier2dImageA);
         clSetKernelArg(_butterflyDht2dKernel, 1, sizeof(cl_mem), (void *) &sliceImage);
         
-        qDebug() << globalThreadsButterfly[0] << globalThreadsButterfly[1] << globalThreadsButterfly[2];
-        qDebug() << localThreadsButterfly[0] << localThreadsButterfly[1] << localThreadsButterfly[2];
-
-        qDebug() << "butterfly" << clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
+        clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
                                nullptr, DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_COMPLETED_EVENT);
 
-        uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
+        float * sliceData = (float *) clEnqueueMapImage(_queue, sliceImage,
                                                  CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                                  &rowPitchDst, &slicePitchDst,
-                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, &errNo);
-
+                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, nullptr);
         
-        qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData << errNo;
-
-        cv::Mat helperMat;
-
-        double minVal;
-        double maxVal;
 
         // there will be never such values, so it's save
-        double minValVolume = 1000.0f;
-        double maxValVolume = -1000.0f;
-
-        _slicesOCL.resize((int) height);
-        posSlice = sliceData;
-        QMutableVectorIterator<cv::Mat *>it(_slicesOCL);
+        float minValVolume = 1000.0f;
+        float maxValVolume = -1000.0f;
+        
+#ifdef CL_VERSION_1_2
+        cl_mem sliceImageB = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+                                          &image_format, &image_desc_slices, nullptr, &errNo);
+#else
+        cl_mem sliceImageB = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
+                                            &image_format, width, width, height, 0, 0, nullptr, nullptr);
+#endif
         
         clWaitForEvents(ALL_EVENTS_COMPLETED, eventList);
-
-        while (it.hasNext()) {
-            helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (posSlice));
-            posSlice += slicePitchDst;
-
-            cv::minMaxLoc(helperMat, &minVal, &maxVal, nullptr, nullptr);
-            
-            qDebug() << minVal << maxVal;
-
-            it.next() = new cv::Mat(helperMat);
-
-            maxValVolume = std::max(maxValVolume, maxVal);
-            minValVolume = std::min(minValVolume, minVal);
+        
+        for (size_t i = 0; i != width * width * height; ++ i) {
+            minValVolume = std::fmin(sliceData[i], minValVolume);
+            maxValVolume = std::fmax(sliceData[i], maxValVolume);
         }
 
+        qDebug() << minValVolume << maxValVolume;
+        
+        size_t globalThreadsThresh[3] = {width, width, height};
+        
+        float threshV = 80.0f;
+        float maxV = 255.0f;
+        
+        qDebug() << clSetKernelArg(_threshKernel, 0, sizeof(cl_mem), (void *) &sliceImage);
+        clSetKernelArg(_threshKernel, 1, sizeof(cl_mem), (void *) &sliceImageB);
+        clSetKernelArg(_threshKernel, 2, sizeof(float), (void *) &minValVolume);
+        clSetKernelArg(_threshKernel, 3, sizeof(float), (void *) &maxValVolume);
+        clSetKernelArg(_threshKernel, 4, sizeof(float), (void *) &threshV);
+        clSetKernelArg(_threshKernel, 5, sizeof(float), (void *) &maxV);
+        
+        qDebug() << clEnqueueNDRangeKernel(_queue, _threshKernel, 3, nullptr, globalThreadsThresh, nullptr, 0, nullptr, nullptr);
+        
+        uchar * sliceImData = (uchar *) clEnqueueMapImage(_queue, sliceImageB,
+                                                          CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
+                                                          &rowPitchDst, &slicePitchDst,
+                                                          0, nullptr, nullptr, &errNo);
+        
+        
+        clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
+        
+        
+        qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceImData << errNo;
+        
+        _slicesOCL.resize((int) height);
+        posSlice = sliceImData;
+        
+        cv::Mat helperMat;
         cv::Mat result;
-        foreach (cv::Mat * slice, _slicesOCL) {/*
-            cv::convertScaleAbs(*slice, *slice,
-                                256.0f / (maxValVolume - minValVolume),
-                                256.0f * minValVolume / (minValVolume - maxValVolume));*/
+        cv::Mat slice;
+        
+        double minVV;
+        double maxVV;
+        
+        for (int i = 0; i != _slicesOCL.size(); ++ i) {
+            helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (posSlice));
             
-            slice->convertTo(*slice, CV_8UC1, 256 * 256);
+            cv::minMaxLoc(helperMat, &minVV, &maxVV, nullptr, nullptr);
+            
+            qDebug() << minVV << maxVV;
+            
+            posSlice += slicePitchDst;
 
-            //cv::inRange(*slice, cv::Scalar(160), cv::Scalar(165), *slice);
-/*
-            cv::Canny(*slice, *slice, 20, 40, 3);
+            slice = helperMat;
+            
+            slice.convertTo(helperMat, CV_8UC1);
+
+            cv::Canny(helperMat, helperMat, 20, 40, 3);
 
             std::vector<cv::vector<cv::Point> > contours;
 
-            cv::findContours(*slice, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_L1, cv::Point(0, 0));
-
-            helperMat = cv::Mat(slice->rows, slice->cols, CV_8UC1, cv::Scalar(0));
+            cv::findContours(helperMat, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_L1, cv::Point(0, 0));
+            helperMat = cv::Scalar(0);
+            
             for (size_t i = 0; i < contours.size(); ++ i) {
                 if (contours.at(i).size() > 10) {
-                    cv::drawContours(helperMat, contours, (int) i, cv::Scalar(255), 2, 8, cv::noArray(), 0, cv::Point());
+                    cv::drawContours(helperMat, contours, (int) i, cv::Scalar(255), CV_FILLED);
                 }
             }
+            
             result = cv::Scalar(0);
-            cv::bitwise_and(*slice, *slice, result, helperMat);
-            result.copyTo(*slice);*/
+            cv::bitwise_and(slice, slice, result, helperMat);
+            
+            _slicesOCL[i] = new cv::Mat(slice.rows, slice.cols, CV_8UC1);
+            result.copyTo(*(_slicesOCL[i]));
         }
 
         for (int i = 0; i != ALL_EVENTS_COMPLETED; ++ i) {
             clReleaseEvent(eventList[i]);
         }
         
-        
         clReleaseMemObject(fourier2dImageA);
         clReleaseMemObject(casBuf);
         clReleaseMemObject(tanBuf);
         clReleaseMemObject(radBuf);
-        clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
 
         clReleaseMemObject(sliceImage);
-
+        
+        clEnqueueUnmapMemObject(_queue, sliceImageB, sliceImData, 0, nullptr, nullptr);
+        clReleaseMemObject(sliceImageB);
+        
         visualize();
     }
 
@@ -536,7 +544,7 @@ namespace Parser {
 
         uchar * mergedData = new uchar[oneSliceSize * sliceCount];
         uchar * posSlice = mergedData;
-
+        
         foreach (const cv::Mat * slice, _slicesOCL) {
             memcpy(posSlice, slice->data, oneSliceSize);
             posSlice += oneSliceSize;

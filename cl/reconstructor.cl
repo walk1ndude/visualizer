@@ -19,7 +19,7 @@ float calcElem(image3d_t src,
                float coeff) {
     int width = get_image_width(src);
     
-    int casPos = (int) pos.x * width + offset;
+    int casPos = (int) round(pos.x * width + offset);
     float i = 0.0f;
     
     float elem = 0.0f;
@@ -64,8 +64,7 @@ __kernel void gauss1d(__read_only image3d_t src,
         sum += (gaussTab[kernGaussSize + i] * read_imagef(src, sampler, posR).x);
     }
 
-    //write_imagef(dst, pos, (float4) (sum));
-    write_imagef(dst, pos, read_imagef(src, sampler, pos));
+    write_imagef(dst, pos, (float4) (sum));
 }
 
 __kernel void calcTables(__global float * cas,
@@ -110,20 +109,19 @@ __kernel void fourier2d(__read_only image3d_t src,
 
     float4 srcPos = {radTable[posT], pos.z, tanTable[posT], 0.0f};
     
-    if (fabs(srcPos.x) <= center.z) {
-
-        const float sinoX = (center.z + srcPos.x) * pad.x;
-        srcPos.x = center.x + (srcPos.x < 0 ? 0 : 1) * size.x - sinoX;
+    const float sinoX = (center.z + srcPos.x) * pad.x;
+    srcPos.x = round(sinoX + (srcPos.x < 0 ? 1 : -1) * center.x);
         
-        const float dhtValue = calcElem(src, cas, srcPos, (int) center.z - center.x, 1.0f);
-        
-        write_imagef(dst,
-                    (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
-                            pos.y + (pos.y < center.w ? 1 : -1) * center.w,
-                            pos.z,
-                            0),
-                    (float4) (( ((int) sinoX % 2 ? 1 : -1) * dhtValue)));
-    }
+    const float dhtValue = calcElem(src, cas, srcPos, (int) center.z - center.x, 1.0f);
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    write_imagef(dst,
+                 (int4) (pos.x + (pos.x < center.z ? 1 : -1) * center.z,
+                         pos.y + (pos.y < center.w ? 1 : -1) * center.w,
+                         pos.z,
+                         0),
+                 (float4) (( ((int) round(sinoX) % 2 ? -1 : 1) * dhtValue)));
 }
 
 __kernel void dht1dTranspose(__read_only image3d_t src,
@@ -131,13 +129,17 @@ __kernel void dht1dTranspose(__read_only image3d_t src,
                              __global float * cas,
                              float coeff) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-    write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), (float4) (calcElem(src, cas, convert_float4(pos), 0, coeff)));
+    const float4 dhtValue = (float4) (calcElem(src, cas, convert_float4(pos), 0, coeff));
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    write_imagef(dst, (int4) (pos.y, pos.x, pos.z, 0), dhtValue);
 }
 
 __kernel void butterflyDht2d(__read_only image3d_t src,
                              __write_only image3d_t dst) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-
+    
     const int4 size = {get_image_width(src), get_image_height(src),
                        get_image_width(dst), get_image_height(dst)};
 
@@ -153,19 +155,38 @@ __kernel void butterflyDht2d(__read_only image3d_t src,
             read_imagef(src, sampler, (int4) (positions.z, positions.w, pos.z, 0)).x
     };
 
-    const float E = 0.0f;//((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
+    const float E = ((readPixels.x + readPixels.w) - (readPixels.y + readPixels.z)) / 2.0f;
 
-    //positions.x += center.x;
-    //positions.y += center.y;
+    positions.x += center.x;
+    positions.y += center.y;
 
-    //positions.z -= center.x;
-    //positions.w -= center.y;
+    positions.z -= center.x;
+    positions.w -= center.y;
 
     positions.xz -= (center.x - center.z);
     positions.yw -= (center.y - center.w);
  
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
     write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
     write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
     write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (float4) (readPixels.z + E));
     write_imagef(dst, (int4) (positions.z, positions.w, pos.z, 0), (float4) (readPixels.w - E));
+}
+
+__kernel void thresh(__read_only image3d_t src,
+                     __write_only image3d_t dst,
+                     float minValVolume,
+                     float maxValVolume,
+                     float threshV,
+                     float maxV) {
+    const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
+    
+    const float value = 256.0f / (maxValVolume - minValVolume) * read_imagef(src, sampler, pos).x + 256.0f * minValVolume / (minValVolume - maxValVolume);
+    
+    const float4 value4 = (float4) (value >= threshV ? maxV : 0.0f);
+    
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    write_imagef(dst, pos, value4);
 }
