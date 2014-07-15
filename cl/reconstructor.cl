@@ -96,7 +96,7 @@ __kernel void fourier2d(__read_only image3d_t src,
                         __global float * tanTable,
                         __global float * radTable) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-
+    
     const int4 size = {get_image_width(src), get_image_depth(src),
                        get_image_width(dst), get_image_height(dst)};
 
@@ -139,7 +139,7 @@ __kernel void dht1dTranspose(__read_only image3d_t src,
 __kernel void butterflyDht2d(__read_only image3d_t src,
                              __write_only image3d_t dst) {
     const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-    
+
     const int4 size = {get_image_width(src), get_image_height(src),
                        get_image_width(dst), get_image_height(dst)};
 
@@ -168,25 +168,8 @@ __kernel void butterflyDht2d(__read_only image3d_t src,
  
     barrier(CLK_LOCAL_MEM_FENCE);
     
-    write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (float4) (readPixels.x - E));
-    write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (float4) (readPixels.y + E));
-    write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (float4) (readPixels.z + E));
-    write_imagef(dst, (int4) (positions.z, positions.w, pos.z, 0), (float4) (readPixels.w - E));
-}
-
-__kernel void thresh(__read_only image3d_t src,
-                     __write_only image3d_t dst,
-                     float minValVolume,
-                     float maxValVolume,
-                     float threshV,
-                     float maxV) {
-    const int4 pos = {get_global_id(0), get_global_id(1), get_global_id(2), 0};
-    
-    const float value = 256.0f / (maxValVolume - minValVolume) * read_imagef(src, sampler, pos).x + 256.0f * minValVolume / (minValVolume - maxValVolume);
-    
-    const float4 value4 = (float4) (value >= threshV ? maxV : 0.0f);
-    
-    barrier(CLK_LOCAL_MEM_FENCE);
-    
-    write_imagef(dst, pos, value4);
+    write_imagef(dst, (int4) (positions.x, positions.y, pos.z, 0), (readPixels.x - E));
+    write_imagef(dst, (int4) (positions.x, positions.w, pos.z, 0), (readPixels.y + E));
+    write_imagef(dst, (int4) (positions.z, positions.y, pos.z, 0), (readPixels.z + E));
+    write_imagef(dst, (int4) (positions.z, positions.w, pos.z, 0), (readPixels.w - E));
 }

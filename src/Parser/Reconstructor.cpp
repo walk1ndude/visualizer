@@ -145,7 +145,6 @@ namespace Parser {
         _fourier2dKernel = clCreateKernel(_programSlice, "fourier2d", nullptr);
         _dht1dTransposeKernel = clCreateKernel(_programSlice, "dht1dTranspose", nullptr);
         _butterflyDht2dKernel = clCreateKernel(_programSlice, "butterflyDht2d", nullptr);
-        _threshKernel = clCreateKernel(_programSlice, "thresh", nullptr);
     }
 
     void Reconstructor::reconstruct() {
@@ -200,10 +199,6 @@ namespace Parser {
         cl_image_format image_format;
         image_format.image_channel_data_type = CL_FLOAT;
         image_format.image_channel_order = CL_R;
-
-        cl_image_format image_format_half;
-        image_format_half.image_channel_data_type = CL_FLOAT;
-        image_format_half.image_channel_order = CL_R;
 
     #ifdef CL_VERSION_1_2
         cl_image_desc image_desc_src;
@@ -352,7 +347,7 @@ namespace Parser {
         
 #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageA = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                               &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
+                                               &image_format, &image_desc_fourier2d, nullptr, &errNo);
 #else
         cl_mem fourier2dImageA = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
@@ -376,7 +371,7 @@ namespace Parser {
 
     #ifdef CL_VERSION_1_2
         cl_mem fourier2dImageB = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
-                                               &image_format_half, &image_desc_fourier2d, nullptr, &errNo);
+                                               &image_format, &image_desc_fourier2d, nullptr, &errNo);
     #else
         cl_mem fourier2dImageB = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
                                                  &image_format, paddedWidth, paddedWidth, height, 0, 0, nullptr, nullptr);
@@ -400,17 +395,17 @@ namespace Parser {
         clSetKernelArg(_dht1dTransposeKernel, 1, sizeof(cl_mem), (void *) &fourier2dImageA);
         
         clEnqueueNDRangeKernel(_queue, _dht1dTransposeKernel, 3, nullptr, globalThreadsDht1dTranspose,
-                                           localThreadsDht1dTranspose, DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_SECOND_1D_COMPLETED_EVENT);
+                               localThreadsDht1dTranspose, DHT_2D_I_FIRST_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_SECOND_1D_COMPLETED_EVENT);
 
         clWaitForEvents(DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList);
-
         
-
+        clReleaseMemObject(fourier2dImageB);
+        
 #ifdef CL_VERSION_1_2
-        cl_mem sliceImage = clCreateImage(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+        cl_mem sliceImage = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
                                           &image_format, &image_desc_slices, nullptr, &errNo);
 #else
-        cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_READ_WRITE | CL_MEM_ALLOC_HOST_PTR,
+        cl_mem sliceImage = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
                                             &image_format, width, width, height, 0, 0, nullptr, nullptr);
 #endif
 
@@ -421,102 +416,69 @@ namespace Parser {
         
         clEnqueueNDRangeKernel(_queue, _butterflyDht2dKernel, 3, nullptr, globalThreadsButterfly,
                                nullptr, DHT_2D_I_SECOND_1D_COMPLETED_EVENT, eventList, eventList + DHT_2D_I_COMPLETED_EVENT);
-
-        float * sliceData = (float *) clEnqueueMapImage(_queue, sliceImage,
+        
+        uchar * sliceData = (uchar *) clEnqueueMapImage(_queue, sliceImage,
                                                  CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
                                                  &rowPitchDst, &slicePitchDst,
-                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, nullptr);
+                                                 DHT_2D_I_COMPLETED_EVENT, eventList, eventList + MAP_FINAL_COMPLETED_EVENT, &errNo);
         
-
-        // there will be never such values, so it's save
-        float minValVolume = 1000.0f;
-        float maxValVolume = -1000.0f;
-        
-#ifdef CL_VERSION_1_2
-        cl_mem sliceImageB = clCreateImage(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                          &image_format, &image_desc_slices, nullptr, &errNo);
-#else
-        cl_mem sliceImageB = clCreateImage3D(_context, CL_MEM_WRITE_ONLY | CL_MEM_ALLOC_HOST_PTR,
-                                            &image_format, width, width, height, 0, 0, nullptr, nullptr);
-#endif
+        qDebug() << errNo;
         
         clWaitForEvents(ALL_EVENTS_COMPLETED, eventList);
         
-        for (size_t i = 0; i != width * width * height; ++ i) {
-            minValVolume = std::fmin(sliceData[i], minValVolume);
-            maxValVolume = std::fmax(sliceData[i], maxValVolume);
-        }
-
-        qDebug() << minValVolume << maxValVolume;
+        cv::Mat helperMat;
         
-        size_t globalThreadsThresh[3] = {width, width, height};
+        double minVal;
+        double maxVal;
         
-        float threshV = 80.0f;
-        float maxV = 255.0f;
-        
-        qDebug() << clSetKernelArg(_threshKernel, 0, sizeof(cl_mem), (void *) &sliceImage);
-        clSetKernelArg(_threshKernel, 1, sizeof(cl_mem), (void *) &sliceImageB);
-        clSetKernelArg(_threshKernel, 2, sizeof(float), (void *) &minValVolume);
-        clSetKernelArg(_threshKernel, 3, sizeof(float), (void *) &maxValVolume);
-        clSetKernelArg(_threshKernel, 4, sizeof(float), (void *) &threshV);
-        clSetKernelArg(_threshKernel, 5, sizeof(float), (void *) &maxV);
-        
-        qDebug() << clEnqueueNDRangeKernel(_queue, _threshKernel, 3, nullptr, globalThreadsThresh, nullptr, 0, nullptr, nullptr);
-        
-        uchar * sliceImData = (uchar *) clEnqueueMapImage(_queue, sliceImageB,
-                                                          CL_TRUE, CL_MEM_WRITE_ONLY, origin, regionSlice,
-                                                          &rowPitchDst, &slicePitchDst,
-                                                          0, nullptr, nullptr, &errNo);
-        
-        
-        clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
-        
-        
-        qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceImData << errNo;
+        // there will be never such values, so it's save
+        double minValVolume = 1000.0f;
+        double maxValVolume = -1000.0f;
         
         _slicesOCL.resize((int) height);
-        posSlice = sliceImData;
+        posSlice = sliceData;
+        QMutableVectorIterator<cv::Mat *>it(_slicesOCL);
         
-        cv::Mat helperMat;
-        cv::Mat result;
-        cv::Mat slice;
+        qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime << sliceData;
         
-        double minVV;
-        double maxVV;
-        
-        for (int i = 0; i != _slicesOCL.size(); ++ i) {
+        while (it.hasNext()) {
             helperMat = cv::Mat((int) width, (int) width, CV_32FC1, (void *) (posSlice));
-            
-            cv::minMaxLoc(helperMat, &minVV, &maxVV, nullptr, nullptr);
-            
-            qDebug() << minVV << maxVV;
-            
             posSlice += slicePitchDst;
-
-            slice = helperMat;
             
-            slice.convertTo(helperMat, CV_8UC1);
-
+            cv::minMaxLoc(helperMat, &minVal, &maxVal);
+            
+            it.next() = new cv::Mat(helperMat);
+            
+            maxValVolume = std::max(maxValVolume, maxVal);
+            minValVolume = std::min(minValVolume, minVal);
+        }
+        
+        cv::Mat result;
+        foreach (cv::Mat * slice, _slicesOCL) {
+            cv::convertScaleAbs(*slice, *slice,
+                                255.0f / (maxValVolume - minValVolume),
+                                255.0f * minValVolume / (minValVolume - maxValVolume));
+            
+            cv::threshold(*slice, helperMat, 77, 255, CV_THRESH_BINARY);
+            
             cv::Canny(helperMat, helperMat, 20, 40, 3);
-
+             
             std::vector<cv::vector<cv::Point> > contours;
-
+             
             cv::findContours(helperMat, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_TC89_L1, cv::Point(0, 0));
+             
             helperMat = cv::Scalar(0);
-            
             for (size_t i = 0; i < contours.size(); ++ i) {
                 if (contours.at(i).size() > 10) {
-                    cv::drawContours(helperMat, contours, (int) i, cv::Scalar(255), CV_FILLED);
+                    cv::drawContours(helperMat, contours, (int) i, cv::Scalar(255), 2, 8, cv::noArray(), 0, cv::Point());
                 }
             }
             
             result = cv::Scalar(0);
-            cv::bitwise_and(slice, slice, result, helperMat);
-            
-            _slicesOCL[i] = new cv::Mat(slice.rows, slice.cols, CV_8UC1);
-            result.copyTo(*(_slicesOCL[i]));
+            cv::bitwise_and(*slice, *slice, result, helperMat);
+            result.copyTo(*slice);
         }
-
+        
         for (int i = 0; i != ALL_EVENTS_COMPLETED; ++ i) {
             clReleaseEvent(eventList[i]);
         }
@@ -525,11 +487,9 @@ namespace Parser {
         clReleaseMemObject(casBuf);
         clReleaseMemObject(tanBuf);
         clReleaseMemObject(radBuf);
-
-        clReleaseMemObject(sliceImage);
+        clEnqueueUnmapMemObject(_queue, sliceImage, sliceData, 0, nullptr, nullptr);
         
-        clEnqueueUnmapMemObject(_queue, sliceImageB, sliceImData, 0, nullptr, nullptr);
-        clReleaseMemObject(sliceImageB);
+        clReleaseMemObject(sliceImage);
         
         visualize();
     }
