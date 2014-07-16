@@ -4,7 +4,7 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     id: appWindow
-    width: 640
+    width: 1000
     height: 670
 
     title: "visualizer"
@@ -18,6 +18,7 @@ ApplicationWindow {
     signal sliceNumberChanged(int ds);
 
     menuBar: MenuBar {
+        id: menubar
         Menu {
             title: 'File'
 
@@ -83,11 +84,32 @@ ApplicationWindow {
     }
 
     Row {
+        id: modelRow
         objectName: "modelRow"
         ModelItem {
             id: modelItem
-            width: appWindow.width
+            width: appWindow.width * 0.65
             height: appWindow.height
         }
+    }
+
+    SideBar {
+        id: sidebar
+        color: "#FFFFFF"
+
+        width: appWindow.width - modelRow.width
+        height: appWindow.height
+
+        anchors.left: modelRow.right;
+
+        onXRangeChanged: modelItem.xRange = xRange;
+        onYRangeChanged: modelItem.yRange = yRange;
+        onZRangeChanged: modelItem.zRange = zRange;
+
+        onMinHUChanged: modelItem.minHU = minHU;
+        onMaxHUChanged: modelItem.maxHU = maxHU;
+
+        onAngleChanged: modelItem.rotation = angle;
+        onZoomFactorChanged: modelItem.zoomFactor = zoomFactor;
     }
 }

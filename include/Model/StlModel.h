@@ -17,6 +17,8 @@ namespace Model {
         void setShaderVariables(ViewPort::ViewPort & viewPort);
         void bindShaderVariablesToBuffers();
 
+        ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
+
         void glStatesEnable();
         void glStatesDisable();
 

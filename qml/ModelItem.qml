@@ -7,25 +7,21 @@ Item {
 
     property bool takeShot: false
 
+    property vector2d xRange: Qt.vector2d(0.0, 1.0)
+    property vector2d yRange: Qt.vector2d(0.0, 1.0)
+    property vector2d zRange: Qt.vector2d(0.0, 1.0)
+
+    property vector3d rotation: Qt.vector3d(0.0, 0.0, 0.0)
+    property real zoomFactor: 2.0
+
+    property int minHU: 0
+    property int maxHU: 65535
+
     Rectangle {
-
-        Hud {
-            id: modelHud
-            objectName: "sliceHud"
-
-            width: modelItem.width
-            height: modelItem.height * 0.35
-
-            huRange: modelViewer.huRange
-
-            visible: false
-        }
-
         Rectangle {
             id: horizontalSeparator
 
             color: "#FF888888"
-            anchors.top: modelHud.top
             x: modelItem.width / 2 - 5
             width: 10
             height: modelItem.height
@@ -56,16 +52,16 @@ Item {
             height: modelItem.height
             z: -2
 
-            xRange: modelHud.xRange
-            yRange: modelHud.yRange
-            zRange: modelHud.zRange
+            xRange: modelItem.xRange
+            yRange: modelItem.yRange
+            zRange: modelItem.zRange
 
-            rotation: modelHud.angle
+            rotation: modelItem.rotation
 
-            zoomFactor: modelHud.zoomFactor
+            zoomFactor: modelItem.zoomFactor
 
-            minHU: modelHud.minHU
-            maxHU: modelHud.maxHU
+            minHU: modelItem.minHU
+            maxHU: modelItem.maxHU
 
             takeShot: modelItem.takeShot
         }
@@ -78,11 +74,10 @@ Item {
     }
 
     function show() {
-        modelHud.visible = true;
         horizontalSeparator.visible = true;
         verticalSeparator.visible = true;
     }
-
+/*
     Timer {
         id: angleShotTimer
         interval: 400
@@ -93,12 +88,12 @@ Item {
         onTriggered: {
             modelHud.angleShot += 1.0;
 
-            if (modelHud.angleShot > 180.0) {
+            if (modelHud.angleShot > 179.0) {
                 angleShotTimer.running = false;
                 modelHud.angleShot = 0.0;
 
                 modelItemItem.takeShot = false;
             }
         }
-    }
+    }*/
 }

@@ -104,10 +104,9 @@ vec4 sobel3(vec3 position) {
 }
 
 void main(void) {
-    
-    if (fragPos.s >= ranges.xRange[0] && fragPos.s <= ranges.xRange[1]
-            && fragPos.t >= ranges.yRange[0] && fragPos.t <= ranges.yRange[1]
-            && fragPos.p >= ranges.zRange[0] && fragPos.p <= ranges.zRange[1]) {
+    if (fragPos.s >= ranges.xRange[0] * 0.5 + 0.5 && fragPos.s <= ranges.xRange[1] * 0.5 + 0.5
+            && fragPos.t >= ranges.yRange[0] * 0.5 + 0.5 && fragPos.t <= ranges.yRange[1] * 0.5 + 0.5
+            && fragPos.p >= ranges.zRange[0] * 0.5 + 0.5 && fragPos.p <= ranges.zRange[1] * 0.5 + 0.5) {
 
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 

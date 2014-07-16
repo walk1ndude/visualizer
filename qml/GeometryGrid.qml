@@ -3,7 +3,7 @@ import QtQuick.Controls 1.2
 
 import "../js/helperfuncs.js" as HelperFuncs
 
-Grid {
+Rectangle {
     id: geometryGrid
 
     property real angleShot: 0.0
@@ -11,76 +11,89 @@ Grid {
     property vector3d angle: Qt.vector3d(0.0, 0.0, 0.0)
     property real zoomFactor: 2.0
 
-    columns: 3
-    rows: 4
-    spacing: 5
+    color: "#cccccc"
+    border.color: "black"
+    border.width: 2
 
-    Text {
-        text: qsTr("x axis")
-    }
+    width: 200
+    height: 200
 
-    Slider {
-        id: xRotSlider
-        width: 200
-        minimumValue: -180.0
-        maximumValue: 180.0
-        value: 0.0
-        onValueChanged: updateAngle();
-    }
+    Grid {
+        columns: 3
+        rows: 4
+        spacing: 5
 
-    Text {
-        text: HelperFuncs.pad((Math.round(xRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
-    }
+        anchors.top: geometryGrid.top
+        anchors.left: geometryGrid.left
+        anchors.margins: 5
 
-    Text {
-        text: qsTr("y axis")
-    }
+        Text {
+            text: qsTr("x axis")
+        }
 
-    Slider {
-        id: yRotSlider
-        width: 200
-        minimumValue: -180.0
-        maximumValue: 180.0
-        value: 0.0
-        onValueChanged: updateAngle();
-    }
+        Slider {
+            id: xRotSlider
+            width: 200
+            minimumValue: -180.0
+            maximumValue: 180.0
+            value: 0.0
+            onValueChanged: updateAngle();
+        }
 
-    Text {
-        text: HelperFuncs.pad((Math.round(yRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
-    }
+        Text {
+            text: HelperFuncs.pad((Math.round(xRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        }
 
-    Text {
-        text: qsTr("z axis")
-    }
+        Text {
+            text: qsTr("y axis")
+        }
 
-    Slider {
-        id: zRotSlider
-        width: 200
-        minimumValue: -180.0
-        maximumValue: 180.0
-        value: 0.0
-        onValueChanged: updateAngle();
-    }
+        Slider {
+            id: yRotSlider
+            width: 200
+            minimumValue: -180.0
+            maximumValue: 180.0
+            value: 0.0
+            onValueChanged: updateAngle();
+        }
 
-    Text {
-        text: HelperFuncs.pad((Math.round(zRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
-    }
+        Text {
+            text: HelperFuncs.pad((Math.round(yRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        }
 
-    Text {
-        text: qsTr("zoom")
-    }
+        Text {
+            text: qsTr("z axis")
+        }
 
-    Slider {
-        id: zoomSlider
-        width: 200
-        minimumValue: 0.1
-        maximumValue: 4.0
-        value: 2.0
-        onValueChanged: geometryGrid.zoomFactor = value;
-    }
+        Slider {
+            id: zRotSlider
+            width: 200
+            minimumValue: -180.0
+            maximumValue: 180.0
+            value: 0.0
+            onValueChanged: updateAngle();
+        }
 
-    Text {
-        text: HelperFuncs.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        Text {
+            text: HelperFuncs.pad((Math.round(zRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        }
+
+        Text {
+            text: qsTr("zoom")
+        }
+
+        Slider {
+            id: zoomSlider
+            width: 200
+            minimumValue: 0.1
+            maximumValue: 4.0
+            value: 2.0
+            onValueChanged: geometryGrid.zoomFactor = value;
+        }
+
+        Text {
+            text: HelperFuncs.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+        }
     }
 
     onAngleShotChanged: yRotSlider.value = geometryGrid.angleShot;

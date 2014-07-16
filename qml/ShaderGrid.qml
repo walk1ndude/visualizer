@@ -1,7 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 
-Item {
+Rectangle {
     id: shaderGrid
 
     property vector2d xRange: xRange.rangeVector
@@ -13,12 +13,22 @@ Item {
     property int minHU: minHUSlider.value
     property int maxHU: maxHUSlider.value
 
+    color: "#cccccc"
+    border.color: "black"
+    border.width: 2
+
+    width: 200
+    height: 200
+
     Grid {
         id: grid
 
         columns: 3
         rows: 6
-        spacing: 5
+
+        anchors.top: shaderGrid.top
+        anchors.left: shaderGrid.left
+        anchors.margins: 5
 
         Text {
             text: qsTr("minHU")
@@ -62,6 +72,8 @@ Item {
         onRangeVectorChanged: shaderGrid.xRange = rangeVector
 
         anchors.top: grid.bottom
+        anchors.left: shaderGrid.left
+        anchors.margins: 5
     }
 
 
@@ -72,6 +84,8 @@ Item {
         onRangeVectorChanged: shaderGrid.yRange = rangeVector
 
         anchors.top: xRange.bottom
+        anchors.left: shaderGrid.left
+        anchors.margins: 5
     }
 
 
@@ -82,5 +96,7 @@ Item {
         onRangeVectorChanged: shaderGrid.zRange = rangeVector
 
         anchors.top: yRange.bottom
+        anchors.left: shaderGrid.left
+        anchors.margins: 5
     }
 }

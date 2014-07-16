@@ -49,7 +49,7 @@ namespace Gui {
             });
 
             QObject::connect(_appWindow, &QQuickWindow::widthChanged, [=](const int & width) {
-                modelViewer->setWidth(width);
+                modelViewer->setWidth(width * 0.65);
                 modelViewer->update();
             });
 

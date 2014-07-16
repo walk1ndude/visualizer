@@ -12,5 +12,7 @@
         <file>cl/reconstructor.cl</file>
         <file>shaders/stlVertex.glsl</file>
         <file>shaders/stlFragment.glsl</file>
+        <file>qml/SideBar.qml</file>
+        <file>qml/MeasureGrid.qml</file>
     </qresource>
 </RCC>

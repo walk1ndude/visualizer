@@ -20,6 +20,8 @@ namespace Model {
         void glStatesEnable();
         void glStatesDisable();
 
+        ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
+
         void init(const int & depth);
 
     private:

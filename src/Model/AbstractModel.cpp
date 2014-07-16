@@ -53,7 +53,10 @@ namespace Model {
         QMutexLocker locker(&_modelMutex);
 
         if (_program) {
-            _viewRange = new ModelInfo::ViewRange(xRange, yRange, zRange, _program, shaderVariables);
+            _viewRange = new ModelInfo::ViewRange(correctedViewwAxisRange(xRange),
+                                                  correctedViewwAxisRange(yRange),
+                                                  correctedViewwAxisRange(zRange),
+                                                  _program, shaderVariables);
         }
         else {
             emit shaderProgramSetVariableErrorHappened();
@@ -62,7 +65,7 @@ namespace Model {
 
     void AbstractModel::setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
                                          const ModelInfo::ViewAxis viewAxis) {
-        _viewRange->setViewAxisRange(viewAxisRange, viewAxis);
+        _viewRange->setViewAxisRange(correctedViewwAxisRange(viewAxisRange), viewAxis);
     }
 
     bool AbstractModel::bindShaderProgram() {
@@ -106,8 +109,8 @@ namespace Model {
 
         glStatesEnable();
 
-        setShaderVariables();
         setShaderVariables(viewPort);
+        setShaderVariables();
 
         bindTextures();
 

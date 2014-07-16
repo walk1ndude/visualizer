@@ -62,6 +62,10 @@ namespace Model {
         glDisable(GL_DEPTH_TEST);
     }
 
+    ModelInfo::ViewAxisRange HeadModel::correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) {
+        return viewAxisRange;
+    }
+
     void HeadModel::initShaderVariables() {
         _shaderVertex = _program->attributeLocation("vertex");
         _shaderTexHead = _program->attributeLocation("tex");

@@ -30,6 +30,10 @@ namespace Model {
         glDisable(GL_DEPTH_TEST);
     }
 
+    ModelInfo::ViewAxisRange StlModel::correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) {
+        return viewAxisRange;
+    }
+
     void StlModel::bindShaderVariablesToBuffers() {
         _program->enableAttributeArray(_shaderVertex);
         _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);

@@ -29,6 +29,8 @@ namespace Model {
         virtual void glStatesEnable() = 0;
         virtual void glStatesDisable() = 0;
 
+        virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) = 0;
+
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
