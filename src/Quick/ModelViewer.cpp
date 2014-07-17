@@ -76,6 +76,15 @@ namespace Quick {
         }
     }
 
+    QVector2D ModelViewer::mousePosition() {
+        return _mousePosition;
+    }
+
+    void ModelViewer::setMousePosition(const QVector2D & mousePosition) {
+        qDebug() << mousePosition;
+        emit mousePositionChanged(mousePosition);
+    }
+
     bool ModelViewer::takeShot() {
         return _takeShot;
     }

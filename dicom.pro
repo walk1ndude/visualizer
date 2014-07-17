@@ -115,6 +115,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Info/ShaderInfo.h \
             include/Scene/AbstractScene.h \
             include/Scene/ModelScene.h \
-            include/Parser/Helpers.hpp
+            include/Parser/Helpers.hpp \
+    include/Info/PointsInfo.h
 
 RESOURCES += resources.qrc

@@ -3,6 +3,8 @@
 
 #include "Model/AbstractModel.h"
 
+#include "Info/PointsInfo.h"
+
 namespace Model {
     class HeadModel : public AbstractModel {
         Q_OBJECT
@@ -34,6 +36,9 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderNormalMatrix;
         ShaderInfo::ShaderVariable _shaderScale;
         ShaderInfo::ShaderVariable _shaderStep;
+
+        PointsInfo::FacePoints * _facePoints;
+        PointsInfo::FacePointsProgram * _facePointsProgram;
 
         GLfloat _step;
     };

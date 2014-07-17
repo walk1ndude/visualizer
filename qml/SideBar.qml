@@ -39,9 +39,7 @@ Item {
                 // A ListElement can't contain child elements, but it can contain
                 // a list of elements. A list of ListElements can be used as a model
                 // just like any other model type.
-                subItems: [
-                    ListElement { }
-                ]
+                subItems: ListElement { }
             }
 
             ListElement {
@@ -49,18 +47,14 @@ Item {
                 collapsed: true
                 itemName: "geometryGrid"
 
-                subItems: [
-                    ListElement { }
-                ]
+                subItems: ListElement { }
             }
 
             ListElement {
                 categoryName: "Линейки"
                 collapsed: true
                 itemName: "measureGrid"
-                subItems: [
-                    ListElement { }
-                ]
+                subItems: ListElement { }
             }
 
         }

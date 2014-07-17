@@ -18,6 +18,8 @@ namespace Quick {
 
         Q_PROPERTY(bool takeShot READ takeShot WRITE setTakeShot NOTIFY takeShotChanged)
 
+        Q_PROPERTY(QVector2D mousePosition READ mousePosition WRITE setMousePosition NOTIFY mousePositionChanged)
+
         Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
         Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor NOTIFY zoomFactorChanged)
 
@@ -36,6 +38,9 @@ namespace Quick {
 
         bool takeShot();
         void setTakeShot(const bool & takeShot);
+
+        QVector2D mousePosition();
+        void setMousePosition(const QVector2D & mousePosition);
 
         QVector3D rotation();
         void setRotation(const QVector3D & rotation);
@@ -76,6 +81,8 @@ namespace Quick {
 
         bool _takeShot;
 
+        QVector2D _mousePosition;
+
         QVector3D _step;
 
         ModelInfo::ViewAxisRange _xRange;
@@ -106,6 +113,8 @@ namespace Quick {
 
         void minHUChanged(const int & minHU);
         void maxHUChanged(const int & maxHU);
+
+        void mousePositionChanged(const QVector2D & mousePosition);
 
         void slicesProcessed(SliceInfo::Slices slices);
         void modelRead(ModelInfo::BuffersVN buffers);

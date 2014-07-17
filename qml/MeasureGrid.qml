@@ -1,5 +1,7 @@
 import QtQuick 2.3
 
+import "../js/pointsdictionary.js" as PointsDict
+
 Rectangle {
     id: measureGrid
     width: 100
@@ -10,18 +12,20 @@ Rectangle {
     border.width: 2
 
     ListView {
-        model: listModel
+        model: ListModel {
+            id: listModel
+            Component.onCompleted: {
+                for (var key in PointsDict.pointsDict) {
+                    append({
+                               "itemName" : key,
+                               "colorItem" : PointsDict.pointsDict[key],
+                           });
+                }
+            }
+        }
+
         delegate: delegateComponent
         anchors.fill: parent
-    }
-
-    ListModel {
-        id: listModel
-        ListElement { itemName: "Верхняя резцовая" }
-        ListElement { itemName: "Правый сустав" }
-        ListElement { itemName: "Левый сустав" }
-        ListElement { itemName: "Правая опорная точка протетической плоскости" }
-        ListElement { itemName: "Левая опорная точка протетической плоскости" }
     }
 
     Component {
@@ -32,6 +36,8 @@ Rectangle {
                 border.color: "black"
                 border.width: 1
                 color: "white"
+
+                property bool selected: false
 
                 height: 45
                 width: measureGrid.width
@@ -44,7 +50,14 @@ Rectangle {
                     clip: true
                     wrapMode: Text.WordWrap
                 }
-            }
 
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        parent.selected = !parent.selected;
+                        parent.color = categoryItem.selected ? listModel.get(index).colorItem : "white";
+                    }
+                }
+            }
     }
 }

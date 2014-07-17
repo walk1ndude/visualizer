@@ -2,7 +2,8 @@
 
 namespace Model {
     HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModel(shaderFiles) {
+        AbstractModel(shaderFiles),
+        _facePoints(new PointsInfo::FacePoints) {
 
     }
 
@@ -76,6 +77,12 @@ namespace Model {
         _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
         _shaderScale = _program->uniformLocation("scale");
         _shaderStep = _program->uniformLocation("stepSlices");
+
+        _facePointsProgram = new PointsInfo::FacePointsProgram(_program,
+                                                               ShaderInfo::ShaderVariables() <<
+                                                               "facePoints.incisor" << "facePoints.leftJoint" <<
+                                                               "facePoint.rightJoint" << "facePoint.leftProsthetic" <<
+                                                               "facePoint.rightProsthetic");
     }
 
     void HeadModel::bindShaderVariablesToBuffers() {
@@ -93,5 +100,7 @@ namespace Model {
         _program->setUniformValue(_shaderNormalMatrix, viewPort.normalM());
         _program->setUniformValue(_shaderScale, viewPort.scaleM());
         _program->setUniformValue(_shaderStep, _step);
+
+        _facePointsProgram->setUniformValue(_program, _facePoints);
     }
 }

@@ -64,6 +64,13 @@ Item {
             maxHU: modelItem.maxHU
 
             takeShot: modelItem.takeShot
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: if (mouse.button == Qt.LeftButton) {
+                               modelViewer.mousePosition = Qt.vector2d(mouseX, mouseY);
+                           }
+            }
         }
     }
 

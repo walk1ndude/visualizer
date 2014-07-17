@@ -17,6 +17,16 @@ uniform highp mat4 scale;
 
 uniform highp mat3 normalMatrix;
 
+struct FacePoints {
+    vec2 incisor;
+    vec2 leftJoint;
+    vec2 rightJoint;
+    vec2 leftProsthetic;
+    vec2 rightProsthetic;
+};
+
+uniform highp FacePoints facePoints;
+
 struct Material {
     vec4 emissive;
     vec4 diffuse;
