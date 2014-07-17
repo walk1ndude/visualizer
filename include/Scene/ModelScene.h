@@ -7,6 +7,7 @@
 #include "Info/MaterialInfo.h"
 #include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
+#include "Info/PointsInfo.h"
 
 #include "Model/AbstractModel.h"
 
@@ -53,6 +54,8 @@ namespace Scene {
         void setXRange(const ModelInfo::ViewAxisRange & xRange);
         void setYRange(const ModelInfo::ViewAxisRange & yRange);
         void setZRange(const ModelInfo::ViewAxisRange & zRange);
+
+        void setPoint(const PointsInfo::Point & point);
 
     protected:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;

@@ -53,6 +53,10 @@ namespace Scene {
         _selectedModel->setViewAxisRange(zRange, ModelInfo::ZAXIS);
     }
 
+    void ModelScene::setPoint(const PointsInfo::Point & point) {
+
+    }
+
     void ModelScene::renderScene(const QSize & surfaceSize) {
         _viewPorts.resize(surfaceSize);
 

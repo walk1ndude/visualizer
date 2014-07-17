@@ -11,14 +11,21 @@ Rectangle {
     border.color: "black"
     border.width: 2
 
+    property string index: ""
+
     ListView {
         model: ListModel {
             id: listModel
+
+            property int prevIndex: -1
+
             Component.onCompleted: {
                 for (var key in PointsDict.pointsDict) {
                     append({
                                "itemName" : key,
-                               "colorItem" : PointsDict.pointsDict[key],
+                               "itemText" : PointsDict.pointsDict[key].text,
+                               "itemColor" : PointsDict.pointsDict[key].color,
+                               "selected" : false
                            });
                 }
             }
@@ -31,33 +38,43 @@ Rectangle {
     Component {
         id: delegateComponent
 
-            Rectangle {
-                id: categoryItem
-                border.color: "black"
-                border.width: 1
-                color: "white"
+        Rectangle {
+            id: rectangleItem
+            border.color: "black"
+            border.width: 1
+            color: "white"
 
-                property bool selected: false
+            property alias textItem: textItem
 
-                height: 45
-                width: measureGrid.width
+            height: 45
+            width: measureGrid.width
 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    x: 15
-                    font.pixelSize: 12
-                    text: itemName
-                    clip: true
-                    wrapMode: Text.WordWrap
-                }
+            Text {
+                id: textItem
+                anchors.verticalCenter: parent.verticalCenter
+                x: 15
+                font.pixelSize: 12
+                font.bold: selected
+                text: itemText
+                clip: true
+                wrapMode: Text.WordWrap
+            }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        parent.selected = !parent.selected;
-                        parent.color = categoryItem.selected ? listModel.get(index).colorItem : "white";
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    listModel.get(index).selected = !selected;
+
+                    if (listModel.prevIndex > -1) {
+                        listModel.setProperty(listModel.prevIndex, "selected", false);
                     }
+
+                    listModel.prevIndex = listModel.prevIndex === index ? -1 : index;
+
+                    parent.color = selected ? itemColor : "white";
+                    measureGrid.index = itemName;
                 }
             }
+        }
     }
 }

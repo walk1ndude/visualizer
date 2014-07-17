@@ -76,13 +76,21 @@ namespace Quick {
         }
     }
 
-    QVector2D ModelViewer::mousePosition() {
-        return _mousePosition;
+    QVector2D ModelViewer::point() {
+        return _point;
     }
 
-    void ModelViewer::setMousePosition(const QVector2D & mousePosition) {
-        qDebug() << mousePosition;
-        emit mousePositionChanged(mousePosition);
+    void ModelViewer::setPoint(const QVector2D & point) {
+        _point = point;
+        emit pointChanged(PointsInfo::Point(_point, _pointName));
+    }
+
+    QString ModelViewer::pointName() {
+        return _pointName;
+    }
+
+    void ModelViewer::setPointName(const QString & pointName) {
+        _pointName = pointName;
     }
 
     bool ModelViewer::takeShot() {
@@ -192,6 +200,8 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::zRangeChanged, _modelRenderer, &Render::ModelRenderer::setZRange, Qt::DirectConnection);
+
+            QObject::connect(this, &ModelViewer::pointChanged, _modelRenderer, &Render::ModelRenderer::setPoint, Qt::DirectConnection);
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 

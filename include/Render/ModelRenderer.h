@@ -10,6 +10,7 @@
 
 #include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
+#include "Info/PointsInfo.h"
 
 namespace Render {
     class ModelRenderer : public AbstractRenderer {
@@ -47,6 +48,8 @@ namespace Render {
         void setXRange(const ModelInfo::ViewAxisRange & xRange);
         void setYRange(const ModelInfo::ViewAxisRange & yRange);
         void setZRange(const ModelInfo::ViewAxisRange & zRange);
+
+        void setPoint(const PointsInfo::Point & point);
     };
 }
 #endif // SLICERENDERER_H

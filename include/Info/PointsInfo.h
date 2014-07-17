@@ -4,6 +4,18 @@
 #include "Info/ShaderInfo.h"
 
 namespace PointsInfo {
+    class Point {
+    public:
+        QVector2D position;
+        QString name;
+
+        Point(const QVector2D & position,
+              const QString & name) {
+            this->position = position;
+            this->name = name;
+        }
+    };
+
     using Incisor = QVector2D;
     using LeftJoint = QVector2D;
     using RightJoint = QVector2D;

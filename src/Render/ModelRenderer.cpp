@@ -107,6 +107,12 @@ namespace Render {
         }
     }
 
+    void ModelRenderer::setPoint(const PointsInfo::Point & point) {
+        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(_selectedScene)) {
+            selectModelScene->setPoint(point);
+        }
+    }
+
     void ModelRenderer::cleanUp() {
         QMutexLocker locker(&_renderMutex);
 

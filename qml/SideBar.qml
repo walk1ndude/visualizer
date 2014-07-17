@@ -6,15 +6,17 @@ Item {
 
     property color color: "#FFFFFF"
 
-    signal xRangeChanged(vector2d xRange);
-    signal yRangeChanged(vector2d yRange);
-    signal zRangeChanged(vector2d zRange);
+    property vector2d xRange: Qt.vector2d(0, 0)
+    property vector2d yRange: Qt.vector2d(0, 0)
+    property vector2d zRange: Qt.vector2d(0, 0)
 
-    signal minHUChanged(int minHU);
-    signal maxHUChanged(int maxHU);
+    property int minHU: -1
+    property int maxHU: -1
 
-    signal angleChanged(vector3d angle);
-    signal zoomFactorChanged(real zoomFactor);
+    property vector3d angle: Qt.vector3d(0, 0, 0)
+    property real zoomFactor: 1.0
+
+    property string selectedPoint: ""
 
     Rectangle {
         width: sidebar.width
@@ -128,12 +130,12 @@ Item {
                             ShaderGrid {
                                 width: sidebar.width
 
-                                onXRangeChanged: sidebar.xRangeChanged(xRange);
-                                onYRangeChanged: sidebar.yRangeChanged(yRange);
-                                onZRangeChanged: sidebar.zRangeChanged(zRange);
+                                onXRangeChanged: sidebar.xRange = xRange;
+                                onYRangeChanged: sidebar.yRange = yRange;
+                                onZRangeChanged: sidebar.zRange = zRange;
 
-                                //onMinHUChanged: sidebar.minHUChanged(minHU);
-                                //onMaxHUChanged: sidebar.maxHUChanged(maxHU);
+                                //onMinHUChanged: sidebar.minHU = minHU;
+                                //onMaxHUChanged: sidebar.maxHU = maxHU;
                             }
                 }
             }
@@ -151,8 +153,8 @@ Item {
                             GeometryGrid {
                                 width: sidebar.width
 
-                                onAngleChanged: sidebar.angleChanged(angle);
-                                onZoomFactorChanged: sidebar.zoomFactorChanged(zoomFactor);
+                                onAngleChanged: sidebar.angle = angle;
+                                onZoomFactorChanged: sidebar.zoomFactor = zoomFactor;
                             }
                 }
             }
