@@ -1,6 +1,8 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 
+import "../js/sidebarcontent.js" as SideBar
+
 Item {
     id: sidebar
 
@@ -26,39 +28,23 @@ Item {
 
         ListView {
             id: sidebarListView
+            model: ListModel {
+                id: sidebarListModel
+                Component.onCompleted: {
+                    var elements = SideBar.sideBarDict.elements;
+                    for (var i = 0; i !== elements.length; ++ i) {
+                        append({
+                                   "categoryName" : elements[i].text,
+                                   "collapsed" : true,
+                                   "itemType" : elements[i].type,
+                                   "subItems" : Qt.createQmlObject("import QtQuick 2.3; ListElement { }", categoryDelegate)
+                               });
+                    }
+                }
+            }
+
             anchors.fill: parent
-            model: sidebarListModel
             delegate: categoryDelegate
-        }
-
-        ListModel {
-            id: sidebarListModel
-            ListElement {
-                categoryName: "Секущие плоскости"
-                collapsed: true
-                itemName: "shaderGrid"
-
-                // A ListElement can't contain child elements, but it can contain
-                // a list of elements. A list of ListElements can be used as a model
-                // just like any other model type.
-                subItems: ListElement { }
-            }
-
-            ListElement {
-                categoryName: "Вращение"
-                collapsed: true
-                itemName: "geometryGrid"
-
-                subItems: ListElement { }
-            }
-
-            ListElement {
-                categoryName: "Линейки"
-                collapsed: true
-                itemName: "measureGrid"
-                subItems: ListElement { }
-            }
-
         }
 
         Component {
@@ -105,7 +91,7 @@ Item {
                                          return null;
                                      }
                                      else {
-                                         switch(itemName) {
+                                         switch(itemType) {
                                          case "shaderGrid": return subItemShaderGrid
                                          case "geometryGrid": return subItemGeometryGrid
                                          case "measureGrid": return subItemMeasureGrid

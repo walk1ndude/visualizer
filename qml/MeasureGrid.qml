@@ -20,11 +20,12 @@ Rectangle {
             property int prevIndex: -1
 
             Component.onCompleted: {
-                for (var key in PointsDict.pointsDict) {
+                var measures = PointsDict.pointsDict.measures;
+                for (var i = 0; i !== measures.length; ++ i) {
                     append({
-                               "itemName" : key,
-                               "itemText" : PointsDict.pointsDict[key].text,
-                               "itemColor" : PointsDict.pointsDict[key].color,
+                               "itemName" : measures[i].name,
+                               "itemText" : measures[i].visuals.text,
+                               "itemColor" : measures[i].visuals.color,
                                "selected" : false
                            });
                 }
@@ -39,18 +40,14 @@ Rectangle {
         id: delegateComponent
 
         Rectangle {
-            id: rectangleItem
             border.color: "black"
             border.width: 1
             color: "white"
-
-            property alias textItem: textItem
 
             height: 45
             width: measureGrid.width
 
             Text {
-                id: textItem
                 anchors.verticalCenter: parent.verticalCenter
                 x: 15
                 font.pixelSize: 12

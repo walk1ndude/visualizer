@@ -15,5 +15,6 @@
         <file>qml/SideBar.qml</file>
         <file>qml/MeasureGrid.qml</file>
         <file>js/pointsdictionary.js</file>
+        <file>js/sidebarcontent.js</file>
     </qresource>
 </RCC>
