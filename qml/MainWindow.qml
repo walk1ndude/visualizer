@@ -111,5 +111,8 @@ ApplicationWindow {
 
         onAngleChanged: modelItem.rotation = angle;
         onZoomFactorChanged: modelItem.zoomFactor = zoomFactor;
+
+        onSelectedPointNameChanged: modelItem.selectedPointName = selectedPointName;
+        onSelectedPointColorChanged: modelItem.selectedPointColor = selectedPointColor;
     }
 }

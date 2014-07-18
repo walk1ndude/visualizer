@@ -18,8 +18,9 @@ namespace Quick {
 
         Q_PROPERTY(bool takeShot READ takeShot WRITE setTakeShot NOTIFY takeShotChanged)
 
-        Q_PROPERTY(QVector2D point READ point WRITE setPoint)
-        Q_PROPERTY(QString pointName READ pointName WRITE setPointName)
+        Q_PROPERTY(QPointF selectedPointPosition READ selectedPointPosition WRITE setSelectedPointPosition)
+        Q_PROPERTY(QString selectedPointName READ selectedPointName WRITE setSelectedPointName)
+        Q_PROPERTY(QColor selectedPointColor READ selectedPointColor WRITE setSelectedPointColor)
 
         Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
         Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor NOTIFY zoomFactorChanged)
@@ -40,11 +41,14 @@ namespace Quick {
         bool takeShot();
         void setTakeShot(const bool & takeShot);
 
-        QVector2D point();
-        void setPoint(const QVector2D & point);
+        QPointF selectedPointPosition();
+        void setSelectedPointPosition(const QPointF & position);
 
-        QString pointName();
-        void setPointName(const QString & pointName);
+        QString selectedPointName();
+        void setSelectedPointName(const QString & name);
+
+        QColor selectedPointColor();
+        void setSelectedPointColor(const QColor & color);
 
         QVector3D rotation();
         void setRotation(const QVector3D & rotation);
@@ -85,9 +89,7 @@ namespace Quick {
 
         bool _takeShot;
 
-        QVector2D _point;
-
-        QString _pointName;
+        PointsInfo::Point _selectedPoint;
 
         QVector3D _step;
 

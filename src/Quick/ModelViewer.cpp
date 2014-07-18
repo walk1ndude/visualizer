@@ -76,21 +76,29 @@ namespace Quick {
         }
     }
 
-    QVector2D ModelViewer::point() {
-        return _point;
+    QPointF ModelViewer::selectedPointPosition() {
+        return _selectedPoint.position;
     }
 
-    void ModelViewer::setPoint(const QVector2D & point) {
-        _point = point;
-        emit pointChanged(PointsInfo::Point(_point, _pointName));
+    void ModelViewer::setSelectedPointPosition(const QPointF & position) {
+        _selectedPoint.position = position;
+        emit pointChanged(_selectedPoint);
     }
 
-    QString ModelViewer::pointName() {
-        return _pointName;
+    QString ModelViewer::selectedPointName() {
+        return _selectedPoint.name;
     }
 
-    void ModelViewer::setPointName(const QString & pointName) {
-        _pointName = pointName;
+    void ModelViewer::setSelectedPointName(const QString & name) {
+        _selectedPoint.name = name;
+    }
+
+    QColor ModelViewer::selectedPointColor() {
+        return _selectedPoint.color;
+    }
+
+    void ModelViewer::setSelectedPointColor(const QColor & color) {
+        _selectedPoint.color = color;
     }
 
     bool ModelViewer::takeShot() {

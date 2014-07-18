@@ -17,6 +17,9 @@ Item {
     property int minHU: 0
     property int maxHU: 65535
 
+    property string selectedPointName: ""
+    property color selectedPointColor: Qt.rgba(0, 0, 0, 0)
+
     Rectangle {
         Rectangle {
             id: horizontalSeparator
@@ -65,10 +68,13 @@ Item {
 
             takeShot: modelItem.takeShot
 
+            selectedPointColor: modelItem.selectedPointColor
+            selectedPointName: modelItem.selectedPointName
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: if (mouse.button == Qt.LeftButton) {
-                               modelViewer.mousePosition = Qt.vector2d(mouseX, mouseY);
+                               modelViewer.selectedPointPosition = Qt.point(mouseX, mouseY);
                            }
             }
         }

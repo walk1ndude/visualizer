@@ -11,7 +11,8 @@ Rectangle {
     border.color: "black"
     border.width: 2
 
-    property string index: ""
+    property string selectedPointName: ""
+    property color selectedPointColor: Qt.rgba(0, 0, 0, 0)
 
     ListView {
         model: ListModel {
@@ -69,7 +70,9 @@ Rectangle {
                     listModel.prevIndex = listModel.prevIndex === index ? -1 : index;
 
                     parent.color = selected ? itemColor : "white";
-                    measureGrid.index = itemName;
+
+                    measureGrid.selectedPointName = itemName;
+                    measureGrid.selectedPointColor = parent.color;
                 }
             }
         }

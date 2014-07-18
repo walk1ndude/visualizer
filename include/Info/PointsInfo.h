@@ -6,21 +6,26 @@
 namespace PointsInfo {
     class Point {
     public:
-        QVector2D position;
+        QPointF position;
         QString name;
+        QColor color;
 
-        Point(const QVector2D & position,
-              const QString & name) {
+        Point() { }
+
+        Point(const QPointF & position,
+              const QString & name,
+              const QColor & color) {
             this->position = position;
             this->name = name;
+            this->color = color;
         }
     };
 
-    using Incisor = QVector2D;
-    using LeftJoint = QVector2D;
-    using RightJoint = QVector2D;
-    using LeftProsthetic = QVector2D;
-    using RightProsthetic = QVector2D;
+    using Incisor = QPointF;
+    using LeftJoint = QPointF;
+    using RightJoint = QPointF;
+    using LeftProsthetic = QPointF;
+    using RightProsthetic = QPointF;
 
     class FacePoints {
     public:

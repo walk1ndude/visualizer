@@ -5,5 +5,6 @@
 #include <QtCore/QSharedPointer>
 
 #include <QtGui/QOpenGLShaderProgram>
+#include <QtGui/QColor>
 
 #endif // INFO_H

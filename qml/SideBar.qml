@@ -18,7 +18,8 @@ Item {
     property vector3d angle: Qt.vector3d(0, 0, 0)
     property real zoomFactor: 1.0
 
-    property string selectedPoint: ""
+    property string selectedPointName: ""
+    property color selectedPointColor: Qt.rgba(0, 0, 0, 0)
 
     Rectangle {
         width: sidebar.width
@@ -157,6 +158,9 @@ Item {
                     delegate:
                             MeasureGrid {
                                 width: sidebar.width
+
+                                onSelectedPointNameChanged: sidebar.selectedPointName = selectedPointName;
+                                onSelectedPointColorChanged: sidebar.selectedPointColor = selectedPointColor;
                             }
                 }
             }

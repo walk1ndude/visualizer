@@ -54,7 +54,7 @@ namespace Scene {
     }
 
     void ModelScene::setPoint(const PointsInfo::Point & point) {
-
+        qDebug() << point.position << point.color << point.name;
     }
 
     void ModelScene::renderScene(const QSize & surfaceSize) {
