@@ -52,10 +52,12 @@ namespace PointsInfo {
             QHashIterator<QString, ShaderInfo::ShaderVariable> itFPShader(_facePoints);
             QHashIterator<QString, FacePoint> itFP(facePoints);
 
-            bool contains = false;
+            bool contains;
 
             while (itFP.hasNext()) {
+                contains = false;
                 itFP.next();
+
                 while (itFPShader.hasNext() && !contains) {
                     itFPShader.next();
                     contains = itFPShader.key().contains(itFP.key());

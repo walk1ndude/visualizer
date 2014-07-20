@@ -83,6 +83,7 @@ namespace Quick {
     void ModelViewer::setSelectedPointPosition(const QPointF & position) {
         _selectedPoint.position = position;
         emit pointAdded(_selectedPoint);
+        update();
     }
 
     QString ModelViewer::selectedPointName() {
