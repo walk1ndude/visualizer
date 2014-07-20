@@ -99,7 +99,7 @@ namespace Model {
 
     void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
         if (_program) {
-            _facePointsProgram.addPoint(_program, shaderVariableName);
+            _facePointsProgram.addPoint(_program, "facePoints." + shaderVariableName);
             _facePoints.insert(name, PointsInfo::FacePoint(point.position, point.color));
         }
     }

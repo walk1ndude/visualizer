@@ -57,7 +57,7 @@ namespace Scene {
         QVector4D worldPosition = _viewPorts.selectedPointWorldCoordinates(point.position);
 
         if (Model::HeadModel * selectedModel = dynamic_cast<Model::HeadModel *>(_selectedModel)) {
-            selectedModel->addPoint(point.name, PointsInfo::FacePoint(worldPosition, point.color), "facePoints." + point.name);
+            selectedModel->addPoint(point.name, PointsInfo::FacePoint(worldPosition, point.color), point.name);
         }
     }
 
