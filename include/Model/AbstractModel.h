@@ -36,12 +36,12 @@ namespace Model {
 
         virtual void drawModel(ViewPort::ViewPort & viewPort) final;
 
-        virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariables & shaderVariables) final;
-        virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariables & shaderVariables) final;
-        virtual void addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariables & shaderVariables) final;
+        virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
 
         template <class Key, class Value>
-        void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariables & shaderVariables) {
+        void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
             QMutexLocker locker(&_modelMutex);
 
             if (_program) {
@@ -55,7 +55,7 @@ namespace Model {
         virtual void setViewRange(const ModelInfo::ViewAxisRange & xRange,
                                   const ModelInfo::ViewAxisRange & yRange,
                                   const ModelInfo::ViewAxisRange & zRange,
-                                  const ShaderInfo::ShaderVariables & shaderVariables) final;
+                                  const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
 
         virtual void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
                                       const ModelInfo::ViewAxis viewAxis = ModelInfo::XAXIS) final;

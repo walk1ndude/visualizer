@@ -33,7 +33,7 @@ namespace LightInfo {
 
     public:
         LightProgram(QOpenGLShaderProgram * program,
-                     const ShaderInfo::ShaderVariables & shaderVariables) {
+                     const ShaderInfo::ShaderVariablesNames & shaderVariables) {
             shaderPosition = program->uniformLocation(shaderVariables.at(0));
             shaderColor = program->uniformLocation(shaderVariables.at(1));
             shaderAmbientIntensity = program->uniformLocation(shaderVariables.at(2));

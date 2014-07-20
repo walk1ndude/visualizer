@@ -286,7 +286,7 @@ namespace ModelInfo {
                   const ViewAxisRange & yRange,
                   const ViewAxisRange & zRange,
                   QOpenGLShaderProgram * program,
-                  const ShaderInfo::ShaderVariables & shaderVariables) {
+                  const ShaderInfo::ShaderVariablesNames & shaderVariables) {
             this->xRange = xRange;
             this->yRange = yRange;
             this->zRange = zRange;

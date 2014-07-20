@@ -26,6 +26,12 @@ namespace Model {
 
         void init(const int & depth);
 
+        void addPoint(
+                const QString & name,
+                const PointsInfo::FacePoint & point,
+                const ShaderInfo::ShaderVariableName & shaderVariableName
+                );
+
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderTexHead;
@@ -37,8 +43,8 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderScale;
         ShaderInfo::ShaderVariable _shaderStep;
 
-        PointsInfo::FacePoints * _facePoints;
-        PointsInfo::FacePointsProgram * _facePointsProgram;
+        PointsInfo::FacePoints _facePoints;
+        PointsInfo::FacePointsProgram _facePointsProgram;
 
         GLfloat _step;
     };

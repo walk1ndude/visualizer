@@ -35,7 +35,7 @@ namespace TextureInfo {
 
     public:
         TextureProgram(QOpenGLShaderProgram * program,
-                       const ShaderInfo::ShaderVariables & shaderVariables) {
+                       const ShaderInfo::ShaderVariablesNames & shaderVariables) {
             _sampler = program->uniformLocation(shaderVariables.at(0));
         }
 

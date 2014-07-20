@@ -42,7 +42,7 @@ namespace ViewPort {
                 case ViewPort::PERSPECTIVE:
                     data()[i].rotate(QVector3D(xRot - 90.0, yRot, zRot));
                     break;
-                case ViewPort::BOTTOM:
+                case ViewPort::TOP:
                     //data()[i].rotate(QVector3D(0.0, 0.0, zRot));
                     data()[i].rotate(QVector3D(0.0, -90 + yRot, 0.0));
                     break;
@@ -55,5 +55,13 @@ namespace ViewPort {
                     break;
             }
         }
+    }
+
+    QVector4D ViewPortArray::selectedPointWorldCoordinates(const QPointF & point) const {
+        QVector4D worldCoordinates;
+
+        for (int i = 0; !at(i).convertPointToWorldCoordintes(point, worldCoordinates) && i != size(); ++ i);
+
+        return worldCoordinates;
     }
 }

@@ -122,7 +122,7 @@ namespace Quick {
         void minHUChanged(const int & minHU);
         void maxHUChanged(const int & maxHU);
 
-        void pointChanged(const PointsInfo::Point & point);
+        void pointAdded(const PointsInfo::Point & point);
 
         void slicesProcessed(SliceInfo::Slices slices);
         void modelRead(ModelInfo::BuffersVN buffers);

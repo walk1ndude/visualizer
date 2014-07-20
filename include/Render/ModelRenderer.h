@@ -49,7 +49,7 @@ namespace Render {
         void setYRange(const ModelInfo::ViewAxisRange & yRange);
         void setZRange(const ModelInfo::ViewAxisRange & zRange);
 
-        void setPoint(const PointsInfo::Point & point);
+        void addPoint(const PointsInfo::Point & point);
     };
 }
 #endif // SLICERENDERER_H

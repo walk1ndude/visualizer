@@ -82,7 +82,7 @@ namespace Quick {
 
     void ModelViewer::setSelectedPointPosition(const QPointF & position) {
         _selectedPoint.position = position;
-        emit pointChanged(_selectedPoint);
+        emit pointAdded(_selectedPoint);
     }
 
     QString ModelViewer::selectedPointName() {
@@ -209,7 +209,7 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::zRangeChanged, _modelRenderer, &Render::ModelRenderer::setZRange, Qt::DirectConnection);
 
-            QObject::connect(this, &ModelViewer::pointChanged, _modelRenderer, &Render::ModelRenderer::setPoint, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::pointAdded, _modelRenderer, &Render::ModelRenderer::addPoint, Qt::DirectConnection);
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 

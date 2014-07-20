@@ -12,7 +12,8 @@ namespace ShaderInfo {
 
     using ShaderVariable = int;
 
-    using ShaderVariables = QStringList;
+    using ShaderVariablesNames = QStringList;
+    using ShaderVariableName = QString;
 
     class ShaderFiles {
     public:

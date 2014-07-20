@@ -55,7 +55,7 @@ namespace Scene {
         void setYRange(const ModelInfo::ViewAxisRange & yRange);
         void setZRange(const ModelInfo::ViewAxisRange & zRange);
 
-        void setPoint(const PointsInfo::Point & point);
+        void addPoint(const PointsInfo::Point & point);
 
     protected:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
@@ -77,6 +77,8 @@ namespace Scene {
         QVector3D _rotation;
 
         ViewPort::ViewPortRect _screenSaveRect;
+
+        PointsInfo::FacePoints _facePoints;
 
         void initializeViewPorts(const QSize & surfaceSize);
 

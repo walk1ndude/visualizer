@@ -13,11 +13,11 @@ namespace ViewPort {
 
         explicit MatrixStack(ProjectionType projectionType);
 
-        QMatrix4x4 model();
-        QMatrix4x4 view();
-        QMatrix4x4 projection();
-        QMatrix4x4 scaleM();
-        QMatrix3x3 normalM();
+        QMatrix4x4 model() const;
+        QMatrix4x4 view() const;
+        QMatrix4x4 projection() const;
+        QMatrix4x4 scaleM() const;
+        QMatrix3x3 normalM() const;
 
         void identity(const QVector3D & eye = QVector3D(0.0, 0.0, 0.0),
                       const QVector3D & orientation = QVector3D(0.0, 0.0, 0.0));
@@ -32,6 +32,8 @@ namespace ViewPort {
         void zoom(const qreal & zoomFactor);
         void rotate(const QVector3D & angle);
         void scale(const QVector3D & scale);
+
+        QVector4D convertPointToWorldCoordintes(const QVector4D & point) const;
 
     private:
         QMatrix4x4 _mMatrix;

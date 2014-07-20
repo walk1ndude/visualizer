@@ -73,8 +73,9 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: if (mouse.button == Qt.LeftButton) {
-                               modelViewer.selectedPointPosition = Qt.point(mouseX, mouseY);
+                onClicked: if (!!modelItem.selectedPointName && mouse.button == Qt.LeftButton) {
+                               // find mouse coordinates in range [0; 1], y inverted
+                               modelViewer.selectedPointPosition = Qt.point(mouseX / width, (height - mouseY) / height);
                            }
             }
         }

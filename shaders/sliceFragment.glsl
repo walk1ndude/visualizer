@@ -18,11 +18,11 @@ uniform highp mat4 scale;
 uniform highp mat3 normalMatrix;
 
 struct FacePoints {
-    vec2 incisor;
-    vec2 leftJoint;
-    vec2 rightJoint;
-    vec2 leftProsthetic;
-    vec2 rightProsthetic;
+    vec4 incisor;
+    vec4 leftJoint;
+    vec4 rightJoint;
+    vec4 leftProsthetic;
+    vec4 rightProsthetic;
 };
 
 uniform highp FacePoints facePoints;

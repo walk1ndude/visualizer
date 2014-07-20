@@ -45,7 +45,7 @@ namespace MaterialInfo {
 
     public:
         MaterialProgram(QOpenGLShaderProgram * program,
-                        const ShaderInfo::ShaderVariables & shaderVariables) {
+                        const ShaderInfo::ShaderVariablesNames & shaderVariables) {
             shaderEmissive = program->uniformLocation(shaderVariables.at(0));
             shaderDiffuse = program->uniformLocation(shaderVariables.at(1));
             shaderSpecular = program->uniformLocation(shaderVariables.at(2));

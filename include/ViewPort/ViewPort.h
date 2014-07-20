@@ -13,7 +13,7 @@ namespace ViewPort {
             PERSPECTIVE,
             LEFT,
             FRONT,
-            BOTTOM
+            TOP
         };
 
         explicit ViewPort();
@@ -22,10 +22,10 @@ namespace ViewPort {
                           const ProjectionType & projectionType = ViewPort::LEFT);
         ~ViewPort();
 
-        ViewPortRect boundingRect();
+        ViewPortRect boundingRect() const;
         void setBoundingRect(const QRect & boundingRect);
 
-        ProjectionType projectionType();
+        ProjectionType projectionType() const;
 
         void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
 
@@ -33,13 +33,15 @@ namespace ViewPort {
         void rotate(const QVector3D & angle);
         void scale(const QVector3D & scale);
 
-        QMatrix4x4 model();
-        QMatrix4x4 view();
-        QMatrix4x4 projection();
-        QMatrix4x4 scaleM();
-        QMatrix3x3 normalM();
+        QMatrix4x4 model() const;
+        QMatrix4x4 view() const;
+        QMatrix4x4 projection() const;
+        QMatrix4x4 scaleM() const;
+        QMatrix3x3 normalM() const;
 
         void resize(const QSize & windowSize);
+
+        bool convertPointToWorldCoordintes(const QPointF & point, QVector4D & worldCoordinates) const;
 
     private:
         MatrixStack _matrixStack;

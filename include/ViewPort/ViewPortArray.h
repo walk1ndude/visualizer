@@ -19,6 +19,8 @@ namespace ViewPort {
         void zoom(const qreal & zoomFactor);
 
         void resize(const QSize & surfaceSize);
+
+        QVector4D selectedPointWorldCoordinates(const QPointF & point) const;
     };
 }
 

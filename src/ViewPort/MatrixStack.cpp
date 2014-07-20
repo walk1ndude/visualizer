@@ -18,23 +18,23 @@ namespace ViewPort {
         _sMatrix.setToIdentity();
     }
 
-    QMatrix4x4 MatrixStack::model() {
+    QMatrix4x4 MatrixStack::model() const {
         return _mMatrix;
     }
 
-    QMatrix4x4 MatrixStack::view() {
+    QMatrix4x4 MatrixStack::view() const {
         return _vMatrix;
     }
 
-    QMatrix4x4 MatrixStack::projection() {
+    QMatrix4x4 MatrixStack::projection() const {
         return _pMatrix;
     }
 
-    QMatrix4x4 MatrixStack::scaleM() {
+    QMatrix4x4 MatrixStack::scaleM() const {
         return _sMatrix;
     }
 
-    QMatrix3x3 MatrixStack::normalM() {
+    QMatrix3x3 MatrixStack::normalM() const {
         return (_mMatrix * _vMatrix).normalMatrix();
     }
 
@@ -60,6 +60,10 @@ namespace ViewPort {
         _mMatrix.rotate(rot.z(), 0.0, 0.0, 1.0);
 
         _orientation = angle;
+    }
+
+    QVector4D MatrixStack::convertPointToWorldCoordintes(const QVector4D & point) const {
+        return point * (_pMatrix * _vMatrix).inverted();
     }
 
     void MatrixStack::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D up) {

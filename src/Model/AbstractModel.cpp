@@ -34,22 +34,22 @@ namespace Model {
         _lightSources.clear();
     }
 
-    void AbstractModel::addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariables & shaderVariables) {
+    void AbstractModel::addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
         addToMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram>(_materials, material, shaderVariables);
     }
 
-    void AbstractModel::addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariables & shaderVariables) {
+    void AbstractModel::addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
         addToMap<LightInfo::LightSource *, LightInfo::LightProgram>(_lightSources, lightSource, shaderVariables);
     }
 
-    void AbstractModel::addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariables & shaderVariables) {
+    void AbstractModel::addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
         addToMap<QOpenGLTexture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
     }
 
     void AbstractModel::setViewRange(const ModelInfo::ViewAxisRange & xRange,
                                      const ModelInfo::ViewAxisRange & yRange,
                                      const ModelInfo::ViewAxisRange & zRange,
-                                     const ShaderInfo::ShaderVariables & shaderVariables) {
+                                     const ShaderInfo::ShaderVariablesNames & shaderVariables) {
         QMutexLocker locker(&_modelMutex);
 
         if (_program) {

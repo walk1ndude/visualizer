@@ -53,8 +53,12 @@ namespace Scene {
         _selectedModel->setViewAxisRange(zRange, ModelInfo::ZAXIS);
     }
 
-    void ModelScene::setPoint(const PointsInfo::Point & point) {
-        qDebug() << point.position << point.color << point.name;
+    void ModelScene::addPoint(const PointsInfo::Point & point) {
+        QVector4D worldPosition = _viewPorts.selectedPointWorldCoordinates(point.position);
+
+        if (Model::HeadModel * selectedModel = dynamic_cast<Model::HeadModel *>(_selectedModel)) {
+            selectedModel->addPoint(point.name, PointsInfo::FacePoint(worldPosition, point.color), "facePoints." + point.name);
+        }
     }
 
     void ModelScene::renderScene(const QSize & surfaceSize) {
@@ -71,7 +75,7 @@ namespace Scene {
             viewPort = itV.next();
 
             boundingRect = viewPort.boundingRect();
-            if (viewPort.projectionType() == ViewPort::ViewPort::BOTTOM) {
+            if (viewPort.projectionType() == ViewPort::ViewPort::TOP) {
                 _screenSaveRect = boundingRect;
             }
 
@@ -131,7 +135,7 @@ namespace Scene {
 
         viewPorts.push_back(
                     QPair<QRectF, ViewPort::ViewPort::ProjectionType>(
-                        QRectF(0, 0.5, 0.5, 0.5), ViewPort::ViewPort::BOTTOM)
+                        QRectF(0, 0.5, 0.5, 0.5), ViewPort::ViewPort::TOP)
                     );
 
         viewPorts.push_back(
@@ -162,7 +166,6 @@ namespace Scene {
     }
 
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
-        // strange bug
         textureInfo.pixelFormat = QOpenGLTexture::Red;
 
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
@@ -197,17 +200,17 @@ namespace Scene {
         model->initModel<ModelInfo::BuffersVN>(buffers);
 
         model->addLightSource(_lightSources.at(0),
-                              ShaderInfo::ShaderVariables() << "lightSource.position" << "lightSource.color" <<
+                              ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
                               "lightSource.ambientIntensity");
 
         model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariables() << "stlMaterial.emissive" << "stlMaterial.diffuse" <<
+                           ShaderInfo::ShaderVariablesNames() << "stlMaterial.emissive" << "stlMaterial.diffuse" <<
                            "stlMaterial.specular" << "stlMaterial.shininess");
 
         model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ShaderInfo::ShaderVariables() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
+                            ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
 
         _models.push_back(model);
     }
@@ -223,20 +226,20 @@ namespace Scene {
         addTexture(slices.texture);
 
         model->addLightSource(_lightSources.at(0),
-                              ShaderInfo::ShaderVariables() << "lightSource.position" << "lightSource.color" <<
+                              ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
                               "lightSource.ambientIntensity");
 
         model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariables() << "headMaterial.emissive" << "headMaterial.diffuse" <<
+                           ShaderInfo::ShaderVariablesNames() << "headMaterial.emissive" << "headMaterial.diffuse" <<
                            "headMaterial.specular" << "headMaterial.shininess");
 
         model->addTexture(_textures.at(0),
-                          ShaderInfo::ShaderVariables() << "texHead");
+                          ShaderInfo::ShaderVariablesNames() << "texHead");
 
         model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ShaderInfo::ShaderVariables() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
+                            ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
 
         _models.push_back(model);
     }
