@@ -63,10 +63,6 @@ namespace ViewPort {
         _boundingRect = boundingRect;
     }
 
-    void ViewPort::scale(const QVector3D & scale) {
-        _matrixStack.scale(scale);
-    }
-
     void ViewPort::zoom(const qreal & zoomFactor) {
         _matrixStack.zoom(zoomFactor);
     }
@@ -89,10 +85,6 @@ namespace ViewPort {
 
     QMatrix4x4 ViewPort::view() const {
         return _matrixStack.view();
-    }
-
-    QMatrix4x4 ViewPort::scaleM() const {
-        return _matrixStack.scaleM();
     }
 
     QMatrix3x3 ViewPort::normalM() const {

@@ -24,12 +24,6 @@ namespace ViewPort {
         }
     }
 
-    void ViewPortArray::scale(const QVector3D & scale) {
-        for (int i = 0; i != size(); ++ i) {
-            data()[i].scale(scale);
-        }
-    }
-
     void ViewPortArray::zoom(const qreal & zoomFactor) {
         for (int i = 0; i != size(); ++ i) {
             data()[i].zoom(zoomFactor);

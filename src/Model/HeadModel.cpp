@@ -3,7 +3,7 @@
 namespace Model {
     HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles) :
         AbstractModel(shaderFiles) {
-
+        _scaleM.setToIdentity();
     }
 
     void HeadModel::init(const int & depth) {
@@ -44,6 +44,10 @@ namespace Model {
         buffers.indices = ModelInfo::IndicesPointer(indices);
 
         initModel<ModelInfo::BuffersVT>(buffers);
+    }
+
+    void HeadModel::scale(const QVector3D & scale) {
+        _scaleM.scale(scale);
     }
 
     void HeadModel::glStatesEnable() {
@@ -91,7 +95,7 @@ namespace Model {
         _program->setUniformValue(_shaderModel, viewPort.model());
         _program->setUniformValue(_shaderProjection, viewPort.projection());
         _program->setUniformValue(_shaderNormalMatrix, viewPort.normalM());
-        _program->setUniformValue(_shaderScale, viewPort.scaleM());
+        _program->setUniformValue(_shaderScale, _scaleM);
         _program->setUniformValue(_shaderStep, _step);
 
         _facePointsProgram.setUniformValue(_program, _facePoints);

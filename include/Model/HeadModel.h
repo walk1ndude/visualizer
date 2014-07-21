@@ -26,6 +26,8 @@ namespace Model {
 
         void init(const int & depth);
 
+        void scale(const QVector3D & scale);
+
         void addPoint(
                 const QString & name,
                 const PointsInfo::FacePoint & point,
@@ -45,6 +47,8 @@ namespace Model {
 
         PointsInfo::FacePoints _facePoints;
         PointsInfo::FacePointsProgram _facePointsProgram;
+
+        QMatrix4x4 _scaleM;
 
         GLfloat _step;
     };

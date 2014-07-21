@@ -172,8 +172,6 @@ namespace Scene {
 
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
 
-        _viewPorts.scale(textureInfo.scaling);
-
         texture->create();
         texture->setFormat(textureInfo.textureFormat);
         texture->setSize(textureInfo.size.x(), textureInfo.size.y(), textureInfo.size.z());
@@ -226,6 +224,8 @@ namespace Scene {
 
         // depth
         model->init(slices.texture.size.z());
+
+        model->scale(slices.texture.scaling);
 
         addTexture(slices.texture);
 

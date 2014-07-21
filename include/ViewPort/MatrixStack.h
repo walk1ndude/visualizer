@@ -16,7 +16,6 @@ namespace ViewPort {
         QMatrix4x4 model() const;
         QMatrix4x4 view() const;
         QMatrix4x4 projection() const;
-        QMatrix4x4 scaleM() const;
         QMatrix3x3 normalM() const;
 
         void identity(const QVector3D & eye = QVector3D(0.0, 0.0, 0.0),
@@ -31,7 +30,6 @@ namespace ViewPort {
 
         void zoom(const qreal & zoomFactor);
         void rotate(const QVector3D & angle);
-        void scale(const QVector3D & scale);
 
         QVector4D calculateRayDir(const QVector4D & point) const;
 
@@ -39,7 +37,6 @@ namespace ViewPort {
         QMatrix4x4 _mMatrix;
         QMatrix4x4 _vMatrix;
         QMatrix4x4 _pMatrix;
-        QMatrix4x4 _sMatrix;
 
         QVector3D _orientation;
         QVector3D _eye;

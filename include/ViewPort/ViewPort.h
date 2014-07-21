@@ -31,12 +31,10 @@ namespace ViewPort {
 
         void zoom(const qreal & zoomFactor);
         void rotate(const QVector3D & angle);
-        void scale(const QVector3D & scale);
 
         QMatrix4x4 model() const;
         QMatrix4x4 view() const;
         QMatrix4x4 projection() const;
-        QMatrix4x4 scaleM() const;
         QMatrix3x3 normalM() const;
 
         void resize(const QSize & windowSize);

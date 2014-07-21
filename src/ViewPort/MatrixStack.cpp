@@ -15,7 +15,6 @@ namespace ViewPort {
         _pMatrix.setToIdentity();
         _vMatrix.setToIdentity();
         _mMatrix.setToIdentity();
-        _sMatrix.setToIdentity();
     }
 
     QMatrix4x4 MatrixStack::model() const {
@@ -30,10 +29,6 @@ namespace ViewPort {
         return _pMatrix;
     }
 
-    QMatrix4x4 MatrixStack::scaleM() const {
-        return _sMatrix;
-    }
-
     QMatrix3x3 MatrixStack::normalM() const {
         return (_mMatrix * _vMatrix).normalMatrix();
     }
@@ -46,10 +41,6 @@ namespace ViewPort {
         else {
             _pMatrix.ortho(-zoomFactor / 2, zoomFactor / 2, -zoomFactor / 2, zoomFactor / 2, _nearVal, _farVal);
         }
-    }
-
-    void MatrixStack::scale(const QVector3D & scale) {
-        _sMatrix.scale(scale);
     }
 
     void MatrixStack::rotate(const QVector3D & angle) {
