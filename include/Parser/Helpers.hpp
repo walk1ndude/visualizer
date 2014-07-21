@@ -3,21 +3,28 @@
 
 template<class Input, class OutputVector>
 OutputVector scaleVector(const Input & sX, const Input & sY, const Input & sZ) {
-    QVector3D scale;
+    Input sSX = sX * sX;
+    Input sSY = sY * sY;
+    Input sSZ = sZ * sZ;
+
+    Input _sX = sqrt(sSX + sSY);
+    Input _sY = sqrt(sSY + sSZ);
+    Input _sZ = sqrt(sSX + sSZ);
+
     Input divisor;
 
-    if (sX > sY) {
-        divisor = (sX > sZ) ? sX : sZ;
+    if (_sX > _sY) {
+        divisor = (_sX > _sZ) ? _sX : _sZ;
     }
     else {
-        divisor = (sY > sZ) ? sY : sZ;
+        divisor = (_sY > _sZ) ? _sY : _sZ;
     }
 
-    scale.setX(sX / divisor);
-    scale.setY(sY / divisor);
-    scale.setZ(sZ / divisor);
-
-    return scale;
+    return OutputVector(
+                sX / divisor,
+                sY / divisor,
+                sZ / divisor
+                );
 }
 
 template<class T>

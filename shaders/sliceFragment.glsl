@@ -49,40 +49,40 @@ uniform highp vec3 stepSlices;
 out highp vec4 fragColor;
 
 vec4 sobel3(vec3 position) {
-    vec3 p = vec3(0);
-    vec3 n = vec3(0);
+    vec3 p = vec3(0.0f);
+    vec3 n = vec3(0.0f);
 
     float fragElem[27];
 
-    fragElem[0] = -1 * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, -stepSlices.z)).r;
-    fragElem[1] = -3 * texture(texHead, position + vec3(-stepSlices.x, 0, -stepSlices.z)).r;
-    fragElem[2] = -1 * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, -stepSlices.z)).r;
-    fragElem[3] = -3 * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, 0)).r;
-    fragElem[4] = -6 * texture(texHead, position + vec3(-stepSlices.x, 0, 0)).r;
-    fragElem[5] = -3 * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, 0)).r;
-    fragElem[6] = -1 * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, stepSlices.z)).r;
-    fragElem[7] = -3 * texture(texHead, position + vec3(-stepSlices.x, 0, stepSlices.z)).r;
-    fragElem[8] = -1 * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, stepSlices.z)).r;
+    fragElem[0] = -1.0f * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, -stepSlices.z)).r;
+    fragElem[1] = -3.0f * texture(texHead, position + vec3(-stepSlices.x, 0.0f, -stepSlices.z)).r;
+    fragElem[2] = -1.0f * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, -stepSlices.z)).r;
+    fragElem[3] = -3.0f * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, 0.0f)).r;
+    fragElem[4] = -6.0f * texture(texHead, position + vec3(-stepSlices.x, 0.0f, 0.0f)).r;
+    fragElem[5] = -3.0f * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, 0.0f)).r;
+    fragElem[6] = -1.0f * texture(texHead, position + vec3(-stepSlices.x, -stepSlices.y, stepSlices.z)).r;
+    fragElem[7] = -3.0f * texture(texHead, position + vec3(-stepSlices.x, 0.0f, stepSlices.z)).r;
+    fragElem[8] = -1.0f * texture(texHead, position + vec3(-stepSlices.x, stepSlices.y, stepSlices.z)).r;
 
-    fragElem[9] = 0.0;
-    fragElem[10] = 0.0;
-    fragElem[11] = 0.0;
-    fragElem[12] = 0.0;
-    fragElem[13] = 0.0;
-    fragElem[14] = 0.0;
-    fragElem[15] = 0.0;
-    fragElem[16] = 0.0;
-    fragElem[17] = 0.0;
+    fragElem[9] = 0.0f;
+    fragElem[10] = 0.0f;
+    fragElem[11] = 0.0f;
+    fragElem[12] = 0.0f;
+    fragElem[13] = 0.0f;
+    fragElem[14] = 0.0f;
+    fragElem[15] = 0.0f;
+    fragElem[16] = 0.0f;
+    fragElem[17] = 0.0f;
 
-    fragElem[18] = 1 * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, -stepSlices.z)).r;
-    fragElem[19] = 3 * texture(texHead, position + vec3(stepSlices.x, 0, -stepSlices.z)).r;
-    fragElem[20] = 1 * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, -stepSlices.z)).r;
-    fragElem[21] = 3 * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, 0)).r;
-    fragElem[22] = 6 * texture(texHead, position + vec3(stepSlices.x, 0, 0)).r;
-    fragElem[23] = 3 * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, 0)).r;
-    fragElem[24] = 1 * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, stepSlices.z)).r;
-    fragElem[25] = 3 * texture(texHead, position + vec3(stepSlices.x, 0, stepSlices.z)).r;
-    fragElem[26] = 1 * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, stepSlices.z)).r;
+    fragElem[18] = 1.0f * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, -stepSlices.z)).r;
+    fragElem[19] = 3.0f * texture(texHead, position + vec3(stepSlices.x, 0.0f, -stepSlices.z)).r;
+    fragElem[20] = 1.0f * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, -stepSlices.z)).r;
+    fragElem[21] = 3.0f * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, 0.0f)).r;
+    fragElem[22] = 6.0f * texture(texHead, position + vec3(stepSlices.x, 0.0f, 0.0f)).r;
+    fragElem[23] = 3.0f * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, 0.0f)).r;
+    fragElem[24] = 1.0f * texture(texHead, position + vec3(stepSlices.x, -stepSlices.y, stepSlices.z)).r;
+    fragElem[25] = 3.0f * texture(texHead, position + vec3(stepSlices.x, 0.0f, stepSlices.z)).r;
+    fragElem[26] = 1.0f * texture(texHead, position + vec3(stepSlices.x, stepSlices.y, stepSlices.z)).r;
 
     for (int i = 0; i != 27; ++ i) {
         if (i / 9 == 0) {
@@ -110,31 +110,31 @@ vec4 sobel3(vec3 position) {
         }
     }
 
-    return vec4(normalize(n - p), 0.0);
+    return vec4(normalize(n - p), 0.0f);
 }
 
 void main(void) {
-    if (fragPos.s >= ranges.xRange[0] * 0.5 + 0.5 && fragPos.s <= ranges.xRange[1] * 0.5 + 0.5
-            && fragPos.t >= ranges.yRange[0] * 0.5 + 0.5 && fragPos.t <= ranges.yRange[1] * 0.5 + 0.5
-            && fragPos.p >= ranges.zRange[0] * 0.5 + 0.5 && fragPos.p <= ranges.zRange[1] * 0.5 + 0.5) {
+    if (fragPos.s >= ranges.xRange[0] * 0.5f + 0.5f && fragPos.s <= ranges.xRange[1] * 0.5f + 0.5f
+            && fragPos.t >= ranges.yRange[0] * 0.5f + 0.5f && fragPos.t <= ranges.yRange[1] * 0.5f + 0.5f
+            && fragPos.p >= ranges.zRange[0] * 0.5f + 0.5f && fragPos.p <= ranges.zRange[1] * 0.5f + 0.5f) {
 
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
-        if (headColor.r > 0.05) {
+        if (headColor.r > 0.05f) {
             vec4 normal = sobel3(fragPos.stp);
 
             vec4 N = normalize(mat4(normalMatrix) * normal);
             vec4 L = normalize(lightSource.position - fragPos);
 
-            float NdotL = max(dot(N, L), 0);
+            float NdotL = max(dot(N, L), 0.0f);
             vec4 diffuse =  NdotL * lightSource.color * headMaterial.diffuse;
 
             vec4 V = normalize(normal - fragPos);
             vec4 H = normalize(L + V);
             vec4 R = reflect(-L, N);
 
-            float RdotV = max(dot(R, V), 0);
-            float NdotH = max(dot(N, H), 0);
+            float RdotV = max(dot(R, V), 0.0f);
+            float NdotH = max(dot(N, H), 0.0f);
 
             vec4 specular = pow(RdotV, headMaterial.shininess) * lightSource.color * headMaterial.specular;
 
@@ -151,6 +151,12 @@ void main(void) {
             }
 */
             //fragColor.a = clamp(fragColor.a, 0.0, 1.0);
+
+            if (abs(fragPos.s - facePoints.incisor.s) < 0.1f &&
+                //abs(fragPos.t - facePoints.incisor.t) < 0.2f &&
+                abs(fragPos.p - facePoints.incisor.p) < 0.1f) {
+                fragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+            }
         }
         else {
             discard;

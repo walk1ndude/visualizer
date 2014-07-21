@@ -41,7 +41,7 @@ namespace ViewPort {
 
         void resize(const QSize & windowSize);
 
-        bool convertPointToWorldCoordintes(const QPointF & point, QVector4D & worldCoordinates) const;
+        bool calculateRayDir(const QPointF & point, QVector4D & rayDirection) const;
 
     private:
         MatrixStack _matrixStack;
@@ -51,6 +51,8 @@ namespace ViewPort {
         QRectF _boundingRect;
 
         ProjectionType _projectionType;
+
+        QVector4D mapToProjectionType(const QVector4D & vector) const;
     };
 }
 #endif // VIEWPORT_H

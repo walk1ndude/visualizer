@@ -131,7 +131,7 @@ namespace Parser {
 
     class DicomData {
     public:
-        std::vector<float> imageSpacings;
+        QVector3D imageSpacings;
 
         std::vector<char> vbuffer;
 

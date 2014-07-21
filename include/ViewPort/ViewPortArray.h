@@ -20,7 +20,7 @@ namespace ViewPort {
 
         void resize(const QSize & surfaceSize);
 
-        QVector4D selectedPointWorldCoordinates(const QPointF & point) const;
+        QVector4D calculateRayDir(const QPointF & point) const;
     };
 }
 

@@ -46,17 +46,16 @@ namespace Parser {
 
         gdcm::DataSet & dDataSet = dFile.GetDataSet();
 
-        for (int i = 0; i != 2; ++ i) {
-            dicomData.imageSpacings.push_back(dImage.GetSpacing(i));
-        }
+        dicomData.imageSpacings.setX(dImage.GetSpacing(0));
+        dicomData.imageSpacings.setY(dImage.GetSpacing(1));
 
         gdcm::Tag tagFind(0x0018, 0x0050);
         if (dDataSet.FindDataElement(tagFind)) {
-            dicomData.imageSpacings.push_back(std::stof(dStringFilter.ToString(tagFind)));
+            dicomData.imageSpacings.setZ(std::stof(dStringFilter.ToString(tagFind)));
         }
         else {
             //pure assumtion for now
-            dicomData.imageSpacings.push_back(1.0);
+            dicomData.imageSpacings.setZ(1.0);
         }
 
         tagFind.SetElementTag(0x0018, 0x0088);
@@ -170,7 +169,13 @@ namespace Parser {
         slices.texture.scaling = scaleVector<float, QVector3D>(
                 _dicomData.width * _dicomData.imageSpacings[0],
                 _dicomData.height * _dicomData.imageSpacings[1],
-                depth * _dicomData.imageSpacings[2]);
+                depth * _dicomData.imageSpacings[2]
+                ) *
+                QVector3D(
+                    1.0f / _dicomData.imageSpacings.x(),
+                    1.0f / _dicomData.imageSpacings.y(),
+                    1.0f / _dicomData.imageSpacings.z()
+                    );
 
         slices.texture.size.setX(_dicomData.width);
         slices.texture.size.setY(_dicomData.height);

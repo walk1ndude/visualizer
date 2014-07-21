@@ -54,12 +54,12 @@ namespace Scene {
     }
 
     void ModelScene::addPoint(const PointsInfo::Point & point) {
-        QVector4D worldPosition = _viewPorts.selectedPointWorldCoordinates(point.position);
+        QVector4D rayDirection = _viewPorts.calculateRayDir(point.position);
 
-        qDebug() << worldPosition;
+        qDebug() << rayDirection;
 
         if (Model::HeadModel * selectedModel = dynamic_cast<Model::HeadModel *>(_selectedModel)) {
-            selectedModel->addPoint(point.name, PointsInfo::FacePoint(worldPosition, point.color), point.name);
+            selectedModel->addPoint(point.name, PointsInfo::FacePoint(rayDirection, point.color), point.name);
         }
     }
 
@@ -171,6 +171,8 @@ namespace Scene {
         textureInfo.pixelFormat = QOpenGLTexture::Red;
 
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
+
+        _viewPorts.scale(textureInfo.scaling);
 
         texture->create();
         texture->setFormat(textureInfo.textureFormat);

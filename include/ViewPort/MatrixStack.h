@@ -33,7 +33,7 @@ namespace ViewPort {
         void rotate(const QVector3D & angle);
         void scale(const QVector3D & scale);
 
-        QVector4D convertPointToWorldCoordintes(const QVector4D & point) const;
+        QVector4D calculateRayDir(const QVector4D & point) const;
 
     private:
         QMatrix4x4 _mMatrix;

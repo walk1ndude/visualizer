@@ -57,11 +57,11 @@ namespace ViewPort {
         }
     }
 
-    QVector4D ViewPortArray::selectedPointWorldCoordinates(const QPointF & point) const {
-        QVector4D worldCoordinates;
+    QVector4D ViewPortArray::calculateRayDir(const QPointF & point) const {
+        QVector4D rayDirection;
 
-        for (int i = 0; !at(i).convertPointToWorldCoordintes(point, worldCoordinates) && i != size(); ++ i);
+        for (int i = 0; !at(i).calculateRayDir(point, rayDirection) && i != size(); ++ i);
 
-        return worldCoordinates;
+        return rayDirection;
     }
 }

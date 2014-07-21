@@ -99,7 +99,18 @@ namespace ViewPort {
         return _matrixStack.normalM();
     }
 
-    bool ViewPort::convertPointToWorldCoordintes(const QPointF & point, QVector4D & worldCoordinates) const {
+    QVector4D ViewPort::mapToProjectionType(const QVector4D & vector) const {
+        switch (_projectionType) {
+        case TOP:
+            return QVector4D(vector.x(), 0.0f, vector.y(), 1.0f);
+        case LEFT:
+            return QVector4D(0.0f, vector.y(), vector.x(), 1.0f);
+        default:
+            return QVector4D(vector.x(), vector.y(), 0.0f, 1.0f);
+        }
+    }
+
+    bool ViewPort::calculateRayDir(const QPointF & point, QVector4D & rayDirection) const {
         float pX = point.x();
         float pY = point.y();
 
@@ -110,21 +121,10 @@ namespace ViewPort {
         float h = _surfaceSize.height();
 
         if (pX >= x && pY >= y && pX < x + w && pY < y + h) {
-            QVector4D wC = _matrixStack.convertPointToWorldCoordintes(
-                            QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f)
+            qDebug() << mapToProjectionType(QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f));
+            rayDirection = _matrixStack.calculateRayDir(
+                            mapToProjectionType(QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f))
                         );
-
-            switch (_projectionType) {
-            case TOP:
-                worldCoordinates = QVector4D(wC.x(), 0.0f, wC.y(), 1.0f);
-                break;
-            case LEFT:
-                worldCoordinates = QVector4D(0.0f, wC.y(), wC.x(), 1.0f);
-                break;
-            default:
-                worldCoordinates = QVector4D(wC.x(), wC.y(), 0.0f, 1.0f);
-                break;
-            }
             return true;
         }
         else {

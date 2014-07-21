@@ -55,15 +55,15 @@ namespace ViewPort {
     void MatrixStack::rotate(const QVector3D & angle) {
         QVector3D rot = _orientation - angle;
 
-        _mMatrix.rotate(rot.x(), 1.0, 0.0, 0.0);
-        _mMatrix.rotate(rot.y(), 0.0, 1.0, 0.0);
-        _mMatrix.rotate(rot.z(), 0.0, 0.0, 1.0);
+        _mMatrix.rotate(rot.x(), 1.0f, 0.0f, 0.0f);
+        _mMatrix.rotate(rot.y(), 0.0f, 1.0f, 0.0f);
+        _mMatrix.rotate(rot.z(), 0.0f, 0.0f, 1.0f);
 
         _orientation = angle;
     }
 
-    QVector4D MatrixStack::convertPointToWorldCoordintes(const QVector4D & point) const {
-        return point * (_pMatrix * _vMatrix).inverted();
+    QVector4D MatrixStack::calculateRayDir(const QVector4D & point) const {
+        return point * (_pMatrix * _mMatrix * _vMatrix).inverted() - _eye;
     }
 
     void MatrixStack::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D up) {
