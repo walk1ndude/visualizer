@@ -14,7 +14,6 @@ namespace ViewPort {
 
         void setViewPorts(const ViewPorts & viewPorts, const QSize & windowSize);
 
-        void rotate(qreal xRot, qreal yRot, qreal zRot);
         void zoom(const qreal & zoomFactor);
 
         void resize(const QSize & surfaceSize);

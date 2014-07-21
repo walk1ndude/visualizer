@@ -44,7 +44,7 @@ namespace Model {
 
     void StlModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
         _program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
-        _program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * viewPort.model());
-        _program->setUniformValue(_shaderNormalMatrix, viewPort.normalM());
+        _program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * _mMatrix);
+        _program->setUniformValue(_shaderNormalMatrix, (_mMatrix * viewPort.view()).normalMatrix());
     }
 }

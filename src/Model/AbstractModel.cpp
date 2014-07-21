@@ -63,6 +63,16 @@ namespace Model {
         }
     }
 
+    void AbstractModel::rotate(const QVector3D & rotation) {
+        QVector3D rot = _orientation - rotation;
+
+        _mMatrix.rotate(rot.x(), 1.0f, 0.0f, 0.0f);
+        _mMatrix.rotate(rot.y(), 0.0f, 1.0f, 0.0f);
+        _mMatrix.rotate(rot.z(), 0.0f, 0.0f, 1.0f);
+
+        _orientation = rotation;
+    }
+
     void AbstractModel::setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
                                          const ModelInfo::ViewAxis viewAxis) {
         _viewRange->setViewAxisRange(correctedViewwAxisRange(viewAxisRange), viewAxis);

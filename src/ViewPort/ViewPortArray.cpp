@@ -30,27 +30,6 @@ namespace ViewPort {
         }
     }
 
-    void ViewPortArray::rotate(qreal xRot, qreal yRot, qreal zRot) {
-        for (int i = 0; i != size(); ++ i) {
-            switch (data()[i].projectionType()) {
-                case ViewPort::PERSPECTIVE:
-                    data()[i].rotate(QVector3D(xRot - 90.0, yRot, zRot));
-                    break;
-                case ViewPort::TOP:
-                    //data()[i].rotate(QVector3D(0.0, 0.0, zRot));
-                    data()[i].rotate(QVector3D(0.0, -90 + yRot, 0.0));
-                    break;
-                case ViewPort::FRONT:
-                    data()[i].rotate(QVector3D(xRot - 90.0, 0.0, 0.0));
-                    break;
-                case ViewPort::LEFT:
-                    //data()[i].rotate(QVector3D(-90.0, yRot -90.0, 0.0));
-                    data()[i].rotate(QVector3D(90.0, 0.0, yRot));
-                    break;
-            }
-        }
-    }
-
     QVector4D ViewPortArray::calculateRayDir(const QPointF & point) const {
         QVector4D rayDirection;
 

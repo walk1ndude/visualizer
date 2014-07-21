@@ -34,7 +34,9 @@ namespace Scene {
 
     void ModelScene::setRotation(const QVector3D & rotation) {
         _rotation = rotation;
-        _viewPorts.rotate(_rotation.x(), _rotation.y(), _rotation.z());
+        if (_selectedModel) {
+            _selectedModel->rotate(rotation);
+        }
     }
 
     void ModelScene::setZoomFactor(const qreal & zoomFactor) {

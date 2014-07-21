@@ -81,7 +81,6 @@ SOURCES +=  src/main.cpp \
             src/Parser/DicomReader.cpp \
             src/Parser/Reconstructor.cpp \
             src/Parser/StlReader.cpp \
-            src/ViewPort/MatrixStack.cpp \
             src/Render/AbstractRenderer.cpp \
             src/Render/ModelRenderer.cpp \
             src/ViewPort/ViewPort.cpp \
@@ -98,7 +97,6 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Parser/DicomReader.h \
             include/Parser/Reconstructor.h \
             include/Parser/StlReader.h \
-            include/ViewPort/MatrixStack.h \
             include/Render/AbstractRenderer.h \
             include/Render/ModelRenderer.h \
             include/ViewPort/ViewPort.h \

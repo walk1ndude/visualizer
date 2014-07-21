@@ -1,45 +1,35 @@
 #include "ViewPort/ViewPort.h"
 
 namespace ViewPort {
-    ViewPort::ViewPort() :
-        _matrixStack(MatrixStack::PERSPECTIVE) {
+    ViewPort::ViewPort() {
 
     }
 
     ViewPort::ViewPort(const ViewPortRect & boundingRect,
                        const QSize & surfaceSize,
                        const ProjectionType & projectionType) :
-        _matrixStack((projectionType == ViewPort::PERSPECTIVE) ? MatrixStack::PERSPECTIVE : MatrixStack::ORTHOGONAL),
         _surfaceSize(surfaceSize),
         _boundingRect(boundingRect),
         _projectionType(projectionType) {
 
         switch (projectionType) {
             case ViewPort::PERSPECTIVE :
-                _matrixStack.perspective(60.0, 1.0, 0.0001, 10.0);
-                _matrixStack.lookAt(QVector3D(0.0, 0.0, 2.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-                _matrixStack.rotate(QVector3D(-90.0, 0.0, 0.0));
+                perspective(60.0f, 1.0f, 0.0001f, 10.0f);
+                lookAt(QVector3D(0.0f, -2.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
                 break;
             case ViewPort::LEFT:
-                _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.0001, 10.0);
-                _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-                _matrixStack.rotate(QVector3D(-90.0, -90.0, 0.0));
+                ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
+                lookAt(QVector3D(-2.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
                 break;
             case ViewPort::FRONT:
-                _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.0001, 10.0);
-                _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-                _matrixStack.rotate(QVector3D(-90.0, 0.0, 0.0));
+                ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
+                lookAt(QVector3D(0.0f, -3.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
                 break;
             case ViewPort::TOP:
-                _matrixStack.ortho(-1.0, 1.0, -1.0, 1.0, 0.0001, 10.0);
-                _matrixStack.lookAt(QVector3D(0.0, 0.0, 1.0), QVector3D(0.0, 0.0, 0.0), QVector3D(0.0, 1.0, 0.0));
-                _matrixStack.rotate(QVector3D(0.0, -90.0, 0.0));
+                ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
+                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
             break;
         }
-    }
-
-    ViewPort::~ViewPort() {
-
     }
 
     ViewPort::ProjectionType ViewPort::projectionType() const {
@@ -64,31 +54,25 @@ namespace ViewPort {
     }
 
     void ViewPort::zoom(const qreal & zoomFactor) {
-        _matrixStack.zoom(zoomFactor);
-    }
+        _pMatrix.setToIdentity();
+        if (_projectionType == ViewPort::PERSPECTIVE) {
+            // fov will be in 1/4 to 3/2 from initial fov
+            float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
+            float b = (_eye.z() + a) / 4.0f;
 
-    void ViewPort::rotate(const QVector3D & angle) {
-        _matrixStack.rotate(angle);
-    }
-
-    void ViewPort::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
-        _matrixStack.lookAt(eye, center, up);
-    }
-
-    QMatrix4x4 ViewPort::model() const {
-        return _matrixStack.model();
+            _pMatrix.perspective(_fov * (zoomFactor + b) / (_eye.z() + a), _aspectRatio, _nearVal, _farVal);
+        }
+        else {
+            _pMatrix.ortho(-zoomFactor / 2, zoomFactor / 2, -zoomFactor / 2, zoomFactor / 2, _nearVal, _farVal);
+        }
     }
 
     QMatrix4x4 ViewPort::projection() const {
-        return _matrixStack.projection();
+        return _pMatrix;
     }
 
     QMatrix4x4 ViewPort::view() const {
-        return _matrixStack.view();
-    }
-
-    QMatrix3x3 ViewPort::normalM() const {
-        return _matrixStack.normalM();
+        return _vMatrix;
     }
 
     QVector4D ViewPort::mapToProjectionType(const QVector4D & vector) const {
@@ -114,7 +98,7 @@ namespace ViewPort {
 
         if (pX >= x && pY >= y && pX < x + w && pY < y + h) {
             qDebug() << mapToProjectionType(QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f));
-            rayDirection = _matrixStack.calculateRayDir(
+            rayDirection = calculateRayDir(
                             mapToProjectionType(QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f))
                         );
             return true;
@@ -122,5 +106,38 @@ namespace ViewPort {
         else {
             return false;
         }
+    }
+
+    QVector4D ViewPort::calculateRayDir(const QVector4D & point) const {
+        return point * (_pMatrix * _vMatrix).inverted() - _eye;
+    }
+
+    void ViewPort::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
+        _vMatrix.setToIdentity();
+        _vMatrix.lookAt(eye, center, up);
+
+        _eye = eye;
+        _center = center;
+        _up = up;
+    }
+
+    void ViewPort::ortho(const float & left, const float & right, const float & bottom,
+                            const float & top, const float & nearVal, const float & farVal) {
+        _pMatrix.setToIdentity();
+        _pMatrix.ortho(left, right, bottom, top, nearVal, farVal);
+
+        _nearVal = nearVal;
+        _farVal = farVal;
+    }
+
+    void ViewPort::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
+        _pMatrix.setToIdentity();
+        _pMatrix.perspective(fov, aspectRatio, nearVal, farVal);
+
+        _fov = fov;
+        _aspectRatio = aspectRatio;
+
+        _nearVal = nearVal;
+        _farVal = farVal;
     }
 }

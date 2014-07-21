@@ -34,6 +34,8 @@ namespace Model {
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
+        virtual void rotate(const QVector3D & rotation) final;
+
         virtual void drawModel(ViewPort::ViewPort & viewPort) final;
 
         virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
@@ -129,10 +131,14 @@ namespace Model {
 
         QMutex _modelMutex;
 
+        QMatrix4x4 _mMatrix;
+
         ShaderInfo::ShaderFiles _shaderFiles;
 
     private:
         uint _modelID;
+
+        QVector3D _orientation;
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void setShaderVariables();
