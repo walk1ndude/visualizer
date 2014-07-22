@@ -30,7 +30,11 @@ namespace ViewPort {
 
         void zoom(const qreal & zoomFactor);
 
+        QMatrix4x4 modelVoxel(const QMatrix4x4 & model) const;
+
         QMatrix4x4 view() const;
+        QMatrix4x4 viewVoxel() const;
+
         QMatrix4x4 projection() const;
 
         void resize(const QSize & windowSize);
@@ -46,6 +50,8 @@ namespace ViewPort {
         ProjectionType _projectionType;
 
         QMatrix4x4 _vMatrix;
+        QMatrix4x4 _vMatrixVoxel;
+
         QMatrix4x4 _pMatrix;
 
         QVector3D _orientation;

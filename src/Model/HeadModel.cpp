@@ -97,8 +97,8 @@ namespace Model {
     }
 
     void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
-        _program->setUniformValue(_shaderView, viewPort.view());
-        _program->setUniformValue(_shaderModel, _mMatrix);
+        _program->setUniformValue(_shaderView, viewPort.viewVoxel());
+        _program->setUniformValue(_shaderModel, viewPort.modelVoxel(_mMatrix));
         _program->setUniformValue(_shaderProjection, viewPort.projection());
         _program->setUniformValue(_shaderNormalMatrix, (_mMatrix * viewPort.view()).normalMatrix());
         _program->setUniformValue(_shaderScale, _scaleM);

@@ -75,6 +75,31 @@ namespace ViewPort {
         return _vMatrix;
     }
 
+    QMatrix4x4 ViewPort::viewVoxel() const {
+        return _vMatrixVoxel;
+    }
+
+    QMatrix4x4 ViewPort::modelVoxel(const QMatrix4x4 & model) const {
+        QMatrix4x4 modelMatrix(model);
+
+        switch (_projectionType) {
+            case ViewPort::PERSPECTIVE :
+                modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+                break;
+            case ViewPort::LEFT:
+                modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+                modelMatrix.rotate(90.0f, 0.0f, 1.0f, 0.0f);
+                break;
+            case ViewPort::FRONT:
+                modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);
+                break;
+            default:
+                break;
+        }
+
+        return modelMatrix;
+    }
+
     bool ViewPort::pointInViewPort(const QVector4D & point) const {
         float pX = point.x();
         float pY = point.y();
@@ -123,7 +148,15 @@ namespace ViewPort {
 
     void ViewPort::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
         _vMatrix.setToIdentity();
+        _vMatrixVoxel.setToIdentity();
         _vMatrix.lookAt(eye, center, up);
+
+        if (_projectionType == ViewPort::PERSPECTIVE) {
+            _vMatrixVoxel.lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+        }
+        else {
+            _vMatrixVoxel.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+        }
 
         _eye = eye;
         _center = center;
