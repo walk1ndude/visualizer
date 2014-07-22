@@ -4,6 +4,8 @@
 #include "Info/Info.h"
 #include "Info/ShaderInfo.h"
 
+static uint lightSourceNumber = 0;
+
 namespace LightInfo {
     using Position = QVector4D;
     using Color = QVector4D;
@@ -22,7 +24,13 @@ namespace LightInfo {
             this->position = position;
             this->color = color;
             this->ambientIntensity = ambientIntensity;
+
+            _id = lightSourceNumber ++;
         }
+
+        uint id() { return _id; }
+    private:
+        uint _id;
     };
 
     class LightProgram {

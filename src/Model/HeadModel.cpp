@@ -1,9 +1,15 @@
+#include <cmath>
+
 #include "Model/HeadModel.h"
 
 namespace Model {
     HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles) :
         AbstractModel(shaderFiles) {
         _scaleM.setToIdentity();
+    }
+
+    HeadModel::~HeadModel() {
+        qDeleteAll(_facePoints.begin(), _facePoints.end());
     }
 
     void HeadModel::init(const int & depth) {
@@ -104,7 +110,39 @@ namespace Model {
     void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
         if (_program) {
             _facePointsProgram.addPoint(_program, "facePoints." + shaderVariableName);
-            _facePoints.insert(name, PointsInfo::FacePoint(point.position, point.color));
+            _facePoints.insert(name, new PointsInfo::FacePoint(point.position, point.color));
+        }
+    }
+
+    void HeadModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
+        QVector4D unprojectdPoint;
+
+        foreach (PointsInfo::FacePoint * facePoint, _facePoints) {
+            if (!facePoint->isPositionCalculated()) {
+                if (!facePoint->depthTested()) {
+                    GLfloat posZ;
+
+                    glReadPixels(
+                                (int) std::round(facePoint->position.x()),
+                                (int) std::round(facePoint->position.y()),
+                                1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &posZ
+                    );
+
+                    //qDebug() << posZ;
+
+                    facePoint->position.setZ(posZ);
+                    facePoint->depthTestCompleted();
+                }
+
+                if (viewPort.unproject(facePoint->position, unprojectdPoint)) {
+
+                    facePoint->position = unprojectdPoint;
+                    facePoint->positionCalculated();
+
+                    qDebug() << facePoint->position;
+                }
+            }
+
         }
     }
 }

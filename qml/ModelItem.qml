@@ -55,6 +55,8 @@ Item {
             height: modelItem.height
             z: -2
 
+            fboSize: Qt.size(768, 768)
+
             xRange: modelItem.xRange
             yRange: modelItem.yRange
             zRange: modelItem.zRange
@@ -75,7 +77,9 @@ Item {
                 anchors.fill: parent
                 onClicked: if (!!modelItem.selectedPointName && mouse.button == Qt.LeftButton) {
                                // find mouse coordinates in range [0; 1], y inverted
-                               modelViewer.selectedPointPosition = Qt.point(mouseX / width, (height - mouseY) / height);
+                               modelViewer.selectedPointPosition = Qt.point(
+                                           mouseX * parent.fboSize.width / width,
+                                           (height - mouseY) * parent.fboSize.height / height);
                            }
             }
         }

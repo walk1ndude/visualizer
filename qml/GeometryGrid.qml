@@ -88,7 +88,7 @@ Rectangle {
             minimumValue: 0.1
             maximumValue: 4.0
             value: 2.0
-            onValueChanged: geometryGrid.zoomFactor = value;
+            onValueChanged: geometryGrid.zoomFactor = maximumValue - value;
         }
 
         Text {

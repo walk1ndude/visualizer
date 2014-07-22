@@ -10,10 +10,10 @@ namespace ViewPort {
     public:
 
         enum ProjectionType {
-            PERSPECTIVE,
-            LEFT,
-            FRONT,
-            TOP
+            PERSPECTIVE = 0,
+            LEFT = 1,
+            FRONT = 2,
+            TOP = 3
         };
 
         explicit ViewPort();
@@ -35,7 +35,7 @@ namespace ViewPort {
 
         void resize(const QSize & windowSize);
 
-        bool calculateRayDir(const QPointF & point, QVector4D & rayDirection) const;
+        bool unproject(const QVector4D & projection, QVector4D & unprojectPoint) const;
 
     private:
         QSize _surfaceSize;
@@ -58,8 +58,6 @@ namespace ViewPort {
 
         qreal _nearVal;
         qreal _farVal;
-
-        QVector4D mapToProjectionType(const QVector4D & vector) const;
 
         QVector4D calculateRayDir(const QVector4D & point) const;
 

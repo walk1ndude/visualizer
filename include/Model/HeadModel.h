@@ -15,6 +15,8 @@ namespace Model {
                               ShaderInfo::FramentShaderFile(":shaders/sliceFragment.glsl")
                               ));
 
+        ~HeadModel();
+
         void initShaderVariables();
         void setShaderVariables(ViewPort::ViewPort & viewPort);
         void bindShaderVariablesToBuffers();
@@ -33,6 +35,8 @@ namespace Model {
                 const PointsInfo::FacePoint & point,
                 const ShaderInfo::ShaderVariableName & shaderVariableName
                 );
+
+        void checkDepthBuffer(ViewPort::ViewPort & viewPort);
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;

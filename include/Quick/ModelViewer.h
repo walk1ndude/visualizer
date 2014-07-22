@@ -22,6 +22,8 @@ namespace Quick {
         Q_PROPERTY(QString selectedPointName READ selectedPointName WRITE setSelectedPointName)
         Q_PROPERTY(QColor selectedPointColor READ selectedPointColor WRITE setSelectedPointColor)
 
+        Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize)
+
         Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
         Q_PROPERTY(qreal zoomFactor READ zoomFactor WRITE setZoomFactor NOTIFY zoomFactorChanged)
 
@@ -37,6 +39,9 @@ namespace Quick {
     public:
         explicit ModelViewer();
         virtual ~ModelViewer();
+
+        QSize fboSize();
+        void setFboSize(const QSize & fboSize);
 
         bool takeShot();
         void setTakeShot(const bool & takeShot);
@@ -92,6 +97,8 @@ namespace Quick {
         PointsInfo::Point _selectedPoint;
 
         QVector3D _step;
+
+        QSize _fboSize;
 
         ModelInfo::ViewAxisRange _xRange;
         ModelInfo::ViewAxisRange _yRange;

@@ -113,8 +113,6 @@ namespace Model {
     }
 
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
-        //QMutexLocker locker(&_modelMutex);
-
         bindShaderProgram();
 
         glStatesEnable();
@@ -135,6 +133,8 @@ namespace Model {
 
         glFinish();
         _vao.release();
+
+        checkDepthBuffer(viewPort);
 
         releaseTextures();
         glStatesDisable();

@@ -40,10 +40,7 @@ namespace Render {
 
         Scene::AbstractScene * _selectedScene;
 
-        virtual void initialize() = 0;
-
         virtual void render() = 0;
-
         virtual void cleanUp() = 0;
 
         virtual bool updateContent() final;

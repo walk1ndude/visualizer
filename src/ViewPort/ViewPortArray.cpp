@@ -29,12 +29,4 @@ namespace ViewPort {
             data()[i].zoom(zoomFactor);
         }
     }
-
-    QVector4D ViewPortArray::calculateRayDir(const QPointF & point) const {
-        QVector4D rayDirection;
-
-        for (int i = 0; !at(i).calculateRayDir(point, rayDirection) && i != size(); ++ i);
-
-        return rayDirection;
-    }
 }

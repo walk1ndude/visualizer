@@ -3,9 +3,6 @@
 
 #include "Quick/ModelViewer.h"
 
-#define FBO_WIDTH 768
-#define FBO_HEIGHT 768
-
 class TextureNode : public QObject, public QSGSimpleTextureNode {
     Q_OBJECT
 public:
@@ -74,6 +71,14 @@ namespace Quick {
         if (_modelRenderer->isRunning()) {
             _modelRenderer->deleteLater();
         }
+    }
+
+    QSize ModelViewer::fboSize() {
+        return _fboSize;
+    }
+
+    void ModelViewer::setFboSize(const QSize & fboSize) {
+        _fboSize = fboSize;
     }
 
     QPointF ModelViewer::selectedPointPosition() {
@@ -194,7 +199,7 @@ namespace Quick {
             QOpenGLContext * current = window()->openglContext();
             current->doneCurrent();
 
-            _modelRenderer = new Render::ModelRenderer(current, QSize(FBO_WIDTH, FBO_HEIGHT));
+            _modelRenderer = new Render::ModelRenderer(current, _fboSize);
             _modelRenderer->selectScene(_scenes.at(0));
 
             current->makeCurrent(window());

@@ -8,7 +8,6 @@
 namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
         AbstractRenderer(context, size) {
-        initialize();
     }
 
     ModelRenderer::~ModelRenderer() {
@@ -52,10 +51,6 @@ namespace Render {
     void ModelRenderer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
         _selectedScene->setZRange(zRange);
         emit needToRedraw();
-    }
-
-    void ModelRenderer::initialize() {
-
     }
 
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {

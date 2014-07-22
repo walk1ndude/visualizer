@@ -56,12 +56,16 @@ namespace Scene {
     }
 
     void ModelScene::addPoint(const PointsInfo::Point & point) {
-        QVector4D rayDirection = _viewPorts.calculateRayDir(point.position);
+        //QVector4D rayDirection = _viewPorts.calculateRayDir(point.position);
 
-        qDebug() << rayDirection;
+        //qDebug() << rayDirection;
+
+        if (!_selectedModel) {
+            return;
+        }
 
         if (Model::HeadModel * selectedModel = dynamic_cast<Model::HeadModel *>(_selectedModel)) {
-            selectedModel->addPoint(point.name, PointsInfo::FacePoint(rayDirection, point.color), point.name);
+            selectedModel->addPoint(point.name, PointsInfo::FacePoint(QVector4D(point.position.x(), point.position.y(), 0.0f, 1.0f), point.color), point.name);
         }
     }
 

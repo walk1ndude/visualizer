@@ -22,7 +22,6 @@ namespace Render {
         void selectScene(Scene::AbstractScene * scene = nullptr);
 
     protected:
-        void initialize();
         void render();
 
     private:

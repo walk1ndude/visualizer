@@ -75,33 +75,40 @@ namespace ViewPort {
         return _vMatrix;
     }
 
-    QVector4D ViewPort::mapToProjectionType(const QVector4D & vector) const {
-        switch (_projectionType) {
-        case TOP:
-            return QVector4D(vector.x(), 0.0f, vector.y(), 1.0f);
-        case LEFT:
-            return QVector4D(0.0f, vector.y(), vector.x(), 1.0f);
-        default:
-            return QVector4D(vector.x(), vector.y(), 0.0f, 1.0f);
-        }
-    }
+    bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectPoint) const {
+        float pX = projection.x();
+        float pY = projection.y();
 
-    bool ViewPort::calculateRayDir(const QPointF & point, QVector4D & rayDirection) const {
-        float pX = point.x();
-        float pY = point.y();
+        float x = _boundingRect.x() * _surfaceSize.width();
+        float y = _boundingRect.y() * _surfaceSize.height();
 
-        float x = _boundingRect.x();
-        float y = _boundingRect.y();
+        float w = _boundingRect.width() * _surfaceSize.width();
+        float h = _boundingRect.height() * _surfaceSize.height();
 
-        float w = _boundingRect.width();
-        float h = _surfaceSize.height();
+        bool invertible;
 
         if (pX >= x && pY >= y && pX < x + w && pY < y + h) {
-            qDebug() << mapToProjectionType(QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f));
-            rayDirection = calculateRayDir(
-                            mapToProjectionType(QVector4D(2.0 * (pX - x) / w - 1, - 2.0 * (pY - y) / h + 1, 0.0f, 1.0f))
-                        );
-            return true;
+            QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
+
+            if (!invertible) {
+                return false;
+            }
+
+            QVector4D unprojectPointVector = QVector4D(
+                        2.0 * (pX - x) / w - 1.0f,
+                        - 2.0 * (pY - y) / h + 1.0f,
+                        2.0 * projection.z() - 1.0f,
+                        1.0f) * invVP;
+
+            if (unprojectPointVector.w() == 0.0f) {
+                return false;
+            }
+            else {
+                unprojectPoint.setX(unprojectPointVector.x() / unprojectPointVector.w());
+                unprojectPoint.setY(unprojectPointVector.y() / unprojectPointVector.w());
+                unprojectPoint.setZ(unprojectPointVector.z() / unprojectPointVector.w());
+                return true;
+            }
         }
         else {
             return false;

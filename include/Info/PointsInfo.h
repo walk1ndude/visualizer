@@ -26,15 +26,37 @@ namespace PointsInfo {
         QVector4D position;
         QColor color;
 
+        bool depthTested() {
+            return _depthTested;
+        }
+
+        void depthTestCompleted() {
+            _depthTested = true;
+        }
+
+        bool isPositionCalculated() {
+            return _positionCalculated;
+        }
+
+        void positionCalculated() {
+            _positionCalculated = true;
+        }
+
         FacePoint(const QVector4D & position,
                   const QColor & color) {
             this->position = position;
             this->color = color;
+
+            _depthTested = false;
+            _positionCalculated = false;
         }
+    private:
+        bool _depthTested;
+        bool _positionCalculated;
     };
 
 
-    class FacePoints : public QHash<QString, FacePoint> { };
+    class FacePoints : public QHash<QString, FacePoint *> { };
 
     class FacePointsProgram {
     private:
@@ -50,7 +72,7 @@ namespace PointsInfo {
         void setUniformValue(QOpenGLShaderProgram * program,
                              const FacePoints & facePoints) {
             QHashIterator<QString, ShaderInfo::ShaderVariable> itFPShader(_facePoints);
-            QHashIterator<QString, FacePoint> itFP(facePoints);
+            QHashIterator<QString, FacePoint *> itFP(facePoints);
 
             bool contains;
 
@@ -63,8 +85,8 @@ namespace PointsInfo {
                     contains = itFPShader.key().contains(itFP.key());
                 }
 
-                if (contains) {
-                    program->setUniformValue(itFPShader.value(), itFP.value().position);
+                if (contains && itFP.value()->isPositionCalculated()) {
+                    program->setUniformValue(itFPShader.value(), itFP.value()->position);
                 }
 
                 itFPShader.toFront();

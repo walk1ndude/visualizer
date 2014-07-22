@@ -17,8 +17,6 @@ namespace ViewPort {
         void zoom(const qreal & zoomFactor);
 
         void resize(const QSize & surfaceSize);
-
-        QVector4D calculateRayDir(const QPointF & point) const;
     };
 }
 
