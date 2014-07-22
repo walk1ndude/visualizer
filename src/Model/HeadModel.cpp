@@ -118,31 +118,31 @@ namespace Model {
         QVector4D unprojectdPoint;
 
         foreach (PointsInfo::FacePoint * facePoint, _facePoints) {
-            if (!facePoint->isPositionCalculated()) {
-                if (!facePoint->depthTested()) {
-                    GLfloat posZ;
+            if (viewPort.pointInViewPort(facePoint->position) && !facePoint->isPositionCalculated()) {
+                GLfloat posZ;
 
-                    glReadPixels(
-                                (int) std::round(facePoint->position.x()),
-                                (int) std::round(facePoint->position.y()),
-                                1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &posZ
-                    );
+                facePoint->position.setX(std::round(facePoint->position.x()));
+                facePoint->position.setY(std::round(facePoint->position.y()));
 
-                    //qDebug() << posZ;
+                glReadPixels(
+                            (int) facePoint->position.x(),
+                            (int) facePoint->position.y(),
+                            1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &posZ
+                            );
 
-                    facePoint->position.setZ(posZ);
-                    facePoint->depthTestCompleted();
-                }
+                qDebug() << posZ;
+
+                facePoint->position.setZ(posZ);
+
+                //facePoint->position = viewPortCoords;
 
                 if (viewPort.unproject(facePoint->position, unprojectdPoint)) {
-
                     facePoint->position = unprojectdPoint;
                     facePoint->positionCalculated();
 
                     qDebug() << facePoint->position;
                 }
             }
-
         }
     }
 }

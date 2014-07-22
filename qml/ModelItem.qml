@@ -76,7 +76,6 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: if (!!modelItem.selectedPointName && mouse.button == Qt.LeftButton) {
-                               // find mouse coordinates in range [0; 1], y inverted
                                modelViewer.selectedPointPosition = Qt.point(
                                            mouseX * parent.fboSize.width / width,
                                            (height - mouseY) * parent.fboSize.height / height);

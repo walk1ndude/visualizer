@@ -26,14 +26,6 @@ namespace PointsInfo {
         QVector4D position;
         QColor color;
 
-        bool depthTested() {
-            return _depthTested;
-        }
-
-        void depthTestCompleted() {
-            _depthTested = true;
-        }
-
         bool isPositionCalculated() {
             return _positionCalculated;
         }
@@ -47,11 +39,9 @@ namespace PointsInfo {
             this->position = position;
             this->color = color;
 
-            _depthTested = false;
             _positionCalculated = false;
         }
     private:
-        bool _depthTested;
         bool _positionCalculated;
     };
 

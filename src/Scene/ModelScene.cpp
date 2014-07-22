@@ -65,7 +65,7 @@ namespace Scene {
         }
 
         if (Model::HeadModel * selectedModel = dynamic_cast<Model::HeadModel *>(_selectedModel)) {
-            selectedModel->addPoint(point.name, PointsInfo::FacePoint(QVector4D(point.position.x(), point.position.y(), 0.0f, 1.0f), point.color), point.name);
+            selectedModel->addPoint(point.name, PointsInfo::FacePoint(QVector4D(point.position.x(), point.position.y(), 1.0f, 1.0f), point.color), point.name);
         }
     }
 

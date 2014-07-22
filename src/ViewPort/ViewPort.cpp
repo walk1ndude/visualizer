@@ -15,19 +15,19 @@ namespace ViewPort {
         switch (projectionType) {
             case ViewPort::PERSPECTIVE :
                 perspective(60.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(0.0f, -2.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
+                lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
                 break;
             case ViewPort::LEFT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(-2.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
+                lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
                 break;
             case ViewPort::FRONT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(0.0f, -3.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
+                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
                 break;
             case ViewPort::TOP:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+                lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
             break;
         }
     }
@@ -75,10 +75,20 @@ namespace ViewPort {
         return _vMatrix;
     }
 
-    bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectPoint) const {
-        float pX = projection.x();
-        float pY = projection.y();
+    bool ViewPort::pointInViewPort(const QVector4D & point) const {
+        float pX = point.x();
+        float pY = point.y();
 
+        float x = _boundingRect.x() * _surfaceSize.width();
+        float y = _boundingRect.y() * _surfaceSize.height();
+
+        float w = _boundingRect.width() * _surfaceSize.width();
+        float h = _boundingRect.height() * _surfaceSize.height();
+
+        return (pX >= x && pY >= y && pX < x + w && pY < y + h);
+    }
+
+    bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectPoint) const {
         float x = _boundingRect.x() * _surfaceSize.width();
         float y = _boundingRect.y() * _surfaceSize.height();
 
@@ -87,36 +97,28 @@ namespace ViewPort {
 
         bool invertible;
 
-        if (pX >= x && pY >= y && pX < x + w && pY < y + h) {
-            QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
+        QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
 
-            if (!invertible) {
-                return false;
-            }
-
-            QVector4D unprojectPointVector = QVector4D(
-                        2.0 * (pX - x) / w - 1.0f,
-                        - 2.0 * (pY - y) / h + 1.0f,
-                        2.0 * projection.z() - 1.0f,
-                        1.0f) * invVP;
-
-            if (unprojectPointVector.w() == 0.0f) {
-                return false;
-            }
-            else {
-                unprojectPoint.setX(unprojectPointVector.x() / unprojectPointVector.w());
-                unprojectPoint.setY(unprojectPointVector.y() / unprojectPointVector.w());
-                unprojectPoint.setZ(unprojectPointVector.z() / unprojectPointVector.w());
-                return true;
-            }
-        }
-        else {
+        if (!invertible) {
             return false;
         }
-    }
 
-    QVector4D ViewPort::calculateRayDir(const QVector4D & point) const {
-        return point * (_pMatrix * _vMatrix).inverted() - _eye;
+        QVector4D unprojectPointVector = QVector4D(
+                    2.0 * (projection.x() - x) / w - 1.0f,
+                    2.0 * (projection.y() - y) / h + 1.0f,
+                    2.0 * projection.z() - 1.0f,
+                    1.0f) * invVP;
+
+        if (unprojectPointVector.w() == 0.0f) {
+            return false;
+        }
+        else {
+            unprojectPoint.setX(unprojectPointVector.x() / unprojectPointVector.w());
+            unprojectPoint.setY(unprojectPointVector.y() / unprojectPointVector.w());
+            unprojectPoint.setZ(unprojectPointVector.z() / unprojectPointVector.w());
+            unprojectPoint.setW(1.0f);
+            return true;
+        }
     }
 
     void ViewPort::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {

@@ -13,7 +13,7 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU 900
+#define MIN_HU 700
 #define MAX_HU 3600
 
 namespace Parser {

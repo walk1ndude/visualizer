@@ -36,6 +36,7 @@ namespace ViewPort {
         void resize(const QSize & windowSize);
 
         bool unproject(const QVector4D & projection, QVector4D & unprojectPoint) const;
+        bool pointInViewPort(const QVector4D & point) const;
 
     private:
         QSize _surfaceSize;
