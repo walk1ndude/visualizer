@@ -16,14 +16,21 @@ namespace ViewPort {
             case ViewPort::PERSPECTIVE :
                 perspective(60.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+
+                _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
                 break;
             case ViewPort::LEFT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+
+                _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
+                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f);
                 break;
             case ViewPort::FRONT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+
+                _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
                 break;
             case ViewPort::TOP:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
@@ -62,8 +69,8 @@ namespace ViewPort {
 
             _pMatrix.perspective(_fov * (zoomFactor + b) / (_eye.z() + a), _aspectRatio, _nearVal, _farVal);
         }
-        else {
-            _pMatrix.ortho(-zoomFactor / 2, zoomFactor / 2, -zoomFactor / 2, zoomFactor / 2, _nearVal, _farVal);
+        else if (zoomFactor != 0.0f) {
+            _pMatrix.ortho(-zoomFactor / 2.0f, zoomFactor / 2.0f, -zoomFactor / 2.0f, zoomFactor / 2.0f, _nearVal, _farVal);
         }
     }
 
@@ -81,21 +88,7 @@ namespace ViewPort {
 
     QMatrix4x4 ViewPort::modelVoxel(const QMatrix4x4 & model) const {
         QMatrix4x4 modelMatrix(model);
-
-        switch (_projectionType) {
-            case ViewPort::PERSPECTIVE :
-                modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);
-                break;
-            case ViewPort::LEFT:
-                modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);
-                modelMatrix.rotate(90.0f, 0.0f, 1.0f, 0.0f);
-                break;
-            case ViewPort::FRONT:
-                modelMatrix.rotate(90.0f, 1.0f, 0.0f, 0.0f);
-                break;
-            default:
-                break;
-        }
+        modelMatrix.rotate(_qRotateVoxel);
 
         return modelMatrix;
     }

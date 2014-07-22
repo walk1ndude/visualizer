@@ -54,6 +54,8 @@ namespace ViewPort {
 
         QMatrix4x4 _pMatrix;
 
+        QQuaternion _qRotateVoxel;
+
         QVector3D _orientation;
         QVector3D _eye;
         QVector3D _center;

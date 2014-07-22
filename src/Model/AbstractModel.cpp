@@ -66,9 +66,10 @@ namespace Model {
     void AbstractModel::rotate(const QVector3D & rotation) {
         QVector3D rot = _orientation - rotation;
 
-        _mMatrix.rotate(rot.x(), 1.0f, 0.0f, 0.0f);
-        _mMatrix.rotate(rot.y(), 0.0f, 1.0f, 0.0f);
-        _mMatrix.rotate(rot.z(), 0.0f, 0.0f, 1.0f);
+        _mMatrix.rotate(QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rot.x()) *
+                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rot.y()) *
+                        QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rot.z())
+        );
 
         _orientation = rotation;
     }
