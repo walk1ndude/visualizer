@@ -1,5 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
 
 import "../js/sidebarcontent.js" as SideBar
 
@@ -70,13 +71,26 @@ Item {
                     }
 
                     Button {
-                        width: 30
-                        height: 30
+                        width: 20
+                        height: 20
                         anchors.right: parent.right
                         anchors.rightMargin: 15
+                        anchors.topMargin: 5
                         anchors.verticalCenter: parent.verticalCenter
 
-                        onClicked: sidebarListModel.setProperty(index, "collapsed", !collapsed);
+                        iconSource: "qrc:/icons/expand.svg"
+
+                        style: ButtonStyle {
+                            background: Rectangle {
+                                anchors.fill: parent
+                            }
+                        }
+
+                        onClicked: {
+                            sidebarListModel.setProperty(index, "collapsed", !collapsed);
+
+                            iconSource = sidebarListModel.get(index).collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
+                        }
                     }
                 }
 

@@ -115,7 +115,7 @@ namespace ViewPort {
 
         bool invertible;
 
-        QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
+        QMatrix4x4 invVP = (_pMatrix * _vMatrixVoxel).inverted(&invertible);
 
         if (!invertible) {
             return false;
@@ -123,8 +123,8 @@ namespace ViewPort {
 
         QVector4D unprojectPointVector = QVector4D(
                     2.0 * (projection.x() - x) / w - 1.0f,
-                    2.0 * (projection.y() - y) / h + 1.0f,
-                    2.0 * projection.z() - 1.0f,
+                    - 2.0 * (projection.y() - y) / h - 1.0f,
+                    projection.z(),
                     1.0f) * invVP;
 
         if (unprojectPointVector.w() == 0.0f) {

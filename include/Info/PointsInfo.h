@@ -60,7 +60,8 @@ namespace PointsInfo {
         }
 
         void setUniformValue(QOpenGLShaderProgram * program,
-                             const FacePoints & facePoints) {
+                             const FacePoints & facePoints,
+                             const QMatrix4x4 & projViewMartix) {
             QHashIterator<QString, ShaderInfo::ShaderVariable> itFPShader(_facePoints);
             QHashIterator<QString, FacePoint *> itFP(facePoints);
 
@@ -76,7 +77,8 @@ namespace PointsInfo {
                 }
 
                 if (contains && itFP.value()->isPositionCalculated()) {
-                    program->setUniformValue(itFPShader.value(), itFP.value()->position);
+                    qDebug() << itFPShader.key() << itFP.value()->position;
+                    program->setUniformValue(itFPShader.value(), projViewMartix * itFP.value()->position);
                 }
 
                 itFPShader.toFront();

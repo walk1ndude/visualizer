@@ -25,6 +25,7 @@ namespace Render {
         surfaceFormat.setVersion(4, 1);
         surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
         surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
+        surfaceFormat.setDepthBufferSize(16);
 
         //_context->setShareContext(context);
         _context->setFormat(surfaceFormat);

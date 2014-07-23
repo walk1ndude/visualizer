@@ -97,14 +97,16 @@ namespace Model {
     }
 
     void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
+        QMatrix4x4 modelMatrix = viewPort.modelVoxel(_mMatrix);
+
         _program->setUniformValue(_shaderView, viewPort.viewVoxel());
-        _program->setUniformValue(_shaderModel, viewPort.modelVoxel(_mMatrix));
+        _program->setUniformValue(_shaderModel, modelMatrix);
         _program->setUniformValue(_shaderProjection, viewPort.projection());
-        _program->setUniformValue(_shaderNormalMatrix, (_mMatrix * viewPort.view()).normalMatrix());
+        _program->setUniformValue(_shaderNormalMatrix, (modelMatrix * viewPort.viewVoxel()).normalMatrix());
         _program->setUniformValue(_shaderScale, _scaleM);
         _program->setUniformValue(_shaderStep, _step);
 
-        _facePointsProgram.setUniformValue(_program, _facePoints);
+        _facePointsProgram.setUniformValue(_program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
     }
 
     void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
@@ -119,20 +121,21 @@ namespace Model {
 
         foreach (PointsInfo::FacePoint * facePoint, _facePoints) {
             if (viewPort.pointInViewPort(facePoint->position) && !facePoint->isPositionCalculated()) {
-                GLfloat posZ;
+                GLushort posZ;
 
                 facePoint->position.setX(std::round(facePoint->position.x()));
                 facePoint->position.setY(std::round(facePoint->position.y()));
 
+                // usage of GL_UNSIGNED_SHORT explaned here http://www.opengl.org/wiki/Common_Mistakes#Depth_Buffer_Precision
                 glReadPixels(
                             (int) facePoint->position.x(),
                             (int) facePoint->position.y(),
-                            1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &posZ
+                            1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ
                             );
 
                 qDebug() << posZ;
 
-                facePoint->position.setZ(posZ);
+                facePoint->position.setZ(posZ / 65536.0f);
 
                 //facePoint->position = viewPortCoords;
 

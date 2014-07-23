@@ -11,9 +11,8 @@ uniform highp Ranges ranges;
 
 uniform highp sampler3D texHead;
 
-uniform highp mat4 model;
+uniform highp mat4 projection;
 uniform highp mat4 view;
-uniform highp mat4 scale;
 
 uniform highp mat3 normalMatrix;
 
@@ -152,11 +151,6 @@ void main(void) {
 */
             //fragColor.a = clamp(fragColor.a, 0.0, 1.0);
 
-            if (abs(fragPos.s - facePoints.incisor.s) < 0.1f &&
-                abs(fragPos.t - facePoints.incisor.t) < 0.2f &&
-                abs(fragPos.p - facePoints.incisor.p) < 0.1f) {
-                fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-            }
         }
         else {
             discard;
@@ -164,5 +158,11 @@ void main(void) {
     }
     else {
         discard;
+    }
+
+    if (abs(fragPos.s - facePoints.incisor.s) < 0.5f &&
+        abs(fragPos.t - facePoints.incisor.t) < 0.5f &&
+        abs(fragPos.p - facePoints.incisor.p) < 0.5f) {
+        fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
     }
 }
