@@ -109,8 +109,6 @@ namespace Model {
     }
 
     void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
-
-        qDebug() << _program->uniformLocation("facePoints.incisor") << _program->isLinked();
         if (_program) {
             _facePointsProgram.addPoint(_program, "facePoints." + shaderVariableName);
             _facePoints.insert(name, new PointsInfo::FacePoint(point.position, point.color));
