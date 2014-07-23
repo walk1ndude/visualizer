@@ -55,15 +55,15 @@ namespace PointsInfo {
         FacePointsProgram() { }
 
         void addPoint(QOpenGLShaderProgram * program,
-                      const ShaderInfo::ShaderVariableName & shaderVariable) {
-            _facePoints.insert(shaderVariable, program->uniformLocation(shaderVariable));
+                      const ShaderInfo::ShaderVariableName & shaderVariableName) {
+            _facePoints.insert(shaderVariableName, program->uniformLocation(shaderVariableName));
         }
 
         void setUniformValue(QOpenGLShaderProgram * program,
                              const FacePoints & facePoints,
                              const QMatrix4x4 & projViewMartix) {
-            QHashIterator<QString, ShaderInfo::ShaderVariable> itFPShader(_facePoints);
-            QHashIterator<QString, FacePoint *> itFP(facePoints);
+            QHashIterator<ShaderInfo::ShaderVariableName , ShaderInfo::ShaderVariable> itFPShader(_facePoints);
+            QHashIterator<ShaderInfo::ShaderVariableName , FacePoint *> itFP(facePoints);
 
             bool contains;
 
@@ -77,7 +77,6 @@ namespace PointsInfo {
                 }
 
                 if (contains && itFP.value()->isPositionCalculated()) {
-                    qDebug() << itFPShader.key() << itFP.value()->position;
                     program->setUniformValue(itFPShader.value(), projViewMartix * itFP.value()->position);
                 }
 

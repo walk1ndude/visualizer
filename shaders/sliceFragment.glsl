@@ -11,10 +11,7 @@ uniform highp Ranges ranges;
 
 uniform highp sampler3D texHead;
 
-uniform highp mat4 projection;
-uniform highp mat4 view;
-
-uniform highp mat3 normalMatrix;
+uniform highp mat4 normalMatrix;
 
 struct FacePoints {
     vec4 incisor;
@@ -122,7 +119,7 @@ void main(void) {
         if (headColor.r > 0.05f) {
             vec4 normal = sobel3(fragPos.stp);
 
-            vec4 N = normalize(mat4(normalMatrix) * normal);
+            vec4 N = normalize(normalMatrix * normal);
             vec4 L = normalize(lightSource.position - fragPos);
 
             float NdotL = max(dot(N, L), 0.0f);

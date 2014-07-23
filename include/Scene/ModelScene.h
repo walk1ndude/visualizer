@@ -15,6 +15,7 @@
 
 namespace Scene {
     class ModelScene : public AbstractScene {
+        Q_OBJECT
     public:
         explicit ModelScene();
         ~ModelScene();

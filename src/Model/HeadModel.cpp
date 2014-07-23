@@ -5,31 +5,30 @@
 namespace Model {
     HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles) :
         AbstractModel(shaderFiles) {
-        _scaleM.setToIdentity();
     }
 
     HeadModel::~HeadModel() {
         qDeleteAll(_facePoints.begin(), _facePoints.end());
     }
 
-    void HeadModel::init(const int & depth) {
-        _vertexCount = 4 * depth;
-        _indexCount = 6 * depth;
+    void HeadModel::init(const QVector3D & size) {
+        _vertexCount = 4 * size.z();
+        _indexCount = 6 * size.z();
 
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
 
-        GLfloat step = 2.0 / (GLfloat) depth;
-        GLfloat stepTexture = 1.0 / (GLfloat) depth;
+        GLfloat step = 2.0f / size.z();
+        GLfloat stepTexture = 1.0f / size.z();
 
-        GLfloat zCurrent = -1.0;
-        GLfloat zCurrentTexture = 0.0;
+        GLfloat zCurrent = -1.0f;
+        GLfloat zCurrentTexture = 0.0f;
 
-        for (int i = 0; i != depth; ++ i) {
-            vertices->push_back(ModelInfo::VertexVT(-1.0, -1.0, zCurrent, 0.0, 1.0, zCurrentTexture));
-            vertices->push_back(ModelInfo::VertexVT(-1.0, 1.0, zCurrent, 0.0, 0.0, zCurrentTexture));
-            vertices->push_back(ModelInfo::VertexVT(1.0, 1.0, zCurrent, 1.0, 0.0, zCurrentTexture));
-            vertices->push_back(ModelInfo::VertexVT(1.0, -1.0, zCurrent, 1.0, 1.0, zCurrentTexture));
+        for (int i = 0; i != (int) size.z(); ++ i) {
+            vertices->push_back(ModelInfo::VertexVT(-1.0f, -1.0f, zCurrent, 0.0f, 1.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(-1.0f, 1.0f, zCurrent, 0.0f, 0.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(1.0f, 1.0f, zCurrent, 1.0f, 0.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(1.0f, -1.0f, zCurrent, 1.0f, 1.0f, zCurrentTexture));
 
             indices->push_back(4 * i);
             indices->push_back(4 * i + 2);
@@ -42,7 +41,7 @@ namespace Model {
             zCurrentTexture += stepTexture;
         };
 
-        _step = 1.0 / depth;
+        _step = QVector3D(1.0f / size.x(), 1.0f / size.y(), 1.0f / size.z());
 
         ModelInfo::BuffersVT buffers;
 
@@ -102,7 +101,7 @@ namespace Model {
         _program->setUniformValue(_shaderView, viewPort.viewVoxel());
         _program->setUniformValue(_shaderModel, modelMatrix);
         _program->setUniformValue(_shaderProjection, viewPort.projection());
-        _program->setUniformValue(_shaderNormalMatrix, (modelMatrix * viewPort.viewVoxel()).normalMatrix());
+        _program->setUniformValue(_shaderNormalMatrix, QMatrix4x4((modelMatrix * viewPort.viewVoxel()).normalMatrix()));
         _program->setUniformValue(_shaderScale, _scaleM);
         _program->setUniformValue(_shaderStep, _step);
 
@@ -110,14 +109,18 @@ namespace Model {
     }
 
     void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
+
+        qDebug() << _program->uniformLocation("facePoints.incisor") << _program->isLinked();
         if (_program) {
             _facePointsProgram.addPoint(_program, "facePoints." + shaderVariableName);
             _facePoints.insert(name, new PointsInfo::FacePoint(point.position, point.color));
         }
     }
 
-    void HeadModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
+    bool HeadModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
         QVector4D unprojectdPoint;
+
+        bool updateNeeded = false;
 
         foreach (PointsInfo::FacePoint * facePoint, _facePoints) {
             if (viewPort.pointInViewPort(facePoint->position) && !facePoint->isPositionCalculated()) {
@@ -133,8 +136,6 @@ namespace Model {
                             1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ
                             );
 
-                qDebug() << posZ;
-
                 facePoint->position.setZ(posZ / 65536.0f);
 
                 //facePoint->position = viewPortCoords;
@@ -143,9 +144,12 @@ namespace Model {
                     facePoint->position = unprojectdPoint;
                     facePoint->positionCalculated();
 
+                    updateNeeded = true;
                     qDebug() << facePoint->position;
                 }
             }
         }
+
+        return updateNeeded;
     }
 }

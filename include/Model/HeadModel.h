@@ -26,7 +26,7 @@ namespace Model {
 
         ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
 
-        void init(const int & depth);
+        void init(const QVector3D & size);
 
         void scale(const QVector3D & scale);
 
@@ -36,7 +36,7 @@ namespace Model {
                 const ShaderInfo::ShaderVariableName & shaderVariableName
                 );
 
-        void checkDepthBuffer(ViewPort::ViewPort & viewPort);
+        bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
@@ -54,7 +54,7 @@ namespace Model {
 
         QMatrix4x4 _scaleM;
 
-        GLfloat _step;
+        QVector3D _step;
     };
 }
 #endif // HEADMODEL_H

@@ -135,7 +135,9 @@ namespace Model {
         glFinish();
         _vao.release();
 
-        checkDepthBuffer(viewPort);
+        if (checkDepthBuffer(viewPort)) {
+            emit redraw();
+        }
 
         releaseTextures();
         glStatesDisable();

@@ -24,7 +24,16 @@ namespace Render {
         if (!scene->isInitialized()) {
             scene->initScene(_surfaceSize);
         }
+
+        // no more connection with previous scene
+        if (_selectedScene) {
+            QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
+            _sceneHistory.insert(scene);
+        }
+
         _selectedScene = scene;
+        QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
+
         _sceneHistory.insert(scene);
     }
 

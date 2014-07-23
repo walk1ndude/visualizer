@@ -228,8 +228,7 @@ namespace Scene {
 
         _selectedModel = model;
 
-        // depth
-        model->init(slices.texture.size.z());
+        model->init(slices.texture.size);
 
         model->scale(slices.texture.scaling);
 
@@ -250,6 +249,8 @@ namespace Scene {
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
+
+        QObject::connect(model, &Model::HeadModel::redraw, this, &Scene::ModelScene::redraw);
 
         _models.push_back(model);
     }

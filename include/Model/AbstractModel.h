@@ -29,7 +29,7 @@ namespace Model {
         virtual void glStatesEnable() = 0;
         virtual void glStatesDisable() = 0;
 
-        virtual void checkDepthBuffer(ViewPort::ViewPort & viewPort) = 0;
+        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort) = 0;
 
         virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) = 0;
 
@@ -154,6 +154,7 @@ namespace Model {
     signals:
         void shaderProgramInitErrorHappened();
         void shaderProgramSetVariableErrorHappened();
+        void redraw();
 
     public slots:
         virtual void deleteModel() final;

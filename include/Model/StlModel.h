@@ -22,7 +22,7 @@ namespace Model {
         void glStatesEnable();
         void glStatesDisable();
 
-        void checkDepthBuffer(ViewPort::ViewPort & viewPort);
+        bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;

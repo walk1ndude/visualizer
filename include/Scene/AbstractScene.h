@@ -6,7 +6,8 @@
 #include <Info/ModelInfo.h>
 
 namespace Scene {
-    class AbstractScene {
+    class AbstractScene : public QObject {
+        Q_OBJECT
     public:
         AbstractScene() :
             _isInitialized(false) {}
@@ -34,6 +35,9 @@ namespace Scene {
         virtual void setZRange(const ModelInfo::ViewAxisRange & zRange) = 0;
     private:
         bool _isInitialized;
+
+    signals:
+        void redraw();
     };
 }
 

@@ -48,7 +48,9 @@ namespace Model {
         _program->setUniformValue(_shaderNormalMatrix, (_mMatrix * viewPort.view()).normalMatrix());
     }
 
-    void StlModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
+    bool StlModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
         Q_UNUSED(viewPort)
+
+        return false;
     }
 }
