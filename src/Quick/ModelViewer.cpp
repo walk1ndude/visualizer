@@ -27,9 +27,9 @@ signals:
 public slots:
     // This function gets called on the FBO rendering thread and will store the
     // texture id and size and schedule an update on the window.
-    void newTexture(const QImage & image, const QSize & size) {
+    void newTexture(const GLuint & fboTexId, const QSize & size) {
         _textureMutex.lock();
-        _image = image;
+        _fboTexId = fboTexId;
         _size = size;
         _textureMutex.unlock();
 
@@ -42,14 +42,14 @@ public slots:
         QMutexLocker locker (&_textureMutex);
 
         delete _texture;
-        _texture = _window->createTextureFromImage(_image);
+        _texture = _window->createTextureFromId(_fboTexId, _size);
         setTexture(_texture);
     }
 
 private:
     QSize _size;
 
-    QImage _image;
+    GLuint _fboTexId;
 
     QMutex _textureMutex;
 
@@ -192,7 +192,7 @@ namespace Quick {
         _scenes.push_back(new Scene::ModelScene);
     }
 
-    QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *) {
+    QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * paintNodeData) {
         TextureNode * node = static_cast<TextureNode *>(oldNode);
 
         if (!_modelRenderer) {
@@ -251,6 +251,14 @@ namespace Quick {
         QMetaObject::invokeMethod(_modelRenderer, "renderNext");
 
         node->setRect(boundingRect());
+
+        QMatrix4x4 paintNodeTransformMatrix;
+
+        paintNodeTransformMatrix.translate(width() * 0.5f, height() * 0.5f);
+        paintNodeTransformMatrix.scale(1.0f, -1.0f);
+        paintNodeTransformMatrix.translate(-width() * 0.5f, -height() * 0.5f);
+
+        paintNodeData->transformNode->setMatrix(paintNodeTransformMatrix);
 
         return node;
     }

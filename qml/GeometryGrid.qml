@@ -1,5 +1,4 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
 
 import "../js/helperfuncs.js" as HelperFuncs
 
@@ -25,7 +24,7 @@ Rectangle {
 
         anchors.top: geometryGrid.top
         anchors.left: geometryGrid.left
-        anchors.margins: 5
+        anchors.margins: 10
 
         Text {
             text: qsTr("x axis")

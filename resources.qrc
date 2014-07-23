@@ -18,5 +18,6 @@
         <file>js/sidebarcontent.js</file>
         <file>icons/expand.svg</file>
         <file>icons/collapse.svg</file>
+        <file>qml/Slider.qml</file>
     </qresource>
 </RCC>

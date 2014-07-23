@@ -85,7 +85,7 @@ namespace Quick {
     protected:
         bool _needsInitialize;
 
-        QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData *);
+        QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData * paintNodeData);
 
     private:
         Render::ModelRenderer * _modelRenderer;

@@ -52,6 +52,7 @@ namespace Render {
         bool _contentInitializeNeeded;
 
         QOpenGLFramebufferObject * _fboRender;
+        QOpenGLFramebufferObject * _fboDisplay;
 
         QOffscreenSurface * _surface;
 
@@ -59,7 +60,7 @@ namespace Render {
 
         FBOSaver * _fboSaver;
     signals:
-        void textureReady(const QImage & image, const QSize & size);
+        void textureReady(const GLuint & fboTexId, const QSize & size);
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void needToRedraw();
         void appearedSmthToDraw();

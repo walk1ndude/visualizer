@@ -24,12 +24,14 @@ namespace Gui {
         QObject * appWindow = _engine->rootObjects().at(0);
 
         _appWindow = qobject_cast<QQuickWindow *>(appWindow);
-/*
+
         QSurfaceFormat surfaceFormat = _appWindow->format();
         surfaceFormat.setVersion(4, 1);
         surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
         surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
-        _appWindow->setFormat(surfaceFormat);*/
+        surfaceFormat.setSwapInterval(10);
+
+        _appWindow->setFormat(surfaceFormat);
 
         QObject::connect(appWindow, SIGNAL(fileOpenedDcm(const QUrl &)), this, SIGNAL(fileOpenedDcm(const QUrl &)));
         QObject::connect(appWindow, SIGNAL(fileOpenedStl(const QUrl &)), this, SIGNAL(fileOpenedStl(const QUrl &)));

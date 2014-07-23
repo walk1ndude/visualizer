@@ -1,5 +1,4 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
 
 Rectangle {
     id: shaderGrid
@@ -40,7 +39,7 @@ Rectangle {
             minimumValue: shaderGrid.huRange.x
             maximumValue: shaderGrid.huRange.y
             value: 400
-            stepSize: 1.0
+            //stepSize: 1.0
         }
 
         Text {
@@ -57,7 +56,7 @@ Rectangle {
             minimumValue: shaderGrid.huRange.x
             maximumValue: shaderGrid.huRange.y
             value: 63512
-            stepSize: 1.0
+            //stepSize: 1.0
         }
 
         Text {
