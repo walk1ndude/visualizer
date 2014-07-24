@@ -2,12 +2,10 @@
     <qresource prefix="/">
         <file>shaders/sliceFragment.glsl</file>
         <file>shaders/sliceVertex.glsl</file>
-        <file>qml/Hud.qml</file>
         <file>qml/GeometryGrid.qml</file>
         <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/ModelItem.qml</file>
-        <file>qml/Range.qml</file>
         <file>js/helperfuncs.js</file>
         <file>cl/reconstructor.cl</file>
         <file>shaders/stlVertex.glsl</file>
@@ -19,5 +17,7 @@
         <file>icons/expand.svg</file>
         <file>icons/collapse.svg</file>
         <file>qml/Slider.qml</file>
+        <file>qml/RangeSlider.qml</file>
+        <file>qml/CircleSlider.qml</file>
     </qresource>
 </RCC>

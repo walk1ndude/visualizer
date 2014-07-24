@@ -25,9 +25,11 @@ Rectangle {
         columns: 3
         rows: 6
 
-        anchors.top: shaderGrid.top
-        anchors.left: shaderGrid.left
-        anchors.margins: 5
+        anchors {
+            top: shaderGrid.top
+            left: shaderGrid.left
+            margins: 5
+        }
 
         Text {
             text: qsTr("minHU")
@@ -64,38 +66,53 @@ Rectangle {
         }
     }
 
-    Range {
-        id: xRange
-        objectName: "XRange"
+    Grid {
+        columns: 2
+        rows: 3
 
-        onRangeVectorChanged: shaderGrid.xRange = rangeVector
+        anchors {
+            top: grid.bottom
+            left: shaderGrid.left
+            margins: 15
+        }
 
-        anchors.top: grid.bottom
-        anchors.left: shaderGrid.left
-        anchors.margins: 5
-    }
+        Text {
+            text: qsTr("xRange")
+        }
 
+        RangeSlider {
+            id: xRange
 
-    Range {
-        id: yRange
-        objectName: "YRange"
+            value: Qt.vector2d(-1.0, 1.0)
+            valueRange: Qt.vector2d(-1.0, 1.0)
 
-        onRangeVectorChanged: shaderGrid.yRange = rangeVector
+            onValueChanged: shaderGrid.xRange = value
+        }
 
-        anchors.top: xRange.bottom
-        anchors.left: shaderGrid.left
-        anchors.margins: 5
-    }
+        Text {
+            text: qsTr("yRange")
+        }
 
+        RangeSlider {
+            id: yRange
 
-    Range {
-        id: zRange
-        objectName: "ZRange"
+            value: Qt.vector2d(-1.0, 1.0)
+            valueRange: Qt.vector2d(-1.0, 1.0)
 
-        onRangeVectorChanged: shaderGrid.zRange = rangeVector
+            onValueChanged: shaderGrid.yRange = value
+        }
 
-        anchors.top: yRange.bottom
-        anchors.left: shaderGrid.left
-        anchors.margins: 5
+        Text {
+            text: qsTr("zRange")
+        }
+
+        RangeSlider {
+            id: zRange
+
+            value: Qt.vector2d(-1.0, 1.0)
+            valueRange: Qt.vector2d(-1.0, 1.0)
+
+            onValueChanged: shaderGrid.zRange = value
+        }
     }
 }
