@@ -69,7 +69,7 @@ Rectangle {
             color: "white"
 
             width: invidualInfo.width
-            height: 100
+            height: 60 + subItemLoader.item.model.count * 25
 
             Rectangle {
                 anchors {
@@ -120,24 +120,18 @@ Rectangle {
                 wrapMode: Text.WordWrap
             }
 
-            Rectangle {
-                id: helper
+            Loader {
+                id: subItemLoader
 
                 anchors {
                     top: sourceText.bottom
+                    bottom: mainRectangle.bottom
                     left: sourceText.left
                 }
 
-                Loader {
-                    id: subItemLoader
-
-                    property variant subItemModel: subItems
-                    sourceComponent: subItemComponent
-                    onStatusChanged: if (status == Loader.Ready) {
-                                         item.model = subItems;
-                                         mainRectangle.height = item.model.count * 50;
-                                     }
-                }
+                property variant subItemModel: subItems
+                sourceComponent: subItemComponent
+                onStatusChanged: if (status == Loader.Ready) item.model = subItems;
             }
         }
     }
