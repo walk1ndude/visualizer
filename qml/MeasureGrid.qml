@@ -3,22 +3,22 @@ import QtQuick 2.3
 import "../js/pointsdictionary.js" as PointsDict
 
 Rectangle {
-    id: measureGrid
-    width: 100
-    height: listModel.count * 45
+    id: measureGrid;
+    width: 100;
+    height: listModel.count * 45;
 
     color: "#cccccc"
-    border.color: "black"
-    border.width: 2
+    border.color: "black";
+    border.width: 2;
 
-    property string selectedPointName: ""
-    property color selectedPointColor: Qt.rgba(0, 0, 0, 0)
+    property string selectedPointName: "";
+    property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
 
     ListView {
         model: ListModel {
-            id: listModel
+            id: listModel;
 
-            property int prevIndex: -1
+            property int prevIndex: -1;
 
             Component.onCompleted: {
                 var measures = PointsDict.pointsDict.measures;
@@ -36,33 +36,37 @@ Rectangle {
             }
         }
 
-        delegate: delegateComponent
-        anchors.fill: parent
+        delegate: delegateComponent;
+        anchors.fill: parent;
     }
 
     Component {
-        id: delegateComponent
+        id: delegateComponent;
 
         Rectangle {
-            border.color: "black"
-            border.width: 1
-            color: "white"
+            border.color: "black";
+            border.width: 1;
+            color: "white";
 
-            height: 45
-            width: measureGrid.width
+            height: 45;
+            width: measureGrid.width;
 
             Text {
-                anchors.verticalCenter: parent.verticalCenter
-                x: 15
-                font.pixelSize: 12
-                font.bold: selected
-                text: itemText
-                clip: true
-                wrapMode: Text.WordWrap
+                anchors.verticalCenter: parent.verticalCenter;
+                x: 15;
+
+                font {
+                    pixelSize: 12;
+                    bold: selected;
+                }
+
+                text: itemText;
+                clip: true;
+                wrapMode: Text.WordWrap;
             }
 
             MouseArea {
-                anchors.fill: parent
+                anchors.fill: parent;
                 onClicked: {
                     listModel.get(index).selected = !selected;
 

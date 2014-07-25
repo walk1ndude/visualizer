@@ -4,12 +4,12 @@
 #
 #-------------------------------------------------
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += quick
+greaterThan(QT_VERSION, 5.2): QT += quick
 
 TARGET = dicom
 TEMPLATE = app
 
-CONFIG += c++11
+CONFIG += c++11 qtquickcompiler
 
 INCLUDEPATH += include
 

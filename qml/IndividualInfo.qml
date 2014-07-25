@@ -4,17 +4,17 @@ import "../js/pointsdictionary.js" as PointsDict
 import "../js/helpers.js" as Helpers
 
 Rectangle {
-    id: individualInfo
-    width: 100
-    height: 300
+    id: individualInfo;
+    width: 100;
+    height: 300;
 
-    color: "#cccccc"
-    border.color: "black"
-    border.width: 2
+    color: "#cccccc";
+    border.color: "black";
+    border.width: 2;
 
     ListView {
         model: ListModel {
-            id: listModel
+            id: listModel;
 
             Component.onCompleted: {
                 var measures = PointsDict.pointsDict.measures;
@@ -51,78 +51,79 @@ Rectangle {
             }
         }
 
-        delegate: delegateComponent
-        anchors.fill: parent
+        delegate: delegateComponent;
+        anchors.fill: parent;
     }
 
     Component {
-        id: delegateComponent
+        id: delegateComponent;
 
         Rectangle {
-            id: mainRectangle
+            id: mainRectangle;
 
             border {
-                color: "black"
-                width: 1
+                color: "black";
+                width: 1;
             }
 
-            color: "white"
+            color: "white";
 
-            width: individualInfo.width
-            height: 60
+            width: individualInfo.width;
+            height: 60;
 
             Rectangle {
-                id: borderRect
+                id: borderRect;
+
                 anchors {
-                    fill: parent
-                    margins: 10
+                    fill: parent;
+                    margins: 10;
                 }
 
                 border {
-                    color: "black"
-                    width: 3
+                    color: "black";
+                    width: 3;
                 }
             }
 
             Rectangle {
-                id: header
-                color: "white"
+                id: header;
+                color: "white";
 
-                x: 20
-                y: 3
+                x: 20;
+                y: 3;
 
-                width: childrenRect.width
-                height: childrenRect.height
+                width: childrenRect.width;
+                height: childrenRect.height;
 
                 Text {
-                    id: headerText
+                    id: headerText;
 
                     font {
-                        pixelSize: 16
-                        bold: true
+                        pixelSize: 16;
+                        bold: true;
                     }
 
-                    text: itemHeader
-                    wrapMode: Text.WordWrap
+                    text: itemHeader;
+                    wrapMode: Text.WordWrap;
                 }
             }
 
             Loader {
-                id: subItemLoader
+                id: subItemLoader;
 
                 anchors {
-                    top: header.bottom
-                    left: header.left
+                    top: header.bottom;
+                    left: header.left;
                 }
 
-                sourceComponent: subItemComponent
+                sourceComponent: subItemComponent;
                 onStatusChanged: {
                     if (status == Loader.Ready) {
                         item.model = subItems;
                         item.headerText = itemText;
 
                         if (item.currentItem) {
-                            mainRectangle.height = 60 + item.currentItem.height
+                            mainRectangle.height = 60 + item.currentItem.height;
                         }
                     }
                 }
@@ -131,45 +132,45 @@ Rectangle {
     }
 
     Component {
-        id: subItemComponent
+        id: subItemComponent;
 
         GridView {
-            id: gridView
+            id: gridView;
 
-            property string headerText: ""
+            property string headerText: "";
 
             header:
                 Text {
-                    id: headerText
+                    id: headerText;
                     font {
-                        pixelSize: 14
-                        italic: true
+                        pixelSize: 14;
+                        italic: true;
                     }
 
-                    text: gridView.headerText
-                    wrapMode: Text.WordWrap
+                    text: gridView.headerText;
+                    wrapMode: Text.WordWrap;
                 }
 
-            delegate: textMeasures
+            delegate: textMeasures;
         }
     }
 
     Component {
-        id: textMeasures
+        id: textMeasures;
         Column {
-            id: textMeasuresColumn
-            property variant model: GridView.view.model
+            id: textMeasuresColumn;
+            property variant model: GridView.view.model;
             Repeater {
-                model: parent.model
+                model: parent.model;
                 delegate: Row {
                     Text {
-                        id: from2To
-                        width: individualInfo.width - 40 - data.width
-                        text: from + " --> " + to
+                        id: from2To;
+                        width: individualInfo.width - 40 - data.width;
+                        text: from + " --> " + to;
                     }
                     Text {
-                        id: data
-                        text: "Нет данных"
+                        id: data;
+                        text: "Нет данных";
                     }
                 }
             }

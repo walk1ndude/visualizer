@@ -24,9 +24,9 @@ Rectangle {
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0)
 
     ListView {
-        id: sidebarListView
+        id: sidebarListView;
         model: ListModel {
-            id: sidebarListModel
+            id: sidebarListModel;
             Component.onCompleted: {
                 var elements = SideBar.sideBarDict.elements;
                 for (var i = 0; i !== elements.length; ++ i) {
@@ -40,44 +40,46 @@ Rectangle {
             }
         }
 
-        anchors.fill: parent
-        delegate: categoryDelegate
+        anchors.fill: parent;
+        delegate: categoryDelegate;
     }
 
     Component {
-        id: categoryDelegate
+        id: categoryDelegate;
         Column {
-            width: sidebar.width
+            width: sidebar.width;
 
             Rectangle {
-                id: categoryItem
-                border.color: "black"
-                border.width: 5
-                color: "white"
+                id: categoryItem;
+                border.color: "black";
+                border.width: 5;
+                color: "white";
 
-                height: 50
-                width: sidebar.width
+                height: 50;
+                width: sidebar.width;
 
                 Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    x: 15
-                    font.pixelSize: 14
-                    text: categoryName
+                    anchors.verticalCenter: parent.verticalCenter;
+                    x: 15;
+                    font.pixelSize: 14;
+                    text: categoryName;
                 }
 
                 Button {
-                    width: 20
-                    height: 20
-                    anchors.right: parent.right
-                    anchors.rightMargin: 15
-                    anchors.topMargin: 5
-                    anchors.verticalCenter: parent.verticalCenter
+                    width: 20;
+                    height: 20;
+                    anchors {
+                        right: parent.right;
+                        rightMargin: 15;
+                        topMargin: 5;
+                        verticalCenter: parent.verticalCenter;
+                    }
 
-                    iconSource: "qrc:/icons/expand.svg"
+                    iconSource: "qrc:/icons/expand.svg";
 
                     style: ButtonStyle {
                         background: Rectangle {
-                            anchors.fill: parent
+                            anchors.fill: parent;
                         }
                     }
 
@@ -91,36 +93,36 @@ Rectangle {
 
             Loader {
                 visible: !collapsed
-                property variant subItemModel : subItems
+                property variant subItemModel : subItems;
                 sourceComponent: if (!!collapsed) {
                                      return null;
                                  }
                                  else {
                                      switch(itemType) {
-                                     case "ShaderGrid" : return subItemShaderGrid
-                                     case "GeometryGrid" : return subItemGeometryGrid
-                                     case "MeasureGrid" : return subItemMeasureGrid
-                                     case "IndividualInfo" : return subItemIndividualInfo
+                                     case "ShaderGrid" : return subItemShaderGrid;
+                                     case "GeometryGrid" : return subItemGeometryGrid;
+                                     case "MeasureGrid" : return subItemMeasureGrid;
+                                     case "IndividualInfo" : return subItemIndividualInfo;
                                      default: return null;
                                      }
                                  }
 
-                onStatusChanged: if (status == Loader.Ready) item.model = subItemModel
+                onStatusChanged: if (status == Loader.Ready) item.model = subItemModel;
             }
         }
     }
 
     Component {
-        id: subItemShaderGrid
+        id: subItemShaderGrid;
 
         Column {
-            property alias model : subItemRepeaterShaderGrid.model
-            width: sidebar.width
+            property alias model : subItemRepeaterShaderGrid.model;
+            width: sidebar.width;
             Repeater {
-                id: subItemRepeaterShaderGrid
+                id: subItemRepeaterShaderGrid;
                 delegate:
                     ShaderGrid {
-                    width: sidebar.width
+                    width: sidebar.width;
 
                     onXRangeChanged: sidebar.xRange = xRange;
                     onYRangeChanged: sidebar.yRange = yRange;
@@ -134,16 +136,16 @@ Rectangle {
     }
 
     Component {
-        id: subItemGeometryGrid
+        id: subItemGeometryGrid;
 
         Column {
-            property alias model : subItemRepeaterGeometryGrid.model
-            width: sidebar.width
+            property alias model : subItemRepeaterGeometryGrid.model;
+            width: sidebar.width;
             Repeater {
-                id: subItemRepeaterGeometryGrid
+                id: subItemRepeaterGeometryGrid;
                 delegate:
                     GeometryGrid {
-                    width: sidebar.width
+                    width: sidebar.width;
 
                     onAngleChanged: sidebar.angle = angle;
                     onZoomFactorChanged: sidebar.zoomFactor = zoomFactor;
@@ -153,17 +155,17 @@ Rectangle {
     }
 
     Component {
-        id: subItemMeasureGrid
+        id: subItemMeasureGrid;
 
         Column {
-            property alias model : subItemRepeaterMeasureGrid.model
-            width: sidebar.width
+            property alias model : subItemRepeaterMeasureGrid.model;
+            width: sidebar.width;
             Repeater {
-                id: subItemRepeaterMeasureGrid
+                id: subItemRepeaterMeasureGrid;
                 delegate:
                     MeasureGrid {
-                    id: measureGrid
-                    width: sidebar.width
+                    id: measureGrid;
+                    width: sidebar.width;
 
                     onSelectedPointNameChanged: sidebar.selectedPointName = selectedPointName;
                     onSelectedPointColorChanged: sidebar.selectedPointColor = selectedPointColor;
@@ -173,16 +175,16 @@ Rectangle {
     }
 
     Component {
-        id: subItemIndividualInfo
+        id: subItemIndividualInfo;
 
         Column {
-            property alias model : subItemRepeaterIndividualInfo.model
-            width: sidebar.width
+            property alias model : subItemRepeaterIndividualInfo.model;
+            width: sidebar.width;
             Repeater {
-                id: subItemRepeaterIndividualInfo
+                id: subItemRepeaterIndividualInfo;
                 delegate:
                     IndividualInfo {
-                    width: sidebar.width
+                    width: sidebar.width;
                 }
             }
         }

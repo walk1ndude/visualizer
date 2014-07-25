@@ -3,13 +3,13 @@ import QtQuick.Controls 1.2
 import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
-    id: appWindow
-    width: 1100
-    height: 768
+    id: appWindow;
+    width: 1100;
+    height: 768;
 
-    title: "visualizer"
+    title: "visualizer";
 
-    color: "black"
+    color: "black";
 
     signal fileOpenedDcm(url fileName);
     signal filesOpened(variant fileName);
@@ -18,60 +18,60 @@ ApplicationWindow {
     signal sliceNumberChanged(int ds);
 
     menuBar: MenuBar {
-        id: menubar
+        id: menubar;
         Menu {
-            title: 'File'
+            title: "File";
 
             MenuItem {
-                text: 'Open dicom'
+                text: "Open dicom";
                 onTriggered: {
-                    openFileDialogDicom.visible = true
+                    openFileDialogDicom.visible = true;
                 }
             }
 
             MenuItem {
-                text: 'Open reconstructor'
+                text: "Open reconstructor";
                 onTriggered: {
-                    openFileDialogReconstructor.visible = true
+                    openFileDialogReconstructor.visible = true;
                 }
             }
 
             MenuItem {
-                text: 'Open Stl file'
+                text: "Open Stl file";
                 onTriggered: {
-                    openFileDialogStl.visible = true
+                    openFileDialogStl.visible = true;
                 }
             }
 
             MenuItem {
-                text: 'Quit'
-                onTriggered: Qt.quit()
+                text: "Quit";
+                onTriggered: Qt.quit();
             }
         }
     }
 
     FileDialog {
-        id: openFileDialogDicom
-        title: 'Choose DICOM file'
+        id: openFileDialogDicom;
+        title: "Choose DICOM file";
         onAccepted: fileOpenedDcm(fileUrl);
     }
 
     FileDialog {
-        id: openFileDialogReconstructor
-        title: 'Choose image files'
-        selectMultiple: true
+        id: openFileDialogReconstructor;
+        title: "Choose image files";
+        selectMultiple: true;
         onAccepted: filesOpened(fileUrls);
     }
 
     FileDialog {
-        id: openFileDialogStl
-        title: 'Choose stl files'
+        id: openFileDialogStl;
+        title: "Choose stl files";
         onAccepted: fileOpenedStl(fileUrl);
     }
 
     FocusScope {
-        focus: true
-        anchors.fill: parent
+        focus: true;
+        anchors.fill: parent;
 
         Keys.onPressed: {
             switch (event.key) {
@@ -84,21 +84,21 @@ ApplicationWindow {
     }
 
     Row {
-        id: modelRow
-        objectName: "modelRow"
+        id: modelRow;
+        objectName: "modelRow";
         ModelItem {
-            id: modelItem
-            width: appWindow.width * 0.65
-            height: appWindow.height
+            id: modelItem;
+            width: appWindow.width * 0.65;
+            height: appWindow.height;
         }
     }
 
     SideBar {
-        id: sidebar
-        color: "#FFFFFF"
+        id: sidebar;
+        color: "#FFFFFF";
 
-        width: appWindow.width - modelRow.width
-        height: appWindow.height
+        width: appWindow.width - modelRow.width;
+        height: appWindow.height;
 
         anchors.left: modelRow.right;
 
