@@ -27,23 +27,23 @@ Rectangle {
                                "itemName" : group,
                                "itemHeader" : group.text,
                                "itemText" : group.distances.text,
-                               "subItems" : populateListElements(group.distances.point2point, measures, subItemComponent)
+                               "subItems" : populateListElements(group.distances.point2point, measures)
                            });
                 }
 
             }
 
-            function populateListElements(ptps, measures, parent) {
+            function populateListElements(ptps, measures) {
                 var qmlElements = [];
                 for (var ptp in ptps) {
                     var pointsOfPTP = ptps[ptp];
 
                     for (var i = 0; i !== pointsOfPTP.length; ++ i) {
-                        qmlElements.push(
-                                    Qt.createQmlObject(Helpers
-                                    .insertElementsIndivGroupTemplate
-                                    .replace("{fromP}", "\"" + measures[ptp].visuals.text + "\"")
-                                    .replace("{toP}", "\"" + measures[pointsOfPTP[i]].visuals.text + "\""), parent));
+                        var qmlElement = {};
+                        qmlElement["from"] = measures[ptp].visuals.text;
+                        qmlElement["to"] = measures[pointsOfPTP[i]].visuals.text;
+
+                        qmlElements.push(qmlElement);
                     }
                 }
 
@@ -125,7 +125,6 @@ Rectangle {
 
                 anchors {
                     top: sourceText.bottom
-                    bottom: mainRectangle.bottom
                     left: sourceText.left
                 }
 
@@ -139,7 +138,7 @@ Rectangle {
     Component {
         id: subItemComponent
 
-        Column {
+        GridView {
             property alias model: subItemComponentRepeater.model
             width: invidualInfo.width
             Repeater {

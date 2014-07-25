@@ -34,7 +34,7 @@ Rectangle {
                                "categoryName" : elements[i].text,
                                "collapsed" : elements[i].collapsed,
                                "itemType" : elements[i].type,
-                               "subItems" : Qt.createQmlObject(Helpers.insertElementsSideBarTemplate, categoryDelegate)
+                               "subItems" : [ { } ]
                            });
                 }
             }
