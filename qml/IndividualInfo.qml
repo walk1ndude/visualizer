@@ -4,7 +4,7 @@ import "../js/pointsdictionary.js" as PointsDict
 import "../js/helpers.js" as Helpers
 
 Rectangle {
-    id: invidualInfo
+    id: individualInfo
     width: 100
     height: 300
 
@@ -68,10 +68,11 @@ Rectangle {
 
             color: "white"
 
-            width: invidualInfo.width
-            height: 60 + subItemLoader.item.model.count * 25
+            width: individualInfo.width
+            height: 60
 
             Rectangle {
+                id: borderRect
                 anchors {
                     fill: parent
                     margins: 10
@@ -94,6 +95,8 @@ Rectangle {
                 height: childrenRect.height
 
                 Text {
+                    id: headerText
+
                     font {
                         pixelSize: 16
                         bold: true
@@ -104,33 +107,25 @@ Rectangle {
                 }
             }
 
-            Text {
-                id: sourceText
+            Loader {
+                id: subItemLoader
+
                 anchors {
                     top: header.bottom
                     left: header.left
                 }
 
-                font {
-                    pixelSize: 14
-                    italic: true
-                }
-
-                text: itemText
-                wrapMode: Text.WordWrap
-            }
-
-            Loader {
-                id: subItemLoader
-
-                anchors {
-                    top: sourceText.bottom
-                    left: sourceText.left
-                }
-
-                property variant subItemModel: subItems
                 sourceComponent: subItemComponent
-                onStatusChanged: if (status == Loader.Ready) item.model = subItems;
+                onStatusChanged: {
+                    if (status == Loader.Ready) {
+                        item.model = subItems;
+                        item.headerText = itemText;
+
+                        if (item.currentItem) {
+                            mainRectangle.height = 60 + item.currentItem.height
+                        }
+                    }
+                }
             }
         }
     }
@@ -139,25 +134,44 @@ Rectangle {
         id: subItemComponent
 
         GridView {
-            property alias model: subItemComponentRepeater.model
-            width: invidualInfo.width
-            Repeater {
-                id: subItemComponentRepeater
-                delegate: textMeasures
-            }
+            id: gridView
+
+            property string headerText: ""
+
+            header:
+                Text {
+                    id: headerText
+                    font {
+                        pixelSize: 14
+                        italic: true
+                    }
+
+                    text: gridView.headerText
+                    wrapMode: Text.WordWrap
+                }
+
+            delegate: textMeasures
         }
     }
 
     Component {
         id: textMeasures
-        Row {
-            width: invidualInfo.width
-            spacing: 5
-            Text {
-                text: "От " + from + " до " + to
-            }
-            Text {
-                text: "Нет данных"
+        Column {
+            id: textMeasuresColumn
+            property variant model: GridView.view.model
+            Repeater {
+                model: parent.model
+                delegate: Row {
+                    Text {
+                        id: from2To
+                        width: individualInfo.width - 40 - data.width
+                        text: from + " --> " + to
+                    }
+                    Text {
+                        id: data
+                        text: "Нет данных"
+                    }
+                }
             }
         }
     }
