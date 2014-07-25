@@ -1,39 +1,73 @@
+.pragma library
+
 var pointsDict = {
-    "measures" : [
-        {
-            "name" : "incisor",
+    "measures" : {
+        "incisor" : {
             "visuals" : {
                 "text" : "Верхняя резцовая",
                 "color" : "red"
             }
         },
-        {
-            "name" : "leftjoint",
+        "leftjoint" : {
             "visuals" : {
                 "text" : "Левый сустав",
                 "color" : "yellow"
             }
         },
-        {
-            "name" : "rightjoint",
+        "rightjoint" : {
             "visuals" : {
                 "text" : "Правый сустав",
                 "color" : "green"
             }
         },
-        {
-            "name" : "leftprosthetic",
+        "leftprosthetic" : {
             "visuals" : {
                 "text" : "Левая опорная точка протетической плоскости",
                 "color" : "cyan"
             }
         },
-        {
-            "name" : "rightprosthetic",
+        "rightprosthetic" : {
             "visuals" : {
                 "text" : "Правая опорная точка протетической плоскости",
                 "color" : "orange"
             }
         }
-    ]
+    },
+
+    "groups" : {
+        "bonville" : {
+            "text" : "Треугольник Бонвиля",
+            "distances" : {
+                "text" : "Межсуставные расстояния",
+                "point2point" : {
+                    "incisor" : ["leftjoint", "rightjoint"],
+                    "leftjoint" : ["rightjoint"]
+                }
+            }
+        },
+        "test" : {
+            "text" : "тест",
+            "distances" : {
+                "text" : "тестовые расстояния",
+                "point2point" : {}
+            }
+        }
+    }
 };
+
+var measuresOrder = {
+    "MeasuresGrid" : [
+        "incisor",
+        "leftjoint",
+        "rightjoint",
+        "leftprosthetic",
+        "rightprosthetic"
+    ]
+}
+
+var groupsOrder = {
+    "IndividualInfo" : [
+        "bonville",
+        "test"
+    ]
+}

@@ -5,7 +5,7 @@ import "../js/pointsdictionary.js" as PointsDict
 Rectangle {
     id: measureGrid
     width: 100
-    height: 300
+    height: listModel.count * 45
 
     color: "#cccccc"
     border.color: "black"
@@ -22,11 +22,14 @@ Rectangle {
 
             Component.onCompleted: {
                 var measures = PointsDict.pointsDict.measures;
-                for (var i = 0; i !== measures.length; ++ i) {
+                var measureOrder = PointsDict.measuresOrder.MeasuresGrid;
+
+                for (var i = 0; i !== measureOrder.length; ++ i) {
+                    var measure = measures[measureOrder[i]];
                     append({
-                               "itemName" : measures[i].name,
-                               "itemText" : measures[i].visuals.text,
-                               "itemColor" : measures[i].visuals.color,
+                               "itemName" : measureOrder[i],
+                               "itemText" : measure.visuals.text,
+                               "itemColor" : measure.visuals.color,
                                "selected" : false
                            });
                 }

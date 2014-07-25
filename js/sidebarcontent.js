@@ -1,16 +1,26 @@
+.pragma library
+
 var sideBarDict = {
     "elements" : [
         {
-            "text" : "Секущие плоскости",
-            "type" : "shaderGrid"
-        },
-        {
-            "text" : "Вращение",
-            "type" : "geometryGrid"
+            "text" : "Индивидуальные параметры",
+            "type" : "IndividualInfo",
+            "collapsed" : false
         },
         {
             "text" : "Измерения",
-            "type" : "measureGrid"
+            "type" : "MeasureGrid",
+            "collapsed" : false
+        },
+        {
+            "text" : "Секущие плоскости",
+            "type" : "ShaderGrid",
+            "collapsed" : false
+        },
+        {
+            "text" : "Вращение",
+            "type" : "GeometryGrid",
+            "collapsed" : false
         }
     ]
 };

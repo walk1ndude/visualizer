@@ -6,7 +6,7 @@
         <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
         <file>qml/ModelItem.qml</file>
-        <file>js/helperfuncs.js</file>
+        <file>js/helpers.js</file>
         <file>cl/reconstructor.cl</file>
         <file>shaders/stlVertex.glsl</file>
         <file>shaders/stlFragment.glsl</file>
@@ -19,5 +19,6 @@
         <file>qml/Slider.qml</file>
         <file>qml/RangeSlider.qml</file>
         <file>qml/CircleSlider.qml</file>
+        <file>qml/IndividualInfo.qml</file>
     </qresource>
 </RCC>

@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-import "../js/helperfuncs.js" as HelperFuncs
+import "../js/helpers.js" as Helpers
 
 Item {
     id: sliderMain
@@ -148,8 +148,8 @@ Item {
 
     function clampValues() {
         if (valueRange.x !== valueRange.y) {
-            value.x = HelperFuncs.clamp(value.x, valueRange.x, value.y);
-            value.y = HelperFuncs.clamp(value.y, value.x, valueRange.y);
+            value.x = Helpers.clamp(value.x, valueRange.x, value.y);
+            value.y = Helpers.clamp(value.y, value.x, valueRange.y);
         }
     }
 }

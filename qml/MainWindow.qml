@@ -4,8 +4,8 @@ import QtQuick.Dialogs 1.2
 
 ApplicationWindow {
     id: appWindow
-    width: 1000
-    height: 670
+    width: 1100
+    height: 768
 
     title: "visualizer"
 

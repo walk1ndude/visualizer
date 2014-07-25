@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-import "../js/helperfuncs.js" as HelperFuncs
+import "../js/helpers.js" as Helpers
 
 Item {
     id: sliderMain
@@ -75,6 +75,6 @@ Item {
     }
 
     onValueChanged: {
-        value = HelperFuncs.clamp(value, minimumValue, maximumValue)
+        value = Helpers.clamp(value, minimumValue, maximumValue)
     }
 }

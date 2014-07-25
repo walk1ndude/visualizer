@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-import "../js/helperfuncs.js" as HelperFuncs
+import "../js/helpers.js" as Helpers
 
 Rectangle {
     id: geometryGrid
@@ -17,12 +17,16 @@ Rectangle {
     width: 200
     height: 200
 
+    CircleSlider {
+        id: circle
+    }
+
     Grid {
         columns: 3
         rows: 4
         spacing: 5
 
-        anchors.top: geometryGrid.top
+        anchors.top: circle.bottom//geometryGrid.top
         anchors.left: geometryGrid.left
         anchors.margins: 10
 
@@ -40,7 +44,7 @@ Rectangle {
         }
 
         Text {
-            text: HelperFuncs.pad((Math.round(xRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+            text: Helpers.pad((Math.round(xRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
         }
 
         Text {
@@ -57,7 +61,7 @@ Rectangle {
         }
 
         Text {
-            text: HelperFuncs.pad((Math.round(yRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+            text: Helpers.pad((Math.round(yRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
         }
 
         Text {
@@ -74,7 +78,7 @@ Rectangle {
         }
 
         Text {
-            text: HelperFuncs.pad((Math.round(zRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+            text: Helpers.pad((Math.round(zRotSlider.value * 1000) / 1000).toFixed(4), 3, 4)
         }
 
         Text {
@@ -91,7 +95,7 @@ Rectangle {
         }
 
         Text {
-            text: HelperFuncs.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
+            text: Helpers.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4)
         }
     }
 

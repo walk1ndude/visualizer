@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-import "../js/helperfuncs.js" as HelperFuncs
+import "../js/helpers.js" as Helpers
 
 Rectangle {
     id: sliderMain
