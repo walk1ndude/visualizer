@@ -75,11 +75,15 @@ Item {
 
             MouseArea {
                 anchors.fill: parent;
-                onClicked: if (!!modelItem.selectedPointName && mouse.button == Qt.LeftButton) {
+                onClicked: switch (mouse.button) {
+                           case Qt.LeftButton: if (!!modelItem.selectedPointName) {
                                modelViewer.selectedPointPosition = Qt.point(
                                            mouseX * parent.fboSize.width / width,
                                            (height - mouseY) * parent.fboSize.height / height);
+                               }
+                               break;
                            }
+                onWheel: zoomFactor += wheel.angleDelta.y * 0.001;
             }
         }
     }

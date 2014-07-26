@@ -99,7 +99,7 @@ Rectangle {
                                  else {
                                      switch(sectionType) {
                                      case "ShaderGrid" : return subSectionShaderGrid;
-                                     case "GeometryGrid" : return subSectionShaderGrid;
+                                     case "GeometryGrid" : return subSectionGeometryGrid;
                                      case "MeasureGrid" : return subSectionMeasureGrid;
                                      case "IndividualInfo" : return subSectionIndividualInfo;
                                      default: return null;
