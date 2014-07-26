@@ -45,10 +45,9 @@ var pointsDict = {
                 }
             }
         },
-        "ungroupped" : {
-            "groupHeader" : "измерения",
+        "ungrouped" : {
             "distances" : {
-                "header" : "ddfdf",
+                "header" : "Измеренные расстояния",
                 "point2point" : {
                     "incisor" : ["leftprosthetic", "rightprosthetic"]
                 }
@@ -70,6 +69,6 @@ var measuresOrder = {
 var groupsOrder = {
     "IndividualInfo" : [
         "bonvile",
-        "ungroupped"
+        "ungrouped"
     ]
 }

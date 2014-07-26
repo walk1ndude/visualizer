@@ -50,7 +50,7 @@ Rectangle {
                                "itemHeader" : group.groupHeader,
                                "itemText" : group.distances.header,
                                "subItems" : populateListElements(group.distances.point2point, measures),
-                               "grouped" : groupOrder[i] !== "ungroupped",
+                               "grouped" : groupOrder[i] !== "ungrouped",
                                "elementHeight" : 0
                            });
                 }
