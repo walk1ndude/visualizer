@@ -22,9 +22,9 @@ namespace Model {
         explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles);
         virtual ~AbstractModel();
 
-        virtual void initShaderVariables() = 0;
-        virtual void setShaderVariables(ViewPort::ViewPort & viewPort) = 0;
-        virtual void bindShaderVariablesToBuffers() = 0;
+        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
+        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void glStatesEnable() = 0;
         virtual void glStatesDisable() = 0;
@@ -89,9 +89,10 @@ namespace Model {
             _vboVert.setUsagePattern(usagePattern);
 
             _vertexCount = buffers.vertices.data()->size();
+            _stride = sizeof(buffers.vertices->at(0));
 
             _vboVert.bind();
-            _vboVert.allocate(buffers.vertices.data()->data(), _vertexCount * sizeof(buffers.vertices->at(0)));
+            _vboVert.allocate(buffers.vertices.data()->data(), _vertexCount * _stride);
 
             if (buffers.indices.data()) {
                 _vboInd.setUsagePattern(usagePattern);
@@ -104,7 +105,7 @@ namespace Model {
                 buffers.indices.clear();
             }
 
-            bindShaderVariablesToBuffers();
+            bindShaderVariablesToBuffers(_program);
 
             _vao.release();
             buffers.vertices.clear();
@@ -112,8 +113,15 @@ namespace Model {
             releaseShaderProgram();
         }
 
-
     protected:
+        int stride();
+
+        GLsizei indexCount();
+        GLsizei vertexCount();
+
+        QMatrix4x4 model();
+
+    private:
         QOpenGLBuffer _vboVert;
         QOpenGLBuffer _vboInd;
 
@@ -123,9 +131,6 @@ namespace Model {
 
         ModelInfo::ViewRange * _viewRange;
 
-        GLsizei _indexCount;
-        GLsizei _vertexCount;
-
         QMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> _materials;
         QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;
 
@@ -133,12 +138,16 @@ namespace Model {
 
         QMutex _modelMutex;
 
-        QMatrix4x4 _mMatrix;
+        uint _modelID;
 
         ShaderInfo::ShaderFiles _shaderFiles;
 
-    private:
-        uint _modelID;
+        int _stride;
+
+        GLsizei _indexCount;
+        GLsizei _vertexCount;
+
+        QMatrix4x4 _mMatrix;
 
         QVector3D _orientation;
 

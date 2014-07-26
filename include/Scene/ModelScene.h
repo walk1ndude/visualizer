@@ -59,7 +59,7 @@ namespace Scene {
 
         void addPoint(const PointsInfo::Point & point);
 
-    protected:
+    private:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
         QVector<Model::AbstractModel *> _models;
 
@@ -73,7 +73,6 @@ namespace Scene {
         Model::AbstractModel * _selectedModel;
         QOpenGLTexture * _selectedTexture;
 
-    private:
         ViewPort::ViewPortArray _viewPorts;
 
         QVector3D _rotation;

@@ -5,13 +5,13 @@ namespace Model {
         AbstractModel(shaderFiles) {
     }
 
-    void StlModel::initShaderVariables() {
-        _shaderVertex = _program->attributeLocation("vertex");
-        _shaderNormal = _program->attributeLocation("normal");
+    void StlModel::initShaderVariables(QOpenGLShaderProgram * program) {
+        _shaderVertex = program->attributeLocation("vertex");
+        _shaderNormal = program->attributeLocation("normal");
 
-        _shaderColorU = _program->uniformLocation("colorU");
-        _shaderMPV = _program->uniformLocation("mvp");
-        _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
+        _shaderColorU = program->uniformLocation("colorU");
+        _shaderMPV = program->uniformLocation("mvp");
+        _shaderNormalMatrix = program->uniformLocation("normalMatrix");
     }
 
     void StlModel::glStatesEnable() {
@@ -34,18 +34,18 @@ namespace Model {
         return viewAxisRange;
     }
 
-    void StlModel::bindShaderVariablesToBuffers() {
-        _program->enableAttributeArray(_shaderVertex);
-        _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);
+    void StlModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
+        program->enableAttributeArray(_shaderVertex);
+        program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, stride());
 
-        _program->enableAttributeArray(_shaderNormal);
-        _program->setAttributeBuffer(_shaderNormal, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(GLfloat) * 6);
+        program->enableAttributeArray(_shaderNormal);
+        program->setAttributeBuffer(_shaderNormal, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void StlModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
-        _program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
-        _program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * _mMatrix);
-        _program->setUniformValue(_shaderNormalMatrix, (_mMatrix * viewPort.view()).normalMatrix());
+    void StlModel::setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) {
+        program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
+        program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * model());
+        program->setUniformValue(_shaderNormalMatrix, (model() * viewPort.view()).normalMatrix());
     }
 
     bool StlModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {

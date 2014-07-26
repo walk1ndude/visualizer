@@ -68,6 +68,18 @@ namespace Model {
 
         void init(const PointsInfo::FacePoints & facePoints);
         void update(const PointsInfo::FacePoints & facePoints);
+
+        void glStatesEnable();
+        void glStatesDisable();
+
+        void initShaderVariables(QOpenGLShaderProgram * program);
+
+        void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
+
+    private:
+        ShaderInfo::ShaderVariable _shaderVertex;
+        ShaderInfo::ShaderVariable _shaderColor;
+        ShaderInfo::ShaderVariable _shaderPolygon;
     };
 }
 

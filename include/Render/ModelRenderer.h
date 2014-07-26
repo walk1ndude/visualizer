@@ -19,16 +19,8 @@ namespace Render {
         explicit ModelRenderer(QOpenGLContext * context, const QSize & size);
         ~ModelRenderer();
 
-        void selectScene(Scene::AbstractScene * scene = nullptr);
-
     protected:
         void render();
-
-    private:
-        // remember all scenes, rendered by this renderer -> for clean up after
-        QSet<Scene::AbstractScene *> _sceneHistory;
-
-        void cleanUp();
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);

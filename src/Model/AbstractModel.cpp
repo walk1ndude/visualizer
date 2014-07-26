@@ -5,9 +5,10 @@ namespace Model {
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(nullptr),
+        _shaderFiles(shaderFiles),
+        _stride(0),
         _indexCount(0),
-        _vertexCount(0),
-        _shaderFiles(shaderFiles) {
+        _vertexCount(0) {
     }
 
     AbstractModel::~AbstractModel() {
@@ -60,6 +61,14 @@ namespace Model {
         else {
             emit shaderProgramSetVariableErrorHappened();
         }
+    }
+
+    int AbstractModel::stride() {
+        return _stride;
+    }
+
+    QMatrix4x4 AbstractModel::model() {
+        return _mMatrix;
     }
 
     void AbstractModel::rotate(const QVector3D & rotation) {
@@ -117,7 +126,7 @@ namespace Model {
 
         glStatesEnable();
 
-        setShaderVariables(viewPort);
+        setShaderVariables(_program, viewPort);
         setShaderVariables();
 
         bindTextures();
@@ -203,7 +212,7 @@ namespace Model {
                 return false;
             }
 
-            initShaderVariables();
+            initShaderVariables(_program);
         }
         else {
             return !programIsInited;

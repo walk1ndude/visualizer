@@ -27,57 +27,39 @@ namespace Render {
     }
 
     void ModelRenderer::setTakeShot(const bool & takeShot) {
-        _takeShot = takeShot;
-    }
-
-    void ModelRenderer::selectScene(Scene::AbstractScene * scene) {
-        QMutexLocker locker(&_renderMutex);
-
-        if (!scene->isInitialized()) {
-            scene->initScene(_surfaceSize);
-        }
-
-        // no more connection with previous scene
-        if (_selectedScene) {
-            QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
-            _sceneHistory.insert(scene);
-        }
-
-        _selectedScene = scene;
-        QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
-
-        _sceneHistory.insert(scene);
+        Q_UNUSED(takeShot)
+        //_takeShot = takeShot;
     }
 
     void ModelRenderer::setRotation(const QVector3D & rotation) {
-        _selectedScene->setRotation(rotation);
+        selectedScene()->setRotation(rotation);
         emit needToRedraw();
     }
 
     void ModelRenderer::setZoomFactor(const qreal & zoomFactor) {
-        _selectedScene->setZoomFactor(zoomFactor);
+        selectedScene()->setZoomFactor(zoomFactor);
         emit needToRedraw();
     }
 
     void ModelRenderer::setXRange(const ModelInfo::ViewAxisRange & xRange) {
-        _selectedScene->setXRange(xRange);
+        selectedScene()->setXRange(xRange);
         emit needToRedraw();
     }
 
     void ModelRenderer::setYRange(const ModelInfo::ViewAxisRange & yRange) {
-        _selectedScene->setYRange(yRange);
+        selectedScene()->setYRange(yRange);
         emit needToRedraw();
     }
 
     void ModelRenderer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
-        _selectedScene->setZRange(zRange);
+        selectedScene()->setZRange(zRange);
         emit needToRedraw();
     }
 
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
         QMutexLocker locker(&_renderMutex);
 
-        if (Scene::ModelScene * selectedModelScene = dynamic_cast<Scene::ModelScene *>(_selectedScene)) {
+        if (Scene::ModelScene * selectedModelScene = dynamic_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
             selectedModelScene->addStlModel(buffers);
@@ -98,7 +80,7 @@ namespace Render {
     void ModelRenderer::addHeadModel(SliceInfo::Slices slices) {
         QMutexLocker locker(&_renderMutex);
 
-        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(_selectedScene)) {
+        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
             selectModelScene->addHeadModel(slices);
@@ -118,26 +100,14 @@ namespace Render {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        if (_selectedScene) {
-            _selectedScene->renderScene(_surfaceSize);
+        if (selectedScene()) {
+            selectedScene()->renderScene(surfaceSize());
         }
     }
 
     void ModelRenderer::addPoint(const PointsInfo::Point & point) {
-        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(_selectedScene)) {
+        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(selectedScene())) {
             selectModelScene->addPoint(point);
-        }
-    }
-
-    void ModelRenderer::cleanUp() {
-        QMutexLocker locker(&_renderMutex);
-
-        activateContext();
-
-        QSetIterator<Scene::AbstractScene *> it (_sceneHistory);
-
-        while (it.hasNext()) {
-            it.next()->cleanUp();
         }
     }
 }

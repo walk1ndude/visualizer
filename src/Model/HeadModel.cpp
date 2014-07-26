@@ -12,9 +12,6 @@ namespace Model {
     }
 
     void HeadModel::init(const QVector3D & size) {
-        _vertexCount = 4 * size.z();
-        _indexCount = 6 * size.z();
-
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
 
@@ -75,44 +72,45 @@ namespace Model {
         return viewAxisRange;
     }
 
-    void HeadModel::initShaderVariables() {
-        _shaderVertex = _program->attributeLocation("vertex");
-        _shaderTexHead = _program->attributeLocation("tex");
+    void HeadModel::initShaderVariables(QOpenGLShaderProgram * program) {
+        _shaderVertex = program->attributeLocation("vertex");
+        _shaderTexHead = program->attributeLocation("tex");
 
-        _shaderView = _program->uniformLocation("view");
-        _shaderModel = _program->uniformLocation("model");
-        _shaderProjection = _program->uniformLocation("projection");
-        _shaderNormalMatrix = _program->uniformLocation("normalMatrix");
-        _shaderScale = _program->uniformLocation("scale");
-        _shaderStep = _program->uniformLocation("stepSlices");
+        _shaderView = program->uniformLocation("view");
+        _shaderModel = program->uniformLocation("model");
+        _shaderProjection = program->uniformLocation("projection");
+        _shaderNormalMatrix = program->uniformLocation("normalMatrix");
+        _shaderScale = program->uniformLocation("scale");
+        _shaderStep = program->uniformLocation("stepSlices");
     }
 
-    void HeadModel::bindShaderVariablesToBuffers() {
-        _program->enableAttributeArray(_shaderVertex);
-        _program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, sizeof(GLfloat) * 6);
+    void HeadModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
+        program->enableAttributeArray(_shaderVertex);
+        program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, stride());
 
-        _program->enableAttributeArray(_shaderTexHead);
-        _program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, sizeof(GLfloat) * 6);
+        program->enableAttributeArray(_shaderTexHead);
+        program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::setShaderVariables(ViewPort::ViewPort & viewPort) {
-        QMatrix4x4 modelMatrix = viewPort.modelVoxel(_mMatrix);
+    void HeadModel::setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) {
+        QMatrix4x4 modelMatrix = viewPort.modelVoxel(model());
 
-        _program->setUniformValue(_shaderView, viewPort.viewVoxel());
-        _program->setUniformValue(_shaderModel, modelMatrix);
-        _program->setUniformValue(_shaderProjection, viewPort.projection());
-        _program->setUniformValue(_shaderNormalMatrix, QMatrix4x4((modelMatrix * viewPort.viewVoxel()).normalMatrix()));
-        _program->setUniformValue(_shaderScale, _scaleM);
-        _program->setUniformValue(_shaderStep, _step);
+        program->setUniformValue(_shaderView, viewPort.viewVoxel());
+        program->setUniformValue(_shaderModel, modelMatrix);
+        program->setUniformValue(_shaderProjection, viewPort.projection());
+        program->setUniformValue(_shaderNormalMatrix, QMatrix4x4((modelMatrix * viewPort.viewVoxel()).normalMatrix()));
+        program->setUniformValue(_shaderScale, _scaleM);
+        program->setUniformValue(_shaderStep, _step);
 
-        _facePointsProgram.setUniformValue(_program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
+        _facePointsProgram.setUniformValue(program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
     }
 
     void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
+        /*
         if (_program) {
             _facePointsProgram.addPoint(_program, "facePoints." + shaderVariableName);
             _facePoints.insert(name, new PointsInfo::FacePoint(point.position, point.color));
-        }
+        }*/
     }
 
     bool HeadModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {

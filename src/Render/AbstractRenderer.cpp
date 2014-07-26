@@ -72,6 +72,33 @@ namespace Render {
         _surface = surface;
     }
 
+    void AbstractRenderer::selectScene(Scene::AbstractScene * scene) {
+        QMutexLocker locker(&_renderMutex);
+
+        if (!scene->isInitialized()) {
+            scene->initScene(_surfaceSize);
+        }
+
+        // no more connection with previous scene
+        if (_selectedScene) {
+            QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
+            _sceneHistory.insert(scene);
+        }
+
+        _selectedScene = scene;
+        QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
+
+        _sceneHistory.insert(scene);
+    }
+
+    Scene::AbstractScene * AbstractRenderer::selectedScene() {
+        return _selectedScene;
+    }
+
+    QSize AbstractRenderer::surfaceSize() {
+        return _surfaceSize;
+    }
+
     void AbstractRenderer::renderNext() {
         QMutexLocker locker (&_renderMutex);
         activateContext();
@@ -123,5 +150,17 @@ namespace Render {
 
         exit();
         moveToThread(QGuiApplication::instance()->thread());
+    }
+
+    void AbstractRenderer::cleanUp() {
+        QMutexLocker locker(&_renderMutex);
+
+        activateContext();
+
+        QSetIterator<Scene::AbstractScene *> it (_sceneHistory);
+
+        while (it.hasNext()) {
+            it.next()->cleanUp();
+        }
     }
 }

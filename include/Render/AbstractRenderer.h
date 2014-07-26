@@ -28,28 +28,34 @@ namespace Render {
         virtual ~AbstractRenderer();
 
         virtual void setSurface(QOffscreenSurface * surface) final;
+        virtual void selectScene(Scene::AbstractScene * scene = nullptr) final;
 
     protected:
+        QMutex _renderMutex;
+
+        virtual void render() = 0;
+
+        virtual void cleanUp() final;
+
+        virtual bool updateContent() final;
+        virtual bool activateContext() final;
+
+        Scene::AbstractScene * selectedScene();
+
+        QSize surfaceSize();
+
+    private:
+        bool _canRenderContent;
+        bool _textureUpdateNeeded;
+        bool _contentInitializeNeeded;
+
         QSize _surfaceSize;
 
         QRectF _screenSaveRect;
 
         bool _takeShot;
 
-        QMutex _renderMutex;
-
         Scene::AbstractScene * _selectedScene;
-
-        virtual void render() = 0;
-        virtual void cleanUp() = 0;
-
-        virtual bool updateContent() final;
-        virtual bool activateContext() final;
-
-    private:
-        bool _canRenderContent;
-        bool _textureUpdateNeeded;
-        bool _contentInitializeNeeded;
 
         QOpenGLFramebufferObject * _fboRender;
         QOpenGLFramebufferObject * _fboDisplay;
@@ -57,6 +63,9 @@ namespace Render {
         QOffscreenSurface * _surface;
 
         QOpenGLContext * _context;
+
+        // remember all scenes, rendered by this renderer -> for clean up after
+        QSet<Scene::AbstractScene *> _sceneHistory;
 
         FBOSaver * _fboSaver;
     signals:
