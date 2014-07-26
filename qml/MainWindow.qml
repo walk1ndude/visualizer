@@ -7,6 +7,8 @@ ApplicationWindow {
     width: 1100;
     height: 768;
 
+    property real sideBarWidth: 0.65
+
     title: "visualizer";
 
     color: "black";
@@ -88,7 +90,7 @@ ApplicationWindow {
         objectName: "modelRow";
         ModelItem {
             id: modelItem;
-            width: appWindow.width * 0.65;
+            width: appWindow.width * sideBarWidth;
             height: appWindow.height;
         }
     }

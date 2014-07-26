@@ -16,7 +16,6 @@ Rectangle {
     }
 
     ListView {
-        id: groupView;
         model: ListModel {
             id: listModel;
 
@@ -145,7 +144,17 @@ Rectangle {
                     }
                 }
             }
+
+            onHeightChanged: {
+                if (individualInfo.height === 400) {
+                    individualInfo.height = height;
+                }
+                else {
+                    individualInfo.height += height;
+                }
+            }
         }
+
     }
 
     Component {
