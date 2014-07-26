@@ -79,15 +79,13 @@ Rectangle {
                         verticalCenter: parent.verticalCenter;
                     }
 
-                    source: "qrc:/icons/expand.svg";
+                    source: collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
                 }
 
                 MouseArea {
                     anchors.fill: parent;
                     onClicked: if (mouse.button === Qt.LeftButton) {
                                    sidebarListModel.setProperty(index, "collapsed", !collapsed);
-
-                                   icon.source = sidebarListModel.get(index).collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
                                }
                 }
             }
