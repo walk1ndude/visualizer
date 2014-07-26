@@ -35,21 +35,23 @@ var pointsDict = {
     },
 
     "groups" : {
-        "bonville" : {
-            "text" : "Треугольник Бонвиля",
+        "bonvile" : {
+            "groupHeader" : "Треугольник Бонвиля",
             "distances" : {
-                "text" : "Межсуставные расстояния",
+                "header" : "Межсуставные расстояния",
                 "point2point" : {
                     "incisor" : ["leftjoint", "rightjoint"],
                     "leftjoint" : ["rightjoint"]
                 }
             }
         },
-        "test" : {
-            "text" : "тест",
+        "ungroupped" : {
+            "groupHeader" : "измерения",
             "distances" : {
-                "text" : "тестовые расстояния",
-                "point2point" : {}
+                "header" : "ddfdf",
+                "point2point" : {
+                    "incisor" : ["leftprosthetic", "rightprosthetic"]
+                }
             }
         }
     }
@@ -67,7 +69,7 @@ var measuresOrder = {
 
 var groupsOrder = {
     "IndividualInfo" : [
-        "bonville",
-        "test"
+        "bonvile",
+        "ungroupped"
     ]
 }

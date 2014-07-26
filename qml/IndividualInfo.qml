@@ -6,17 +6,39 @@ import "../js/helpers.js" as Helpers
 Rectangle {
     id: individualInfo;
     width: 100;
-    height: 300;
+    height: 400;
 
     color: "#cccccc";
-    border.color: "black";
-    border.width: 2;
+
+    border {
+        color: "black";
+        width: 2;
+    }
 
     ListView {
+        id: groupView;
         model: ListModel {
             id: listModel;
 
             Component.onCompleted: {
+                function populateListElements(ptps, measures) {
+                    var qmlElements = [];
+                    for (var ptp in ptps) {
+                        var pointsOfPTP = ptps[ptp];
+
+                        for (var i = 0; i !== pointsOfPTP.length; ++ i) {
+                            var qmlElement = {};
+                            qmlElement["from"] = measures[ptp].visuals.text;
+                            qmlElement["to"] = measures[pointsOfPTP[i]].visuals.text;
+                            qmlElement["measure"] = "Нет данных";
+
+                            qmlElements.push(qmlElement);
+                        }
+                    }
+
+                    return qmlElements;
+                }
+
                 var measures = PointsDict.pointsDict.measures;
                 var groups = PointsDict.pointsDict.groups;
                 var groupOrder = PointsDict.groupsOrder.IndividualInfo;
@@ -24,30 +46,14 @@ Rectangle {
                 for (var i = 0; i !== groupOrder.length; ++ i) {
                     var group = groups[groupOrder[i]];
                     append({
-                               "itemName" : group,
-                               "itemHeader" : group.text,
-                               "itemText" : group.distances.text,
-                               "subItems" : populateListElements(group.distances.point2point, measures)
+                               "itemName" : groupOrder[i],
+                               "itemHeader" : group.groupHeader,
+                               "itemText" : group.distances.header,
+                               "subItems" : populateListElements(group.distances.point2point, measures),
+                               "grouped" : groupOrder[i] !== "ungroupped",
+                               "elementHeight" : 0
                            });
                 }
-
-            }
-
-            function populateListElements(ptps, measures) {
-                var qmlElements = [];
-                for (var ptp in ptps) {
-                    var pointsOfPTP = ptps[ptp];
-
-                    for (var i = 0; i !== pointsOfPTP.length; ++ i) {
-                        var qmlElement = {};
-                        qmlElement["from"] = measures[ptp].visuals.text;
-                        qmlElement["to"] = measures[pointsOfPTP[i]].visuals.text;
-
-                        qmlElements.push(qmlElement);
-                    }
-                }
-
-                return qmlElements;
             }
         }
 
@@ -60,6 +66,9 @@ Rectangle {
 
         Rectangle {
             id: mainRectangle;
+
+            property alias elementHeight: mainRectangle.height;
+            property int borderRectMargin: 10
 
             border {
                 color: "black";
@@ -76,13 +85,15 @@ Rectangle {
 
                 anchors {
                     fill: parent;
-                    margins: 10;
+                    margins: parent.borderRectMargin;
                 }
 
                 border {
                     color: "black";
-                    width: 3;
+                    width:  3;
                 }
+
+                visible: grouped;
             }
 
             Rectangle {
@@ -92,8 +103,10 @@ Rectangle {
                 x: 20;
                 y: 3;
 
+                visible: grouped;
+
                 width: childrenRect.width;
-                height: childrenRect.height;
+                height: grouped ? childrenRect.height : 0;
 
                 Text {
                     id: headerText;
@@ -102,6 +115,8 @@ Rectangle {
                         pixelSize: 16;
                         bold: true;
                     }
+
+                    visible: grouped;
 
                     text: itemHeader;
                     wrapMode: Text.WordWrap;
@@ -123,7 +138,9 @@ Rectangle {
                         item.headerText = itemText;
 
                         if (item.currentItem) {
-                            mainRectangle.height = 60 + item.currentItem.height;
+                            console.log(item.headerItem.height)
+                            mainRectangle.height =
+                                    subItemLoader.y + (grouped ? 4 : 1) * mainRectangle.borderRectMargin + item.headerItem.height + item.currentItem.height;
                         }
                     }
                 }
@@ -152,6 +169,8 @@ Rectangle {
                 }
 
             delegate: textMeasures;
+
+            Component.onCompleted: console.log(headerItem.height)
         }
     }
 
@@ -167,10 +186,11 @@ Rectangle {
                         id: from2To;
                         width: individualInfo.width - 40 - data.width;
                         text: from + " --> " + to;
+                        clip: true;
                     }
                     Text {
                         id: data;
-                        text: "Нет данных";
+                        text: measure;
                     }
                 }
             }
