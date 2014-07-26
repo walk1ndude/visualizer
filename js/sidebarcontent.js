@@ -1,7 +1,7 @@
 .pragma library
 
 var sideBarDict = {
-    "elements" : [
+    "sections" : [
         {
             "text" : "Индивидуальные параметры",
             "type" : "IndividualInfo",

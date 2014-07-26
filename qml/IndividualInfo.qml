@@ -137,7 +137,6 @@ Rectangle {
                         item.headerText = itemText;
 
                         if (item.currentItem) {
-                            console.log(item.headerItem.height)
                             mainRectangle.height =
                                     subItemLoader.y + (grouped ? 4 : 1) * mainRectangle.borderRectMargin + item.headerItem.height + item.currentItem.height;
                         }
@@ -145,13 +144,16 @@ Rectangle {
                 }
             }
 
+            // if some element changes its height recalculate as sum of heights of all items currently shown in listview
             onHeightChanged: {
-                if (individualInfo.height === 400) {
-                    individualInfo.height = height;
+                var newHeight = 0;
+                // listview
+                var elements = parent.parent.contentItem.children;
+                for (var i = 0; i !== elements.length; ++ i) {
+                    newHeight += elements[i].height;
                 }
-                else {
-                    individualInfo.height += height;
-                }
+
+                individualInfo.height = newHeight;
             }
         }
 
@@ -178,8 +180,6 @@ Rectangle {
                 }
 
             delegate: textMeasures;
-
-            Component.onCompleted: console.log(headerItem.height)
         }
     }
 

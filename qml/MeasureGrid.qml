@@ -8,8 +8,10 @@ Rectangle {
     height: listModel.count * 45;
 
     color: "#cccccc"
-    border.color: "black";
-    border.width: 2;
+    border {
+        color: "black";
+        width: 2;
+    }
 
     property string selectedPointName: "";
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
@@ -44,8 +46,10 @@ Rectangle {
         id: delegateComponent;
 
         Rectangle {
-            border.color: "black";
-            border.width: 1;
+            border {
+                color: "black";
+                width: 1;
+            }
             color: "white";
 
             height: 45;
@@ -67,7 +71,7 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent;
-                onClicked: {
+                onClicked: if (mouse.button === Qt.LeftButton) {
                     listModel.get(index).selected = !selected;
 
                     if (listModel.prevIndex > -1) {

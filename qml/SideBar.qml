@@ -28,31 +28,33 @@ Rectangle {
         model: ListModel {
             id: sidebarListModel;
             Component.onCompleted: {
-                var elements = SideBar.sideBarDict.elements;
-                for (var i = 0; i !== elements.length; ++ i) {
+                var sections = SideBar.sideBarDict.sections;
+                for (var i = 0; i !== sections.length; ++ i) {
                     append({
-                               "categoryName" : elements[i].text,
-                               "collapsed" : elements[i].collapsed,
-                               "itemType" : elements[i].type,
-                               "subItems" : [ { } ]
+                               "sectionName" : sections[i].text,
+                               "collapsed" : sections[i].collapsed,
+                               "sectionType" : sections[i].type,
+                               "subSections" : [ { } ]
                            });
                 }
             }
         }
 
         anchors.fill: parent;
-        delegate: categoryDelegate;
+        delegate: sectionDelegate;
     }
 
     Component {
-        id: categoryDelegate;
+        id: sectionDelegate;
         Column {
             width: sidebar.width;
 
             Rectangle {
-                id: categoryItem;
-                border.color: "black";
-                border.width: 5;
+                border {
+                    color: "black";
+                    width: 5;
+                }
+
                 color: "white";
 
                 height: 50;
@@ -62,12 +64,14 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter;
                     x: 15;
                     font.pixelSize: 14;
-                    text: categoryName;
+                    text: sectionName;
                 }
 
-                Button {
+                Image {
+                    id: icon
                     width: 20;
                     height: 20;
+
                     anchors {
                         right: parent.right;
                         rightMargin: 15;
@@ -75,51 +79,48 @@ Rectangle {
                         verticalCenter: parent.verticalCenter;
                     }
 
-                    iconSource: "qrc:/icons/expand.svg";
+                    source: "qrc:/icons/expand.svg";
+                }
 
-                    style: ButtonStyle {
-                        background: Rectangle {
-                            anchors.fill: parent;
-                        }
-                    }
+                MouseArea {
+                    anchors.fill: parent;
+                    onClicked: if (mouse.button === Qt.LeftButton) {
+                                   sidebarListModel.setProperty(index, "collapsed", !collapsed);
 
-                    onClicked: {
-                        sidebarListModel.setProperty(index, "collapsed", !collapsed);
-
-                        iconSource = sidebarListModel.get(index).collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
-                    }
+                                   icon.source = sidebarListModel.get(index).collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
+                               }
                 }
             }
 
             Loader {
                 visible: !collapsed
-                property variant subItemModel : subItems;
+                property variant subSectionModel : subSections;
                 sourceComponent: if (!!collapsed) {
                                      return null;
                                  }
                                  else {
-                                     switch(itemType) {
-                                     case "ShaderGrid" : return subItemShaderGrid;
-                                     case "GeometryGrid" : return subItemGeometryGrid;
-                                     case "MeasureGrid" : return subItemMeasureGrid;
-                                     case "IndividualInfo" : return subItemIndividualInfo;
+                                     switch(sectionType) {
+                                     case "ShaderGrid" : return subSectionShaderGrid;
+                                     case "GeometryGrid" : return subSectionShaderGrid;
+                                     case "MeasureGrid" : return subSectionMeasureGrid;
+                                     case "IndividualInfo" : return subSectionIndividualInfo;
                                      default: return null;
                                      }
                                  }
 
-                onStatusChanged: if (status == Loader.Ready) item.model = subItemModel;
+                onStatusChanged: if (status == Loader.Ready) item.model = subSectionModel;
             }
         }
     }
 
     Component {
-        id: subItemShaderGrid;
+        id: subSectionShaderGrid;
 
         Column {
-            property alias model : subItemRepeaterShaderGrid.model;
+            property alias model : repeater.model;
             width: sidebar.width;
             Repeater {
-                id: subItemRepeaterShaderGrid;
+                id: repeater;
                 delegate:
                     ShaderGrid {
                     width: sidebar.width;
@@ -136,13 +137,13 @@ Rectangle {
     }
 
     Component {
-        id: subItemGeometryGrid;
+        id: subSectionGeometryGrid;
 
         Column {
-            property alias model : subItemRepeaterGeometryGrid.model;
+            property alias model : repeater.model;
             width: sidebar.width;
             Repeater {
-                id: subItemRepeaterGeometryGrid;
+                id: repeater;
                 delegate:
                     GeometryGrid {
                     width: sidebar.width;
@@ -155,13 +156,13 @@ Rectangle {
     }
 
     Component {
-        id: subItemMeasureGrid;
+        id: subSectionMeasureGrid;
 
         Column {
-            property alias model : subItemRepeaterMeasureGrid.model;
+            property alias model : repeater.model;
             width: sidebar.width;
             Repeater {
-                id: subItemRepeaterMeasureGrid;
+                id: repeater;
                 delegate:
                     MeasureGrid {
                     id: measureGrid;
@@ -175,16 +176,16 @@ Rectangle {
     }
 
     Component {
-        id: subItemIndividualInfo;
+        id: subSectionIndividualInfo;
 
         Column {
-            property alias model : subItemRepeaterIndividualInfo.model;
+            property alias model : repeater.model;
             width: sidebar.width;
             Repeater {
-                id: subItemRepeaterIndividualInfo;
+                id: repeater;
                 delegate:
                     IndividualInfo {
-                    width: sidebar.width;
+                        width: sidebar.width;
                 }
             }
         }
