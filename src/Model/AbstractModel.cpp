@@ -176,18 +176,25 @@ namespace Model {
         if (!_program) {
             _program = new QOpenGLShaderProgram;
 
-            programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Vertex, shaderFiles.vertexShaderFile);
-            programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Fragment, shaderFiles.framentShaderFile);
-
-            if (shaderFiles.geometryShaderFile.length()) {
-                programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Geometry, shaderFiles.geometryShaderFile);
+            foreach (const ShaderInfo::VertexShaderFile & vertex, shaderFiles.vertexShaderFiles) {
+                programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Vertex, vertex);
             }
 
-            if (shaderFiles.tesselationEvaluationShaderFile.length()) {
-                programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, shaderFiles.tesselationEvaluationShaderFile);
+            foreach (const ShaderInfo::FragmentShaderFile & fragment, shaderFiles.fragmentShaderFiles) {
+                programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Fragment, fragment);
+            }
 
-                if (shaderFiles.tesselationControlShaderFile.length()) {
-                    programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::TessellationControl, shaderFiles.tesselationControlShaderFile);
+            foreach (const ShaderInfo::GeometryShaderFile & geometry, shaderFiles.geometryShaderFiles) {
+                programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::Geometry, geometry);
+            }
+
+            if (!shaderFiles.tesselationEvaluationShaderFiles.empty()) {
+                foreach (const ShaderInfo::TesselationEvaluationShaderFile & tessEval, shaderFiles.tesselationEvaluationShaderFiles) {
+                    programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::TessellationEvaluation, tessEval);
+                }
+
+                foreach (const ShaderInfo::TesselationControlShaderFile & tessControl, shaderFiles.tesselationControlShaderFiles) {
+                    programIsInited &= _program->addShaderFromSourceFile(QOpenGLShader::TessellationControl, tessControl);
                 }
             }
 

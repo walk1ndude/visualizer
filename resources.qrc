@@ -20,5 +20,6 @@
         <file>qml/RangeSlider.qml</file>
         <file>qml/CircleSlider.qml</file>
         <file>qml/IndividualInfo.qml</file>
+        <file>shaders/pointsVertex.glsl</file>
     </qresource>
 </RCC>

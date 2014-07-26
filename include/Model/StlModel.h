@@ -9,8 +9,8 @@ namespace Model {
     public:
         explicit StlModel(const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
-                              ShaderInfo::VertexShaderFile(":shaders/stlVertex.glsl"),
-                              ShaderInfo::FramentShaderFile(":shaders/stlFragment.glsl")
+                              ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/stlVertex.glsl"),
+                              ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/stlFragment.glsl")
                               ));
 
         void initShaderVariables();

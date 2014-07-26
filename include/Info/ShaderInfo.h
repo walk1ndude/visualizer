@@ -5,34 +5,40 @@
 
 namespace ShaderInfo {
     using VertexShaderFile = QString;
-    using FramentShaderFile = QString;
+    using FragmentShaderFile = QString;
     using GeometryShaderFile = QString;
     using TesselationControlShaderFile = QString;
     using TesselationEvaluationShaderFile = QString;
 
+    using VertexShaderFiles = QList<VertexShaderFile>;
+    using FragmentShaderFiles = QList<FragmentShaderFile>;
+    using GeometryShaderFiles = QList<GeometryShaderFile>;
+    using TesselationControlShaderFiles = QList<TesselationControlShaderFile>;
+    using TesselationEvaluationShaderFiles = QList<TesselationEvaluationShaderFile>;
+
     using ShaderVariable = int;
 
-    using ShaderVariablesNames = QStringList;
     using ShaderVariableName = QString;
+    using ShaderVariablesNames = QList<ShaderVariableName>;
 
     class ShaderFiles {
     public:
-        VertexShaderFile vertexShaderFile;
-        FramentShaderFile framentShaderFile;
-        GeometryShaderFile geometryShaderFile;
-        TesselationControlShaderFile tesselationControlShaderFile;
-        TesselationEvaluationShaderFile tesselationEvaluationShaderFile;
+        VertexShaderFiles vertexShaderFiles;
+        FragmentShaderFiles fragmentShaderFiles;
+        GeometryShaderFiles geometryShaderFiles;
+        TesselationControlShaderFiles tesselationControlShaderFiles;
+        TesselationEvaluationShaderFiles tesselationEvaluationShaderFiles;
 
-        ShaderFiles(const VertexShaderFile & vertexShaderFile,
-                    const FramentShaderFile & framentShaderFile,
-                    const GeometryShaderFile & geometryShaderFile = "",
-                    const TesselationControlShaderFile & tesselationControlShaderFile = "",
-                    const TesselationEvaluationShaderFile & tesselationEvaluationShaderFile = "") {
-            this->vertexShaderFile = vertexShaderFile;
-            this->framentShaderFile = framentShaderFile;
-            this->geometryShaderFile = geometryShaderFile;
-            this->tesselationControlShaderFile = tesselationControlShaderFile;
-            this->tesselationEvaluationShaderFile = tesselationEvaluationShaderFile;
+        ShaderFiles(const VertexShaderFiles & vertexShaderFiles,
+                    const FragmentShaderFiles & fragmentShaderFiles,
+                    const GeometryShaderFiles & geometryShaderFiles = QList<GeometryShaderFile>(),
+                    const TesselationControlShaderFiles & tesselationControlShaderFiles = QList<TesselationControlShaderFile>(),
+                    const TesselationEvaluationShaderFiles & tesselationEvaluationShaderFiles = QList<TesselationEvaluationShaderFile>()) {
+            this->vertexShaderFiles = vertexShaderFiles;
+            this->fragmentShaderFiles = fragmentShaderFiles;
+            this->geometryShaderFiles = geometryShaderFiles;
+            this->tesselationControlShaderFiles = tesselationControlShaderFiles;
+            this->tesselationEvaluationShaderFiles = tesselationEvaluationShaderFiles;
         }
     };
 }

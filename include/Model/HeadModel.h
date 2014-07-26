@@ -11,8 +11,8 @@ namespace Model {
     public:
         explicit HeadModel(const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
-                              ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
-                              ShaderInfo::FramentShaderFile(":shaders/sliceFragment.glsl")
+                              ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
+                              ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
                               ));
 
         ~HeadModel();
