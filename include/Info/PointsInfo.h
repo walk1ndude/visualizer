@@ -25,6 +25,7 @@ namespace PointsInfo {
     public:
         QVector4D position;
         QColor color;
+        uint polygonId;
 
         bool isPositionCalculated() {
             return _positionCalculated;
@@ -35,9 +36,11 @@ namespace PointsInfo {
         }
 
         FacePoint(const QVector4D & position,
-                  const QColor & color) {
+                  const QColor & color,
+                  const uint & polygonId = 0) {
             this->position = position;
             this->color = color;
+            this->polygonId = polygonId;
 
             _positionCalculated = false;
         }

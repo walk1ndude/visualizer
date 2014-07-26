@@ -1,9 +1,55 @@
 #ifndef HEADMODEL_H
 #define HEADMODEL_H
 
+#include "Info/PointsInfo.h"
+
 #include "Model/AbstractModel.h"
 
-#include "Info/PointsInfo.h"
+namespace ModelInfo {
+    class VertexVT {
+    public:
+        GLfloat x;
+        GLfloat y;
+        GLfloat z;
+        GLfloat tx;
+        GLfloat ty;
+        GLfloat tz;
+
+        VertexVT() { }
+        VertexVT(
+                const GLfloat x,
+                const GLfloat y,
+                const GLfloat z,
+                const GLfloat tx,
+                const GLfloat ty,
+                const GLfloat tz
+                ) {
+            this->x = x;
+            this->y = y;
+            this->z = z;
+            this->tx = tx;
+            this->ty = ty;
+            this->tz = tz;
+        }
+    };
+
+    using VerticesVT = QVector<VertexVT>;
+    using VerticesVTPtr = VerticesVT *;
+
+    using VerticesVTPointer = QSharedPointer<VerticesVT>;
+
+    class BuffersVT : public BuffersV {
+    public:
+        VerticesVTPointer vertices;
+
+        BuffersVT() { }
+        BuffersVT(const VerticesVTPointer & vertices,
+                  const IndicesPointer & indices) {
+            this->vertices = vertices;
+            this->indices = indices;
+        }
+    };
+}
 
 namespace Model {
     class HeadModel : public AbstractModel {

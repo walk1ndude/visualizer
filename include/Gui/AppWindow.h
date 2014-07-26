@@ -8,6 +8,8 @@
 #include "Info/SliceInfo.h"
 #include "Info/ModelInfo.h"
 
+#include "Model/StlModel.h"
+
 namespace Gui {
     class AppWindow : public QObject {
         Q_OBJECT
@@ -23,7 +25,6 @@ namespace Gui {
         QQuickWindow * _appWindow;
 
         void registerQmlTypes();
-        void registerMetaTypes();
 
         void fetchConnections();
 

@@ -9,7 +9,8 @@
 #include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
 
-#include "Model/AbstractModel.h"
+//#include "Model/AbstractModel.h"
+#include "Model/StlModel.h"
 
 #include "ViewPort/ViewPortArray.h"
 

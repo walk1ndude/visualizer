@@ -9,7 +9,6 @@ namespace Gui {
         QObject(parent) {
 
         registerQmlTypes();
-        registerMetaTypes();
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
 
@@ -81,18 +80,6 @@ namespace Gui {
 
     void AppWindow::registerQmlTypes() {
         qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
-    }
-
-    void AppWindow::registerMetaTypes() {
-        qRegisterMetaType<ModelInfo::BuffersV>("ModelInfo::BuffersV");
-        qRegisterMetaType<ModelInfo::BuffersVN>("ModelInfo::BuffersVN");
-        qRegisterMetaType<ModelInfo::BuffersVT>("ModelInfo::BuffersVT");
-        qRegisterMetaType<ModelInfo::BuffersVC>("ModelInfo::BuffersVC");
-        qRegisterMetaType<ModelInfo::BuffersVNC>("ModelInfo::BuffersVNC");
-        qRegisterMetaType<ModelInfo::BuffersVNT>("ModelInfo::BuffersVNT");
-
-        qRegisterMetaType<SliceInfo::Slices>("SliceInfo::Slices");
-        qRegisterMetaType<PointsInfo::Point>("PointsInfo::Point");
     }
 
     void AppWindow::show() {

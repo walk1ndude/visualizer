@@ -8,7 +8,6 @@ namespace Model {
         _indexCount(0),
         _vertexCount(0),
         _shaderFiles(shaderFiles) {
-
     }
 
     AbstractModel::~AbstractModel() {
