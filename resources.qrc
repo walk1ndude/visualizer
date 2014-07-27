@@ -23,5 +23,6 @@
         <file>shaders/pointsVertex.glsl</file>
         <file>shaders/pointsGeometry.glsl</file>
         <file>shaders/pointsFragment.glsl</file>
+        <file>js/settings.js</file>
     </qresource>
 </RCC>

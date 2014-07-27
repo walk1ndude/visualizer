@@ -1,6 +1,9 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Dialogs 1.2
+import QtQuick.LocalStorage 2.0
+
+import "../js/settings.js" as Settings
 
 ApplicationWindow {
     id: appWindow;
@@ -116,5 +119,13 @@ ApplicationWindow {
 
         onSelectedPointNameChanged: modelItem.selectedPointName = selectedPointName;
         onSelectedPointColorChanged: modelItem.selectedPointColor = selectedPointColor;
+    }
+
+    Component.onCompleted: {
+        Settings.init();
+
+        Settings.set("test", 10);
+
+        console.log(Settings.get("test"));
     }
 }
