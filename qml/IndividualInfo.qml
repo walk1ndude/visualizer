@@ -27,8 +27,8 @@ Rectangle {
 
                         for (var i = 0; i !== pointsOfPTP.length; ++ i) {
                             var qmlElement = {};
-                            qmlElement["from"] = measures[ptp].visuals.text;
-                            qmlElement["to"] = measures[pointsOfPTP[i]].visuals.text;
+                            qmlElement["from"] = measures[ptp].name;
+                            qmlElement["to"] = measures[pointsOfPTP[i]].name;
                             qmlElement["measure"] = "Нет данных";
 
                             qmlElements.push(qmlElement);
@@ -45,8 +45,8 @@ Rectangle {
                 for (var i = 0; i !== groupOrder.length; ++ i) {
                     var group = groups[groupOrder[i]];
                     append({
-                               "itemName" : groupOrder[i],
-                               "itemHeader" : group.groupHeader,
+                               "itemId" : groupOrder[i],
+                               "itemName" : group.name,
                                "itemText" : group.distances.header,
                                "subItems" : populateListElements(group.distances.point2point, measures),
                                "grouped" : groupOrder[i] !== "ungrouped",
@@ -117,7 +117,7 @@ Rectangle {
 
                     visible: grouped;
 
-                    text: itemHeader;
+                    text: itemName;
                     wrapMode: Text.WordWrap;
                 }
             }

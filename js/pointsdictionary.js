@@ -3,40 +3,30 @@
 var pointsDict = {
     "measures" : {
         "incisor" : {
-            "visuals" : {
-                "text" : "Верхняя резцовая",
-                "color" : "red"
-            }
+            "name" : "Верхняя резцовая",
+            "color" : "red"
         },
         "leftjoint" : {
-            "visuals" : {
-                "text" : "Левый сустав",
-                "color" : "yellow"
-            }
+            "name" : "Левый сустав",
+            "color" : "yellow"
         },
         "rightjoint" : {
-            "visuals" : {
-                "text" : "Правый сустав",
-                "color" : "green"
-            }
+            "name" : "Правый сустав",
+            "color" : "green"
         },
         "leftprosthetic" : {
-            "visuals" : {
-                "text" : "Левая опорная точка протетической плоскости",
-                "color" : "cyan"
-            }
+            "name" : "Левая опорная точка протетической плоскости",
+            "color" : "cyan"
         },
         "rightprosthetic" : {
-            "visuals" : {
-                "text" : "Правая опорная точка протетической плоскости",
-                "color" : "orange"
-            }
+            "name" : "Правая опорная точка протетической плоскости",
+            "color" : "orange"
         }
     },
 
     "groups" : {
         "bonvile" : {
-            "groupHeader" : "Треугольник Бонвиля",
+            "name" : "Треугольник Бонвиля",
             "distances" : {
                 "header" : "Межсуставные расстояния",
                 "point2point" : {

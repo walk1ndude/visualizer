@@ -29,9 +29,9 @@ Rectangle {
                 for (var i = 0; i !== measureOrder.length; ++ i) {
                     var measure = measures[measureOrder[i]];
                     append({
-                               "itemName" : measureOrder[i],
-                               "itemText" : measure.visuals.text,
-                               "itemColor" : measure.visuals.color,
+                               "itemId" : measureOrder[i],
+                               "itemName" : measure.name,
+                               "itemColor" : measure.color,
                                "selected" : false
                            });
                 }
@@ -64,7 +64,7 @@ Rectangle {
                     bold: selected;
                 }
 
-                text: itemText;
+                text: itemName;
                 clip: true;
                 wrapMode: Text.WordWrap;
             }
@@ -82,7 +82,7 @@ Rectangle {
 
                     parent.color = selected ? itemColor : "white";
 
-                    measureGrid.selectedPointName = itemName;
+                    measureGrid.selectedPointName = itemId;
                     measureGrid.selectedPointColor = parent.color;
                 }
             }

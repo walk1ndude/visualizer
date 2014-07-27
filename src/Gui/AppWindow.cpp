@@ -12,6 +12,9 @@ namespace Gui {
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
 
+        // path to db
+        qDebug() << _engine->offlineStoragePath();
+
         fetchConnections();
     }
 
