@@ -21,5 +21,7 @@
         <file>qml/CircleSlider.qml</file>
         <file>qml/IndividualInfo.qml</file>
         <file>shaders/pointsVertex.glsl</file>
+        <file>shaders/pointsGeometry.glsl</file>
+        <file>shaders/pointsFragment.glsl</file>
     </qresource>
 </RCC>

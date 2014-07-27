@@ -119,4 +119,3 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/PointsModel.h
 
 RESOURCES += resources.qrc
-

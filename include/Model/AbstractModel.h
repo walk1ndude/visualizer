@@ -19,7 +19,8 @@ namespace Model {
     class AbstractModel : public QObject {
         Q_OBJECT
     public:
-        explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles);
+        explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles,
+                               AbstractModel * parent = nullptr);
         virtual ~AbstractModel();
 
         virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
@@ -113,13 +114,15 @@ namespace Model {
             releaseShaderProgram();
         }
 
+        QMatrix4x4 model();
+
     protected:
         int stride();
 
         GLsizei indexCount();
         GLsizei vertexCount();
 
-        QMatrix4x4 model();
+        AbstractModel * parent();
 
     private:
         QOpenGLBuffer _vboVert;
@@ -146,6 +149,8 @@ namespace Model {
 
         GLsizei _indexCount;
         GLsizei _vertexCount;
+
+        AbstractModel * _parent;
 
         QMatrix4x4 _mMatrix;
 

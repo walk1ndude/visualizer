@@ -1,8 +1,8 @@
 #include "Model/StlModel.h"
 
 namespace Model {
-    StlModel::StlModel(const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModel(shaderFiles) {
+    StlModel::StlModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
+        AbstractModel(shaderFiles, parent) {
     }
 
     void StlModel::initShaderVariables(QOpenGLShaderProgram * program) {

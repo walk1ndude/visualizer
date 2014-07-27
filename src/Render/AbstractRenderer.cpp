@@ -11,12 +11,12 @@ namespace Render {
     }
 
     AbstractRenderer::AbstractRenderer(QOpenGLContext * context, const QSize & surfaceSize) :
-        _surfaceSize(surfaceSize),
-        _takeShot(false),
-        _selectedScene(nullptr),
         _canRenderContent(false),
         _textureUpdateNeeded(false),
         _contentInitializeNeeded(false),
+        _surfaceSize(surfaceSize),
+        _takeShot(false),
+        _selectedScene(nullptr),
         _fboRender(nullptr),
         _fboDisplay(nullptr) {
 

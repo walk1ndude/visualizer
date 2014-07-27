@@ -64,7 +64,7 @@ namespace Model {
                     ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/pointsVertex.glsl"),
                     ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/pointsFragment.glsl"),
                     ShaderInfo::GeometryShaderFiles() << ShaderInfo::GeometryShaderFile(":shaders/pointsGeometry.glsl")
-                ));
+                ), AbstractModel * parent = nullptr);
 
         void init(const PointsInfo::FacePoints & facePoints);
         void update(const PointsInfo::FacePoints & facePoints);
@@ -75,11 +75,14 @@ namespace Model {
         void initShaderVariables(QOpenGLShaderProgram * program);
 
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
+        void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort);
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderColor;
         ShaderInfo::ShaderVariable _shaderPolygon;
+
+        ShaderInfo::ShaderVariable _shaderMVP;
     };
 }
 

@@ -59,7 +59,7 @@ namespace Model {
                 ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
-                              ));
+                              ), AbstractModel * parent = nullptr);
 
         ~HeadModel();
 

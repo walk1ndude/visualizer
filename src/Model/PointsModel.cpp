@@ -1,8 +1,10 @@
 #include "Model/PointsModel.h"
+#include "Model/HeadModel.h"
+#include "Model/StlModel.h"
 
 namespace Model {
-    PointsModel::PointsModel(const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModel(shaderFiles) {
+    PointsModel::PointsModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
+        AbstractModel(shaderFiles, parent) {
 
     }
 
@@ -44,6 +46,8 @@ namespace Model {
         _shaderVertex = program->attributeLocation("vertex");
         _shaderColor = program->attributeLocation("color");
         _shaderPolygon = program->attributeLocation("polygon");
+
+        _shaderMVP = program->attributeLocation("mvp");
     }
 
     void PointsModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
@@ -51,9 +55,19 @@ namespace Model {
         program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, stride());
 
         program->enableAttributeArray(_shaderColor);
-        program->setAttributeArray(_shaderColor, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
+        program->setAttributeBuffer(_shaderColor, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
 
         program->enableAttributeArray(_shaderPolygon);
         program->setAttributeValue(_shaderPolygon, GL_FLOAT, sizeof(GLfloat), 1, stride());
+    }
+
+    void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) {
+        QMatrix4x4 model = parent()->model();
+
+        if (dynamic_cast<Model::HeadModel *>(parent())) {
+            model = viewPort.modelVoxel(model);
+        }
+
+        program->setUniformValue(_shaderMVP, viewPort.projection() * viewPort.view() * model);
     }
 }

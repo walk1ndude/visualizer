@@ -1,14 +1,15 @@
 #include "Model/AbstractModel.h"
 
 namespace Model {
-    AbstractModel::AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles) :
+    AbstractModel::AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(nullptr),
         _shaderFiles(shaderFiles),
         _stride(0),
         _indexCount(0),
-        _vertexCount(0) {
+        _vertexCount(0),
+        _parent(parent) {
     }
 
     AbstractModel::~AbstractModel() {
@@ -65,6 +66,10 @@ namespace Model {
 
     int AbstractModel::stride() {
         return _stride;
+    }
+
+    AbstractModel * AbstractModel::parent() {
+        return _parent;
     }
 
     QMatrix4x4 AbstractModel::model() {

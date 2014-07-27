@@ -3,8 +3,8 @@
 #include "Model/HeadModel.h"
 
 namespace Model {
-    HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModel(shaderFiles) {
+    HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
+        AbstractModel(shaderFiles, parent) {
     }
 
     HeadModel::~HeadModel() {

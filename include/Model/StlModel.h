@@ -57,7 +57,7 @@ namespace Model {
                 ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/stlVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/stlFragment.glsl")
-                              ));
+                              ), AbstractModel * parent = nullptr);
 
         void initShaderVariables(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort);
