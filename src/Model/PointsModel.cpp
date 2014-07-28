@@ -3,9 +3,8 @@
 #include "Model/StlModel.h"
 
 namespace Model {
-    PointsModel::PointsModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
-        AbstractModel(shaderFiles, parent) {
-
+    PointsModel::PointsModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
+        AbstractModel(parent, shaderFiles) {
     }
 
     void PointsModel::init(const PointsInfo::FacePoints & facePoints) {

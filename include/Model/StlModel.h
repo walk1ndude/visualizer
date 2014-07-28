@@ -1,7 +1,7 @@
 #ifndef STLMODEL_H
 #define STLMODEL_H
 
-#include "Model/AbstractModel.h"
+#include "Model/AbstractModelWithPoints.h"
 
 namespace ModelInfo {
     class VertexVN {
@@ -50,14 +50,16 @@ namespace ModelInfo {
 }
 
 namespace Model {
-    class StlModel : public AbstractModel {
+    class StlModel : public AbstractModelWithPoints {
         Q_OBJECT
     public:
-        explicit StlModel(const ShaderInfo::ShaderFiles & shaderFiles =
+        explicit StlModel(PointsModel * points = nullptr,
+                          AbstractModel * parent = nullptr,
+                          const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/stlVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/stlFragment.glsl")
-                              ), AbstractModel * parent = nullptr);
+                              ));
 
         void initShaderVariables(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort);
@@ -67,8 +69,6 @@ namespace Model {
 
         void glStatesEnable();
         void glStatesDisable();
-
-        bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;

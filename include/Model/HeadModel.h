@@ -3,7 +3,7 @@
 
 #include "Info/PointsInfo.h"
 
-#include "Model/AbstractModel.h"
+#include "Model/AbstractModelWithPoints.h"
 
 namespace ModelInfo {
     class VertexVT {
@@ -52,14 +52,16 @@ namespace ModelInfo {
 }
 
 namespace Model {
-    class HeadModel : public AbstractModel {
+    class HeadModel : public AbstractModelWithPoints {
         Q_OBJECT
     public:
-        explicit HeadModel(const ShaderInfo::ShaderFiles & shaderFiles =
+        explicit HeadModel(PointsModel * points = nullptr,
+                           AbstractModel * parent = nullptr,
+                           const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
-                              ), AbstractModel * parent = nullptr);
+                              ));
 
         ~HeadModel();
 
@@ -70,17 +72,9 @@ namespace Model {
         void glStatesEnable();
         void glStatesDisable();
 
-        ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
-
         void init(const QVector3D & size);
 
         void scale(const QVector3D & scale);
-
-        void addPoint(
-                const QString & name,
-                const PointsInfo::FacePoint & point,
-                const ShaderInfo::ShaderVariableName & shaderVariableName
-                );
 
         bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
 

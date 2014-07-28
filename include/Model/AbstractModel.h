@@ -12,6 +12,7 @@
 #include "Info/LightInfo.h"
 #include "Info/ShaderInfo.h"
 #include "Info/TextureInfo.h"
+#include "Info/PointsInfo.h"
 
 #include "ViewPort/ViewPort.h"
 
@@ -19,20 +20,27 @@ namespace Model {
     class AbstractModel : public QObject {
         Q_OBJECT
     public:
-        explicit AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles,
-                               AbstractModel * parent = nullptr);
         virtual ~AbstractModel();
 
-        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
-        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
+        virtual void initShaderVariables(QOpenGLShaderProgram * program) {
+            Q_UNUSED(program)
+        }
 
-        virtual void glStatesEnable() = 0;
-        virtual void glStatesDisable() = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) {
+            Q_UNUSED(program)
+            Q_UNUSED(viewPort)
+        }
 
-        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort) = 0;
+        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
+            Q_UNUSED(program)
+        }
 
-        virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) = 0;
+        virtual void glStatesEnable() { }
+        virtual void glStatesDisable() { }
+
+        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
+
+        virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
 
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
@@ -114,15 +122,22 @@ namespace Model {
             releaseShaderProgram();
         }
 
-        QMatrix4x4 model();
+        virtual QMatrix4x4 model() final;
 
     protected:
-        int stride();
+        explicit AbstractModel(AbstractModel * parent = nullptr,
+                               const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
 
-        GLsizei indexCount();
-        GLsizei vertexCount();
+        virtual int stride() final;
 
-        AbstractModel * parent();
+        virtual GLsizei indexCount() final;
+        virtual GLsizei vertexCount() final;
+
+        virtual AbstractModel * parent() final;
+        virtual void addChild(AbstractModel * child) final;
+
+        virtual void drawModelWithIndices();
+        virtual void drawModelWithoutIndices();
 
     private:
         QOpenGLBuffer _vboVert;
@@ -151,6 +166,7 @@ namespace Model {
         GLsizei _vertexCount;
 
         AbstractModel * _parent;
+        QList<AbstractModel *> _children;
 
         QMatrix4x4 _mMatrix;
 
@@ -158,9 +174,6 @@ namespace Model {
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void setShaderVariables();
-
-        void drawModelWithIndices();
-        void drawModelWithoutIndices();
 
         void bindTextures();
         void releaseTextures();

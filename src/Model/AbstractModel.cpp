@@ -1,7 +1,7 @@
 #include "Model/AbstractModel.h"
 
 namespace Model {
-    AbstractModel::AbstractModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
+    AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(nullptr),
@@ -10,6 +10,9 @@ namespace Model {
         _indexCount(0),
         _vertexCount(0),
         _parent(parent) {
+        if (_parent) {
+            _parent->addChild(this);
+        }
     }
 
     AbstractModel::~AbstractModel() {
@@ -68,12 +71,33 @@ namespace Model {
         return _stride;
     }
 
+    GLsizei AbstractModel::vertexCount() {
+        return _vertexCount;
+    }
+
+    GLsizei AbstractModel::indexCount() {
+        return _indexCount;
+    }
+
     AbstractModel * AbstractModel::parent() {
         return _parent;
     }
 
+    void AbstractModel::addChild(AbstractModel * child) {
+        _children.append(child);
+    }
+
     QMatrix4x4 AbstractModel::model() {
         return _mMatrix;
+    }
+
+    bool AbstractModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
+        Q_UNUSED(viewPort);
+        return false;
+    }
+
+    ModelInfo::ViewAxisRange AbstractModel::correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) {
+        return viewAxisRange;
     }
 
     void AbstractModel::rotate(const QVector3D & rotation) {
@@ -127,34 +151,36 @@ namespace Model {
     }
 
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
-        bindShaderProgram();
-
-        glStatesEnable();
-
-        setShaderVariables(_program, viewPort);
-        setShaderVariables();
-
-        bindTextures();
-
-        _vao.bind();
-
-        if (_indexCount) {
-            drawModelWithIndices();
+        if (_program) {
+            bindShaderProgram();
+            
+            glStatesEnable();
+            
+            setShaderVariables(_program, viewPort);
+            setShaderVariables();
+            
+            bindTextures();
+            
+            _vao.bind();
+            
+            if (_indexCount) {
+                drawModelWithIndices();
+            }
+            else {
+                drawModelWithoutIndices();
+            }
+            
+            glFinish();
+            _vao.release();
+            
+            if (checkDepthBuffer(viewPort)) {
+                emit redraw();
+            }
+            
+            releaseTextures();
+            glStatesDisable();
+            releaseShaderProgram();
         }
-        else {
-            drawModelWithoutIndices();
-        }
-
-        glFinish();
-        _vao.release();
-
-        if (checkDepthBuffer(viewPort)) {
-            emit redraw();
-        }
-
-        releaseTextures();
-        glStatesDisable();
-        releaseShaderProgram();
     }
 
     void AbstractModel::drawModelWithIndices() {

@@ -2,6 +2,7 @@
 
 #include "Model/StlModel.h"
 #include "Model/HeadModel.h"
+#include "Model/PointsModel.h"
 
 namespace Scene {
     ModelScene::ModelScene() :
@@ -55,20 +56,6 @@ namespace Scene {
         _selectedModel->setViewAxisRange(zRange, ModelInfo::ZAXIS);
     }
 
-    void ModelScene::addPoint(const PointsInfo::Point & point) {
-        //QVector4D rayDirection = _viewPorts.calculateRayDir(point.position);
-
-        //qDebug() << rayDirection;
-
-        if (!_selectedModel) {
-            return;
-        }
-
-        if (Model::HeadModel * selectedModel = dynamic_cast<Model::HeadModel *>(_selectedModel)) {
-            selectedModel->addPoint(point.name, PointsInfo::FacePoint(QVector4D(point.position.x(), point.position.y(), 1.0f, 1.0f), point.color), point.name);
-        }
-    }
-
     void ModelScene::renderScene(const QSize & surfaceSize) {
         _viewPorts.resize(surfaceSize);
 
@@ -76,7 +63,7 @@ namespace Scene {
         ViewPort::ViewPortRect boundingRect;
 
         ViewPort::ViewPortsIterator itV (_viewPorts);
-        QVectorIterator<Model::AbstractModel *> itM (_models);
+        QListIterator<Model::AbstractModel *> itM (_models);
 
         // for each viewport
         while (itV.hasNext()) {
@@ -164,13 +151,13 @@ namespace Scene {
                                     const MaterialInfo::Diffuse & diffuse,
                                     const MaterialInfo::Specular & specular,
                                     const MaterialInfo::Shininess & shininess) {
-        _materials.push_back(new MaterialInfo::Material(emissive, diffuse, specular, shininess));
+        _materials.append(new MaterialInfo::Material(emissive, diffuse, specular, shininess));
     }
 
     void ModelScene::addLightSource(const LightInfo::Position & position,
                                        const LightInfo::Color & color,
                                        const LightInfo::AmbientIntensity & ambientIntensity) {
-        _lightSources.push_back(new LightInfo::LightSource(position, color, ambientIntensity));
+        _lightSources.append(new LightInfo::LightSource(position, color, ambientIntensity));
     }
 
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
@@ -192,15 +179,30 @@ namespace Scene {
 
         texture->generateMipMaps();
 
-        _textures.push_back(texture);
+        _textures.append(texture);
         _texturesInfo.insert(texture, textureInfo);
         _texturesInModel.insert(_selectedModel, texture);
 
         textureInfo.mergedData.clear();
     }
 
+    void ModelScene::addPoint(const PointsInfo::Point & point) {
+        //QVector4D rayDirection = _viewPorts.calculateRayDir(point.position);
+
+        //qDebug() << rayDirection;
+
+        if (!_selectedModel) {
+            return;
+        }
+
+        //selectedModel->addPoint(point.name, PointsInfo::FacePoint(QVector4D(point.position.x(), point.position.y(), 1.0f, 1.0f), point.color), point.name);
+    }
+
     void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {
-        Model::StlModel * model = new Model::StlModel;
+        Model::PointsModel * pointsInModel = new Model::PointsModel;
+        _models.append(pointsInModel);
+
+        Model::StlModel * model = new Model::StlModel(pointsInModel);
 
         // select newly created model
         _selectedModel = model;
@@ -220,11 +222,14 @@ namespace Scene {
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
 
-        _models.push_back(model);
+        _models.append(model);
     }
 
     void ModelScene::addHeadModel(SliceInfo::Slices slices) {
-        Model::HeadModel * model = new Model::HeadModel;
+        Model::PointsModel * pointsInModel = new Model::PointsModel;
+        _models.append(pointsInModel);
+
+        Model::HeadModel * model = new Model::HeadModel(pointsInModel);
 
         _selectedModel = model;
 
@@ -252,6 +257,6 @@ namespace Scene {
 
         QObject::connect(model, &Model::HeadModel::redraw, this, &Scene::ModelScene::redraw);
 
-        _models.push_back(model);
+        _models.append(model);
     }
 }

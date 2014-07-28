@@ -11,7 +11,7 @@ function init() {
 PRIMARY KEY(groupId, pointFromId, pointToId),
 FOREIGN KEY(groupId) REFERENCES groups(id), FOREIGN KEY(pointFromId) REFERENCES points(id), FOREIGN KEY(pointToId) REFERENCES points(id))");
         tx.executeSql("CREATE TABLE IF NOT EXISTS models (id INTEGER PRIMARY KEY AUTOINCREMENT, TEXT storeLocation, rangeX TEXT, rangeY TEXT, rangeZ TEXT, \
-minHU INTEGER, maxHU INTEGER, rotation TEXT, zoomFactor REAL)");
+huRange TEXT, rotation TEXT, zoomFactor REAL)");
         tx.executeSql("CREATE TABLE IF NOT EXISTS points_in_model (modelId INTEGER, pointId INTEGER, position TEXT, \
 PRIMARY KEY(modelId, pointId),
 FOREIGN KEY(modelId) REFERENCES models(id), FOREIGN KEY(pointId) REFERENCES points(id))");
@@ -44,32 +44,26 @@ function parseVector(stringVd) {
 
 function saveGeometry(geometry, modelId) {
     var db = opendb();
-    var result = result;
+    var result = false;
     db.transaction(function(tx) {
         geometry.rotation = serializeVector(geometry.rotation);
-        result = !!tx.executeSql("UPDATE models SET rotation = ?, zoomFactor = ? WHERE id = ?",
+        result = !!tx.executeSql("UPDATE models SET rotation = ?, zoomFactor = ? WHERE id = ?;",
                                  [geometry.rotation, geometry.zoomFactor, modelId]).rowsAffected;
     });
     return result;
 }
 
-function set(setting, value) {
+function loadGeometry(modelId) {
     var db = opendb();
-    var result = false;
+    var geometry = {};
     db.transaction(function(tx) {
-        result = !!tx.executeSql("INSERT OR REPLACE INTO settings VALUES(?, ?);", [setting, value]).rowsAffected;
-    });
-    return result;
-}
-
-function get(setting) {
-    var db = opendb();
-    var result = null;
-    db.transaction(function(tx) {
-        var rs = tx.executeSql("SELECT value FROM settings WHERE setting=?;", [setting]);
-        if (rs.rows.length) {
-            result = rs.rows.item(0).value;
+        var query = tx.executeSql("SELECT FROM models (rotation, rangeX, rangeY, rangeZ, huRange, zoomFactor) \
+WHERE id = ?;", [modelId]);
+        if (query.rows.length) {
+            for (column in query.item(0)) {
+                geometry.column = (column !== "zoomFactor") ? parseVector(column) : column;
+            }
         }
     });
-    return result;
+    return geometry;
 }

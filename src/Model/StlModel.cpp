@@ -1,8 +1,9 @@
 #include "Model/StlModel.h"
 
 namespace Model {
-    StlModel::StlModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
-        AbstractModel(shaderFiles, parent) {
+    StlModel::StlModel(PointsModel * points, AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
+        AbstractModelWithPoints(points, parent, shaderFiles) {
+            points->setParent(this);
     }
 
     void StlModel::initShaderVariables(QOpenGLShaderProgram * program) {
@@ -46,11 +47,5 @@ namespace Model {
         program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
         program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * model());
         program->setUniformValue(_shaderNormalMatrix, (model() * viewPort.view()).normalMatrix());
-    }
-
-    bool StlModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
-        Q_UNUSED(viewPort)
-
-        return false;
     }
 }

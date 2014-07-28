@@ -14,13 +14,17 @@ var pointsDict = {
             "name" : "Правый сустав",
             "color" : "green"
         },
-        "leftprosthetic" : {
+        "leftprothetic" : {
             "name" : "Левая опорная точка протетической плоскости",
             "color" : "cyan"
         },
-        "rightprosthetic" : {
+        "rightprothetic" : {
             "name" : "Правая опорная точка протетической плоскости",
             "color" : "orange"
+        },
+        "belowincisor" : {
+            "name" : "Нижняя резцовая",
+            "color" : "green"
         }
     },
 
@@ -39,7 +43,7 @@ var pointsDict = {
             "distances" : {
                 "header" : "Измеренные расстояния",
                 "point2point" : {
-                    "incisor" : ["leftprosthetic", "rightprosthetic"]
+                    "incisor" : ["leftprothetic", "rightprothetic"]
                 }
             }
         }
@@ -51,8 +55,9 @@ var measuresOrder = {
         "incisor",
         "leftjoint",
         "rightjoint",
-        "leftprosthetic",
-        "rightprosthetic"
+        "leftprothetic",
+        "rightprothetic",
+        "belowincisor"
     ]
 }
 

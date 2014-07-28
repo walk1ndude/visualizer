@@ -7,6 +7,8 @@ Rectangle {
 
     property real angleShot: 0.0;
 
+    property int modelId: -1;
+
     property vector3d angle: Qt.vector3d(0.0, 0.0, 0.0);
     property real zoomFactor: 2.0;
 

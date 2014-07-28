@@ -3,8 +3,9 @@
 #include "Model/HeadModel.h"
 
 namespace Model {
-    HeadModel::HeadModel(const ShaderInfo::ShaderFiles & shaderFiles, AbstractModel * parent) :
-        AbstractModel(shaderFiles, parent) {
+    HeadModel::HeadModel(PointsModel * points, AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
+        AbstractModelWithPoints(points, parent, shaderFiles) {
+            points->setParent(this);
     }
 
     HeadModel::~HeadModel() {
@@ -68,10 +69,6 @@ namespace Model {
         glDisable(GL_DEPTH_TEST);
     }
 
-    ModelInfo::ViewAxisRange HeadModel::correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) {
-        return viewAxisRange;
-    }
-
     void HeadModel::initShaderVariables(QOpenGLShaderProgram * program) {
         _shaderVertex = program->attributeLocation("vertex");
         _shaderTexHead = program->attributeLocation("tex");
@@ -103,14 +100,6 @@ namespace Model {
         program->setUniformValue(_shaderStep, _step);
 
         _facePointsProgram.setUniformValue(program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
-    }
-
-    void HeadModel::addPoint(const QString & name, const PointsInfo::FacePoint & point, const ShaderInfo::ShaderVariableName & shaderVariableName) {
-        /*
-        if (_program) {
-            _facePointsProgram.addPoint(_program, "facePoints." + shaderVariableName);
-            _facePoints.insert(name, new PointsInfo::FacePoint(point.position, point.color));
-        }*/
     }
 
     bool HeadModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {

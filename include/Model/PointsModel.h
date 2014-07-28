@@ -59,12 +59,13 @@ namespace Model {
     class PointsModel : public AbstractModel {
         Q_OBJECT
     public:
-        explicit PointsModel(const ShaderInfo::ShaderFiles & shaderFiles =
+        explicit PointsModel(AbstractModel * parent = nullptr,
+                             const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
                     ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/pointsVertex.glsl"),
                     ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/pointsFragment.glsl"),
                     ShaderInfo::GeometryShaderFiles() << ShaderInfo::GeometryShaderFile(":shaders/pointsGeometry.glsl")
-                ), AbstractModel * parent = nullptr);
+                ));
 
         void init(const PointsInfo::FacePoints & facePoints);
         void update(const PointsInfo::FacePoints & facePoints);

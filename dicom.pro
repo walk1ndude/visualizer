@@ -89,7 +89,8 @@ SOURCES +=  src/main.cpp \
             src/Model/HeadModel.cpp \
             src/Model/StlModel.cpp \
             src/Scene/ModelScene.cpp \
-    src/Model/PointsModel.cpp
+    src/Model/PointsModel.cpp \
+    src/Model/AbstractModelWithPoints.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -116,6 +117,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Scene/ModelScene.h \
             include/Parser/Helpers.hpp \
             include/Info/PointsInfo.h \
-            include/Model/PointsModel.h
+            include/Model/PointsModel.h \
+    include/Model/AbstractModelWithPoints.h
 
 RESOURCES += resources.qrc

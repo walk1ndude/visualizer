@@ -61,14 +61,14 @@ namespace Scene {
 
     private:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
-        QVector<Model::AbstractModel *> _models;
+        QList<Model::AbstractModel *> _models;
 
         QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
         QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
 
-        QVector<MaterialInfo::Material *> _materials;
-        QVector<LightInfo::LightSource *> _lightSources;
-        QVector<QOpenGLTexture *> _textures;
+        QList<MaterialInfo::Material *> _materials;
+        QList<LightInfo::LightSource *> _lightSources;
+        QList<QOpenGLTexture *> _textures;
 
         Model::AbstractModel * _selectedModel;
         QOpenGLTexture * _selectedTexture;
