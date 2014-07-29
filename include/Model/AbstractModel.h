@@ -22,15 +22,6 @@ namespace Model {
     public:
         virtual ~AbstractModel();
 
-        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
-        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
-
-        virtual void glStatesEnable() { }
-        virtual void glStatesDisable() { }
-
-        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
-
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
@@ -112,6 +103,15 @@ namespace Model {
         explicit AbstractModel(AbstractModel * parent = nullptr,
                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
         
+        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
+        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
+
+        virtual void glStatesEnable() { }
+        virtual void glStatesDisable() { }
+
+        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
+
         virtual void setChildrenVariables() { }
 
         virtual int stride() final;
@@ -128,6 +128,7 @@ namespace Model {
         virtual void setShaderVariables();
 
         virtual QOpenGLShaderProgram * program() final;
+
 
     private:
         QOpenGLBuffer _vboVert;

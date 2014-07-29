@@ -68,10 +68,6 @@ namespace Model {
     public:
         virtual void addPoint(const QString & name, PointsInfo::ModelPoint * point);
 
-        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
-        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
-
         virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
 
         virtual void setViewRange(const ModelInfo::ViewAxisRange & xRange,
@@ -86,6 +82,10 @@ namespace Model {
         AbstractModelWithPoints(PointsModel * points = nullptr,
                                 AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
+
+        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
+        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void setShaderVariables();
 

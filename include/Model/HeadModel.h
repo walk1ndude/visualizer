@@ -65,16 +65,17 @@ namespace Model {
 
         ~HeadModel();
 
+        void init(const QVector3D & size);
+
+        void scale(const QVector3D & scale);
+
+    protected:
         void initShaderVariables(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort);
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
 
         void glStatesEnable();
         void glStatesDisable();
-
-        void init(const QVector3D & size);
-
-        void scale(const QVector3D & scale);
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
