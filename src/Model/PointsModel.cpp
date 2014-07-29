@@ -8,24 +8,28 @@ namespace Model {
     }
 
     void PointsModel::fillBuffers(const PointsInfo::ModelPoints & modelPoints) {
-        ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
+        if (updateNeeded()) {
+            ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
 
-        foreach (const PointsInfo::ModelPoint * modelPoint, modelPoints) {
-            vertices->push_back(ModelInfo::VertexVCP(
-                                    modelPoint->position.x(),
-                                    modelPoint->position.y(),
-                                    modelPoint->position.z(),
-                                    modelPoint->color.redF(),
-                                    modelPoint->color.greenF(),
-                                    modelPoint->color.blueF(),
-                                    modelPoint->polygonId
-                                    ));
+            foreach (const PointsInfo::ModelPoint * modelPoint, modelPoints) {
+                vertices->push_back(ModelInfo::VertexVCP(
+                                        modelPoint->position.x(),
+                                        modelPoint->position.y(),
+                                        modelPoint->position.z(),
+                                        modelPoint->color.redF(),
+                                        modelPoint->color.greenF(),
+                                        modelPoint->color.blueF(),
+                                        modelPoint->polygonId
+                                        ));
+            }
+
+            ModelInfo::BuffersVCP buffers;
+            buffers.vertices = ModelInfo::VerticesVCPPointer(vertices);
+
+            AbstractModel::fillBuffers<ModelInfo::BuffersVCP>(buffers, QOpenGLBuffer::DynamicDraw);
+
+            modelUpdated();
         }
-
-        ModelInfo::BuffersVCP buffers;
-        buffers.vertices = ModelInfo::VerticesVCPPointer(vertices);
-
-        AbstractModel::fillBuffers<ModelInfo::BuffersVCP>(buffers, QOpenGLBuffer::DynamicDraw);
     }
 
     void PointsModel::glStatesEnable() {
@@ -38,7 +42,7 @@ namespace Model {
     }
     
     void PointsModel::drawModelWithoutIndices() {
-        qDebug() << glGetError() << "before" << vertexCount();
+        qDebug() << glGetError() << "before" << vertexCount() << program()->isLinked();
         glDrawArrays(GL_POINTS, 0, vertexCount());
         qDebug() << glGetError();
     }

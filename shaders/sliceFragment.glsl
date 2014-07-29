@@ -13,16 +13,6 @@ uniform highp sampler3D texHead;
 
 uniform highp mat4 normalMatrix;
 
-struct FacePoints {
-    vec4 incisor;
-    vec4 leftJoint;
-    vec4 rightJoint;
-    vec4 leftProsthetic;
-    vec4 rightProsthetic;
-};
-
-uniform highp FacePoints facePoints;
-
 struct Material {
     vec4 emissive;
     vec4 diffuse;
@@ -155,11 +145,5 @@ void main(void) {
     }
     else {
         discard;
-    }
-
-    if (abs(fragPos.s - facePoints.incisor.s) < 0.5f &&
-        abs(fragPos.t - facePoints.incisor.t) < 0.5f &&
-        abs(fragPos.p - facePoints.incisor.p) < 0.5f) {
-        fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
     }
 }

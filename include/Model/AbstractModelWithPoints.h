@@ -78,6 +78,8 @@ namespace Model {
         virtual void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
                                       const ModelInfo::ViewAxis viewAxis = ModelInfo::XAXIS) final;
 
+        virtual void processChildren() final;
+
     protected:
         AbstractModelWithPoints(PointsModel * points = nullptr,
                                 AbstractModel * parent = nullptr,
@@ -91,8 +93,6 @@ namespace Model {
 
         virtual PointsModel * pointsModel() final;
         virtual PointsInfo::ModelPoints modelPoints() final;
-        
-        virtual void setChildrenVariables() final;
         
         virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort) final;
 

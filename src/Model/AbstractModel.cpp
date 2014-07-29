@@ -9,7 +9,8 @@ namespace Model {
         _stride(0),
         _indexCount(0),
         _vertexCount(0),
-        _parent(parent) {
+        _parent(parent),
+        _updateNeeded(false) {
         if (_parent) {
             _parent->addChild(this);
         }
@@ -132,9 +133,19 @@ namespace Model {
         return _program;
     }
 
+    bool AbstractModel::updateNeeded() {
+        return _updateNeeded;
+    }
+
+    void AbstractModel::queueForUpdate() {
+        _updateNeeded = true;
+    }
+
+    void AbstractModel::modelUpdated() {
+        _updateNeeded = false;
+    }
+
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
-        setChildrenVariables();
-        
         /* model can contain no vertices or | and no program
         so it can serve as a "root" model, containing some
         number of children: models with vertices and program.

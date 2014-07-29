@@ -19,10 +19,10 @@ namespace Model {
 
     void AbstractModelWithPoints::addPoint(const QString & name, PointsInfo::ModelPoint * point) {
         _modelPoints.insert(name, point);
-        
     }
     
-    void AbstractModelWithPoints::setChildrenVariables() {
+    void AbstractModelWithPoints::processChildren() {
+        qDebug() << _points->updateNeeded();
         _points->fillBuffers(_modelPoints);
     }
     
@@ -46,9 +46,7 @@ namespace Model {
                              );
                 
                 modelPoint->position.setZ(posZ / 65536.0f);
-                
-                //facePoint->position = viewPortCoords;
-                
+
                 if (viewPort.unproject(modelPoint->position, unprojectdPoint)) {
                     modelPoint->position = QVector3D(unprojectdPoint);
                     modelPoint->positionCalculated();
@@ -57,6 +55,10 @@ namespace Model {
                     qDebug() << modelPoint->position;
                 }
             }
+        }
+
+        if (updateNeeded) {
+            _points->queueForUpdate();
         }
         
         return updateNeeded;

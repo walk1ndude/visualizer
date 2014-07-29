@@ -89,6 +89,13 @@ namespace Scene {
 
             itM.toFront();
         }
+
+        /* some children, like pointsmodel can change its values after rendering -
+        * for example depth buffer check affects values of points (z-coordinate)
+        */
+        while (itM.hasNext()) {
+            itM.next()->processChildren();
+        }
     }
 
     void ModelScene::cleanUp() {
