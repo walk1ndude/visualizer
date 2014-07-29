@@ -3,7 +3,7 @@
 
 #include <QtCore/QSize>
 
-#include <Info/ModelInfo.h>
+#include "Model/AbstractModelWithPoints.h"
 
 namespace Scene {
     class AbstractScene : public QObject {

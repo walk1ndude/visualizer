@@ -148,8 +148,8 @@ namespace Render {
 
         _surface->deleteLater();
 
-        exit();
         moveToThread(QGuiApplication::instance()->thread());
+        exit();
     }
 
     void AbstractRenderer::cleanUp() {

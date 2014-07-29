@@ -45,15 +45,21 @@ namespace Scene {
     }
 
     void ModelScene::setXRange(const ModelInfo::ViewAxisRange & xRange) {
-        _selectedModel->setViewAxisRange(xRange, ModelInfo::XAXIS);
+        if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+            model->setViewAxisRange(xRange, ModelInfo::XAXIS);
+        }
     }
 
     void ModelScene::setYRange(const ModelInfo::ViewAxisRange & yRange) {
-        _selectedModel->setViewAxisRange(yRange, ModelInfo::YAXIS);
+        if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+            model->setViewAxisRange(yRange, ModelInfo::YAXIS);
+        }
     }
 
     void ModelScene::setZRange(const ModelInfo::ViewAxisRange & zRange) {
-        _selectedModel->setViewAxisRange(zRange, ModelInfo::ZAXIS);
+        if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+            model->setViewAxisRange(zRange, ModelInfo::ZAXIS);
+        }
     }
 
     void ModelScene::renderScene(const QSize & surfaceSize) {
@@ -187,15 +193,11 @@ namespace Scene {
     }
 
     void ModelScene::addPoint(const PointsInfo::Point & point) {
-        //QVector4D rayDirection = _viewPorts.calculateRayDir(point.position);
-
-        //qDebug() << rayDirection;
-
         if (!_selectedModel) {
             return;
+        } else if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+            model->addPoint(point.name, new PointsInfo::ModelPoint(QVector3D(point.position), point.color, 0));
         }
-
-        //selectedModel->addPoint(point.name, PointsInfo::FacePoint(QVector4D(point.position.x(), point.position.y(), 1.0f, 1.0f), point.color), point.name);
     }
 
     void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {

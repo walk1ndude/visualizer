@@ -67,8 +67,8 @@ namespace Model {
                     ShaderInfo::GeometryShaderFiles() << ShaderInfo::GeometryShaderFile(":shaders/pointsGeometry.glsl")
                 ));
 
-        void init(const PointsInfo::FacePoints & facePoints);
-        void update(const PointsInfo::FacePoints & facePoints);
+        void init(const PointsInfo::ModelPoints & modelPoints);
+        void update(const PointsInfo::ModelPoints & modelPoints);
 
         void glStatesEnable();
         void glStatesDisable();
@@ -77,6 +77,9 @@ namespace Model {
 
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort);
+        
+    protected:
+        virtual void drawModelWithoutIndices();
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;

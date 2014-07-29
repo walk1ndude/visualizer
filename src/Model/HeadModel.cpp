@@ -99,42 +99,6 @@ namespace Model {
         program->setUniformValue(_shaderScale, _scaleM);
         program->setUniformValue(_shaderStep, _step);
 
-        _facePointsProgram.setUniformValue(program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
-    }
-
-    bool HeadModel::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
-        QVector4D unprojectdPoint;
-
-        bool updateNeeded = false;
-
-        foreach (PointsInfo::FacePoint * facePoint, _facePoints) {
-            if (viewPort.pointInViewPort(facePoint->position) && !facePoint->isPositionCalculated()) {
-                GLushort posZ;
-
-                facePoint->position.setX(std::round(facePoint->position.x()));
-                facePoint->position.setY(std::round(facePoint->position.y()));
-
-                // usage of GL_UNSIGNED_SHORT explaned here http://www.opengl.org/wiki/Common_Mistakes#Depth_Buffer_Precision
-                glReadPixels(
-                            (int) facePoint->position.x(),
-                            (int) facePoint->position.y(),
-                            1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ
-                            );
-
-                facePoint->position.setZ(posZ / 65536.0f);
-
-                //facePoint->position = viewPortCoords;
-
-                if (viewPort.unproject(facePoint->position, unprojectdPoint)) {
-                    facePoint->position = unprojectdPoint;
-                    facePoint->positionCalculated();
-
-                    updateNeeded = true;
-                    qDebug() << facePoint->position;
-                }
-            }
-        }
-
-        return updateNeeded;
+        //_facePointsProgram.setUniformValue(program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
     }
 }

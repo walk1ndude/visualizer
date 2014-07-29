@@ -22,25 +22,14 @@ namespace Model {
     public:
         virtual ~AbstractModel();
 
-        virtual void initShaderVariables(QOpenGLShaderProgram * program) {
-            Q_UNUSED(program)
-        }
-
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) {
-            Q_UNUSED(program)
-            Q_UNUSED(viewPort)
-        }
-
-        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
-            Q_UNUSED(program)
-        }
+        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
+        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void glStatesEnable() { }
         virtual void glStatesDisable() { }
 
         virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
-
-        virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
 
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
@@ -64,14 +53,6 @@ namespace Model {
                 emit shaderProgramSetVariableErrorHappened();
             }
         }
-
-        virtual void setViewRange(const ModelInfo::ViewAxisRange & xRange,
-                                  const ModelInfo::ViewAxisRange & yRange,
-                                  const ModelInfo::ViewAxisRange & zRange,
-                                  const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-
-        virtual void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
-                                      const ModelInfo::ViewAxis viewAxis = ModelInfo::XAXIS) final;
 
         virtual uint modelID() final;
 
@@ -123,10 +104,15 @@ namespace Model {
         }
 
         virtual QMatrix4x4 model() final;
+        virtual void setParent(AbstractModel * parent) final;
 
     protected:
+        QMutex _modelMutex;
+
         explicit AbstractModel(AbstractModel * parent = nullptr,
                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
+        
+        virtual void setChildrenVariables() { }
 
         virtual int stride() final;
 
@@ -139,6 +125,10 @@ namespace Model {
         virtual void drawModelWithIndices();
         virtual void drawModelWithoutIndices();
 
+        virtual void setShaderVariables();
+
+        virtual QOpenGLShaderProgram * program() final;
+
     private:
         QOpenGLBuffer _vboVert;
         QOpenGLBuffer _vboInd;
@@ -147,14 +137,10 @@ namespace Model {
 
         QOpenGLShaderProgram * _program;
 
-        ModelInfo::ViewRange * _viewRange;
-
         QMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> _materials;
         QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;
 
         QMap<QOpenGLTexture *, TextureInfo::TextureProgram *> _textures;
-
-        QMutex _modelMutex;
 
         uint _modelID;
 
@@ -173,7 +159,6 @@ namespace Model {
         QVector3D _orientation;
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
-        void setShaderVariables();
 
         void bindTextures();
         void releaseTextures();

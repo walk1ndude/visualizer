@@ -50,23 +50,6 @@ namespace Model {
         addToMap<QOpenGLTexture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
     }
 
-    void AbstractModel::setViewRange(const ModelInfo::ViewAxisRange & xRange,
-                                     const ModelInfo::ViewAxisRange & yRange,
-                                     const ModelInfo::ViewAxisRange & zRange,
-                                     const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-        QMutexLocker locker(&_modelMutex);
-
-        if (_program) {
-            _viewRange = new ModelInfo::ViewRange(correctedViewwAxisRange(xRange),
-                                                  correctedViewwAxisRange(yRange),
-                                                  correctedViewwAxisRange(zRange),
-                                                  _program, shaderVariables);
-        }
-        else {
-            emit shaderProgramSetVariableErrorHappened();
-        }
-    }
-
     int AbstractModel::stride() {
         return _stride;
     }
@@ -82,6 +65,10 @@ namespace Model {
     AbstractModel * AbstractModel::parent() {
         return _parent;
     }
+    
+    void AbstractModel::setParent(AbstractModel * parent) {
+        _parent = parent;
+    }
 
     void AbstractModel::addChild(AbstractModel * child) {
         _children.append(child);
@@ -96,10 +83,6 @@ namespace Model {
         return false;
     }
 
-    ModelInfo::ViewAxisRange AbstractModel::correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) {
-        return viewAxisRange;
-    }
-
     void AbstractModel::rotate(const QVector3D & rotation) {
         QVector3D rot = _orientation - rotation;
 
@@ -109,11 +92,6 @@ namespace Model {
         );
 
         _orientation = rotation;
-    }
-
-    void AbstractModel::setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
-                                         const ModelInfo::ViewAxis viewAxis) {
-        _viewRange->setViewAxisRange(correctedViewwAxisRange(viewAxisRange), viewAxis);
     }
 
     bool AbstractModel::bindShaderProgram() {
@@ -150,16 +128,22 @@ namespace Model {
         return _modelID;
     }
 
+    QOpenGLShaderProgram * AbstractModel::program() {
+        return _program;
+    }
+
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
+        setChildrenVariables();
+        
         if (_program) {
             bindShaderProgram();
-            
-            glStatesEnable();
             
             setShaderVariables(_program, viewPort);
             setShaderVariables();
             
             bindTextures();
+            
+            glStatesEnable();
             
             _vao.bind();
             
@@ -205,8 +189,6 @@ namespace Model {
             itL.next();
             itL.value()->setUniformValue(_program, itL.key());
         }
-
-        _viewRange->setUniformValue(_program);
     }
 
     bool AbstractModel::initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles) {

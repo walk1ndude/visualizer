@@ -21,9 +21,9 @@ namespace PointsInfo {
         }
     };
 
-    class FacePoint {
+    class ModelPoint {
     public:
-        QVector4D position;
+        QVector3D position;
         QColor color;
         uint polygonId;
 
@@ -35,9 +35,9 @@ namespace PointsInfo {
             _positionCalculated = true;
         }
 
-        FacePoint(const QVector4D & position,
-                  const QColor & color,
-                  const uint & polygonId = 0) {
+        ModelPoint(const QVector3D & position,
+                   const QColor & color,
+                   const uint & polygonId = 0) {
             this->position = position;
             this->color = color;
             this->polygonId = polygonId;
@@ -49,8 +49,8 @@ namespace PointsInfo {
     };
 
 
-    class FacePoints : public QHash<QString, FacePoint *> { };
-
+    class ModelPoints : public QHash<QString, ModelPoint *> { };
+/*
     class FacePointsProgram {
     private:
         QHash<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> _facePoints;
@@ -86,7 +86,7 @@ namespace PointsInfo {
                 itFPShader.toFront();
             }
        }
-    };
+    };*/
 }
 
 

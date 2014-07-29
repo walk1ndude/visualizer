@@ -1,8 +1,10 @@
 #version 410
-layout(location = 0) in highp vec4 oColor;
+in fData {
+    highp vec3 color;
+} frag;
 
-out highp outColor
+out highp vec4 outColor;
 
 void main(void) {
-    outColor = oColor;
+    outColor = vec4(frag.color, 1.0f);
 }

@@ -8,11 +8,11 @@ uniform highp mat4 mvp;
 out vData {
     highp vec3 color;
     highp float polygon;
-} vertex;
+} oVertex;
 
 void main(void) {
     gl_Position = mvp * vertex;
 
-    vertex.color = color;
-    vertex.polygon = polygon;
+    oVertex.color = color;
+    oVertex.polygon = polygon;
 }

@@ -79,8 +79,6 @@ namespace Scene {
 
         ViewPort::ViewPortRect _screenSaveRect;
 
-        PointsInfo::FacePoints _facePoints;
-
         void initializeViewPorts(const QSize & surfaceSize);
 
     public slots:

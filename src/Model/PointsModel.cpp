@@ -7,22 +7,22 @@ namespace Model {
         AbstractModel(parent, shaderFiles) {
     }
 
-    void PointsModel::init(const PointsInfo::FacePoints & facePoints) {
-        update(facePoints);
+    void PointsModel::init(const PointsInfo::ModelPoints & modelPoints) {
+        update(modelPoints);
     }
 
-    void PointsModel::update(const PointsInfo::FacePoints & facePoints) {
+    void PointsModel::update(const PointsInfo::ModelPoints & modelPoints) {
         ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
 
-        foreach (const PointsInfo::FacePoint * facePoint, facePoints) {
+        foreach (const PointsInfo::ModelPoint * modelPoint, modelPoints) {
             vertices->push_back(ModelInfo::VertexVCP(
-                                    facePoint->position.x(),
-                                    facePoint->position.y(),
-                                    facePoint->position.z(),
-                                    facePoint->color.redF(),
-                                    facePoint->color.greenF(),
-                                    facePoint->color.blueF(),
-                                    facePoint->polygonId
+                                    modelPoint->position.x(),
+                                    modelPoint->position.y(),
+                                    modelPoint->position.z(),
+                                    modelPoint->color.redF(),
+                                    modelPoint->color.greenF(),
+                                    modelPoint->color.blueF(),
+                                    modelPoint->polygonId
                                     ));
         }
 
@@ -39,6 +39,10 @@ namespace Model {
 
     void PointsModel::glStatesDisable() {
         glDisable(GL_DEPTH_TEST);
+    }
+    
+    void PointsModel::drawModelWithoutIndices() {
+        glDrawArrays(GL_POINTS, 0, vertexCount());
     }
 
     void PointsModel::initShaderVariables(QOpenGLShaderProgram * program) {

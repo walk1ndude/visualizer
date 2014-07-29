@@ -76,8 +76,6 @@ namespace Model {
 
         void scale(const QVector3D & scale);
 
-        bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
-
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderTexHead;
@@ -89,9 +87,8 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderScale;
         ShaderInfo::ShaderVariable _shaderStep;
 
-        PointsInfo::FacePoints _facePoints;
-        PointsInfo::FacePointsProgram _facePointsProgram;
-
+        PointsInfo::ModelPoints _facePoints;
+        
         QMatrix4x4 _scaleM;
 
         QVector3D _step;
