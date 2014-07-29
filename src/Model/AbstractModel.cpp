@@ -135,7 +135,12 @@ namespace Model {
     void AbstractModel::drawModel(ViewPort::ViewPort & viewPort) {
         setChildrenVariables();
         
-        if (_program) {
+        /* model can contain no vertices or | and no program
+        so it can serve as a "root" model, containing some
+        number of children: models with vertices and program.
+        So children can share some common properties
+        */
+        if (_program && _vertexCount) {
             bindShaderProgram();
             
             setShaderVariables(_program, viewPort);

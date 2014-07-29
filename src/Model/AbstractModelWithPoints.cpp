@@ -23,7 +23,7 @@ namespace Model {
     }
     
     void AbstractModelWithPoints::setChildrenVariables() {
-        _points->init(_modelPoints);
+        _points->fillBuffers(_modelPoints);
     }
     
     bool AbstractModelWithPoints::checkDepthBuffer(ViewPort::ViewPort & viewPort) {

@@ -48,21 +48,18 @@ namespace Model {
         virtual uint modelID() final;
 
         template <class BuffersT>
-        void initModel(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
-            if (!initShaderProgram(_shaderFiles)) {
-                emit shaderProgramInitErrorHappened();
-                return;
+        void fillBuffers(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
+            if (!_program) {
+                if (!initShaderProgram(_shaderFiles)) {
+                    emit shaderProgramInitErrorHappened();
+                    return;
+                }
+
+                _vao.create();
+                _vboVert.create();
+                _vboInd.create();
             }
 
-            _vao.create();
-            _vboVert.create();
-            _vboInd.create();
-
-            updateModel(buffers, usagePattern);
-        }
-
-        template <class BuffersT>
-        void updateModel(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::DynamicDraw) {
             bindShaderProgram();
 
             _vao.bind();
@@ -70,23 +67,28 @@ namespace Model {
             _vboVert.setUsagePattern(usagePattern);
 
             _vertexCount = buffers.vertices.data()->size();
-            _stride = sizeof(buffers.vertices->at(0));
 
-            _vboVert.bind();
-            _vboVert.allocate(buffers.vertices.data()->data(), _vertexCount * _stride);
+            if (_vertexCount) {
+                _stride = sizeof(buffers.vertices->at(0));
 
-            if (buffers.indices.data()) {
-                _vboInd.setUsagePattern(usagePattern);
+                _vboVert.bind();
+                _vboVert.allocate(buffers.vertices.data()->data(), _vertexCount * _stride);
 
-                _indexCount = buffers.indices.data()->size();
+                if (buffers.indices.data()) {
+                    _vboInd.setUsagePattern(usagePattern);
 
-                _vboInd.bind();
-                _vboInd.allocate(buffers.indices.data()->data(), _indexCount * sizeof(GLuint));
+                    _indexCount = buffers.indices.data()->size();
 
+                    _vboInd.bind();
+                    _vboInd.allocate(buffers.indices.data()->data(), _indexCount * sizeof(GLuint));
+
+                    buffers.indices.clear();
+                }
+
+                bindShaderVariablesToBuffers(_program);
+            } else {
                 buffers.indices.clear();
             }
-
-            bindShaderVariablesToBuffers(_program);
 
             _vao.release();
             buffers.vertices.clear();

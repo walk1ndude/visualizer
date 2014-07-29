@@ -67,8 +67,7 @@ namespace Model {
                     ShaderInfo::GeometryShaderFiles() << ShaderInfo::GeometryShaderFile(":shaders/pointsGeometry.glsl")
                 ));
 
-        void init(const PointsInfo::ModelPoints & modelPoints);
-        void update(const PointsInfo::ModelPoints & modelPoints);
+        void fillBuffers(const PointsInfo::ModelPoints & modelPoints);
 
         void glStatesEnable();
         void glStatesDisable();

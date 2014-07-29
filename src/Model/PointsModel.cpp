@@ -7,11 +7,7 @@ namespace Model {
         AbstractModel(parent, shaderFiles) {
     }
 
-    void PointsModel::init(const PointsInfo::ModelPoints & modelPoints) {
-        update(modelPoints);
-    }
-
-    void PointsModel::update(const PointsInfo::ModelPoints & modelPoints) {
+    void PointsModel::fillBuffers(const PointsInfo::ModelPoints & modelPoints) {
         ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
 
         foreach (const PointsInfo::ModelPoint * modelPoint, modelPoints) {
@@ -29,7 +25,7 @@ namespace Model {
         ModelInfo::BuffersVCP buffers;
         buffers.vertices = ModelInfo::VerticesVCPPointer(vertices);
 
-        initModel<ModelInfo::BuffersVCP>(buffers, QOpenGLBuffer::DynamicDraw);
+        AbstractModel::fillBuffers<ModelInfo::BuffersVCP>(buffers, QOpenGLBuffer::DynamicDraw);
     }
 
     void PointsModel::glStatesEnable() {
@@ -42,7 +38,9 @@ namespace Model {
     }
     
     void PointsModel::drawModelWithoutIndices() {
+        qDebug() << glGetError() << "before" << vertexCount();
         glDrawArrays(GL_POINTS, 0, vertexCount());
+        qDebug() << glGetError();
     }
 
     void PointsModel::initShaderVariables(QOpenGLShaderProgram * program) {

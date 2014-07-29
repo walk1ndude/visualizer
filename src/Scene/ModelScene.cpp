@@ -209,7 +209,7 @@ namespace Scene {
         // select newly created model
         _selectedModel = model;
 
-        model->initModel<ModelInfo::BuffersVN>(buffers);
+        model->fillBuffers<ModelInfo::BuffersVN>(buffers);
 
         model->addLightSource(_lightSources.at(0),
                               ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<

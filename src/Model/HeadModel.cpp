@@ -46,7 +46,7 @@ namespace Model {
         buffers.vertices = ModelInfo::VerticesVTPointer(vertices);
         buffers.indices = ModelInfo::IndicesPointer(indices);
 
-        initModel<ModelInfo::BuffersVT>(buffers);
+        fillBuffers<ModelInfo::BuffersVT>(buffers);
     }
 
     void HeadModel::scale(const QVector3D & scale) {
