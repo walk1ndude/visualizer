@@ -103,9 +103,6 @@ namespace Model {
 
         virtual void queueForUpdate() final;
 
-        virtual bool updateNeeded() final;
-        virtual void modelUpdated() final;
-
     protected:
         QMutex _modelMutex;
 
@@ -135,6 +132,9 @@ namespace Model {
         virtual void setShaderVariables();
 
         virtual QOpenGLShaderProgram * program() final;
+
+        virtual bool updateNeeded() final;
+        virtual void modelUpdated() final;
 
     private:
         QOpenGLBuffer _vboVert;

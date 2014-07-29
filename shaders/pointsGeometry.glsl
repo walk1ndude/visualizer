@@ -15,8 +15,7 @@ void main(void) {
     for (int i = 0; i < gl_in.length(); ++ i) {
         vec4 vertex = gl_in[i].gl_Position;
         for (int v = 0; v < 3; ++ v) {
-            gl_Position = gl_in[i].gl_Position
-            + vec4(vertex.x + 0.5f * (v % 2), vertex.y + 0.5f * (v % 2), vertex.z, vertex.w);
+            gl_Position = gl_in[i].gl_Position + vec4(vertex.x + 0.5f * (v % 2), vertex.y + 0.5f * (v % 2), vertex.z, vertex.w);
             
             frag.color = vertices[i].color;
             EmitVertex();

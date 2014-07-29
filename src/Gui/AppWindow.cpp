@@ -64,7 +64,7 @@ namespace Gui {
             });
 
             QObject::connect(_appWindow, &QQuickWindow::visibilityChanged, [=](const QWindow::Visibility & visibility) {
-                if (visibility != (QWindow::Minimized || QWindow::Hidden)) {
+                if (visibility != QWindow::Minimized || visibility != QWindow::Hidden) {
                     modelViewer->update();
                 }
             });

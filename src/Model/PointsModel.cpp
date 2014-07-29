@@ -42,7 +42,7 @@ namespace Model {
     }
     
     void PointsModel::drawModelWithoutIndices() {
-        qDebug() << glGetError() << "before" << vertexCount() << program()->isLinked();
+        qDebug() << glGetError() << "before" << vertexCount();
         glDrawArrays(GL_POINTS, 0, vertexCount());
         qDebug() << glGetError();
     }
@@ -52,7 +52,7 @@ namespace Model {
         _shaderColor = program->attributeLocation("color");
         _shaderPolygon = program->attributeLocation("polygon");
 
-        _shaderMVP = program->attributeLocation("mvp");
+        _shaderMVP = program->uniformLocation("mvp");
     }
 
     void PointsModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {

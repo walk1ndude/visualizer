@@ -22,7 +22,6 @@ namespace Model {
     }
     
     void AbstractModelWithPoints::processChildren() {
-        qDebug() << _points->updateNeeded();
         _points->fillBuffers(_modelPoints);
     }
     
