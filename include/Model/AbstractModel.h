@@ -99,9 +99,9 @@ namespace Model {
         virtual QMatrix4x4 model() final;
         virtual void setParent(AbstractModel * parent) final;
 
-        virtual void processChildren() { }
-
         virtual void queueForUpdate() final;
+
+        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
 
     protected:
         QMutex _modelMutex;
@@ -114,9 +114,7 @@ namespace Model {
         virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void glStatesEnable() { }
-        virtual void glStatesDisable() { }
-
-        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);  
+        virtual void glStatesDisable() { } 
 
         virtual int stride() final;
 
@@ -135,6 +133,8 @@ namespace Model {
 
         virtual bool updateNeeded() final;
         virtual void modelUpdated() final;
+
+        virtual void processChildren() { }
 
     private:
         QOpenGLBuffer _vboVert;
@@ -175,7 +175,6 @@ namespace Model {
     signals:
         void shaderProgramInitErrorHappened();
         void shaderProgramSetVariableErrorHappened();
-        void redraw();
 
     public slots:
         virtual void deleteModel() final;

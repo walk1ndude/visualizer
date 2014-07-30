@@ -4,6 +4,8 @@
 #include "Model/HeadModel.h"
 #include "Model/PointsModel.h"
 
+#include <QtCore/QDateTime>
+
 namespace Scene {
     ModelScene::ModelScene() :
         AbstractScene() {
@@ -71,6 +73,8 @@ namespace Scene {
         ViewPort::ViewPortsIterator itV (_viewPorts);
         QListIterator<Model::AbstractModel *> itM (_models);
 
+        qint64 startTime = QDateTime::currentMSecsSinceEpoch();
+
         // for each viewport
         while (itV.hasNext()) {
             viewPort = itV.next();
@@ -93,8 +97,22 @@ namespace Scene {
         /* some children, like pointsmodel can change its values after rendering -
         * for example depth buffer check affects values of points (z-coordinate)
         */
+        bool needToRedraw = false;
+
         while (itM.hasNext()) {
-            itM.next()->processChildren();
+            itV.toFront();
+
+            Model::AbstractModel * model = itM.next();
+
+            while (itV.hasNext()) {
+                needToRedraw &= model->checkDepthBuffer(itV.next());
+            }
+        }
+
+        qDebug() << "rendering scene, time overall: " << QDateTime::currentMSecsSinceEpoch() - startTime << " ms";
+
+        if (needToRedraw) {
+            emit redraw();
         }
     }
 
@@ -231,8 +249,6 @@ namespace Scene {
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
 
-        QObject::connect(model, &Model::StlModel::redraw, this, &Scene::ModelScene::redraw);
-
         _models.append(model);
     }
 
@@ -265,8 +281,6 @@ namespace Scene {
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
-
-        QObject::connect(model, &Model::HeadModel::redraw, this, &Scene::ModelScene::redraw);
 
         _models.append(model);
     }

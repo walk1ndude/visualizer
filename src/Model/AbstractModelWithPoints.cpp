@@ -59,6 +59,8 @@ namespace Model {
         if (updateNeeded) {
             _points->queueForUpdate();
         }
+
+        processChildren();
         
         return updateNeeded;
     }
