@@ -3,8 +3,8 @@ in fData {
     highp vec3 color;
 } frag;
 
-out highp vec4 outColor;
+out highp vec4 fragColor;
 
 void main(void) {
-    outColor = vec4(frag.color, 1.0f);
+    fragColor = vec4(frag.color, 1.0f);
 }

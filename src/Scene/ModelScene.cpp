@@ -231,6 +231,8 @@ namespace Scene {
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
 
+        QObject::connect(model, &Model::StlModel::redraw, this, &Scene::ModelScene::redraw);
+
         _models.append(model);
     }
 
