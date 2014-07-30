@@ -4,13 +4,12 @@ layout(location = 1) in highp vec3 color;
 layout(location = 2) in highp float polygon;
 
 out vData {
-    highp vec3 color;
-    highp float polygon;
+    highp vec4 vColor;
+    //highp float vPolygon;
 } oVertex;
 
 void main(void) {
     gl_Position = vec4(vertex, 1.0f);
-
-    oVertex.color = color;
-    oVertex.polygon = polygon;
+    oVertex.vColor = vec4(color, 1.0f);
+    //oVertex.vPolygon = polygon;
 }
