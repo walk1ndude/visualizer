@@ -35,12 +35,12 @@ namespace ShaderInfo {
                     const FragmentShaderFiles & fragmentShaderFiles,
                     const GeometryShaderFiles & geometryShaderFiles = QList<GeometryShaderFile>(),
                     const TesselationControlShaderFiles & tesselationControlShaderFiles = QList<TesselationControlShaderFile>(),
-                    const TesselationEvaluationShaderFiles & tesselationEvaluationShaderFiles = QList<TesselationEvaluationShaderFile>()) {
-            this->vertexShaderFiles = vertexShaderFiles;
-            this->fragmentShaderFiles = fragmentShaderFiles;
-            this->geometryShaderFiles = geometryShaderFiles;
-            this->tesselationControlShaderFiles = tesselationControlShaderFiles;
-            this->tesselationEvaluationShaderFiles = tesselationEvaluationShaderFiles;
+                    const TesselationEvaluationShaderFiles & tesselationEvaluationShaderFiles = QList<TesselationEvaluationShaderFile>()) :
+            vertexShaderFiles(vertexShaderFiles),
+            fragmentShaderFiles(fragmentShaderFiles),
+            geometryShaderFiles(geometryShaderFiles),
+            tesselationControlShaderFiles(tesselationControlShaderFiles),
+            tesselationEvaluationShaderFiles(tesselationEvaluationShaderFiles) {
         }
     };
 }

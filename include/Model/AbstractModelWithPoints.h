@@ -16,10 +16,6 @@ namespace ModelInfo {
     };
 
     class ViewRange {
-    private:
-        ShaderInfo::ShaderVariable shaderXRange;
-        ShaderInfo::ShaderVariable shaderYRange;
-        ShaderInfo::ShaderVariable shaderZRange;
     public:
         ViewAxisRange xRange;
         ViewAxisRange yRange;
@@ -29,14 +25,11 @@ namespace ModelInfo {
                   const ViewAxisRange & yRange,
                   const ViewAxisRange & zRange,
                   QOpenGLShaderProgram * program,
-                  const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-            this->xRange = xRange;
-            this->yRange = yRange;
-            this->zRange = zRange;
-
-            shaderXRange = program->uniformLocation(shaderVariables.at(0));
-            shaderYRange = program->uniformLocation(shaderVariables.at(1));
-            shaderZRange = program->uniformLocation(shaderVariables.at(2));
+                  const ShaderInfo::ShaderVariablesNames & shaderVariables) :
+            xRange(xRange), yRange(yRange), zRange(zRange),
+            shaderXRange(program->uniformLocation(shaderVariables.at(0))),
+            shaderYRange(program->uniformLocation(shaderVariables.at(1))),
+            shaderZRange(program->uniformLocation(shaderVariables.at(2))) {
         }
 
         void setUniformValue(QOpenGLShaderProgram * program) {
@@ -59,6 +52,11 @@ namespace ModelInfo {
                 break;
             }
         }
+
+    private:
+        ShaderInfo::ShaderVariable shaderXRange;
+        ShaderInfo::ShaderVariable shaderYRange;
+        ShaderInfo::ShaderVariable shaderZRange;
     };
 }
 

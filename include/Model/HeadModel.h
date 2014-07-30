@@ -23,13 +23,9 @@ namespace ModelInfo {
                 const GLfloat tx,
                 const GLfloat ty,
                 const GLfloat tz
-                ) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
-            this->tx = tx;
-            this->ty = ty;
-            this->tz = tz;
+                ) :
+            x(x), y(y), z(z),
+            tx(tx), ty(ty), tz(tz) {
         }
     };
 

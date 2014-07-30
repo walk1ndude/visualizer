@@ -14,10 +14,10 @@ namespace PointsInfo {
 
         Point(const QPointF & position,
               const QString & name,
-              const QColor & color) {
-            this->position = position;
-            this->name = name;
-            this->color = color;
+              const QColor & color) :
+            position(position),
+            name(name),
+            color(color) {
         }
     };
 
@@ -37,12 +37,12 @@ namespace PointsInfo {
 
         ModelPoint(const QVector3D & position,
                    const QColor & color,
-                   const uint & polygonId = 0) {
-            this->position = position;
-            this->color = color;
-            this->polygonId = polygonId;
+                   const uint & polygonId = 0) :
+            position(position),
+            color(color),
+            polygonId(polygonId),
+            _positionCalculated(false) {
 
-            _positionCalculated = false;
         }
     private:
         bool _positionCalculated;

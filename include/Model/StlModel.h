@@ -21,13 +21,9 @@ namespace ModelInfo {
                 const GLfloat nx,
                 const GLfloat ny,
                 const GLfloat nz
-                ) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
-            this->nx = nx;
-            this->ny = ny;
-            this->nz = nz;
+                )  :
+            x(x), y(y), z(z),
+            nx(nx), ny(ny), nz(nz) {
         }
     };
 

@@ -20,12 +20,11 @@ namespace LightInfo {
 
         LightSource(const Position & position,
                     const Color & color,
-                    const AmbientIntensity & ambientIntensity) {
-            this->position = position;
-            this->color = color;
-            this->ambientIntensity = ambientIntensity;
-
-            _id = lightSourceNumber ++;
+                    const AmbientIntensity & ambientIntensity) :
+            position(position),
+            color(color),
+            ambientIntensity(ambientIntensity),
+            _id(lightSourceNumber ++) {
         }
 
         uint id() { return _id; }
@@ -34,17 +33,12 @@ namespace LightInfo {
     };
 
     class LightProgram {
-    private:
-        ShaderInfo::ShaderVariable shaderPosition;
-        ShaderInfo::ShaderVariable shaderColor;
-        ShaderInfo::ShaderVariable shaderAmbientIntensity;
-
     public:
         LightProgram(QOpenGLShaderProgram * program,
-                     const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-            shaderPosition = program->uniformLocation(shaderVariables.at(0));
-            shaderColor = program->uniformLocation(shaderVariables.at(1));
-            shaderAmbientIntensity = program->uniformLocation(shaderVariables.at(2));
+                     const ShaderInfo::ShaderVariablesNames & shaderVariables) :
+            shaderPosition(program->uniformLocation(shaderVariables.at(0))),
+            shaderColor(program->uniformLocation(shaderVariables.at(1))),
+            shaderAmbientIntensity(program->uniformLocation(shaderVariables.at(2))) {
         }
 
         void setUniformValue(QOpenGLShaderProgram * program,
@@ -53,6 +47,11 @@ namespace LightInfo {
             program->setUniformValue(shaderColor, lightSource->color);
             program->setUniformValue(shaderAmbientIntensity, lightSource->ambientIntensity);
         }
+
+    private:
+        ShaderInfo::ShaderVariable shaderPosition;
+        ShaderInfo::ShaderVariable shaderColor;
+        ShaderInfo::ShaderVariable shaderAmbientIntensity;
     };
 }
 

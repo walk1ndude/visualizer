@@ -15,9 +15,9 @@ namespace SliceInfo {
         Slices() { }
 
         Slices(TextureInfo::Texture texture,
-               const HuRange & huRange) {
-            this->texture = texture;
-            this->huRange = huRange;
+               const HuRange & huRange) :
+            texture(texture),
+            huRange(huRange) {
         }
     };
 }

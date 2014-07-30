@@ -22,13 +22,12 @@ namespace MaterialInfo {
         Material(const Emissive & emissive,
                  const Diffuse & diffuse,
                  const Specular & specular,
-                 const Shininess & shininess) {
-            this->emissive = emissive;
-            this->diffuse = diffuse;
-            this->specular = specular;
-            this->shininess = shininess;
-
-            _id = materialNumber ++;
+                 const Shininess & shininess) :
+            emissive(emissive),
+            diffuse(diffuse),
+            specular(specular),
+            shininess(shininess),
+            _id(materialNumber ++) {
         }
 
         uint id() { return _id; }
@@ -37,19 +36,13 @@ namespace MaterialInfo {
     };
 
     class MaterialProgram {
-    private:
-        ShaderInfo::ShaderVariable shaderEmissive;
-        ShaderInfo::ShaderVariable shaderDiffuse;
-        ShaderInfo::ShaderVariable shaderSpecular;
-        ShaderInfo::ShaderVariable shaderShininess;
-
     public:
         MaterialProgram(QOpenGLShaderProgram * program,
-                        const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-            shaderEmissive = program->uniformLocation(shaderVariables.at(0));
-            shaderDiffuse = program->uniformLocation(shaderVariables.at(1));
-            shaderSpecular = program->uniformLocation(shaderVariables.at(2));
-            shaderShininess = program->uniformLocation(shaderVariables.at(3));
+                        const ShaderInfo::ShaderVariablesNames & shaderVariables) :
+            shaderEmissive(program->uniformLocation(shaderVariables.at(0))),
+            shaderDiffuse(program->uniformLocation(shaderVariables.at(1))),
+            shaderSpecular(program->uniformLocation(shaderVariables.at(2))),
+            shaderShininess(program->uniformLocation(shaderVariables.at(3))) {
         }
 
         void setUniform(QOpenGLShaderProgram * program,
@@ -59,6 +52,13 @@ namespace MaterialInfo {
             program->setUniformValue(shaderSpecular, material->specular);
             program->setUniformValue(shaderShininess, material->shininess);
         }
+
+    private:
+        ShaderInfo::ShaderVariable shaderEmissive;
+        ShaderInfo::ShaderVariable shaderDiffuse;
+        ShaderInfo::ShaderVariable shaderSpecular;
+        ShaderInfo::ShaderVariable shaderShininess;
+
     };
 }
 

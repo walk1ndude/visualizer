@@ -14,10 +14,8 @@ namespace ModelInfo {
         VertexV() { }
         VertexV(GLfloat x,
                 GLfloat y,
-                GLfloat z) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
+                GLfloat z) :
+            x(x), y(y), z(z) {
         }
     };
 
@@ -36,9 +34,9 @@ namespace ModelInfo {
 
         BuffersV() { }
         BuffersV(const VerticesVPointer & vertices,
-                 const IndicesPointer & indices) {
-            this->vertices = vertices;
-            this->indices = indices;
+                 const IndicesPointer & indices) :
+            indices(indices),
+            vertices(vertices) {
         }
     };
 }
