@@ -2,6 +2,8 @@ import QtQuick 2.3
 
 import RenderTools 1.0
 
+import "../js/settings.js" as Settings
+
 Item {
     id: modelItem;
 
@@ -72,6 +74,15 @@ Item {
 
             selectedPointColor: modelItem.selectedPointColor;
             selectedPointName: modelItem.selectedPointName;
+
+            onPointCalculated: {
+                // update info about points
+                Settings.Points[point.name] = Settings.Points[point.name] || { };
+                Settings.Points[point.name]["position"] = point.position;
+
+
+                console.log(point.position);
+            }
 
             MouseArea {
                 anchors.fill: parent;

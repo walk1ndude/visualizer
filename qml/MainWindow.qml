@@ -120,9 +120,4 @@ ApplicationWindow {
         onSelectedPointNameChanged: modelItem.selectedPointName = selectedPointName;
         onSelectedPointColorChanged: modelItem.selectedPointColor = selectedPointColor;
     }
-
-    Component.onCompleted: {
-        // init sqlite db
-        Settings.init();
-    }
 }

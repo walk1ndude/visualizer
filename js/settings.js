@@ -1,3 +1,5 @@
+.pragma library
+/*
 function opendb() {
     return LocalStorage.openDatabaseSync("settingsDB", "0.1", "same as the name", 10000);
 }
@@ -67,5 +69,5 @@ WHERE id = ?;", [modelId]);
     });
     return geometry;
 }
-
+*/
 var Points = {}

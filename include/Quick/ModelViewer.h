@@ -133,6 +133,8 @@ namespace Quick {
         void slicesProcessed(SliceInfo::Slices slices);
         void modelRead(ModelInfo::BuffersVN buffers);
 
+        void pointCalculated(const QVariantMap & point);
+
     public slots:
         void drawSlices(SliceInfo::Slices slices);
         void updatedPoint(const PointsInfo::CalcalutedPoint & point);

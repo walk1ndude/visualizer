@@ -2,6 +2,7 @@ import QtQuick 2.3
 
 import "../js/pointsdictionary.js" as PointsDict
 import "../js/helpers.js" as Helpers
+import "../js/settings.js" as Settings
 
 Rectangle {
     id: individualInfo;
@@ -22,6 +23,7 @@ Rectangle {
             Component.onCompleted: {
                 function populateListElements(ptps, measures) {
                     var qmlElements = [];
+                    var points = Settings.Points;
                     for (var ptp in ptps) {
                         var pointsOfPTP = ptps[ptp];
 
@@ -29,7 +31,16 @@ Rectangle {
                             var qmlElement = {};
                             qmlElement["from"] = measures[ptp].name;
                             qmlElement["to"] = measures[pointsOfPTP[i]].name;
-                            qmlElement["measure"] = "Нет данных";
+
+                            var positionFrom = undefined;
+                            var positionTo = undefined;
+                            if (points[ptp] && points[pointsOfPTP[i]]) {
+                                positionFrom = points[ptp].position;
+                                positionTo = points[pointsOfPTP[i]].position;
+                            }
+                            // if we know position of from and to points, calc and show it
+                            qmlElement["measure"] =
+                                    (positionFrom && positionTo) ? (positionTo.minus(positionFrom).length()).toString() : "Нет данных";
 
                             qmlElements.push(qmlElement);
                         }

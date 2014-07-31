@@ -29,6 +29,8 @@ namespace PointsInfo {
         QVector3D position;
         PointName name;
 
+        CalcalutedPoint() { }
+
         CalcalutedPoint(const QVector3D & position,
                         const PointName & name) :
                     position(position),
