@@ -35,6 +35,9 @@ namespace Render {
 
         virtual void render() = 0;
 
+        virtual void connectWithScene(Scene::AbstractScene * scene);
+        virtual void disconnectWithScene(Scene::AbstractScene * scene);
+
         virtual void cleanUp() final;
 
         virtual bool updateContent() final;
@@ -73,8 +76,6 @@ namespace Render {
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void needToRedraw();
         void appearedSmthToDraw();
-        
-        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
 
     public slots:
         virtual void renderNext() final;

@@ -77,9 +77,9 @@ Item {
 
             onPointCalculated: {
                 // update info about points
-                Settings.Points[point.name] = Settings.Points[point.name] || { };
-                Settings.Points[point.name]["position"] = point.position;
-
+                Settings.Points[point.modelId] = Settings.Points[point.modelId] || { };
+                Settings.Points[point.modelId][point.name] = Settings.Points[point.modelId][point.name] || { };
+                Settings.Points[point.modelId][point.name]["position"] = point.position;
 
                 console.log(point.position);
             }

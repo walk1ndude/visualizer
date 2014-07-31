@@ -81,6 +81,11 @@ namespace Scene {
 
         void initializeViewPorts(const QSize & surfaceSize);
 
+        void selectModel(Model::AbstractModel * model);
+
+    signals:
+        void modelIDChanged(const uint & modelID);
+
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);

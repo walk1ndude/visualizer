@@ -32,11 +32,20 @@ namespace PointsInfo {
         CalcalutedPoint() { }
 
         CalcalutedPoint(const QVector3D & position,
-                        const PointName & name) :
+                        const PointName & name,
+                        const uint & modelId) :
                     position(position),
-                    name(name) {
+                    name(name),
+                    _modelId(modelId) {
             
                     }
+
+        uint modelId() const {
+            return _modelId;
+        }
+
+    private:
+        uint _modelId;
     };
 
     class ModelPoint {
@@ -45,7 +54,7 @@ namespace PointsInfo {
         QColor color;
         uint polygonId;
 
-        bool isPositionCalculated() {
+        bool isPositionCalculated() const {
             return _positionCalculated;
         }
 

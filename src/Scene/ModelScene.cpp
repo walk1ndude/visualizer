@@ -217,6 +217,11 @@ namespace Scene {
         textureInfo.mergedData.clear();
     }
 
+    void ModelScene::selectModel(Model::AbstractModel * model) {
+        _selectedModel = model;
+        emit modelIDChanged(_selectedModel->modelID());
+    }
+
     void ModelScene::addPoint(const PointsInfo::Point & point) {
         if (!_selectedModel) {
             return;
@@ -232,7 +237,7 @@ namespace Scene {
         Model::StlModel * model = new Model::StlModel(pointsInModel);
 
         // select newly created model
-        _selectedModel = model;
+        selectModel(model);
 
         model->fillBuffers<ModelInfo::BuffersVN>(buffers);
 
@@ -260,7 +265,7 @@ namespace Scene {
 
         Model::HeadModel * model = new Model::HeadModel(pointsInModel);
 
-        _selectedModel = model;
+        selectModel(model);
 
         model->init(slices.texture.size);
 

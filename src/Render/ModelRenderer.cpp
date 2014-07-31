@@ -56,6 +56,24 @@ namespace Render {
         emit needToRedraw();
     }
 
+    void ModelRenderer::connectWithScene(Scene::AbstractScene * scene) {
+        Scene::ModelScene * modelScene = dynamic_cast<Scene::ModelScene *>(scene);
+
+        QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged, Qt::DirectConnection);
+        QObject::connect(modelScene, &Scene::ModelScene::pointCalculated, this, &Render::ModelRenderer::pointCalculated, Qt::DirectConnection);
+
+        AbstractRenderer::connectWithScene(scene);
+    }
+
+    void ModelRenderer::disconnectWithScene(Scene::AbstractScene * scene) {
+        Scene::ModelScene * modelScene = dynamic_cast<Scene::ModelScene *>(scene);
+
+        QObject::disconnect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
+        QObject::disconnect(modelScene, &Scene::ModelScene::pointCalculated, this, &Render::ModelRenderer::pointCalculated);
+
+        AbstractRenderer::disconnectWithScene(scene);
+    }
+
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
         QMutexLocker locker(&_renderMutex);
 

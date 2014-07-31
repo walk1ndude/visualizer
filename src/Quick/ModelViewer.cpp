@@ -198,6 +198,7 @@ namespace Quick {
         QVariantMap pointV;
         pointV.insert("name", point.name);
         pointV.insert("position", point.position);
+        pointV.insert("modelId", point.modelId());
 
         emit pointCalculated(pointV);
     }
@@ -229,8 +230,8 @@ namespace Quick {
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::AbstractRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw);
-            QObject::connect(_modelRenderer, &Render::AbstractRenderer::pointCalculated, this, &ModelViewer::updatedPoint, Qt::DirectConnection);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::pointCalculated, this, &ModelViewer::updatedPoint, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();

@@ -81,16 +81,22 @@ namespace Render {
 
         // no more connection with previous scene
         if (_selectedScene) {
-            QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
-            QObject::disconnect(_selectedScene, &Scene::AbstractScene::pointCalculated, this, &Render::AbstractRenderer::pointCalculated);
+            disconnectWithScene(_selectedScene);
         }
 
         _selectedScene = scene;
         // calling render here is legit 'cause sender and reciever are in the same thread
-        QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
-        QObject::connect(_selectedScene, &Scene::AbstractScene::pointCalculated, this, &Render::AbstractRenderer::pointCalculated, Qt::DirectConnection);
+        connectWithScene(_selectedScene);
 
         _sceneHistory.insert(scene);
+    }
+
+    void AbstractRenderer::connectWithScene(Scene::AbstractScene * scene) {
+        QObject::connect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
+    }
+
+    void AbstractRenderer::disconnectWithScene(Scene::AbstractScene * scene) {
+        QObject::disconnect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
     }
 
     Scene::AbstractScene * AbstractRenderer::selectedScene() {

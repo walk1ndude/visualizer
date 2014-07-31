@@ -16,6 +16,8 @@ Rectangle {
         width: 2;
     }
 
+    property int modelId: -1
+
     ListView {
         model: ListModel {
             id: listModel;
@@ -23,7 +25,7 @@ Rectangle {
             Component.onCompleted: {
                 function populateListElements(ptps, measures) {
                     var qmlElements = [];
-                    var points = Settings.Points;
+                    var points = Settings.Points[modelId];
                     for (var ptp in ptps) {
                         var pointsOfPTP = ptps[ptp];
 
@@ -32,9 +34,10 @@ Rectangle {
                             qmlElement["from"] = measures[ptp].name;
                             qmlElement["to"] = measures[pointsOfPTP[i]].name;
 
+                            // if selected point has from and to points, which are measured - assign them to appropriate ps
                             var positionFrom = undefined;
                             var positionTo = undefined;
-                            if (points[ptp] && points[pointsOfPTP[i]]) {
+                            if (points && points[ptp] && points[pointsOfPTP[i]]) {
                                 positionFrom = points[ptp].position;
                                 positionTo = points[pointsOfPTP[i]].position;
                             }
