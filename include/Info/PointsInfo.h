@@ -4,21 +4,37 @@
 #include "Info/ShaderInfo.h"
 
 namespace PointsInfo {
+    using PointName = QString;
+    
     class Point {
     public:
         QPointF position;
-        QString name;
+        PointName name;
         QColor color;
-
+        
         Point() { }
-
+        
         Point(const QPointF & position,
-              const QString & name,
+              const PointName & name,
               const QColor & color) :
             position(position),
             name(name),
             color(color) {
+            
         }
+    };
+    
+    class CalcalutedPoint {
+    public:
+        QVector3D position;
+        PointName name;
+
+        CalcalutedPoint(const QVector3D & position,
+                        const PointName & name) :
+                    position(position),
+                    name(name) {
+            
+                    }
     };
 
     class ModelPoint {
@@ -49,7 +65,7 @@ namespace PointsInfo {
     };
 
 
-    class ModelPoints : public QHash<QString, ModelPoint *> { };
+    class ModelPoints : public QHash<PointName, ModelPoint *> { };
 /*
     class FacePointsProgram {
     private:

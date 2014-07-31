@@ -33,10 +33,13 @@ namespace Scene {
         virtual void setXRange(const ModelInfo::ViewAxisRange & xRange) = 0;
         virtual void setYRange(const ModelInfo::ViewAxisRange & yRange) = 0;
         virtual void setZRange(const ModelInfo::ViewAxisRange & zRange) = 0;
+        
+        virtual void addPoint(const PointsInfo::Point & point) = 0;
     private:
         bool _isInitialized;
 
     signals:
+        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
         void redraw();
     };
 }

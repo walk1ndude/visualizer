@@ -29,7 +29,7 @@ namespace Model {
         QVector4D unprojectdPoint;
         
         bool updateNeeded = false;
-        
+       
         foreach (PointsInfo::ModelPoint * modelPoint, modelPoints()) {
             if (viewPort.pointInViewPort(modelPoint->position) && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
@@ -52,6 +52,8 @@ namespace Model {
                     
                     updateNeeded = true;
                     qDebug() << modelPoint->position;
+                    
+                    emit pointCalculated(PointsInfo::CalcalutedPoint(modelPoint->position, modelPoints().key(modelPoint)));
                 }
             }
         }

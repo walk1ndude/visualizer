@@ -82,11 +82,13 @@ namespace Render {
         // no more connection with previous scene
         if (_selectedScene) {
             QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
+            QObject::disconnect(_selectedScene, &Scene::AbstractScene::pointCalculated, this, &Render::AbstractRenderer::pointCalculated);
         }
 
         _selectedScene = scene;
         // calling render here is legit 'cause sender and reciever are in the same thread
         QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
+        QObject::connect(_selectedScene, &Scene::AbstractScene::pointCalculated, this, &Render::AbstractRenderer::pointCalculated);
 
         _sceneHistory.insert(scene);
     }
@@ -150,8 +152,8 @@ namespace Render {
 
         _surface->deleteLater();
 
-        moveToThread(QGuiApplication::instance()->thread());
-        exit();
+        //moveToThread(QGuiApplication::instance()->thread());
+        //exit();
     }
 
     void AbstractRenderer::cleanUp() {

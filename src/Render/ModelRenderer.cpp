@@ -106,8 +106,8 @@ namespace Render {
     }
 
     void ModelRenderer::addPoint(const PointsInfo::Point & point) {
-        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(selectedScene())) {
-            selectModelScene->addPoint(point);
+        if (selectedScene()) {
+            selectedScene()->addPoint(point);
         }
     }
 }

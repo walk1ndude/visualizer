@@ -73,6 +73,8 @@ namespace Render {
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void needToRedraw();
         void appearedSmthToDraw();
+        
+        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
 
     public slots:
         virtual void renderNext() final;

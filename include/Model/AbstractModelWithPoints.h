@@ -100,6 +100,9 @@ namespace Model {
         PointsInfo::ModelPoints _modelPoints;
 
         ModelInfo::ViewRange * _viewRange;
+        
+    signals:
+        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
     };
 }
 

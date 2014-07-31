@@ -21,12 +21,12 @@ namespace Scene {
         explicit ModelScene();
         ~ModelScene();
 
-        void initScene(const QSize & surfaceSize);
-        void renderScene(const QSize & surfaceSize);
+        virtual void initScene(const QSize & surfaceSize);
+        virtual void renderScene(const QSize & surfaceSize);
 
         bool isEmpty();
 
-        void cleanUp();
+        virtual void cleanUp();
 
         QVector3D rotation();
 
@@ -47,17 +47,17 @@ namespace Scene {
 
         void addTexture(TextureInfo::Texture & textureInfo);
 
-        void setRotation(const QVector3D & rotation);
+        virtual void setRotation(const QVector3D & rotation);
 
         // zoom the whole scene
-        void setZoomFactor(const qreal & zoomFactor);
+        virtual void setZoomFactor(const qreal & zoomFactor);
 
         // to clip selected model
-        void setXRange(const ModelInfo::ViewAxisRange & xRange);
-        void setYRange(const ModelInfo::ViewAxisRange & yRange);
-        void setZRange(const ModelInfo::ViewAxisRange & zRange);
+        virtual void setXRange(const ModelInfo::ViewAxisRange & xRange);
+        virtual void setYRange(const ModelInfo::ViewAxisRange & yRange);
+        virtual void setZRange(const ModelInfo::ViewAxisRange & zRange);
 
-        void addPoint(const PointsInfo::Point & point);
+        virtual void addPoint(const PointsInfo::Point & point);
 
     private:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;

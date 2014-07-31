@@ -67,3 +67,5 @@ WHERE id = ?;", [modelId]);
     });
     return geometry;
 }
+
+var Points = {}
