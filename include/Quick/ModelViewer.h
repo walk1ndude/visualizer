@@ -3,7 +3,6 @@
 
 #include <QtQuick/QQuickItem>
 
-#include <QtGui/QOpenGLFunctions_4_1_Core>
 #include <QtGui/QOpenGLContext>
 #include <QtGui/QOpenGLFramebufferObject>
 #include <QtGui/QOffscreenSurface>
@@ -136,6 +135,7 @@ namespace Quick {
 
     public slots:
         void drawSlices(SliceInfo::Slices slices);
+        void updatedPoint(const PointsInfo::CalcalutedPoint & point);
     };
 }
 

@@ -191,6 +191,10 @@ namespace Quick {
     void ModelViewer::addModelScene() {
         _scenes.push_back(new Scene::ModelScene);
     }
+    
+    void ModelViewer::updatedPoint(const PointsInfo::CalcalutedPoint & point) {
+        qDebug() << point.name << point.position;
+    }
 
     QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * paintNodeData) {
         TextureNode * node = static_cast<TextureNode *>(oldNode);
@@ -219,7 +223,8 @@ namespace Quick {
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw);
+            QObject::connect(_modelRenderer, &Render::AbstractRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw);
+            QObject::connect(_modelRenderer, &Render::AbstractRenderer::pointCalculated, this, &ModelViewer::updatedPoint, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();

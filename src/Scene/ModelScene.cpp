@@ -109,7 +109,7 @@ namespace Scene {
             }
         }
 
-        qDebug() << "rendering scene, time overall: " << QDateTime::currentMSecsSinceEpoch() - startTime << " ms" << needToRedraw;
+        qDebug() << "rendering scene, time overall: " << QDateTime::currentMSecsSinceEpoch() - startTime << " ms";
 
         if (needToRedraw) {
             emit redraw();
@@ -249,7 +249,7 @@ namespace Scene {
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
-        QObject::connect(model, &Model::StlModel::pointCalculated, this, &Scene::AbstractScene::pointCalculated);
+        QObject::connect(model, &Model::StlModel::pointCalculated, this, &Scene::AbstractScene::pointCalculated, Qt::DirectConnection);
 
         _models.append(model);
     }
@@ -285,7 +285,7 @@ namespace Scene {
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
         
-        QObject::connect(model, &Model::HeadModel::pointCalculated, this, &Scene::AbstractScene::pointCalculated);
+        QObject::connect(model, &Model::HeadModel::pointCalculated, this, &Scene::AbstractScene::pointCalculated, Qt::DirectConnection);
 
         _models.append(model);
     }

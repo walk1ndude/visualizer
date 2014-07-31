@@ -88,7 +88,7 @@ namespace Render {
         _selectedScene = scene;
         // calling render here is legit 'cause sender and reciever are in the same thread
         QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
-        QObject::connect(_selectedScene, &Scene::AbstractScene::pointCalculated, this, &Render::AbstractRenderer::pointCalculated);
+        QObject::connect(_selectedScene, &Scene::AbstractScene::pointCalculated, this, &Render::AbstractRenderer::pointCalculated, Qt::DirectConnection);
 
         _sceneHistory.insert(scene);
     }
@@ -121,8 +121,6 @@ namespace Render {
 
         _fboRender->bindDefault();
         std::swap(_fboDisplay, _fboRender);
-        
-        qDebug() << "before emit";
 
         if (_takeShot) {
             QRect screenRect = _selectedScene->screenSaveRect();
@@ -152,8 +150,8 @@ namespace Render {
 
         _surface->deleteLater();
 
-        //moveToThread(QGuiApplication::instance()->thread());
-        //exit();
+        moveToThread(QGuiApplication::instance()->thread());
+        exit();
     }
 
     void AbstractRenderer::cleanUp() {

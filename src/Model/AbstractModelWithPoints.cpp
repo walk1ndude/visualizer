@@ -51,7 +51,6 @@ namespace Model {
                     modelPoint->positionCalculated();
                     
                     updateNeeded = true;
-                    qDebug() << modelPoint->position;
                     
                     emit pointCalculated(PointsInfo::CalcalutedPoint(modelPoint->position, modelPoints().key(modelPoint)));
                 }
