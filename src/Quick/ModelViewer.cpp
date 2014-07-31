@@ -203,9 +203,8 @@ namespace Quick {
     }
     
     void ModelViewer::updatedPoint(const PointsInfo::CalcalutedPoint & point) {
-        qDebug() << point.name << point.position;
-
         QVariantMap pointV;
+
         pointV.insert("name", point.name);
         pointV.insert("position", point.position);
         pointV.insert("modelID", point.modelId());

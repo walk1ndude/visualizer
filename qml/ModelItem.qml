@@ -82,8 +82,6 @@ Item {
                 Settings.Points[point.modelID] = Settings.Points[point.modelID] || { };
                 Settings.Points[point.modelID][point.name] = Settings.Points[point.modelID][point.name] || { };
                 Settings.Points[point.modelID][point.name]["position"] = point.position;
-
-                console.log(point.position);
             }
 
             MouseArea {
