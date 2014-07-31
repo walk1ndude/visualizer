@@ -208,7 +208,7 @@ namespace Quick {
         QVariantMap pointV;
         pointV.insert("name", point.name);
         pointV.insert("position", point.position);
-        pointV.insert("modelId", point.modelId());
+        pointV.insert("modelID", point.modelId());
 
         emit pointCalculated(pointV);
     }
