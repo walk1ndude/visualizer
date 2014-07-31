@@ -1,5 +1,7 @@
 #include "Model/AbstractModel.h"
 
+static int modelNumber = 0;
+
 namespace Model {
     AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
@@ -14,6 +16,8 @@ namespace Model {
         if (_parent) {
             _parent->addChild(this);
         }
+
+        _id = modelNumber ++;
     }
 
     AbstractModel::~AbstractModel() {
@@ -125,8 +129,8 @@ namespace Model {
         }
     }
 
-    uint AbstractModel::modelID() {
-        return _modelID;
+    int AbstractModel::id() {
+        return _id;
     }
 
     QOpenGLShaderProgram * AbstractModel::program() {

@@ -102,6 +102,8 @@ ApplicationWindow {
         id: sidebar;
         color: "#FFFFFF";
 
+        modelID: modelItem.modelID;
+
         width: appWindow.width - modelRow.width;
         height: appWindow.height;
 

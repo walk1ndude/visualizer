@@ -85,14 +85,14 @@ namespace Render {
         }
 
         _selectedScene = scene;
-        // calling render here is legit 'cause sender and reciever are in the same thread
         connectWithScene(_selectedScene);
 
         _sceneHistory.insert(scene);
     }
 
     void AbstractRenderer::connectWithScene(Scene::AbstractScene * scene) {
-        QObject::connect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
+        // calling render here is legit 'cause sender and reciever are in the same thread
+        QObject::connect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render, Qt::DirectConnection);
     }
 
     void AbstractRenderer::disconnectWithScene(Scene::AbstractScene * scene) {

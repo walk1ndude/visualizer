@@ -22,6 +22,8 @@ Item {
     property string selectedPointName: "";
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
 
+    property int modelID: modelViewer.modelID;
+
     Rectangle {
         Rectangle {
             id: horizontalSeparator;

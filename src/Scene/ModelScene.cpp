@@ -219,7 +219,7 @@ namespace Scene {
 
     void ModelScene::selectModel(Model::AbstractModel * model) {
         _selectedModel = model;
-        emit modelIDChanged(_selectedModel->modelID());
+        emit modelIDChanged(_selectedModel->id());
     }
 
     void ModelScene::addPoint(const PointsInfo::Point & point) {

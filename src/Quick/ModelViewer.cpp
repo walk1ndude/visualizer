@@ -60,7 +60,8 @@ private:
 namespace Quick {
     ModelViewer::ModelViewer() :
         _modelRenderer(0),
-        _takeShot(false) {
+        _takeShot(false),
+        _modelID(-1) {
 
         setFlag(QQuickItem::ItemHasContents);
 
@@ -188,6 +189,15 @@ namespace Quick {
         emit maxHUChanged(_maxHU);
     }
 
+    int ModelViewer::modelID() {
+        return _modelID;
+    }
+
+    void ModelViewer::setModelID(const int & modelID) {
+        _modelID = modelID;
+        emit modelIDChanged(_modelID);
+    }
+
     void ModelViewer::addModelScene() {
         _scenes.push_back(new Scene::ModelScene);
     }
@@ -230,8 +240,9 @@ namespace Quick {
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::pointCalculated, this, &ModelViewer::updatedPoint, Qt::DirectConnection);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();

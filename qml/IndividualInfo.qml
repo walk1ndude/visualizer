@@ -16,7 +16,7 @@ Rectangle {
         width: 2;
     }
 
-    property int modelId: -1
+    property int modelID: -1
 
     ListView {
         model: ListModel {
@@ -25,7 +25,7 @@ Rectangle {
             Component.onCompleted: {
                 function populateListElements(ptps, measures) {
                     var qmlElements = [];
-                    var points = Settings.Points[modelId];
+                    var points = Settings.Points[individualInfo.modelID];
                     for (var ptp in ptps) {
                         var pointsOfPTP = ptps[ptp];
 

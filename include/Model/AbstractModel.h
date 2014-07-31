@@ -45,7 +45,7 @@ namespace Model {
             }
         }
 
-        virtual uint modelID() final;
+        virtual int id() final;
 
         template <class BuffersT>
         void fillBuffers(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
@@ -149,7 +149,7 @@ namespace Model {
 
         QMap<QOpenGLTexture *, TextureInfo::TextureProgram *> _textures;
 
-        uint _modelID;
+        int _id;
 
         ShaderInfo::ShaderFiles _shaderFiles;
 

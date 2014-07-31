@@ -35,6 +35,8 @@ namespace Quick {
         Q_PROPERTY(int minHU READ minHU WRITE setMinHU NOTIFY minHUChanged)
         Q_PROPERTY(int maxHU READ maxHU WRITE setMaxHU NOTIFY maxHUChanged)
 
+        Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
+
     public:
         explicit ModelViewer();
         virtual ~ModelViewer();
@@ -78,6 +80,9 @@ namespace Quick {
         int maxHU();
         void setMaxHU(const int & maxHU);
 
+        int modelID();
+        void setModelID(const int & modelID);
+
         // for now just add empty scene
         void addModelScene();
 
@@ -112,6 +117,8 @@ namespace Quick {
 
         QVector3D _rotation;
 
+        uint _modelID;
+
     signals:
         void appearedSmthToDraw();
 
@@ -134,6 +141,8 @@ namespace Quick {
         void modelRead(ModelInfo::BuffersVN buffers);
 
         void pointCalculated(const QVariantMap & point);
+
+        void modelIDChanged(const uint & modelID);
 
     public slots:
         void drawSlices(SliceInfo::Slices slices);

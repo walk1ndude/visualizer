@@ -52,7 +52,7 @@ namespace Model {
                     
                     updateNeeded = true;
                     
-                    emit pointCalculated(PointsInfo::CalcalutedPoint(modelPoint->position, modelPoints().key(modelPoint), modelID()));
+                    emit pointCalculated(PointsInfo::CalcalutedPoint(modelPoint->position, modelPoints().key(modelPoint), id()));
                 }
             }
         }

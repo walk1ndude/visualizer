@@ -6,22 +6,24 @@ import "../js/sidebarcontent.js" as SideBar
 import "../js/helpers.js" as Helpers
 
 Rectangle {
-    id: sidebar
+    id: sidebar;
 
-    color: "#FFFFFF"
+    color: "#FFFFFF";
 
-    property vector2d xRange: Qt.vector2d(0, 0)
-    property vector2d yRange: Qt.vector2d(0, 0)
-    property vector2d zRange: Qt.vector2d(0, 0)
+    property vector2d xRange: Qt.vector2d(0, 0);
+    property vector2d yRange: Qt.vector2d(0, 0);
+    property vector2d zRange: Qt.vector2d(0, 0);
 
-    property int minHU: -1
-    property int maxHU: -1
+    property int minHU: -1;
+    property int maxHU: -1;
 
-    property vector3d angle: Qt.vector3d(0, 0, 0)
-    property real zoomFactor: 1.0
+    property vector3d angle: Qt.vector3d(0, 0, 0);
+    property real zoomFactor: 1.0;
 
-    property string selectedPointName: ""
-    property color selectedPointColor: Qt.rgba(0, 0, 0, 0)
+    property string selectedPointName: "";
+    property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
+
+    property int modelID: -1;
 
     ListView {
         id: sidebarListView;
@@ -184,6 +186,8 @@ Rectangle {
                 delegate:
                     IndividualInfo {
                         width: sidebar.width;
+
+                        modelID: sidebar.modelID;
                 }
             }
         }
