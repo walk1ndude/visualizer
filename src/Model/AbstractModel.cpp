@@ -100,7 +100,7 @@ namespace Model {
     }
 
     void AbstractModel::releaseShaderProgram() {
-        return _program->release();
+        _program->release();
     }
 
     void AbstractModel::bindTextures() {

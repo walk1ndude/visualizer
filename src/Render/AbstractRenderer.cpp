@@ -81,12 +81,12 @@ namespace Render {
 
         // no more connection with previous scene
         if (_selectedScene) {
-            QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
-            _sceneHistory.insert(scene);
+            QObject::disconnect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
         }
 
         _selectedScene = scene;
-        QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::needToRedraw);
+        // calling render here is legit 'cause sender and reciever are in the same thread
+        QObject::connect(_selectedScene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
 
         _sceneHistory.insert(scene);
     }
@@ -100,7 +100,7 @@ namespace Render {
     }
 
     void AbstractRenderer::renderNext() {
-        QMutexLocker locker (&_renderMutex);
+        QMutexLocker locker(&_renderMutex);
         activateContext();
 
         if (!_fboRender) {
@@ -119,6 +119,8 @@ namespace Render {
 
         _fboRender->bindDefault();
         std::swap(_fboDisplay, _fboRender);
+        
+        qDebug() << "before emit";
 
         if (_takeShot) {
             QRect screenRect = _selectedScene->screenSaveRect();

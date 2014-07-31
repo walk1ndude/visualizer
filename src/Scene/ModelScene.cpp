@@ -105,11 +105,11 @@ namespace Scene {
             Model::AbstractModel * model = itM.next();
 
             while (itV.hasNext()) {
-                needToRedraw &= model->checkDepthBuffer(itV.next());
+                needToRedraw |= model->checkDepthBuffer(itV.next());
             }
         }
 
-        qDebug() << "rendering scene, time overall: " << QDateTime::currentMSecsSinceEpoch() - startTime << " ms";
+        qDebug() << "rendering scene, time overall: " << QDateTime::currentMSecsSinceEpoch() - startTime << " ms" << needToRedraw;
 
         if (needToRedraw) {
             emit redraw();
