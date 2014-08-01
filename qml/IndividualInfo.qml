@@ -16,7 +16,7 @@ Rectangle {
         width: 2;
     }
 
-    property int modelID: -1
+    property int modelID: -1;
 
     ListView {
         model: ListModel {

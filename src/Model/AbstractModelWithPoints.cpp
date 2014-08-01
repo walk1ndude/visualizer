@@ -46,6 +46,8 @@ namespace Model {
                 
                 modelPoint->position.setZ(posZ / 65536.0f);
 
+                modelPoint->position = viewPort.placeXYZAccordingToViewPort(modelPoint->position);
+
                 if (viewPort.unproject(modelPoint->position, unprojectdPoint)) {
                     modelPoint->position = QVector3D(unprojectdPoint);
                     modelPoint->positionCalculated();

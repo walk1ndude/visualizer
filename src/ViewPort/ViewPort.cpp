@@ -115,7 +115,7 @@ namespace ViewPort {
 
         bool invertible;
 
-        QMatrix4x4 invVP = (_pMatrix * _vMatrixVoxel).inverted(&invertible);
+        QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
 
         if (!invertible) {
             return false;
@@ -136,6 +136,23 @@ namespace ViewPort {
             unprojectPoint.setZ(unprojectPointVector.z() / unprojectPointVector.w());
             unprojectPoint.setW(1.0f);
             return true;
+        }
+    }
+
+    QVector3D ViewPort::placeXYZAccordingToViewPort(const QVector3D & xyz) {
+        /* In different viewports axes have different meaning.
+         * For example in "Left" z and x axes change their positions,
+         * so x axis turns out to be the axis that determines the
+         * distantion between model and camera, and z takes the role
+         * of x in return
+         */
+        switch (_projectionType) {
+        case ViewPort::LEFT:
+            return QVector3D(xyz.z(), xyz.y(), xyz.x());
+        case ViewPort::FRONT:
+            return QVector3D(xyz.x(), xyz.z(), xyz.y());
+        default:
+            return xyz;
         }
     }
 
