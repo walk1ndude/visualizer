@@ -70,4 +70,6 @@ WHERE id = ?;", [modelId]);
     return geometry;
 }
 */
-var Points = {}
+var Points = {};
+
+var Distances = {};

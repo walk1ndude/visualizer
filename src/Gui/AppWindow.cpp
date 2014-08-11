@@ -1,5 +1,7 @@
 #include <QtQuick/QQuickWindow>
 
+#include <QtCore/QDataStream>
+
 #include "Gui/AppWindow.h"
 
 #include "Quick/ModelViewer.h"
@@ -51,6 +53,8 @@ namespace Gui {
             QObject::connect(modelViewer, &Quick::ModelViewer::minHUChanged, this, &AppWindow::minHUChanged);
             QObject::connect(modelViewer, &Quick::ModelViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
 
+            QObject::connect(modelViewer, &Quick::ModelViewer::pointUpdated, this, &AppWindow::updatePoint);
+
             QObject::connect(modelViewer, SIGNAL(appearedSmthToDraw()), modelItem, SLOT(show()));
 
             QObject::connect(_appWindow, &QQuickWindow::heightChanged, [=](const int & height) {
@@ -69,6 +73,10 @@ namespace Gui {
                 }
             });
         }
+    }
+
+    void AppWindow::updatePoint(const QVariantMap & point) {
+        pointUpdated(QJsonObject::fromVariantMap(point));
     }
 
     void AppWindow::readFiles(QVariant fileNames) {

@@ -24,16 +24,16 @@ namespace PointsInfo {
         }
     };
     
-    class CalcalutedPoint {
+    class UpdatedPoint {
     public:
         QVector3D position;
         PointName name;
 
-        CalcalutedPoint() { }
+        UpdatedPoint() { }
 
-        CalcalutedPoint(const QVector3D & position,
-                        const PointName & name,
-                        const uint & modelId) :
+        UpdatedPoint(const QVector3D & position,
+                     const PointName & name,
+                     const uint & modelId) :
                     position(position),
                     name(name),
                     _modelId(modelId) {

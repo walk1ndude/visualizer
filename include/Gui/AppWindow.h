@@ -5,6 +5,8 @@
 
 #include <QtQuick/QQuickWindow>
 
+#include <QtCore/QJsonObject>
+
 #include "Info/SliceInfo.h"
 #include "Info/ModelInfo.h"
 
@@ -42,8 +44,12 @@ namespace Gui {
         void slicesProcessed(SliceInfo::Slices sliceSettings);
         void modelRead(ModelInfo::BuffersVN buffers);
 
+        void pointUpdated(const QJsonObject & pointUpdated);
+
     private slots:
          void readFiles(QVariant fileNames);
+
+         void updatePoint(const QVariantMap & point);
     };
 }
 

@@ -7,28 +7,52 @@ import "../js/settings.js" as Settings
 ListModel {
     id: individualListModel;
 
+    property int distUpdatedCount: 0;
+
     Component.onCompleted: {
         function populateListElements(ptps, measures) {
             var qmlElements = [];
-            var points = Settings.Points[individualInfo.modelID];
-            for (var ptp in ptps) {
-                var pointsOfPTP = ptps[ptp];
+            var modelPoints = Settings.Points[modelID];
 
-                for (var i = 0; i !== pointsOfPTP.length; ++ i) {
+            if (modelID > 0) {
+                Settings.Distances[modelID] = Settings.Distances[modelID] || { };
+                var modelDists = Settings.Distances[modelID];
+            }
+
+            for (var pointFrom in ptps) {
+                var pointsTo = ptps[pointFrom];
+
+                for (var i = 0; i !== pointsTo.length; ++ i) {
                     var qmlElement = {};
-                    qmlElement["from"] = measures[ptp].name;
-                    qmlElement["to"] = measures[pointsOfPTP[i]].name;
+
+                    var pointTo = pointsTo[i];
+
+                    qmlElement["from"] = measures[pointFrom].name;
+                    qmlElement["to"] = measures[pointTo].name;
 
                     // if selected point has from and to points, which are measured - assign them to appropriate ps
                     var positionFrom = undefined;
                     var positionTo = undefined;
-                    if (points && points[ptp] && points[pointsOfPTP[i]]) {
-                        positionFrom = points[ptp].position;
-                        positionTo = points[pointsOfPTP[i]].position;
+
+                    if (modelPoints && modelPoints[pointFrom] && modelPoints[pointTo]) {
+                        positionFrom = modelPoints[pointFrom].position;
+                        positionTo = modelPoints[pointTo].position;
                     }
                     // if we know position of from and to points, calc and show it
-                    qmlElement["measure"] =
-                            (positionFrom && positionTo) ? (+(positionTo.minus(positionFrom).length()).toFixed(8)).toString() : "Нет данных";
+
+                    if (positionFrom && positionTo) {
+                        var calculatedDist = positionTo.minus(positionFrom).length();
+                        qmlElement["measure"] = (+calculatedDist.toFixed(8)).toString();
+
+                        // tell other parts about calculted dist
+                        modelDists[pointFrom] = Settings.Distances[pointFrom] || { };
+                        modelDists[pointFrom][pointTo] = calculatedDist;
+
+                        distUpdatedCount ++;
+                    }
+                    else {
+                        qmlElement["measure"] = "Нет данных";
+                    }
 
                     qmlElements.push(qmlElement);
                 }
@@ -40,6 +64,8 @@ ListModel {
         var measures = PointsDict.pointsDict.measures;
         var groups = PointsDict.pointsDict.groups;
         var groupOrder = PointsDict.groupsOrder.IndividualInfo;
+
+        distUpdatedCount = 0;
 
         for (var i = 0; i !== groupOrder.length; ++ i) {
             var group = groups[groupOrder[i]];

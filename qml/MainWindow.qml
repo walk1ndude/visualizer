@@ -22,6 +22,8 @@ ApplicationWindow {
 
     signal sliceNumberChanged(int ds);
 
+    signal distsUpdated(variant distanses);
+
     menuBar: MenuBar {
         id: menubar;
         Menu {
@@ -123,5 +125,7 @@ ApplicationWindow {
 
         onSelectedPointNameChanged: modelItem.selectedPointName = selectedPointName;
         onSelectedPointColorChanged: modelItem.selectedPointColor = selectedPointColor;
+
+        onDistsUpdated: appWindow.distsUpdated(Settings.Distances[modelID]);
     }
 }

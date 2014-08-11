@@ -79,7 +79,7 @@ Item {
             selectedPointColor: modelItem.selectedPointColor;
             selectedPointName: modelItem.selectedPointName;
 
-            onPointCalculated: {
+            onPointUpdated: {
                 // update info about points
                 Settings.Points[point.modelID] = Settings.Points[point.modelID] || { };
                 Settings.Points[point.modelID][point.name] = Settings.Points[point.modelID][point.name] || { };

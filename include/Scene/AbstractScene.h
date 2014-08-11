@@ -39,7 +39,7 @@ namespace Scene {
         bool _isInitialized;
 
     signals:
-        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
+        void pointUpdated(const PointsInfo::UpdatedPoint & point);
         void redraw();
     };
 }

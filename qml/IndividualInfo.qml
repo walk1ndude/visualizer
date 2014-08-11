@@ -1,5 +1,7 @@
 import QtQuick 2.3
 
+import "../js/settings.js" as Settings
+
 Rectangle {
     id: individualInfo;
     width: 100;
@@ -14,16 +16,30 @@ Rectangle {
 
     property int modelID: -1;
 
+    signal distsUpdated();
+
     function updateIndividualInfo() {
-        individualListView.model.destroy();
-        individualListView.model = Qt.createComponent("IndividualInfoModel.qml").createObject(individualListView);
+        if (individualListView.model) {
+            individualListView.model.destroy();
+        }
+
+        individualListView.model = Qt.createComponent("IndividualInfoModel.qml")
+                                     .createObject(individualListView, {
+                                                       "modelID" : modelID
+                                                   });
+
+        // why bother when no dists are updated?
+        if (individualListView.model.distUpdatedCount) {
+            distsUpdated();
+        }
     }
 
     ListView {
         id: individualListView;
-        model: IndividualInfoModel { }
         delegate: delegateComponent;
         anchors.fill: parent;
+
+        Component.onCompleted: updateIndividualInfo();
     }
 
     Component {

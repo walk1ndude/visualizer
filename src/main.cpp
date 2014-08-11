@@ -33,6 +33,8 @@ int main(int argc, char * argv[]) {
 
     QObject::connect(&appWindow, &Gui::AppWindow::sliceNumberChanged, &reconstructor, &Parser::Reconstructor::changeSliceNumber);
 
+    QObject::connect(&appWindow, &Gui::AppWindow::pointUpdated, [&](const QJsonObject & point) { qDebug() << "JSON: " << point;});
+
     appWindow.show();
 
     return a.exec();

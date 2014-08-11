@@ -102,7 +102,7 @@ namespace Model {
         ModelInfo::ViewRange * _viewRange;
         
     signals:
-        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
+        void pointUpdated(const PointsInfo::UpdatedPoint & point);
     };
 }
 

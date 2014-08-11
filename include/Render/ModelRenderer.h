@@ -27,7 +27,7 @@ namespace Render {
 
     signals:
         void modelIDChanged(const uint & modelID);
-        void pointCalculated(const PointsInfo::CalcalutedPoint & point);
+        void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);

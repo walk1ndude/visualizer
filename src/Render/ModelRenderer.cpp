@@ -60,7 +60,7 @@ namespace Render {
         Scene::ModelScene * modelScene = dynamic_cast<Scene::ModelScene *>(scene);
 
         QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged, Qt::DirectConnection);
-        QObject::connect(modelScene, &Scene::ModelScene::pointCalculated, this, &Render::ModelRenderer::pointCalculated, Qt::DirectConnection);
+        QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated, Qt::DirectConnection);
 
         AbstractRenderer::connectWithScene(scene);
     }
@@ -69,7 +69,7 @@ namespace Render {
         Scene::ModelScene * modelScene = dynamic_cast<Scene::ModelScene *>(scene);
 
         QObject::disconnect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
-        QObject::disconnect(modelScene, &Scene::ModelScene::pointCalculated, this, &Render::ModelRenderer::pointCalculated);
+        QObject::disconnect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
 
         AbstractRenderer::disconnectWithScene(scene);
     }

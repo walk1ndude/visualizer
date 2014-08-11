@@ -26,6 +26,7 @@ Rectangle {
     property int modelID: -1;
 
     signal updateIndividualInfo();
+    signal distsUpdated();
 
     ListView {
         id: sidebarListView;
@@ -196,6 +197,8 @@ Rectangle {
                             target: sidebar
                             onUpdateIndividualInfo: individualInfo.updateIndividualInfo();
                         }
+
+                        onDistsUpdated: sidebar.distsUpdated();
                 }
             }
         }

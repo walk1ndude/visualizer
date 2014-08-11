@@ -202,14 +202,14 @@ namespace Quick {
         _scenes.push_back(new Scene::ModelScene);
     }
     
-    void ModelViewer::updatedPoint(const PointsInfo::CalcalutedPoint & point) {
+    void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint &point) {
         QVariantMap pointV;
 
         pointV.insert("name", point.name);
         pointV.insert("position", point.position);
         pointV.insert("modelID", point.modelId());
 
-        emit pointCalculated(pointV);
+        emit pointUpdated(pointV);
     }
 
     QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * paintNodeData) {
@@ -240,7 +240,7 @@ namespace Quick {
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
             QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw, Qt::DirectConnection);
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::pointCalculated, this, &ModelViewer::updatedPoint, Qt::DirectConnection);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
