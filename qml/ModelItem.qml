@@ -24,6 +24,8 @@ Item {
 
     property int modelID: modelViewer.modelID;
 
+    signal updateIndividualInfo();
+
     Rectangle {
         Rectangle {
             id: horizontalSeparator;
@@ -82,6 +84,9 @@ Item {
                 Settings.Points[point.modelID] = Settings.Points[point.modelID] || { };
                 Settings.Points[point.modelID][point.name] = Settings.Points[point.modelID][point.name] || { };
                 Settings.Points[point.modelID][point.name]["position"] = point.position;
+
+                // need to update sidebar info, so give singal about it
+                updateIndividualInfo();
             }
 
             MouseArea {

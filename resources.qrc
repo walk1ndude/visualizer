@@ -24,5 +24,6 @@
         <file>shaders/pointsGeometry.glsl</file>
         <file>shaders/pointsFragment.glsl</file>
         <file>js/settings.js</file>
+        <file>qml/IndividualInfoModel.qml</file>
     </qresource>
 </RCC>

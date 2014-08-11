@@ -25,6 +25,8 @@ Rectangle {
 
     property int modelID: -1;
 
+    signal updateIndividualInfo();
+
     ListView {
         id: sidebarListView;
         model: ListModel {
@@ -185,9 +187,15 @@ Rectangle {
                 id: repeater;
                 delegate:
                     IndividualInfo {
+                        id: individualInfo
                         width: sidebar.width;
 
                         modelID: sidebar.modelID;
+
+                        Connections {
+                            target: sidebar
+                            onUpdateIndividualInfo: individualInfo.updateIndividualInfo();
+                        }
                 }
             }
         }

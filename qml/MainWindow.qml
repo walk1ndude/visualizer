@@ -95,6 +95,8 @@ ApplicationWindow {
             id: modelItem;
             width: appWindow.width * sideBarWidth;
             height: appWindow.height;
+
+            onUpdateIndividualInfo: sidebar.updateIndividualInfo();
         }
     }
 
