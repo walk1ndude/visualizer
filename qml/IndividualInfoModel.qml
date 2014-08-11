@@ -28,7 +28,7 @@ ListModel {
                     }
                     // if we know position of from and to points, calc and show it
                     qmlElement["measure"] =
-                            (positionFrom && positionTo) ? (positionTo.minus(positionFrom).length()).toString() : "Нет данных";
+                            (positionFrom && positionTo) ? (+(positionTo.minus(positionFrom).length()).toFixed(8)).toString() : "Нет данных";
 
                     qmlElements.push(qmlElement);
                 }
