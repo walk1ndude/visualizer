@@ -14,7 +14,7 @@ ListModel {
             var qmlElements = [];
             var modelPoints = Settings.Points[modelID];
 
-            if (modelID > 0) {
+            if (modelID != -1) {
                 Settings.Distances[modelID] = Settings.Distances[modelID] || { };
                 var modelDists = Settings.Distances[modelID];
             }
