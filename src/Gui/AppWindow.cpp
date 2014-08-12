@@ -1,7 +1,5 @@
 #include <QtQuick/QQuickWindow>
 
-#include <QtCore/QDataStream>
-
 #include "Gui/AppWindow.h"
 
 #include "Quick/ModelViewer.h"
@@ -77,7 +75,19 @@ namespace Gui {
     }
 
     void AppWindow::updatePoint(const QVariantMap & point) {
-        pointUpdated(QJsonObject::fromVariantMap(point));
+        // need to serialize our vector3d
+        QVariantMap pointM(point);
+
+        QVector3D vector = qvariant_cast<QVector3D>(point["position"]);
+        QVariantList vectorV;
+
+        vectorV.append(vector.x());
+        vectorV.append(vector.y());
+        vectorV.append(vector.z());
+
+        pointM.insert("position", vectorV);
+
+        pointUpdated(QJsonObject::fromVariantMap(pointM));
     }
 
     void AppWindow::updateDists(const QVariant & dists) {
