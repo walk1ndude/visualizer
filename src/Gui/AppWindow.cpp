@@ -54,20 +54,21 @@ namespace Gui {
             QObject::connect(modelViewer, &Quick::ModelViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
 
             QObject::connect(modelViewer, &Quick::ModelViewer::pointUpdated, this, &AppWindow::updatePoint);
+            QObject::connect(appWindow, SIGNAL(distsUpdated(const QVariant &)), this, SLOT(updateDists(const QVariant &)));
 
             QObject::connect(modelViewer, SIGNAL(appearedSmthToDraw()), modelItem, SLOT(show()));
 
-            QObject::connect(_appWindow, &QQuickWindow::heightChanged, [=](const int & height) {
+            QObject::connect(_appWindow, &QQuickWindow::heightChanged, [&](const int & height) {
                 modelViewer->setHeight(height);
                 modelViewer->update();
             });
 
-            QObject::connect(_appWindow, &QQuickWindow::widthChanged, [=](const int & width) {
+            QObject::connect(_appWindow, &QQuickWindow::widthChanged, [&](const int & width) {
                 modelViewer->setWidth(width * appWindow->property("sideBarWidth").toFloat());
                 modelViewer->update();
             });
 
-            QObject::connect(_appWindow, &QQuickWindow::visibilityChanged, [=](const QWindow::Visibility & visibility) {
+            QObject::connect(_appWindow, &QQuickWindow::visibilityChanged, [&](const QWindow::Visibility & visibility) {
                 if (visibility != QWindow::Minimized || visibility != QWindow::Hidden) {
                     modelViewer->update();
                 }
@@ -79,10 +80,14 @@ namespace Gui {
         pointUpdated(QJsonObject::fromVariantMap(point));
     }
 
+    void AppWindow::updateDists(const QVariant & dists) {
+        distsUpdated(QJsonObject::fromVariantMap(qvariant_cast<QVariantMap>(dists)));
+    }
+
     void AppWindow::readFiles(QVariant fileNames) {
         QStringList fileNamesStr;
 
-        foreach (QVariant item, fileNames.value<QList<QUrl> >()) {
+        foreach (const QVariant & item, fileNames.value<QList<QUrl> >()) {
             fileNamesStr.append(item.toUrl().toLocalFile());
         }
 

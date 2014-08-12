@@ -19,7 +19,7 @@ int main(int argc, char * argv[]) {
     QObject::connect(&appWindow, &Gui::AppWindow::fileOpenedDcm, &dicomReader, &Parser::DicomReader::readFile);
     QObject::connect(&appWindow, &Gui::AppWindow::fileOpenedStl, &stlReader, &Parser::StlReader::readFile);
 
-    QObject::connect(&stlReader, &Parser::StlReader::readingErrorHappened, [=]() { qDebug() << "read error happend"; });
+    QObject::connect(&stlReader, &Parser::StlReader::readingErrorHappened, []() { qDebug() << "read error happend"; });
 
     QObject::connect(&appWindow, &Gui::AppWindow::sliceNumberChanged, &dicomReader, &Parser::DicomReader::changeSliceNumber);
     QObject::connect(&appWindow, &Gui::AppWindow::minHUChanged, &dicomReader, &Parser::DicomReader::updateMinHU);
@@ -33,7 +33,8 @@ int main(int argc, char * argv[]) {
 
     QObject::connect(&appWindow, &Gui::AppWindow::sliceNumberChanged, &reconstructor, &Parser::Reconstructor::changeSliceNumber);
 
-    QObject::connect(&appWindow, &Gui::AppWindow::pointUpdated, [&](const QJsonObject & point) { qDebug() << "JSON: " << point;});
+    QObject::connect(&appWindow, &Gui::AppWindow::pointUpdated, [](const QJsonObject & point) { qDebug() << "JSON: " << point;});
+    QObject::connect(&appWindow, &Gui::AppWindow::distsUpdated, [](const QJsonObject & dists) { qDebug() << "JSON: " << dists;});
 
     appWindow.show();
 

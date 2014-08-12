@@ -44,12 +44,14 @@ namespace Gui {
         void slicesProcessed(SliceInfo::Slices sliceSettings);
         void modelRead(ModelInfo::BuffersVN buffers);
 
-        void pointUpdated(const QJsonObject & pointUpdated);
+        void pointUpdated(const QJsonObject & json);
+        void distsUpdated(const QJsonObject & json);
 
     private slots:
          void readFiles(QVariant fileNames);
 
          void updatePoint(const QVariantMap & point);
+         void updateDists(const QVariant & dists);
     };
 }
 
