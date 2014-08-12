@@ -128,14 +128,14 @@ void main(void) {
 
             //fragColor.a = 1.0;
 
-            //if (headColor.r > 0.75 && headColor.r < 0.85 && fragPos.p > 0.45 && fragPos.p < 0.8) {
- /*           if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
-                fragColor.a *= (0.05 * headColor.r);
+            if (headColor.r > 0.75 && headColor.r < 0.85 && fragPos.p > 0.45 && fragPos.p < 0.8) {
+            //if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
+                fragColor.a *= (0.01 * headColor.r);
             }
             else {
-                fragColor.a *= 0.02;
+                fragColor.a *= 0.05;
             }
-*/
+
             //fragColor.a = clamp(fragColor.a, 0.0, 1.0);
 
         }
