@@ -45,8 +45,10 @@ ListModel {
                         qmlElement["measure"] = (+calculatedDist.toFixed(8)).toString();
 
                         // tell other parts about calculted dist
-                        modelDists[pointFrom] = Settings.Distances[pointFrom] || { };
+                        modelDists[pointFrom] = modelDists[pointFrom] || { };
                         modelDists[pointFrom][pointTo] = calculatedDist;
+
+                        console.log(pointFrom, pointTo)
 
                         distUpdatedCount ++;
                     }
