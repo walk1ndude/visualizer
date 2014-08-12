@@ -126,6 +126,6 @@ ApplicationWindow {
         onSelectedPointNameChanged: modelItem.selectedPointName = selectedPointName;
         onSelectedPointColorChanged: modelItem.selectedPointColor = selectedPointColor;
 
-        onDistsUpdated: appWindow.distsUpdated(Settings.Distances[modelID]);
+        onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
 }
