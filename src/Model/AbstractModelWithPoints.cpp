@@ -26,7 +26,7 @@ namespace Model {
     }
     
     bool AbstractModelWithPoints::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
-        QVector4D unprojectdPoint;
+        QVector4D unprojectedPoint;
         
         bool updateNeeded = false;
        
@@ -48,9 +48,10 @@ namespace Model {
 
                 modelPoint->position = viewPort.placeXYZAccordingToViewPort(modelPoint->position);
 
-                if (viewPort.unproject(modelPoint->position, unprojectdPoint)) {
-                    modelPoint->position = QVector3D(unprojectdPoint);
-                    modelPoint->positionCalculated();
+                qDebug() << "AFTER GLREADPOXEL" << modelPoint->position;
+
+                if (viewPort.unproject(modelPoint->position, unprojectedPoint)) {
+                    modelPoint->positionCalculated(unprojectedPoint);
                     
                     updateNeeded = true;
                     

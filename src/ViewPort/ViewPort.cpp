@@ -106,7 +106,7 @@ namespace ViewPort {
         return (pX >= x && pY >= y && pX < x + w && pY < y + h);
     }
 
-    bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectPoint) const {
+    bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
         float x = _boundingRect.x() * _surfaceSize.width();
         float y = _boundingRect.y() * _surfaceSize.height();
 
@@ -121,20 +121,20 @@ namespace ViewPort {
             return false;
         }
 
-        QVector4D unprojectPointVector = QVector4D(
+        QVector4D unprojectedPointVector = QVector4D(
                     2.0 * (projection.x() - x) / w - 1.0f,
                     - 2.0 * (projection.y() - y) / h - 1.0f,
                     projection.z(),
                     1.0f) * invVP;
 
-        if (unprojectPointVector.w() == 0.0f) {
+        if (unprojectedPointVector.w() == 0.0f) {
             return false;
         }
         else {
-            unprojectPoint.setX(unprojectPointVector.x() / unprojectPointVector.w());
-            unprojectPoint.setY(unprojectPointVector.y() / unprojectPointVector.w());
-            unprojectPoint.setZ(unprojectPointVector.z() / unprojectPointVector.w());
-            unprojectPoint.setW(1.0f);
+            unprojectedPoint.setX(unprojectedPointVector.x() / unprojectedPointVector.w());
+            unprojectedPoint.setY(unprojectedPointVector.y() / unprojectedPointVector.w());
+            unprojectedPoint.setZ(unprojectedPointVector.z() / unprojectedPointVector.w());
+            unprojectedPoint.setW(1.0f);
             return true;
         }
     }
