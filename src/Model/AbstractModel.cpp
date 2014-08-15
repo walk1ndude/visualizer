@@ -2,6 +2,19 @@
 
 static int modelNumber = 0;
 
+static float normalizedAngle(const float & angle) {
+    float normalized = angle;
+
+    while (normalized < 0.0f) {
+        normalized += 360.0f;
+    }
+    while (normalized > 360.0f) {
+        normalized -= 360.0f;
+    }
+
+    return normalized;
+}
+
 namespace Model {
     AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
@@ -89,14 +102,10 @@ namespace Model {
     }
 
     void AbstractModel::rotate(const QVector3D & rotation) {
-        QVector3D rot = _orientation - rotation;
-
-        _mMatrix.rotate(QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rot.x()) *
-                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rot.y()) *
-                        QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rot.z())
+        _mMatrix.rotate(QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, normalizedAngle(rotation.x())) *
+                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, normalizedAngle(rotation.y())) *
+                        QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, normalizedAngle(rotation.z()))
         );
-
-        _orientation = rotation;
     }
 
     bool AbstractModel::bindShaderProgram() {

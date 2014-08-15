@@ -49,7 +49,7 @@ namespace Scene {
         }
 
         if (_selectedModel) {
-            _selectedModel->rotate(QVector3D(0.0f, finishPos.x() - startPos.x(), 0.0f));
+            _selectedModel->rotate(QVector3D((finishPos.y() - startPos.y()) / 20.0f, (finishPos.x() - startPos.x()) / 20.0f, 0.0f));
         }
     }
 

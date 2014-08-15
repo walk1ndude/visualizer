@@ -25,7 +25,6 @@ Item {
                 leftMargin: 0.2 * text.height;
             }
 
-
             color: "green";
 
             font {

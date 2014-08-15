@@ -163,8 +163,6 @@ namespace Model {
 
         QMatrix4x4 _mMatrix;
 
-        QVector3D _orientation;
-
         bool _updateNeeded;
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);

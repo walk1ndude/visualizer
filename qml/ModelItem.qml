@@ -91,7 +91,7 @@ Item {
                     prevMouseY = mouseY;
                 }
 
-                onReleased: {
+                onPositionChanged: {
                     parent.mouseRotation(Qt.point(prevMouseX, height - prevMouseY), Qt.point(mouseX, height - mouseY));
                 }
 
