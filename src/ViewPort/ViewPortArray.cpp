@@ -51,7 +51,7 @@ namespace ViewPort {
         ViewPortLegendArray legendArray;
 
         for (int i = 0; i != size(); ++ i) {
-            legendArray.append(ViewPortLegend(data()[i].id(), data()[i].boundingRectNormalized().bottomLeft(), data()[i].text()));
+            legendArray.append(ViewPortLegend(data()[i].id(), data()[i].boundingRectNormalized(), data()[i].text()));
         }
 
         return legendArray;

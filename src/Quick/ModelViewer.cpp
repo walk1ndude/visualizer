@@ -293,11 +293,13 @@ namespace Quick {
 
     void ModelViewer::updateViewPortLegend(const ViewPort::ViewPortLegendArray & legendArray) {
         QVariantMap legendMap;
-        
+
         foreach (const ViewPort::ViewPortLegend & legend, legendArray) {
             legendMap.insert(QString::number(legend.id), QVariantMap {
-                                 {"xNormalized", legend.x},
-                                 {"yNormalized", legend.y},
+                                 {"x", legend.boundingRectNormalized.x() * this->width()},
+                                 {"y", legend.boundingRectNormalized.y() * this->height()},
+                                 {"width", legend.boundingRectNormalized.width() * this->width()},
+                                 {"height", legend.boundingRectNormalized.height() * this->height()},
                                  {"text", *legend.text}
                              });
         }

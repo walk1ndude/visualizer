@@ -11,18 +11,18 @@ namespace ViewPort {
     class ViewPortLegend {
     public:
         int id;
-        qreal x;
-        qreal y;
+
+        QRectF boundingRectNormalized;
+
         QString * text;
 
         ViewPortLegend() { }
 
         ViewPortLegend(const int & id,
-                       const QPointF & textPosition,
+                       const QRectF & boundingRectNormalized,
                        QString * text) :
             id(id),
-            x(textPosition.x()),
-            y(textPosition.y()),
+            boundingRectNormalized(boundingRectNormalized),
             text(text) { }
     };
 

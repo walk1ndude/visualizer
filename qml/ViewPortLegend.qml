@@ -1,33 +1,52 @@
 import QtQuick 2.3
 
-Text {
-    text: "";
+Item {
+    id: viewPortHud
+    property string text: "";
 
-    property real xNormalized: 0;
-    property real yNormalized: 0;
+    Rectangle {
+        color: "transparent";
 
-    x: xNormalized * parent.width + 10;
-    y: yNormalized * parent.height - 10;
+        anchors.fill: parent
 
-    color: "green";
-
-    font {
-        capitalization: Font.SmallCaps;
-        pointSize: 24;
-    }
-
-    transform: Rotation {
-        angle: -180;
-
-        axis {
-            x: 1.0;
-            y: 0.0;
-            z: 0.0;
+        border {
+            color: "green";
         }
 
-        origin {
-            x: parent.x;
-            y: parent.y;
+        Text {
+            id: text;
+            text: viewPortHud.text;
+
+            anchors {
+                left: parent.left;
+                bottom: parent.bottom;
+
+                bottomMargin: - 0.8 * text.height;
+                leftMargin: 0.2 * text.height;
+            }
+
+
+            color: "green";
+
+            font {
+                capitalization: Font.SmallCaps;
+                pointSize: 24;
+            }
+
+            transform: Rotation {
+                angle: -180;
+
+                axis {
+                    x: 1.0;
+                    y: 0.0;
+                    z: 0.0;
+                }
+
+                origin {
+                    x: parent.x;
+                    y: parent.y;
+                }
+            }
         }
     }
 }

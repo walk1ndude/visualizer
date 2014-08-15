@@ -28,32 +28,6 @@ Item {
     signal updateIndividualInfo();
 
     Rectangle {
-        Rectangle {
-            id: horizontalSeparator;
-
-            color: "#FF888888";
-            x: modelItem.width / 2 - 5;
-            width: 10;
-            height: modelItem.height;
-
-            visible: false;
-
-            z: -1;
-        }
-
-        Rectangle {
-            id: verticalSeparator;
-
-            color: "#FF888888";
-            y: modelItem.height / 2 - 5;
-            height: 10;
-            width: modelItem.width;
-
-            visible: false;
-
-            z: -1;
-        }
-
         ModelViewer {
             id: modelViewer;
             objectName: "modelViewer";
@@ -133,9 +107,6 @@ Item {
     }
 
     function show() {
-        horizontalSeparator.visible = true;
-        verticalSeparator.visible = true;
-
         mouseAreaModelItem.enabled = true;
     }
 /*
