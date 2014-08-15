@@ -76,6 +76,8 @@ namespace Scene {
     }
 
     void ModelScene::renderScene(const QSize & surfaceSize) {
+        emit viewPortLegendChanged(_viewPorts.viewPortsLegend());
+
         _viewPorts.resize(surfaceSize);
 
         ViewPort::ViewPort viewPort;
@@ -125,8 +127,6 @@ namespace Scene {
         if (needToRedraw) {
             emit redraw();
         }
-
-        emit viewPortLegendChanged(_viewPorts.viewPortsLegend());
     }
 
     void ModelScene::cleanUp() {
