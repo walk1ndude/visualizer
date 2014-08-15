@@ -42,6 +42,17 @@ namespace Scene {
         }
     }
 
+    void ModelScene::setMouseRotation(const QPointF & startPos, const QPointF & finishPos) {
+        if (!_viewPorts.canRotate(startPos, finishPos)) {
+            // mouse is not in right viewport, do nothing
+            return;
+        }
+
+        if (_selectedModel) {
+            _selectedModel->rotate(QVector3D(0.0f, finishPos.x() - startPos.x(), 0.0f));
+        }
+    }
+
     void ModelScene::setZoomFactor(const qreal & zoomFactor) {
         _viewPorts.zoom(zoomFactor);
     }
@@ -114,6 +125,8 @@ namespace Scene {
         if (needToRedraw) {
             emit redraw();
         }
+
+        emit viewPortLegendChanged(_viewPorts.viewPortsLegend());
     }
 
     void ModelScene::cleanUp() {

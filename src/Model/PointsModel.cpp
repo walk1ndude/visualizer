@@ -42,9 +42,7 @@ namespace Model {
     }
     
     void PointsModel::drawModelWithoutIndices() {
-        qDebug() << glGetError() << "before" << vertexCount();
         glDrawArrays(GL_POINTS, 0, vertexCount());
-        qDebug() << glGetError();
     }
 
     void PointsModel::initShaderVariables(QOpenGLShaderProgram * program) {

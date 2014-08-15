@@ -21,6 +21,7 @@ namespace Scene {
         virtual void cleanUp() = 0;
 
         virtual void setRotation(const QVector3D & rotation) = 0;
+        virtual void setMouseRotation(const QPointF & startPos, const QPointF & finishPos) = 0;
 
         virtual QVector3D rotation() = 0;
 

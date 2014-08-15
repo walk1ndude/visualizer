@@ -41,6 +41,8 @@ namespace Quick {
         explicit ModelViewer();
         virtual ~ModelViewer();
 
+        Q_INVOKABLE void mouseRotation(const QPointF & prevPos, const QPointF & finishPos);
+
         QSize fboSize();
         void setFboSize(const QSize & fboSize);
 
@@ -130,6 +132,8 @@ namespace Quick {
         void yRangeChanged(const ModelInfo::ViewAxisRange & yRange);
         void zRangeChanged(const ModelInfo::ViewAxisRange & zRange);
 
+        void mouseRotationChanged(const QPointF & startPos, const QPointF & finishPos);
+
         void huRangeChanged();
 
         void minHUChanged(const int & minHU);
@@ -147,6 +151,8 @@ namespace Quick {
     public slots:
         void drawSlices(SliceInfo::Slices slices);
         void updatePoint(const PointsInfo::UpdatedPoint & point);
+
+        void updateViewPortLegend(const ViewPort::ViewPortLegendArray & legendArray);
     };
 }
 

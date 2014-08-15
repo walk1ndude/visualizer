@@ -1,15 +1,18 @@
 #include "ViewPort/ViewPort.h"
 
+static int viewPortId = 0;
+
 namespace ViewPort {
     ViewPort::ViewPort() {
 
     }
 
-    ViewPort::ViewPort(const ViewPortRect & boundingRect,
+    ViewPort::ViewPort(const ViewPortRect & boundingRectNormalized,
                        const QSize & surfaceSize,
                        const ProjectionType & projectionType) :
+        _id(viewPortId ++),
         _surfaceSize(surfaceSize),
-        _boundingRect(boundingRect),
+        _boundingRectNormalized(boundingRectNormalized),
         _projectionType(projectionType) {
 
         switch (projectionType) {
@@ -18,6 +21,8 @@ namespace ViewPort {
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
+
+                _text = "PERSPECTIVE";
                 break;
             case ViewPort::LEFT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
@@ -25,17 +30,23 @@ namespace ViewPort {
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
                         QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f);
+
+                _text = "LEFT";
                 break;
             case ViewPort::FRONT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
+
+                _text = "FRONT";
                 break;
             case ViewPort::TOP:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
-            break;
+
+                _text = "TOP";
+                break;
         }
     }
 
@@ -47,17 +58,29 @@ namespace ViewPort {
         _surfaceSize = surfaceSize;
     }
 
+    QString * ViewPort::text() {
+        return &_text;
+    }
+
+    int ViewPort::id() {
+        return _id;
+    }
+
     ViewPortRect ViewPort::boundingRect() const {
         return ViewPortRect(
-                    _boundingRect.x() * _surfaceSize.width(),
-                    _boundingRect.y() * _surfaceSize.height(),
-                    _boundingRect.width() * _surfaceSize.width(),
-                    _boundingRect.height() * _surfaceSize.height()
+                    _boundingRectNormalized.x() * _surfaceSize.width(),
+                    _boundingRectNormalized.y() * _surfaceSize.height(),
+                    _boundingRectNormalized.width() * _surfaceSize.width(),
+                    _boundingRectNormalized.height() * _surfaceSize.height()
                     );
     }
 
+    ViewPortRect ViewPort::boundingRectNormalized() const {
+        return _boundingRectNormalized;
+    }
+
     void ViewPort::setBoundingRect(const QRect & boundingRect) {
-        _boundingRect = boundingRect;
+        _boundingRectNormalized = boundingRect;
     }
 
     void ViewPort::zoom(const qreal & zoomFactor) {
@@ -94,24 +117,28 @@ namespace ViewPort {
     }
 
     bool ViewPort::pointInViewPort(const QVector4D & point) const {
+        return pointInViewPort(QPointF(point.x(), point.y()));
+    }
+
+    bool ViewPort::pointInViewPort(const QPointF & point) const {
         float pX = point.x();
         float pY = point.y();
 
-        float x = _boundingRect.x() * _surfaceSize.width();
-        float y = _boundingRect.y() * _surfaceSize.height();
+        float x = _boundingRectNormalized.x() * _surfaceSize.width();
+        float y = _boundingRectNormalized.y() * _surfaceSize.height();
 
-        float w = _boundingRect.width() * _surfaceSize.width();
-        float h = _boundingRect.height() * _surfaceSize.height();
+        float w = _boundingRectNormalized.width() * _surfaceSize.width();
+        float h = _boundingRectNormalized.height() * _surfaceSize.height();
 
         return (pX >= x && pY >= y && pX < x + w && pY < y + h);
     }
 
     bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
-        float x = _boundingRect.x() * _surfaceSize.width();
-        float y = _boundingRect.y() * _surfaceSize.height();
+        float x = _boundingRectNormalized.x() * _surfaceSize.width();
+        float y = _boundingRectNormalized.y() * _surfaceSize.height();
 
-        float w = _boundingRect.width() * _surfaceSize.width();
-        float h = _boundingRect.height() * _surfaceSize.height();
+        float w = _boundingRectNormalized.width() * _surfaceSize.width();
+        float h = _boundingRectNormalized.height() * _surfaceSize.height();
 
         bool invertible;
 

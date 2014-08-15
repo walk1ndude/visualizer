@@ -48,8 +48,6 @@ namespace Model {
 
                 modelPoint->position = viewPort.placeXYZAccordingToViewPort(modelPoint->position);
 
-                qDebug() << "AFTER GLREADPOXEL" << modelPoint->position;
-
                 if (viewPort.unproject(modelPoint->position, unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     

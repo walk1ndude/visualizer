@@ -36,6 +36,11 @@ namespace Render {
         emit needToRedraw();
     }
 
+    void ModelRenderer::setMouseRotation(const QPointF & startPos, const QPointF & finishPos) {
+        selectedScene()->setMouseRotation(startPos, finishPos);
+        emit needToRedraw();
+    }
+
     void ModelRenderer::setZoomFactor(const qreal & zoomFactor) {
         selectedScene()->setZoomFactor(zoomFactor);
         emit needToRedraw();
@@ -61,6 +66,8 @@ namespace Render {
 
         QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged, Qt::DirectConnection);
         QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated, Qt::DirectConnection);
+        QObject::connect(modelScene, &Scene::ModelScene::viewPortLegendChanged, this, &Render::ModelRenderer::viewPortLegendChanged,
+                         Qt::DirectConnection);
 
         AbstractRenderer::connectWithScene(scene);
     }
@@ -70,6 +77,7 @@ namespace Render {
 
         QObject::disconnect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
         QObject::disconnect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
+        QObject::connect(modelScene, &Scene::ModelScene::viewPortLegendChanged, this, &Render::ModelRenderer::viewPortLegendChanged);
 
         AbstractRenderer::disconnectWithScene(scene);
     }

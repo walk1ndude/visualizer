@@ -29,6 +29,8 @@ namespace Render {
         void modelIDChanged(const uint & modelID);
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
+        void viewPortLegendChanged(const ViewPort::ViewPortLegendArray & legendArray);
+
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);
@@ -38,6 +40,8 @@ namespace Render {
 
         // rotate selected model
         void setRotation(const QVector3D & rotation);
+
+        void setMouseRotation(const QPointF & startPos, const QPointF & finishPos);
 
         // zoom the whole scene
         void setZoomFactor(const qreal & zoomFactor);

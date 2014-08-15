@@ -17,11 +17,13 @@ namespace ViewPort {
         };
 
         explicit ViewPort();
-        explicit ViewPort(const ViewPortRect & boundingRect,
+        explicit ViewPort(const ViewPortRect & boundingRectNormalized,
                           const QSize & surfaceSize,
                           const ProjectionType & projectionType = ViewPort::LEFT);
 
         ViewPortRect boundingRect() const;
+        ViewPortRect boundingRectNormalized() const;
+
         void setBoundingRect(const QRect & boundingRect);
 
         ProjectionType projectionType() const;
@@ -37,17 +39,25 @@ namespace ViewPort {
 
         QMatrix4x4 projection() const;
 
+        QString * text();
+
+        int id();
+
         void resize(const QSize & windowSize);
 
         bool unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const;
+
         bool pointInViewPort(const QVector4D & point) const;
+        bool pointInViewPort(const QPointF & point) const;
 
         QVector3D placeXYZAccordingToViewPort(const QVector3D & xyz);
 
     private:
+        int _id;
+
         QSize _surfaceSize;
 
-        QRectF _boundingRect;
+        QRectF _boundingRectNormalized;
 
         ProjectionType _projectionType;
 
@@ -69,6 +79,8 @@ namespace ViewPort {
 
         qreal _nearVal;
         qreal _farVal;
+
+        QString _text;
 
         QVector4D calculateRayDir(const QVector4D & point) const;
 

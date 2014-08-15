@@ -74,6 +74,10 @@ namespace Quick {
         }
     }
 
+    void ModelViewer::mouseRotation(const QPointF & startPos, const QPointF & finishPos) {
+        mouseRotationChanged(startPos, finishPos);
+    }
+
     QSize ModelViewer::fboSize() {
         return _fboSize;
     }
@@ -203,13 +207,11 @@ namespace Quick {
     }
     
     void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint &point) {
-        QVariantMap pointV;
-
-        pointV.insert("name", point.name);
-        pointV.insert("position", point.position);
-        pointV.insert("modelID", point.modelId());
-
-        emit pointUpdated(pointV);
+        emit pointUpdated(QVariantMap {
+                              {"name", point.name},
+                              {"position", point.position},
+                              {"modelID", point.modelId()}
+                          });
     }
 
     QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * paintNodeData) {
@@ -228,6 +230,8 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
 
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::mouseRotationChanged, _modelRenderer, &Render::ModelRenderer::setMouseRotation, Qt::DirectConnection);
+
             QObject::connect(this, &ModelViewer::takeShotChanged, _modelRenderer, &Render::ModelRenderer::setTakeShot, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
 
@@ -242,6 +246,8 @@ namespace Quick {
             QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
+
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::viewPortLegendChanged, this, &ModelViewer::updateViewPortLegend, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -283,6 +289,20 @@ namespace Quick {
         paintNodeData->transformNode->setMatrix(paintNodeTransformMatrix);
 
         return node;
+    }
+
+    void ModelViewer::updateViewPortLegend(const ViewPort::ViewPortLegendArray & legendArray) {
+        QVariantMap legendMap;
+        
+        foreach (const ViewPort::ViewPortLegend & legend, legendArray) {
+            legendMap.insert(QString::number(legend.id), QVariantMap {
+                                 {"xNormalized", legend.x},
+                                 {"yNormalized", legend.y},
+                                 {"text", *legend.text}
+                             });
+        }
+
+        QMetaObject::invokeMethod(this, "createLegend", Q_ARG(QVariant, legendMap));
     }
 
     void ModelViewer::drawSlices(SliceInfo::Slices slices) {

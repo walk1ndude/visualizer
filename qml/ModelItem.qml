@@ -3,6 +3,7 @@ import QtQuick 2.3
 import RenderTools 1.0
 
 import "../js/settings.js" as Settings
+import "../js/helpers.js" as Helpers
 
 Item {
     id: modelItem;
@@ -89,7 +90,17 @@ Item {
                 updateIndividualInfo();
             }
 
+            function createLegend(legendArray) {
+                Helpers.createObjects(legendArray, Settings.Legends, modelViewer, "/qml/ViewPortLegend.qml");
+            }
+
             MouseArea {
+                id: mouseAreaModelItem;
+                property real prevMouseX: -1.0;
+                property real prevMouseY: -1.0;
+
+                enabled: false;
+
                 anchors.fill: parent;
                 onClicked: switch (mouse.button) {
                            case Qt.LeftButton: if (!!modelItem.selectedPointName) {
@@ -97,8 +108,19 @@ Item {
                                            mouseX * parent.fboSize.width / width,
                                            (height - mouseY) * parent.fboSize.height / height);
                                }
+
                                break;
                            }
+
+                onPressed: {
+                    prevMouseX = mouseX;
+                    prevMouseY = mouseY;
+                }
+
+                onReleased: {
+                    parent.mouseRotation(Qt.point(prevMouseX, height - prevMouseY), Qt.point(mouseX, height - mouseY));
+                }
+
                 onWheel: zoomFactor += wheel.angleDelta.y * 0.001;
             }
         }
@@ -113,6 +135,8 @@ Item {
     function show() {
         horizontalSeparator.visible = true;
         verticalSeparator.visible = true;
+
+        mouseAreaModelItem.enabled = true;
     }
 /*
     Timer {

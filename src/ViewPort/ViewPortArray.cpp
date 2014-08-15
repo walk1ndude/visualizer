@@ -29,4 +29,31 @@ namespace ViewPort {
             data()[i].zoom(zoomFactor);
         }
     }
+
+    bool ViewPortArray::canRotate(const QPointF & startPos, const QPointF & finishPos) {
+        int i = 0;
+        // find viewport with perspective projection that contains both mouse positions
+        while (
+               i < size()
+               &&
+               !(
+               data()[i].projectionType() == ViewPort::PERSPECTIVE
+               && data()[i].pointInViewPort(startPos)
+               && data()[i].pointInViewPort(finishPos)
+               )) {
+            i ++;
+        }
+
+        return (i != size());
+    }
+
+    ViewPortLegendArray ViewPortArray::viewPortsLegend() {
+        ViewPortLegendArray legendArray;
+
+        for (int i = 0; i != size(); ++ i) {
+            legendArray.append(ViewPortLegend(data()[i].id(), data()[i].boundingRectNormalized().bottomLeft(), data()[i].text()));
+        }
+
+        return legendArray;
+    }
 }

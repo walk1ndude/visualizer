@@ -48,6 +48,7 @@ namespace Scene {
         void addTexture(TextureInfo::Texture & textureInfo);
 
         virtual void setRotation(const QVector3D & rotation);
+        virtual void setMouseRotation(const QPointF & startPos, const QPointF & finishPos);
 
         // zoom the whole scene
         virtual void setZoomFactor(const qreal & zoomFactor);
@@ -85,6 +86,8 @@ namespace Scene {
 
     signals:
         void modelIDChanged(const uint & modelID);
+
+        void viewPortLegendChanged(const ViewPort::ViewPortLegendArray & legendArray);
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
