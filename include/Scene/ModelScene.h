@@ -87,7 +87,7 @@ namespace Scene {
     signals:
         void modelIDChanged(const uint & modelID);
 
-        void viewPortLegendChanged(const ViewPort::ViewPortInfoArray & infoArray);
+        void viewPortInfoChanged(const ViewPort::ViewPortInfoArray & infoArray);
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);

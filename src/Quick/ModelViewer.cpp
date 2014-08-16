@@ -247,7 +247,7 @@ namespace Quick {
             QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::viewPortLegendChanged, this, &ModelViewer::updateViewPortLegend, Qt::DirectConnection);
+            QObject::connect(_modelRenderer, &Render::ModelRenderer::viewPortInfoChanged, this, &ModelViewer::updateViewPortInfo, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -291,8 +291,10 @@ namespace Quick {
         return node;
     }
 
-    void ModelViewer::updateViewPortLegend(const ViewPort::ViewPortInfoArray & infoArray) {
+    void ModelViewer::updateViewPortInfo(const ViewPort::ViewPortInfoArray & infoArray) {
         QVariantMap infoMap;
+
+        qDebug() << "here" << width() << height();
 
         foreach (const ViewPort::ViewPortInfo & info, infoArray) {
             infoMap.insert(QString::number(info.id), QVariantMap {

@@ -66,7 +66,7 @@ namespace Render {
 
         QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged, Qt::DirectConnection);
         QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated, Qt::DirectConnection);
-        QObject::connect(modelScene, &Scene::ModelScene::viewPortLegendChanged, this, &Render::ModelRenderer::viewPortLegendChanged,
+        QObject::connect(modelScene, &Scene::ModelScene::viewPortInfoChanged, this, &Render::ModelRenderer::viewPortInfoChanged,
                          Qt::DirectConnection);
 
         AbstractRenderer::connectWithScene(scene);
@@ -77,7 +77,7 @@ namespace Render {
 
         QObject::disconnect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
         QObject::disconnect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
-        QObject::connect(modelScene, &Scene::ModelScene::viewPortLegendChanged, this, &Render::ModelRenderer::viewPortLegendChanged);
+        QObject::connect(modelScene, &Scene::ModelScene::viewPortInfoChanged, this, &Render::ModelRenderer::viewPortInfoChanged);
 
         AbstractRenderer::disconnectWithScene(scene);
     }

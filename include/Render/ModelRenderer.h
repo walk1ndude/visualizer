@@ -29,7 +29,7 @@ namespace Render {
         void modelIDChanged(const uint & modelID);
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
-        void viewPortLegendChanged(const ViewPort::ViewPortInfoArray & legendArray);
+        void viewPortInfoChanged(const ViewPort::ViewPortInfoArray & infoArray);
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);

@@ -76,7 +76,7 @@ namespace Scene {
     }
 
     void ModelScene::renderScene(const QSize & surfaceSize) {
-        emit viewPortLegendChanged(_viewPorts.viewPortsLegend());
+        emit viewPortInfoChanged(_viewPorts.viewPortsInfo());
 
         _viewPorts.resize(surfaceSize);
 

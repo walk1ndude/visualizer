@@ -40,7 +40,7 @@ namespace ViewPort {
 
         bool canRotate(const QPointF & startPos, const QPointF & finishPos);
 
-        virtual ViewPortInfoArray viewPortsLegend() final;
+        virtual ViewPortInfoArray viewPortsInfo() final;
     };
 }
 

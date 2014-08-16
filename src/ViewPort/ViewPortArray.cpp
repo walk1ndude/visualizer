@@ -49,7 +49,7 @@ namespace ViewPort {
         return false;
     }
 
-    ViewPortInfoArray ViewPortArray::viewPortsLegend() {
+    ViewPortInfoArray ViewPortArray::viewPortsInfo() {
         ViewPortInfoArray infoArray;
 
         foreach (const int & key, keys()) {
