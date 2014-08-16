@@ -5,14 +5,15 @@
 
 #include "Model/AbstractModelWithPoints.h"
 
+#include "Viewport/ViewportArray.h"
+
 namespace Scene {
     class AbstractScene : public QObject {
         Q_OBJECT
     public:
-        AbstractScene() :
-            _isInitialized(false) {}
+        AbstractScene(Viewport::ViewportArray ** viewportArray = nullptr);
 
-        virtual void initScene(const QSize & surfaceSize) = 0;
+        virtual void initScene() = 0;
         virtual void renderScene(const QSize & surfaceSize) = 0;
 
         virtual bool isEmpty() = 0;
@@ -36,7 +37,13 @@ namespace Scene {
         virtual void setZRange(const ModelInfo::ViewAxisRange & zRange) = 0;
         
         virtual void addPoint(const PointsInfo::Point & point) = 0;
+
+    protected:
+        Viewport::ViewportArray * viewportArray();
+
     private:
+        Viewport::ViewportArray ** _viewportArray;
+
         bool _isInitialized;
 
     signals:

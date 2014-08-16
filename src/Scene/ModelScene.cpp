@@ -4,11 +4,9 @@
 #include "Model/HeadModel.h"
 #include "Model/PointsModel.h"
 
-#include <QtCore/QDateTime>
-
 namespace Scene {
-    ModelScene::ModelScene() :
-        AbstractScene() {
+    ModelScene::ModelScene(Viewport::ViewportArray ** viewPortArray) :
+        AbstractScene(viewPortArray) {
 
     }
 
@@ -16,9 +14,7 @@ namespace Scene {
 
     }
 
-    void ModelScene::initScene(const QSize & surfaceSize) {
-        initializeViewPorts(surfaceSize);
-
+    void ModelScene::initScene() {
         initMaterials();
         initLightSources();
     }
@@ -43,7 +39,7 @@ namespace Scene {
     }
 
     void ModelScene::setMouseRotation(const QPointF & startPos, const QPointF & finishPos) {
-        if (!_viewPorts.canRotate(startPos, finishPos)) {
+        if (!viewportArray()->canRotate(startPos, finishPos)) {
             // mouse is not in right viewport, do nothing
             return;
         }
@@ -54,7 +50,7 @@ namespace Scene {
     }
 
     void ModelScene::setZoomFactor(const qreal & zoomFactor) {
-        _viewPorts.zoom(zoomFactor);
+        viewportArray()->zoom(zoomFactor);
     }
 
     void ModelScene::setXRange(const ModelInfo::ViewAxisRange & xRange) {
@@ -76,53 +72,15 @@ namespace Scene {
     }
 
     void ModelScene::renderScene(const QSize & surfaceSize) {
-        emit viewPortInfoChanged(_viewPorts.viewPortsInfo());
+        viewportArray()->resize(surfaceSize);
 
-        _viewPorts.resize(surfaceSize);
-
-        ViewPort::ViewPort * viewPort;
-        ViewPort::ViewPortRect boundingRect;
-
-        ViewPort::ViewPortsIterator itV (_viewPorts);
-        QListIterator<Model::AbstractModel *> itM (_models);
-
-        qint64 startTime = QDateTime::currentMSecsSinceEpoch();
-
-        // for each viewport
-        while (itV.hasNext()) {
-            itV.next();
-            viewPort = itV.value();
-
-            boundingRect = viewPort->boundingRect();
-            glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
-
-            // draw each model
-            while (itM.hasNext()) {
-                itM.next()->drawModel(viewPort);
-            }
-
-            itM.toFront();
-        }
+        QListIterator<Model::AbstractModel *> modelIterator (_models);
+        viewportArray()->render(modelIterator);
 
         /* some children, like pointsmodel can change its values after rendering -
         * for example depth buffer check affects values of points (z-coordinate)
         */
-        bool needToRedraw = false;
-
-        while (itM.hasNext()) {
-            itV.toFront();
-
-            Model::AbstractModel * model = itM.next();
-
-            while (itV.hasNext()) {
-                itV.next();
-                needToRedraw |= model->checkDepthBuffer(itV.value());
-            }
-        }
-
-        qDebug() << "rendering scene, time overall: " << QDateTime::currentMSecsSinceEpoch() - startTime << " ms";
-
-        if (needToRedraw) {
+        if (viewportArray()->postProcess(modelIterator)) {
             emit redraw();
         }
     }
@@ -161,16 +119,6 @@ namespace Scene {
                        LightInfo::Color(0.8, 0.8, 0.8, 0.6),
                        LightInfo::AmbientIntensity((GLfloat) 0.002));
     }
-
-    void ModelScene::initializeViewPorts(const QSize & surfaceSize) {
-        _viewPorts.setViewPorts(ViewPort::ViewPorts {
-                                    { QRectF(0.5, 0.5, 0.5, 0.5), ViewPort::PERSPECTIVE },
-                                    { QRectF(0, 0.5, 0.5, 0.5), ViewPort::TOP },
-                                    { QRectF(0, 0, 0.5, 0.5), ViewPort::FRONT },
-                                    { QRectF(0.5, 0, 0.5, 0.5), ViewPort::LEFT }
-                                }, surfaceSize);
-    }
-
 
     void ModelScene::addMaterial(const MaterialInfo::Emissive & emissive,
                                     const MaterialInfo::Diffuse & diffuse,

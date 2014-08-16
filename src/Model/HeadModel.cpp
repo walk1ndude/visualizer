@@ -89,7 +89,7 @@ namespace Model {
         program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort * viewPort) {
+    void HeadModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) {
         QMatrix4x4 modelMatrix = viewPort->modelVoxel(model());
 
         program->setUniformValue(_shaderView, viewPort->viewVoxel());

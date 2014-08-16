@@ -1,38 +1,40 @@
 #ifndef VIEWPORTS_H
 #define VIEWPORTS_H
 
-#include "ViewPort/ViewPort.h"
+#include "ViewPort/Viewport.h"
 
-namespace ViewPort {
-    using ViewPorts = QVector< QPair<QRectF, ProjectionType> >;
-    using ViewPortsIterator = QMapIterator<int, ViewPort *>;
+#include "Model/AbstractModel.h"
 
-    class ViewPortInfo {
+#include <QtQuick/QQuickItem>
+
+namespace Viewport {
+    using ViewportInfos = QVector< QPair<QRectF, Viewport::ProjectionType> >;
+    using ViewportsIterator = QVectorIterator<Viewport *>;
+
+    class ViewportInfo {
     public:
-        int id;
-
         QRectF boundingRectNormalized;
 
         QString * text;
 
-        ViewPortInfo() { }
+        ViewportInfo() { }
 
-        ViewPortInfo(const int & id,
-                       const QRectF & boundingRectNormalized,
-                       QString * text) :
-            id(id),
+        ViewportInfo(const QRectF & boundingRectNormalized,
+                     QString * text) :
             boundingRectNormalized(boundingRectNormalized),
             text(text) { }
     };
 
-    using ViewPortInfoArray = QVector<ViewPortInfo>;
+    using ViewPortInfoArray = QVector<ViewportInfo>;
 
-    class ViewPortArray : public QMap<int, ViewPort *> {
+    class ViewportArray : public QQuickItem {
+        Q_OBJECT
     public:
-        explicit ViewPortArray(const ViewPorts & viewPorts = ViewPorts(), const QSize & windowSize = QSize());
-        ~ViewPortArray();
+        explicit ViewportArray();
+        explicit ViewportArray(const ViewportInfos & viewports, const QSize & windowSize = QSize());
+        ~ViewportArray();
 
-        void setViewPorts(const ViewPorts & viewPorts, const QSize & windowSize);
+        void setViewports(const ViewportInfos & viewports, const QSize & windowSize);
 
         void zoom(const qreal & zoomFactor);
 
@@ -40,7 +42,16 @@ namespace ViewPort {
 
         bool canRotate(const QPointF & startPos, const QPointF & finishPos);
 
-        virtual ViewPortInfoArray viewPortsInfo() final;
+        virtual ViewPortInfoArray viewportsInfo() final;
+
+        void render(QListIterator<Model::AbstractModel *> & modelIterator);
+        bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator);
+
+    private:
+        QVector<Viewport *>  _viewportArray;
+
+    signals:
+        void viewportsChanged();
     };
 }
 

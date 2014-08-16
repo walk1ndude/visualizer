@@ -9,19 +9,18 @@
 #include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
 
-//#include "Model/AbstractModel.h"
 #include "Model/StlModel.h"
 
-#include "ViewPort/ViewPortArray.h"
+#include "Viewport/ViewportArray.h"
 
 namespace Scene {
     class ModelScene : public AbstractScene {
         Q_OBJECT
     public:
-        explicit ModelScene();
+        explicit ModelScene(Viewport::ViewportArray ** viewPortArray);
         ~ModelScene();
 
-        virtual void initScene(const QSize & surfaceSize);
+        virtual void initScene();
         virtual void renderScene(const QSize & surfaceSize);
 
         bool isEmpty();
@@ -74,20 +73,14 @@ namespace Scene {
         Model::AbstractModel * _selectedModel;
         QOpenGLTexture * _selectedTexture;
 
-        ViewPort::ViewPortArray _viewPorts;
-
         QVector3D _rotation;
 
-        ViewPort::ViewPortRect _screenSaveRect;
-
-        void initializeViewPorts(const QSize & surfaceSize);
+        Viewport::ViewportRect _screenSaveRect;
 
         void selectModel(Model::AbstractModel * model);
 
     signals:
         void modelIDChanged(const uint & modelID);
-
-        void viewPortInfoChanged(const ViewPort::ViewPortInfoArray & infoArray);
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);

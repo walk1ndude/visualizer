@@ -40,7 +40,7 @@ function hide(objects) {
     }
 }
 
-function mouseInViewPort(mouseX, mouseY, viewports) {
+function mouseInViewPort(mouseX, mouseY, viewports, viewport) {
     for (var viewportId in viewports) {
         var viewport = viewports[viewportId];
 

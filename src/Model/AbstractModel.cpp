@@ -96,7 +96,7 @@ namespace Model {
         return _mMatrix;
     }
 
-    bool AbstractModel::checkDepthBuffer(ViewPort::ViewPort * viewPort) {
+    bool AbstractModel::checkDepthBuffer(Viewport::Viewport * viewPort) {
         Q_UNUSED(viewPort);
         return false;
     }
@@ -158,7 +158,7 @@ namespace Model {
         _updateNeeded = false;
     }
 
-    void AbstractModel::drawModel(ViewPort::ViewPort * viewPort) {
+    void AbstractModel::drawModel(Viewport::Viewport * viewPort) {
         /* model can contain no vertices or | and no program
         so it can serve as a "root" model, containing some
         number of children: models with vertices and program.

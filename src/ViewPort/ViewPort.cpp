@@ -1,18 +1,27 @@
-#include "ViewPort/ViewPort.h"
+#include "Viewport/Viewport.h"
 
-namespace ViewPort {
-    ViewPort::ViewPort() {
+namespace Viewport {
+    Viewport::Viewport() {
 
     }
 
-    ViewPort::ViewPort(const ViewPortRect & boundingRectNormalized,
+    Viewport::Viewport(const ViewportRect & boundingRectNormalized,
                        const QSize & surfaceSize,
                        const ProjectionType & projectionType) :
         _surfaceSize(surfaceSize),
-        _boundingRectNormalized(boundingRectNormalized),
-        _projectionType(projectionType) {
+        _boundingRectNormalized(boundingRectNormalized) {
 
-        switch (projectionType) {
+        setProjectionType(projectionType);
+    }
+
+    Viewport::ProjectionType Viewport::projectionType() const {
+        return _projectionType;
+    }
+
+    void Viewport::setProjectionType(const ProjectionType & projectionType) {
+        _projectionType = projectionType;
+
+        switch (_projectionType) {
             case PERSPECTIVE :
                 perspective(60.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
@@ -42,29 +51,45 @@ namespace ViewPort {
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
 
+                _qRotateVoxel = QQuaternion();
+
                 _text = "TOP";
                 break;
         }
+
+        emit projectionTypeChanged();
     }
 
-    ProjectionType ViewPort::projectionType() const {
-        return _projectionType;
-    }
-
-    void ViewPort::resize(const QSize & surfaceSize) {
+    void Viewport::resize(const QSize & surfaceSize) {
         _surfaceSize = surfaceSize;
     }
 
-    QString * ViewPort::text() {
+    void Viewport::setBoundingRectNormalized(const QRectF & boundingRectNormalized) {
+        QRectF normalized = QRectF(
+                    std::min(std::max((float) boundingRectNormalized.x(), 0.0f), 1.0f),
+                    std::min(std::max((float) boundingRectNormalized.y(), 0.0f), 1.0f),
+                    boundingRectNormalized.width(),
+                    boundingRectNormalized.height()
+        );
+
+        normalized.setWidth(std::min(1.0f - normalized.x(), normalized.width()));
+        normalized.setHeight(std::min(1.0f - normalized.y(), normalized.height()));
+
+        _boundingRectNormalized = normalized;
+
+        emit boundingRectNormalizedChanged();
+    }
+
+    QString * Viewport::text() {
         return &_text;
     }
 
-    int ViewPort::id() {
+    int Viewport::id() {
         return _id;
     }
 
-    ViewPortRect ViewPort::boundingRect() const {
-        return ViewPortRect(
+    ViewportRect Viewport::boundingRect() const {
+        return ViewportRect(
                     _boundingRectNormalized.x() * _surfaceSize.width(),
                     _boundingRectNormalized.y() * _surfaceSize.height(),
                     _boundingRectNormalized.width() * _surfaceSize.width(),
@@ -72,15 +97,15 @@ namespace ViewPort {
                     );
     }
 
-    ViewPortRect ViewPort::boundingRectNormalized() const {
+    ViewportRect Viewport::boundingRectNormalized() const {
         return _boundingRectNormalized;
     }
 
-    void ViewPort::setBoundingRect(const QRect & boundingRect) {
+    void Viewport::setBoundingRect(const QRect & boundingRect) {
         _boundingRectNormalized = boundingRect;
     }
 
-    void ViewPort::zoom(const qreal & zoomFactor) {
+    void Viewport::zoom(const qreal & zoomFactor) {
         _pMatrix.setToIdentity();
         if (_projectionType == PERSPECTIVE) {
             // fov will be in 1/4 to 3/2 from initial fov
@@ -94,30 +119,30 @@ namespace ViewPort {
         }
     }
 
-    QMatrix4x4 ViewPort::projection() const {
+    QMatrix4x4 Viewport::projection() const {
         return _pMatrix;
     }
 
-    QMatrix4x4 ViewPort::view() const {
+    QMatrix4x4 Viewport::view() const {
         return _vMatrix;
     }
 
-    QMatrix4x4 ViewPort::viewVoxel() const {
+    QMatrix4x4 Viewport::viewVoxel() const {
         return _vMatrixVoxel;
     }
 
-    QMatrix4x4 ViewPort::modelVoxel(const QMatrix4x4 & model) const {
+    QMatrix4x4 Viewport::modelVoxel(const QMatrix4x4 & model) const {
         QMatrix4x4 modelMatrix(model);
         modelMatrix.rotate(_qRotateVoxel);
 
         return modelMatrix;
     }
 
-    bool ViewPort::pointInViewPort(const QVector4D & point) const {
-        return pointInViewPort(QPointF(point.x(), point.y()));
+    bool Viewport::pointInViewport(const QVector4D & point) const {
+        return pointInViewport(QPointF(point.x(), point.y()));
     }
 
-    bool ViewPort::pointInViewPort(const QPointF & point) const {
+    bool Viewport::pointInViewport(const QPointF & point) const {
         float pX = point.x();
         float pY = point.y();
 
@@ -130,7 +155,7 @@ namespace ViewPort {
         return (pX >= x && pY >= y && pX < x + w && pY < y + h);
     }
 
-    bool ViewPort::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
+    bool Viewport::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
         float x = _boundingRectNormalized.x() * _surfaceSize.width();
         float y = _boundingRectNormalized.y() * _surfaceSize.height();
 
@@ -163,7 +188,7 @@ namespace ViewPort {
         }
     }
 
-    QVector3D ViewPort::placeXYZAccordingToViewPort(const QVector3D & xyz) {
+    QVector3D Viewport::placeXYZAccordingToViewPort(const QVector3D & xyz) {
         /* In different viewports axes have different meaning.
          * For example in "Left" z and x axes change their positions,
          * so x axis turns out to be the axis that determines the
@@ -180,7 +205,7 @@ namespace ViewPort {
         }
     }
 
-    void ViewPort::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
+    void Viewport::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
         _vMatrix.setToIdentity();
         _vMatrixVoxel.setToIdentity();
         _vMatrix.lookAt(eye, center, up);
@@ -197,7 +222,7 @@ namespace ViewPort {
         _up = up;
     }
 
-    void ViewPort::ortho(const float & left, const float & right, const float & bottom,
+    void Viewport::ortho(const float & left, const float & right, const float & bottom,
                             const float & top, const float & nearVal, const float & farVal) {
         _pMatrix.setToIdentity();
         _pMatrix.ortho(left, right, bottom, top, nearVal, farVal);
@@ -206,7 +231,7 @@ namespace ViewPort {
         _farVal = farVal;
     }
 
-    void ViewPort::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
+    void Viewport::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
         _pMatrix.setToIdentity();
         _pMatrix.perspective(fov, aspectRatio, nearVal, farVal);
 

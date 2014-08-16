@@ -65,7 +65,33 @@ Item {
             }
 
             function updateViewPortInfo(viewPortArray) {
-                Helpers.createObjects(viewPortArray, Settings.ViewPorts, modelViewer, "/qml/ViewPort.qml");
+                //Helpers.createObjects(viewPortArray, Settings.ViewPorts, modelViewer, "/qml/ViewPort.qml");
+            }
+
+            ViewportArray {
+                id: viewportArray;
+
+                anchors.fill: parent;
+
+                ViewportEx  {
+                    projectionType: Viewport.PERSPECTIVE;
+                    boundingRect: Qt.rect(0.5, 0.5, 0.5, 0.5);
+                }
+
+                ViewportEx {
+                    projectionType: Viewport.TOP;
+                    boundingRect: Qt.rect(0, 0.5, 0.5, 0.5);
+                }
+
+                ViewportEx {
+                    projectionType: Viewport.FRONT;
+                    boundingRect: Qt.rect(0, 0, 0.5, 0.5);
+                }
+
+                ViewportEx {
+                    projectionType: Viewport.LEFT;
+                    boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
+                }
             }
 
             MouseArea {
@@ -113,23 +139,4 @@ Item {
     function show() {
         mouseAreaModelItem.enabled = true;
     }
-/*
-    Timer {
-        id: angleShotTimer
-        interval: 400
-
-        repeat: true
-        running: false
-
-        onTriggered: {
-            modelHud.angleShot += 1.0;
-
-            if (modelHud.angleShot > 179.0) {
-                angleShotTimer.running = false;
-                modelHud.angleShot = 0.0;
-
-                modelItemItem.takeShot = false;
-            }
-        }
-    }*/
 }

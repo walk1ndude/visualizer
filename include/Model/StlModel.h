@@ -61,7 +61,7 @@ namespace Model {
 
     protected:
         void initShaderVariables(QOpenGLShaderProgram * program);
-        void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort * viewPort);
+        void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
 
         void glStatesEnable();

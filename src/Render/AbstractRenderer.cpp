@@ -76,7 +76,7 @@ namespace Render {
         QMutexLocker locker(&_renderMutex);
 
         if (!scene->isInitialized()) {
-            scene->initScene(_surfaceSize);
+            scene->initScene();
         }
 
         // no more connection with previous scene
@@ -87,6 +87,7 @@ namespace Render {
         _selectedScene = scene;
         connectWithScene(_selectedScene);
 
+        // for cleanup reasons mostly
         _sceneHistory.insert(scene);
     }
 

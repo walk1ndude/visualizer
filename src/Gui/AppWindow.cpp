@@ -12,9 +12,6 @@ namespace Gui {
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
 
-        // path to db
-        qDebug() << _engine->offlineStoragePath();
-
         fetchConnections();
     }
 
@@ -106,6 +103,8 @@ namespace Gui {
 
     void AppWindow::registerQmlTypes() {
         qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
+        qmlRegisterType<Viewport::ViewportArray>("RenderTools", 1, 0, "ViewportArray");
+        qmlRegisterType<Viewport::Viewport>("RenderTools", 1, 0, "Viewport");
     }
 
     void AppWindow::show() {

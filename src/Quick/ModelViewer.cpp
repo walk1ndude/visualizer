@@ -53,19 +53,38 @@ private:
 
     QMutex _textureMutex;
 
-    QSGTexture *_texture;
-    QQuickWindow *_window;
+    QSGTexture * _texture;
+    QQuickWindow * _window;
 };
 
 namespace Quick {
     ModelViewer::ModelViewer() :
-        _modelRenderer(0),
+        _modelRenderer(nullptr),
+        _viewportArray(nullptr),
         _takeShot(false),
         _modelID(-1) {
 
         setFlag(QQuickItem::ItemHasContents);
 
         addModelScene();
+
+        QObject::connect(this, &ModelViewer::childrenChanged, [=]() {
+            _viewportArray = nullptr;
+
+            //find viewportArray that is the nearest to the viewer, if many are present
+            for (QQuickItem * child : childItems()) {
+                if (Viewport::ViewportArray * viewportArray = dynamic_cast<Viewport::ViewportArray *>(child)) {
+                    if (_viewportArray) {
+                        if (_viewportArray->z() < viewportArray->z()) {
+                            _viewportArray = viewportArray;
+                        }
+                    }
+                    else {
+                        _viewportArray = viewportArray;
+                    }
+                }
+            }
+        });
     }
 
     ModelViewer::~ModelViewer() {
@@ -204,7 +223,7 @@ namespace Quick {
     }
 
     void ModelViewer::addModelScene() {
-        _scenes.push_back(new Scene::ModelScene);
+        _scenes.push_back(new Scene::ModelScene(&_viewportArray));
     }
     
     void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint &point) {
@@ -213,6 +232,14 @@ namespace Quick {
                               {"position", point.position},
                               {"modelID", point.modelId()}
                           });
+    }
+
+    Viewport::ViewportArray * ModelViewer::viewportArray() {
+        return _viewportArray;
+    }
+
+    void ModelViewer::setViewportArray(Viewport::ViewportArray * viewPortArray) {
+        _viewportArray = viewPortArray;
     }
 
     QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * paintNodeData) {
@@ -247,8 +274,6 @@ namespace Quick {
             QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
-
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::viewPortInfoChanged, this, &ModelViewer::updateViewPortInfo, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -290,22 +315,6 @@ namespace Quick {
         paintNodeData->transformNode->setMatrix(paintNodeTransformMatrix);
 
         return node;
-    }
-
-    void ModelViewer::updateViewPortInfo(const ViewPort::ViewPortInfoArray & infoArray) {
-        QVariantMap infoMap;
-
-        foreach (const ViewPort::ViewPortInfo & info, infoArray) {
-            infoMap.insert(QString::number(info.id), QVariantMap {
-                                 {"x", info.boundingRectNormalized.x() * this->width()},
-                                 {"y", info.boundingRectNormalized.y() * this->height()},
-                                 {"width", info.boundingRectNormalized.width() * this->width()},
-                                 {"height", info.boundingRectNormalized.height() * this->height()},
-                                 {"text", *info.text}
-                             });
-        }
-
-        QMetaObject::invokeMethod(this, "updateViewPortInfo", Q_ARG(QVariant, infoMap));
     }
 
     void ModelViewer::drawSlices(SliceInfo::Slices slices) {

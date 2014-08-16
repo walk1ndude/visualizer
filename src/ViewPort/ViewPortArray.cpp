@@ -1,61 +1,102 @@
-#include "ViewPort/ViewPortArray.h"
+#include "Viewport/ViewportArray.h"
 
 static int viewPortId = 0;
 
-namespace ViewPort {
-    ViewPortArray::ViewPortArray(const ViewPorts & viewPorts, const QSize & windowSize) :
-        QMap<int, ViewPort *>() {
-        setViewPorts(viewPorts, windowSize);
+namespace Viewport {
+    ViewportArray::ViewportArray(const ViewportInfos & viewports, const QSize & windowSize) {
+        setViewports(viewports, windowSize);
     }
 
-    ViewPortArray::~ViewPortArray() {
-        qDeleteAll(begin(), end());
+    ViewportArray::ViewportArray() {
+        QObject::connect(this, &ViewportArray::childrenChanged, [=]() {
+            _viewportArray.clear();
+
+            for (QQuickItem * child : childItems()) {
+                if (Viewport * viewport = dynamic_cast<Viewport *>(child)) {
+                    _viewportArray.append(viewport);
+                }
+            }
+        });
     }
 
-    void ViewPortArray::setViewPorts(const ViewPorts & viewPorts, const QSize & windowSize) {
-        clear();
+    ViewportArray::~ViewportArray() {
+        _viewportArray.clear();
+    }
 
-        QPair<QRectF, ProjectionType> viewPortInfo;
-        QVectorIterator<QPair<QRectF, ProjectionType> >it(viewPorts);
+    void ViewportArray::setViewports(const ViewportInfos & viewports, const QSize & windowSize) {
+        _viewportArray.clear();
 
-        while (it.hasNext()) {
-            viewPortInfo = it.next();
-            insert(viewPortId ++, new ViewPort(viewPortInfo.first, windowSize, viewPortInfo.second));
+        QPair<QRectF, Viewport::ProjectionType> viewPortInfo;
+        QVectorIterator<QPair<QRectF, Viewport::ProjectionType> >it(viewports);
+
+        for (const QPair<QRectF, Viewport::ProjectionType> & viewportInfo : viewports) {
+            _viewportArray.push_back(new Viewport(viewPortInfo.first, windowSize, viewPortInfo.second));
         }
     }
 
-    void ViewPortArray::resize(const QSize & surfaceSize) {
-        foreach (ViewPort * viewPort, values()) {
-            viewPort->resize(surfaceSize);
+    void ViewportArray::resize(const QSize & surfaceSize) {
+        for (Viewport * viewport : _viewportArray) {
+            viewport->resize(surfaceSize);
         }
     }
 
-    void ViewPortArray::zoom(const qreal & zoomFactor) {
-        foreach (ViewPort * viewPort, values()) {
-            viewPort->zoom(zoomFactor);
+    void ViewportArray::zoom(const qreal & zoomFactor) {
+        for (Viewport * viewport : _viewportArray) {
+            viewport->zoom(zoomFactor);
         }
     }
 
-    bool ViewPortArray::canRotate(const QPointF & startPos, const QPointF & finishPos) {
+    bool ViewportArray::canRotate(const QPointF & startPos, const QPointF & finishPos) {
         // find viewport with perspective projection that contains both mouse positions
-        foreach (ViewPort * viewPort, values()) {
-            if (viewPort->projectionType() == PERSPECTIVE
-                    && viewPort->pointInViewPort(startPos)
-                    && viewPort->pointInViewPort(finishPos)) {
+        /*foreach (Viewport * viewport, data()) {
+            if (viewport->projectionType() == Viewport::PERSPECTIVE
+                    && viewport->pointInViewport(startPos)
+                    && viewport->pointInViewport(finishPos)) {
                 return true;
             }
-        }
+        }*/
 
         return false;
     }
 
-    ViewPortInfoArray ViewPortArray::viewPortsInfo() {
+    ViewPortInfoArray ViewportArray::viewportsInfo() {
         ViewPortInfoArray infoArray;
 
-        foreach (const int & key, keys()) {
-            infoArray.append(ViewPortInfo(key, value(key)->boundingRectNormalized(), value(key)->text()));
+        for (Viewport * viewport : _viewportArray) {
+            qDebug() << viewport->boundingRectNormalized();
+            infoArray.append(ViewportInfo(viewport->boundingRectNormalized(), viewport->text()));
         }
 
         return infoArray;
+    }
+
+    void ViewportArray::render(QListIterator<Model::AbstractModel *> & modelIterator) {
+        ViewportRect boundingRect;
+
+        for (Viewport * viewport : _viewportArray) {
+            boundingRect = viewport->boundingRect();
+            glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
+
+            // draw each model
+            while (modelIterator.hasNext()) {
+                modelIterator.next()->drawModel(viewport);
+            }
+
+            modelIterator.toFront();
+        }
+    }
+
+    bool ViewportArray::postProcess(QListIterator<Model::AbstractModel *> & modelIterator) {
+        bool needToRedraw = false;
+
+        while (modelIterator.hasNext()) {
+            Model::AbstractModel * model = modelIterator.next();
+
+            for (Viewport * viewport : _viewportArray) {
+                needToRedraw |= model->checkDepthBuffer(viewport);
+            }
+        }
+
+        return needToRedraw;
     }
 }

@@ -25,6 +25,6 @@
         <file>shaders/pointsFragment.glsl</file>
         <file>js/settings.js</file>
         <file>qml/IndividualInfoModel.qml</file>
-        <file>qml/ViewPort.qml</file>
+        <file>qml/ViewportEx.qml</file>
     </qresource>
 </RCC>

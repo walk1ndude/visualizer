@@ -3,29 +3,43 @@
 
 #include <QtGui/QMatrix4x4>
 
-namespace ViewPort {
-    using ViewPortRect = QRectF;
+#include <QtQuick/QQuickItem>
 
-    enum ProjectionType {
-        PERSPECTIVE = 0,
-        LEFT = 1,
-        FRONT = 2,
-        TOP = 3
-    };
+namespace Viewport {
+    using ViewportRect = QRectF;
 
-    class ViewPort {
+    class Viewport : public QQuickItem {
+        Q_PROPERTY(QRectF boundingRect READ boundingRectNormalized
+                   WRITE setBoundingRectNormalized NOTIFY boundingRectNormalizedChanged)
+
+        Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType NOTIFY projectionTypeChanged)
+
+        Q_ENUMS(ProjectionType)
+
+        Q_OBJECT
     public:
-        explicit ViewPort();
-        explicit ViewPort(const ViewPortRect & boundingRectNormalized,
+        enum ProjectionType {
+            PERSPECTIVE = 0,
+            LEFT = 1,
+            FRONT = 2,
+            TOP = 3
+        };
+
+        explicit Viewport();
+        explicit Viewport(const ViewportRect & boundingRectNormalized,
                           const QSize & surfaceSize,
                           const ProjectionType & projectionType = LEFT);
 
-        ViewPortRect boundingRect() const;
-        ViewPortRect boundingRectNormalized() const;
+        ViewportRect boundingRect() const;
+
+        ViewportRect boundingRectNormalized() const;
+
+        void setBoundingRectNormalized(const QRectF & boundingRectNormalized);
 
         void setBoundingRect(const QRect & boundingRect);
 
         ProjectionType projectionType() const;
+        void setProjectionType(const ProjectionType & projectionType);
 
         void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
 
@@ -46,8 +60,8 @@ namespace ViewPort {
 
         bool unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const;
 
-        bool pointInViewPort(const QVector4D & point) const;
-        bool pointInViewPort(const QPointF & point) const;
+        bool pointInViewport(const QVector4D & point) const;
+        bool pointInViewport(const QPointF & point) const;
 
         QVector3D placeXYZAccordingToViewPort(const QVector3D & xyz);
 
@@ -87,6 +101,10 @@ namespace ViewPort {
                    const float & top, const float & nearVal, const float & farVal);
 
         void perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal);
+
+    signals:
+        void boundingRectNormalizedChanged();
+        void projectionTypeChanged();
     };
 }
 #endif // VIEWPORT_H

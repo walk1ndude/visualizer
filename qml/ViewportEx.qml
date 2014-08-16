@@ -1,8 +1,10 @@
 import QtQuick 2.3
 
-Item {
+import RenderTools 1.0
+
+Viewport {
     id: viewPortHud
-    property string text: "";
+    property string text: projectionType;
 
     property color color: "green"
 

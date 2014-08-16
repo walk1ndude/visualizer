@@ -83,14 +83,15 @@ SOURCES +=  src/main.cpp \
             src/Parser/StlReader.cpp \
             src/Render/AbstractRenderer.cpp \
             src/Render/ModelRenderer.cpp \
-            src/ViewPort/ViewPort.cpp \
-            src/ViewPort/ViewPortArray.cpp \
             src/Model/AbstractModel.cpp \
             src/Model/HeadModel.cpp \
             src/Model/StlModel.cpp \
             src/Scene/ModelScene.cpp \
-    src/Model/PointsModel.cpp \
-    src/Model/AbstractModelWithPoints.cpp
+            src/Model/PointsModel.cpp \
+            src/Model/AbstractModelWithPoints.cpp \
+            src/Scene/AbstractScene.cpp \
+            src/Viewport/Viewport.cpp \
+            src/Viewport/ViewportArray.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -101,8 +102,6 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Parser/StlReader.h \
             include/Render/AbstractRenderer.h \
             include/Render/ModelRenderer.h \
-            include/ViewPort/ViewPort.h \
-            include/ViewPort/ViewPortArray.h \
             include/Model/AbstractModel.h \
             include/Model/HeadModel.h \
             include/Model/StlModel.h \
@@ -118,6 +117,8 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Parser/Helpers.hpp \
             include/Info/PointsInfo.h \
             include/Model/PointsModel.h \
-    include/Model/AbstractModelWithPoints.h
+            include/Model/AbstractModelWithPoints.h \
+            include/Viewport/Viewport.h \
+            include/Viewport/ViewportArray.h
 
 RESOURCES += resources.qrc

@@ -6,7 +6,7 @@
 
 #include "Render/AbstractRenderer.h"
 
-#include "ViewPort/ViewPortArray.h"
+#include "Viewport/ViewportArray.h"
 
 #include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
@@ -28,8 +28,6 @@ namespace Render {
     signals:
         void modelIDChanged(const uint & modelID);
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
-
-        void viewPortInfoChanged(const ViewPort::ViewPortInfoArray & infoArray);
 
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
