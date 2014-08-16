@@ -25,13 +25,13 @@ namespace Model {
         _points->fillBuffers(_modelPoints);
     }
     
-    bool AbstractModelWithPoints::checkDepthBuffer(ViewPort::ViewPort & viewPort) {
+    bool AbstractModelWithPoints::checkDepthBuffer(ViewPort::ViewPort * viewPort) {
         QVector4D unprojectedPoint;
         
         bool updateNeeded = false;
        
         foreach (PointsInfo::ModelPoint * modelPoint, modelPoints()) {
-            if (viewPort.pointInViewPort(modelPoint->position) && !modelPoint->isPositionCalculated()) {
+            if (viewPort->pointInViewPort(modelPoint->position) && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
                 
                 modelPoint->position.setX(std::round(modelPoint->position.x()));
@@ -46,9 +46,9 @@ namespace Model {
                 
                 modelPoint->position.setZ(posZ / 65536.0f);
 
-                modelPoint->position = viewPort.placeXYZAccordingToViewPort(modelPoint->position);
+                modelPoint->position = viewPort->placeXYZAccordingToViewPort(modelPoint->position);
 
-                if (viewPort.unproject(modelPoint->position, unprojectedPoint)) {
+                if (viewPort->unproject(modelPoint->position, unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     
                     updateNeeded = true;

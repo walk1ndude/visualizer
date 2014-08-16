@@ -1,59 +1,61 @@
 #include "ViewPort/ViewPortArray.h"
 
+static int viewPortId = 0;
+
 namespace ViewPort {
     ViewPortArray::ViewPortArray(const ViewPorts & viewPorts, const QSize & windowSize) :
-        QVector() {
+        QMap<int, ViewPort *>() {
         setViewPorts(viewPorts, windowSize);
+    }
+
+    ViewPortArray::~ViewPortArray() {
+        qDeleteAll(begin(), end());
     }
 
     void ViewPortArray::setViewPorts(const ViewPorts & viewPorts, const QSize & windowSize) {
         clear();
 
-        QVectorIterator<QPair<QRectF, ViewPort::ProjectionType> >it(viewPorts);
-        QPair<QRectF, ViewPort::ProjectionType> viewPort;
+        QPair<QRectF, ProjectionType> viewPortInfo;
+        QVectorIterator<QPair<QRectF, ProjectionType> >it(viewPorts);
 
         while (it.hasNext()) {
-            viewPort = it.next();
-            push_back(ViewPort(viewPort.first, windowSize, viewPort.second));
+            viewPortInfo = it.next();
+            insert(viewPortId ++, new ViewPort(viewPortInfo.first, windowSize, viewPortInfo.second));
         }
     }
 
     void ViewPortArray::resize(const QSize & surfaceSize) {
-        for (int i = 0; i != size(); ++ i) {
-            data()[i].resize(surfaceSize);
+        foreach (ViewPort * viewPort, values()) {
+            viewPort->resize(surfaceSize);
         }
     }
 
     void ViewPortArray::zoom(const qreal & zoomFactor) {
-        for (int i = 0; i != size(); ++ i) {
-            data()[i].zoom(zoomFactor);
+        foreach (ViewPort * viewPort, values()) {
+            viewPort->zoom(zoomFactor);
         }
     }
 
     bool ViewPortArray::canRotate(const QPointF & startPos, const QPointF & finishPos) {
-        int i = 0;
         // find viewport with perspective projection that contains both mouse positions
-        while (
-               i < size()
-               &&
-               !(
-               data()[i].projectionType() == ViewPort::PERSPECTIVE
-               && data()[i].pointInViewPort(startPos)
-               && data()[i].pointInViewPort(finishPos)
-               )) {
-            i ++;
+        foreach (ViewPort * viewPort, values()) {
+            if (viewPort->projectionType() == PERSPECTIVE
+                    && viewPort->pointInViewPort(startPos)
+                    && viewPort->pointInViewPort(finishPos)) {
+                return true;
+            }
         }
 
-        return (i != size());
+        return false;
     }
 
-    ViewPortLegendArray ViewPortArray::viewPortsLegend() {
-        ViewPortLegendArray legendArray;
+    ViewPortInfoArray ViewPortArray::viewPortsLegend() {
+        ViewPortInfoArray infoArray;
 
-        for (int i = 0; i != size(); ++ i) {
-            legendArray.append(ViewPortLegend(data()[i].id(), data()[i].boundingRectNormalized(), data()[i].text()));
+        foreach (const int & key, keys()) {
+            infoArray.append(ViewPortInfo(key, value(key)->boundingRectNormalized(), value(key)->text()));
         }
 
-        return legendArray;
+        return infoArray;
     }
 }

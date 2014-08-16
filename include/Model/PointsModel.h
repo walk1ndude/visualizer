@@ -70,7 +70,7 @@ namespace Model {
         void initShaderVariables(QOpenGLShaderProgram * program);
 
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
-        void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort);
+        void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort * viewPort);
         
     protected:
         virtual void drawModelWithoutIndices();

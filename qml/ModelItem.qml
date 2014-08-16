@@ -64,8 +64,8 @@ Item {
                 updateIndividualInfo();
             }
 
-            function createLegend(legendArray) {
-                Helpers.createObjects(legendArray, Settings.Legends, modelViewer, "/qml/ViewPortLegend.qml");
+            function updateViewPortInfo(viewPortArray) {
+                Helpers.createObjects(viewPortArray, Settings.ViewPorts, modelViewer, "/qml/ViewPort.qml");
             }
 
             MouseArea {
@@ -81,6 +81,10 @@ Item {
                                modelViewer.selectedPointPosition = Qt.point(
                                            mouseX * parent.fboSize.width / width,
                                            (height - mouseY) * parent.fboSize.height / height);
+                               }
+
+                               if (mouse.modifiers && Qt.ShiftModifier) {
+                                   Helpers.mouseInViewPort(mouseX, height - mouseY, Settings.ViewPorts[modelViewer]);
                                }
 
                                break;

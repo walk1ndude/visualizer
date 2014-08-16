@@ -4,11 +4,10 @@
 #include "ViewPort/ViewPort.h"
 
 namespace ViewPort {
-    using ViewPortInfo = QPair<QRectF, ViewPort::ProjectionType>;
-    using ViewPorts = QVector<ViewPortInfo>;
-    using ViewPortsIterator = QMutableVectorIterator<ViewPort>;
+    using ViewPorts = QVector< QPair<QRectF, ProjectionType> >;
+    using ViewPortsIterator = QMapIterator<int, ViewPort *>;
 
-    class ViewPortLegend {
+    class ViewPortInfo {
     public:
         int id;
 
@@ -16,9 +15,9 @@ namespace ViewPort {
 
         QString * text;
 
-        ViewPortLegend() { }
+        ViewPortInfo() { }
 
-        ViewPortLegend(const int & id,
+        ViewPortInfo(const int & id,
                        const QRectF & boundingRectNormalized,
                        QString * text) :
             id(id),
@@ -26,11 +25,12 @@ namespace ViewPort {
             text(text) { }
     };
 
-    using ViewPortLegendArray = QVector<ViewPortLegend>;
+    using ViewPortInfoArray = QVector<ViewPortInfo>;
 
-    class ViewPortArray : public QVector<ViewPort> {
+    class ViewPortArray : public QMap<int, ViewPort *> {
     public:
         explicit ViewPortArray(const ViewPorts & viewPorts = ViewPorts(), const QSize & windowSize = QSize());
+        ~ViewPortArray();
 
         void setViewPorts(const ViewPorts & viewPorts, const QSize & windowSize);
 
@@ -40,7 +40,7 @@ namespace ViewPort {
 
         bool canRotate(const QPointF & startPos, const QPointF & finishPos);
 
-        virtual ViewPortLegendArray viewPortsLegend() final;
+        virtual ViewPortInfoArray viewPortsLegend() final;
     };
 }
 

@@ -27,7 +27,7 @@ namespace Model {
 
         virtual void rotate(const QVector3D & rotation) final;
 
-        virtual void drawModel(ViewPort::ViewPort & viewPort) final;
+        virtual void drawModel(ViewPort::ViewPort * viewPort) final;
 
         virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
         virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
@@ -101,7 +101,7 @@ namespace Model {
 
         virtual void queueForUpdate() final;
 
-        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort);
+        virtual bool checkDepthBuffer(ViewPort::ViewPort * viewPort);
 
     protected:
         QMutex _modelMutex;
@@ -110,7 +110,7 @@ namespace Model {
                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
         
         virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort * viewPort) = 0;
         virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void glStatesEnable() { }

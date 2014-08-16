@@ -84,7 +84,7 @@ namespace Model {
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
 
         virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) = 0;
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort * viewPort) = 0;
         virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void setShaderVariables();
@@ -92,7 +92,7 @@ namespace Model {
         virtual PointsModel * pointsModel() final;
         virtual PointsInfo::ModelPoints modelPoints() final;
         
-        virtual bool checkDepthBuffer(ViewPort::ViewPort & viewPort) final;
+        virtual bool checkDepthBuffer(ViewPort::ViewPort * viewPort) final;
 
     private:
         PointsModel * _points;

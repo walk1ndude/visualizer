@@ -43,9 +43,9 @@ namespace Model {
         program->setAttributeBuffer(_shaderNormal, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void StlModel::setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort & viewPort) {
+    void StlModel::setShaderVariables(QOpenGLShaderProgram * program, ViewPort::ViewPort * viewPort) {
         program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
-        program->setUniformValue(_shaderMPV, viewPort.projection() * viewPort.view() * model());
-        program->setUniformValue(_shaderNormalMatrix, (model() * viewPort.view()).normalMatrix());
+        program->setUniformValue(_shaderMPV, viewPort->projection() * viewPort->view() * model());
+        program->setUniformValue(_shaderNormalMatrix, (model() * viewPort->view()).normalMatrix());
     }
 }

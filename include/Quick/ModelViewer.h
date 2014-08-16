@@ -152,7 +152,7 @@ namespace Quick {
         void drawSlices(SliceInfo::Slices slices);
         void updatePoint(const PointsInfo::UpdatedPoint & point);
 
-        void updateViewPortLegend(const ViewPort::ViewPortLegendArray & legendArray);
+        void updateViewPortLegend(const ViewPort::ViewPortInfoArray & infoArray);
     };
 }
 

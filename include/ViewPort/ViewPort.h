@@ -6,20 +6,19 @@
 namespace ViewPort {
     using ViewPortRect = QRectF;
 
+    enum ProjectionType {
+        PERSPECTIVE = 0,
+        LEFT = 1,
+        FRONT = 2,
+        TOP = 3
+    };
+
     class ViewPort {
     public:
-
-        enum ProjectionType {
-            PERSPECTIVE = 0,
-            LEFT = 1,
-            FRONT = 2,
-            TOP = 3
-        };
-
         explicit ViewPort();
         explicit ViewPort(const ViewPortRect & boundingRectNormalized,
                           const QSize & surfaceSize,
-                          const ProjectionType & projectionType = ViewPort::LEFT);
+                          const ProjectionType & projectionType = LEFT);
 
         ViewPortRect boundingRect() const;
         ViewPortRect boundingRectNormalized() const;

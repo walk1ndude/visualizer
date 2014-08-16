@@ -4,13 +4,15 @@ Item {
     id: viewPortHud
     property string text: "";
 
+    property color color: "green"
+
     Rectangle {
         color: "transparent";
 
         anchors.fill: parent
 
         border {
-            color: "green";
+            color: viewPortHud.color;
         }
 
         Text {
@@ -25,7 +27,7 @@ Item {
                 leftMargin: 0.2 * text.height;
             }
 
-            color: "green";
+            color: viewPortHud.color;
 
             font {
                 capitalization: Font.SmallCaps;

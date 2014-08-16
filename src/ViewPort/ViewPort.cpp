@@ -1,7 +1,5 @@
 #include "ViewPort/ViewPort.h"
 
-static int viewPortId = 0;
-
 namespace ViewPort {
     ViewPort::ViewPort() {
 
@@ -10,13 +8,12 @@ namespace ViewPort {
     ViewPort::ViewPort(const ViewPortRect & boundingRectNormalized,
                        const QSize & surfaceSize,
                        const ProjectionType & projectionType) :
-        _id(viewPortId ++),
         _surfaceSize(surfaceSize),
         _boundingRectNormalized(boundingRectNormalized),
         _projectionType(projectionType) {
 
         switch (projectionType) {
-            case ViewPort::PERSPECTIVE :
+            case PERSPECTIVE :
                 perspective(60.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
 
@@ -24,7 +21,7 @@ namespace ViewPort {
 
                 _text = "PERSPECTIVE";
                 break;
-            case ViewPort::LEFT:
+            case LEFT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
 
@@ -33,7 +30,7 @@ namespace ViewPort {
 
                 _text = "LEFT";
                 break;
-            case ViewPort::FRONT:
+            case FRONT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
 
@@ -41,7 +38,7 @@ namespace ViewPort {
 
                 _text = "FRONT";
                 break;
-            case ViewPort::TOP:
+            case TOP:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
 
@@ -50,7 +47,7 @@ namespace ViewPort {
         }
     }
 
-    ViewPort::ProjectionType ViewPort::projectionType() const {
+    ProjectionType ViewPort::projectionType() const {
         return _projectionType;
     }
 
@@ -85,7 +82,7 @@ namespace ViewPort {
 
     void ViewPort::zoom(const qreal & zoomFactor) {
         _pMatrix.setToIdentity();
-        if (_projectionType == ViewPort::PERSPECTIVE) {
+        if (_projectionType == PERSPECTIVE) {
             // fov will be in 1/4 to 3/2 from initial fov
             float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
             float b = (_eye.z() + a) / 4.0f;
@@ -174,9 +171,9 @@ namespace ViewPort {
          * of x in return
          */
         switch (_projectionType) {
-        case ViewPort::LEFT:
+        case LEFT:
             return QVector3D(xyz.z(), xyz.y(), xyz.x());
-        case ViewPort::FRONT:
+        case FRONT:
             return QVector3D(xyz.x(), xyz.z(), xyz.y());
         default:
             return xyz;
@@ -188,7 +185,7 @@ namespace ViewPort {
         _vMatrixVoxel.setToIdentity();
         _vMatrix.lookAt(eye, center, up);
 
-        if (_projectionType == ViewPort::PERSPECTIVE) {
+        if (_projectionType == PERSPECTIVE) {
             _vMatrixVoxel.lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
         }
         else {

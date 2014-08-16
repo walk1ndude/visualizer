@@ -80,7 +80,7 @@ namespace Scene {
 
         _viewPorts.resize(surfaceSize);
 
-        ViewPort::ViewPort viewPort;
+        ViewPort::ViewPort * viewPort;
         ViewPort::ViewPortRect boundingRect;
 
         ViewPort::ViewPortsIterator itV (_viewPorts);
@@ -90,13 +90,10 @@ namespace Scene {
 
         // for each viewport
         while (itV.hasNext()) {
-            viewPort = itV.next();
+            itV.next();
+            viewPort = itV.value();
 
-            boundingRect = viewPort.boundingRect();
-            if (viewPort.projectionType() == ViewPort::ViewPort::TOP) {
-                _screenSaveRect = boundingRect;
-            }
-
+            boundingRect = viewPort->boundingRect();
             glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
 
             // draw each model
@@ -118,7 +115,8 @@ namespace Scene {
             Model::AbstractModel * model = itM.next();
 
             while (itV.hasNext()) {
-                needToRedraw |= model->checkDepthBuffer(itV.next());
+                itV.next();
+                needToRedraw |= model->checkDepthBuffer(itV.value());
             }
         }
 
@@ -165,29 +163,12 @@ namespace Scene {
     }
 
     void ModelScene::initializeViewPorts(const QSize & surfaceSize) {
-        ViewPort::ViewPorts viewPorts;
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ViewPort::ProjectionType>(
-                        QRectF(0.5, 0.5, 0.5, 0.5), ViewPort::ViewPort::PERSPECTIVE)
-                    );
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ViewPort::ProjectionType>(
-                        QRectF(0, 0.5, 0.5, 0.5), ViewPort::ViewPort::TOP)
-                    );
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ViewPort::ProjectionType>(
-                        QRectF(0, 0, 0.5, 0.5), ViewPort::ViewPort::FRONT)
-                    );
-
-        viewPorts.push_back(
-                    QPair<QRectF, ViewPort::ViewPort::ProjectionType>(
-                        QRectF(0.5, 0, 0.5, 0.5), ViewPort::ViewPort::LEFT)
-                    );
-
-        _viewPorts.setViewPorts(viewPorts, surfaceSize);
+        _viewPorts.setViewPorts(ViewPort::ViewPorts {
+                                    { QRectF(0.5, 0.5, 0.5, 0.5), ViewPort::PERSPECTIVE },
+                                    { QRectF(0, 0.5, 0.5, 0.5), ViewPort::TOP },
+                                    { QRectF(0, 0, 0.5, 0.5), ViewPort::FRONT },
+                                    { QRectF(0.5, 0, 0.5, 0.5), ViewPort::LEFT }
+                                }, surfaceSize);
     }
 
 

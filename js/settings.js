@@ -3,4 +3,4 @@ var Points = {};
 
 var Distances = {};
 
-var Legends = {};
+var ViewPorts = {};

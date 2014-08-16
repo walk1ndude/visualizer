@@ -291,20 +291,20 @@ namespace Quick {
         return node;
     }
 
-    void ModelViewer::updateViewPortLegend(const ViewPort::ViewPortLegendArray & legendArray) {
-        QVariantMap legendMap;
+    void ModelViewer::updateViewPortLegend(const ViewPort::ViewPortInfoArray & infoArray) {
+        QVariantMap infoMap;
 
-        foreach (const ViewPort::ViewPortLegend & legend, legendArray) {
-            legendMap.insert(QString::number(legend.id), QVariantMap {
-                                 {"x", legend.boundingRectNormalized.x() * this->width()},
-                                 {"y", legend.boundingRectNormalized.y() * this->height()},
-                                 {"width", legend.boundingRectNormalized.width() * this->width()},
-                                 {"height", legend.boundingRectNormalized.height() * this->height()},
-                                 {"text", *legend.text}
+        foreach (const ViewPort::ViewPortInfo & info, infoArray) {
+            infoMap.insert(QString::number(info.id), QVariantMap {
+                                 {"x", info.boundingRectNormalized.x() * this->width()},
+                                 {"y", info.boundingRectNormalized.y() * this->height()},
+                                 {"width", info.boundingRectNormalized.width() * this->width()},
+                                 {"height", info.boundingRectNormalized.height() * this->height()},
+                                 {"text", *info.text}
                              });
         }
 
-        QMetaObject::invokeMethod(this, "createLegend", Q_ARG(QVariant, legendMap));
+        QMetaObject::invokeMethod(this, "updateViewPortInfo", Q_ARG(QVariant, infoMap));
     }
 
     void ModelViewer::drawSlices(SliceInfo::Slices slices) {
