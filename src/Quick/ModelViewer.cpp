@@ -70,6 +70,7 @@ namespace Quick {
 
     ModelViewer::~ModelViewer() {
         if (_modelRenderer->isRunning()) {
+            _modelRenderer->wait();
             _modelRenderer->deleteLater();
         }
     }
@@ -293,8 +294,6 @@ namespace Quick {
 
     void ModelViewer::updateViewPortInfo(const ViewPort::ViewPortInfoArray & infoArray) {
         QVariantMap infoMap;
-
-        qDebug() << "here" << width() << height();
 
         foreach (const ViewPort::ViewPortInfo & info, infoArray) {
             infoMap.insert(QString::number(info.id), QVariantMap {
