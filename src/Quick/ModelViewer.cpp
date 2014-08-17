@@ -61,7 +61,6 @@ namespace Quick {
     ModelViewer::ModelViewer() :
         _modelRenderer(nullptr),
         _viewportArray(nullptr),
-        _takeShot(false),
         _modelID(-1) {
 
         setFlag(QQuickItem::ItemHasContents);
@@ -130,15 +129,6 @@ namespace Quick {
 
     void ModelViewer::setSelectedPointColor(const QColor & color) {
         _selectedPoint.color = color;
-    }
-
-    bool ModelViewer::takeShot() {
-        return _takeShot;
-    }
-
-    void ModelViewer::setTakeShot(const bool & takeShot) {
-        _takeShot = takeShot;
-        emit takeShotChanged(_takeShot);
     }
 
     QVector3D ModelViewer::rotation() {
@@ -260,7 +250,6 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::mouseRotationChanged, _modelRenderer, &Render::ModelRenderer::setMouseRotation, Qt::DirectConnection);
 
-            QObject::connect(this, &ModelViewer::takeShotChanged, _modelRenderer, &Render::ModelRenderer::setTakeShot, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
@@ -271,7 +260,6 @@ namespace Quick {
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::appearedSmthToDraw, this, &ModelViewer::appearedSmthToDraw, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
 

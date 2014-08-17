@@ -10,6 +10,7 @@ Item {
     id: modelViewerEx;
 
     property url dicomFile: "";
+    property url stlFile: "";
 
     property vector2d xRange: Qt.vector2d(0.0, 1.0);
     property vector2d yRange: Qt.vector2d(0.0, 1.0);
@@ -98,7 +99,7 @@ Item {
                 property real prevMouseX: -1.0;
                 property real prevMouseY: -1.0;
 
-                enabled: false;
+                enabled: true;
 
                 anchors.fill: parent;
                 onClicked: switch (mouse.button) {
@@ -127,12 +128,18 @@ Item {
                 onWheel: zoomFactor += wheel.angleDelta.y * 0.001;
             }
         }
+    }
 
-        Connections {
-            target: dicomReader;
+    Connections {
+        target: dicomReader;
 
-            onSlicesProcessed: modelViewer.drawSlices(slices);
-        }
+        onSlicesProcessed: modelViewer.drawSlices(slices);
+    }
+
+    Connections {
+        target: stlReader;
+
+        onModelRead: modelViewer.modelRead(buffers);
     }
 
     function nextSlide() {
@@ -143,13 +150,15 @@ Item {
         dicomReader.nextSlice(-1);
     }
 
-    function show() {
-        mouseAreaModelItem.enabled = true;
-    }
-
     DicomReader {
         id: dicomReader;
 
         dicomFile: modelViewerEx.dicomFile;
+    }
+
+    StlReader {
+        id: stlReader;
+
+        stlFile: modelViewerEx.stlFile;
     }
 }

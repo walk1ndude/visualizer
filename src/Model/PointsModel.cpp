@@ -11,7 +11,7 @@ namespace Model {
         if (updateNeeded()) {
             ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
 
-            foreach (const PointsInfo::ModelPoint * modelPoint, modelPoints) {
+            for (const PointsInfo::ModelPoint * modelPoint : modelPoints) {
                 vertices->push_back(ModelInfo::VertexVCP(
                                         modelPoint->position.x(),
                                         modelPoint->position.y(),

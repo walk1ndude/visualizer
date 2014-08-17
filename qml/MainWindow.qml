@@ -72,7 +72,7 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogStl;
         title: "Choose stl files";
-        onAccepted: fileOpenedStl(fileUrl);
+        onAccepted: modelViewer.stlFile = fileUrl;
     }
 
     FocusScope {

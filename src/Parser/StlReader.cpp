@@ -137,8 +137,7 @@ public:
 };
 
 namespace Parser {
-    StlReader::StlReader(QObject * parent) :
-        QObject(parent) {
+    StlReader::StlReader() {
 
     }
 
@@ -146,27 +145,34 @@ namespace Parser {
 
     }
 
-    void StlReader::readFile(const QUrl & fileUrl) {
-        QString fileName = fileUrl.toLocalFile();
+    QUrl StlReader::stlFile() const {
+        return _stlFile;
+    }
 
-        QFile stlFile(fileName);
+    void StlReader::setStlFile(const QUrl & stlFile) {
+        QString fileName = stlFile.toLocalFile();
+
+        QFile file(fileName);
 
         QString fileNameLower = fileName.toLower();
 
-        if (stlFile.open(QIODevice::ReadOnly)) {
+        if (file.open(QIODevice::ReadOnly)) {
             if (fileNameLower.at(fileName.length() - 4) == 's' &&
                 fileNameLower.at(fileName.length() - 3) == 't' &&
                 fileNameLower.at(fileName.length() - 2) == 'l' &&
                 fileNameLower.at(fileName.length() - 1) == 'a'
             ) {
-                readASCII(stlFile);
+                readASCII(file);
             }
             else {
-                readBinary(stlFile);
+                readBinary(file);
             }
 
-            stlFile.close();
+            file.close();
         }
+
+        _stlFile = stlFile;
+        emit stlFileChanged();
     }
 
     void StlReader::readASCII(QFile & stlFile) {
@@ -288,7 +294,7 @@ namespace Parser {
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        emit modelRead(buffers);
+        emit modelRead(QVariant::fromValue(buffers));
     }
 
     void StlReader::readBinary(QFile & stlFile) {
@@ -346,6 +352,6 @@ namespace Parser {
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        emit modelRead(buffers);
+        emit modelRead(QVariant::fromValue(buffers));
     }
 }

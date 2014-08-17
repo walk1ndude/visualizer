@@ -35,16 +35,7 @@ namespace Viewport {
 
         ViewportRect boundingRectNormalized() const;
 
-        void setBoundingRectNormalized(const QRectF & boundingRectNormalized);
-
-        void setBoundingRect(const QRect & boundingRect);
-
         ProjectionType projectionType() const;
-        void setProjectionType(const ProjectionType & projectionType);
-
-        void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
-
-        void zoom(const qreal & zoomFactor);
 
         QMatrix4x4 modelVoxel(const QMatrix4x4 & model) const;
 
@@ -54,8 +45,6 @@ namespace Viewport {
         QMatrix4x4 projection() const;
 
         QString text() const;
-
-        void resize(const QSize & windowSize);
 
         bool unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const;
 
@@ -102,6 +91,19 @@ namespace Viewport {
     signals:
         void boundingRectNormalizedChanged();
         void projectionTypeChanged();
+
+    public slots:
+        void setBoundingRectNormalized(const QRectF & boundingRectNormalized);
+
+        void setBoundingRect(const QRect & boundingRect);
+
+        void setProjectionType(const ProjectionType & projectionType);
+
+        void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
+
+        void zoom(const qreal & zoomFactor);
+
+        void resize(const QSize & windowSize);
     };
 }
 #endif // VIEWPORT_H

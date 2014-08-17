@@ -5,6 +5,7 @@
 #include "Quick/ModelViewer.h"
 
 #include "Parser/DicomReader.h"
+#include "Parser/StlReader.h"
 
 namespace Gui {
     AppWindow::AppWindow(const QString & qmlSource, QObject * parent) :
@@ -34,24 +35,14 @@ namespace Gui {
 
         _appWindow->setFormat(surfaceFormat);
 
-        QObject::connect(appWindow, SIGNAL(fileOpenedStl(const QUrl &)), this, SIGNAL(fileOpenedStl(const QUrl &)));
-
         QObject::connect(appWindow, SIGNAL(filesOpened(QVariant)), this, SLOT(readFiles(QVariant)));
 
-        QObject::connect(appWindow, SIGNAL(sliceNumberChanged(const int &)), this, SIGNAL(sliceNumberChanged(const int &)));
+        QObject::connect(appWindow, SIGNAL(distsUpdated(const QVariant &)), this, SLOT(updateDists(const QVariant &)));
 
-        foreach (QObject * modelItem, _appWindow->findChild<QQuickItem *>("modelRow")->children()) {
+        for (QObject * modelItem : _appWindow->findChild<QQuickItem *>("modelRow")->children()) {
             Quick::ModelViewer * modelViewer = modelItem->findChild<Quick::ModelViewer *>("modelViewer");
 
-            QObject::connect(this, &AppWindow::modelRead, modelViewer, &Quick::ModelViewer::modelRead);
-
-            QObject::connect(modelViewer, &Quick::ModelViewer::minHUChanged, this, &AppWindow::minHUChanged);
-            QObject::connect(modelViewer, &Quick::ModelViewer::maxHUChanged, this, &AppWindow::maxHUChanged);
-
             QObject::connect(modelViewer, &Quick::ModelViewer::pointUpdated, this, &AppWindow::updatePoint);
-            QObject::connect(appWindow, SIGNAL(distsUpdated(const QVariant &)), this, SLOT(updateDists(const QVariant &)));
-
-            QObject::connect(modelViewer, SIGNAL(appearedSmthToDraw()), modelItem, SLOT(show()));
 
             QObject::connect(_appWindow, &QQuickWindow::heightChanged, [=](const int & height) {
                 modelViewer->setHeight(height);
@@ -94,7 +85,7 @@ namespace Gui {
     void AppWindow::readFiles(QVariant fileNames) {
         QStringList fileNamesStr;
 
-        foreach (const QVariant & item, fileNames.value<QList<QUrl> >()) {
+        for (const QVariant & item : fileNames.value<QList<QUrl> >()) {
             fileNamesStr.append(item.toUrl().toLocalFile());
         }
 
@@ -107,6 +98,7 @@ namespace Gui {
         qmlRegisterType<Viewport::Viewport>("RenderTools", 1, 0, "Viewport");
 
         qmlRegisterType<Parser::DicomReader>("ParserTools", 1, 0, "DicomReader");
+        qmlRegisterType<Parser::StlReader>("ParserTools", 1, 0, "StlReader");
     }
 
     void AppWindow::show() {

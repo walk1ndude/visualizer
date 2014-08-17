@@ -6,16 +6,11 @@
 #include "Render/AbstractRenderer.h"
 
 namespace Render {
-    void FBOSaver::saveToDisk(const QImage & fboContent, const QRect & saveArea, const qreal & angle) {
-        fboContent.copy(saveArea).save((angle > 99 ? "" : (angle > 9 ? "0" : "00")) + QString::number(angle * 10) + ".png");
-    }
-
     AbstractRenderer::AbstractRenderer(QOpenGLContext * context, const QSize & surfaceSize) :
         _canRenderContent(false),
         _textureUpdateNeeded(false),
         _contentInitializeNeeded(false),
         _surfaceSize(surfaceSize),
-        _takeShot(false),
         _selectedScene(nullptr),
         _fboRender(nullptr),
         _fboDisplay(nullptr) {
@@ -34,22 +29,11 @@ namespace Render {
         _surface->setFormat(surfaceFormat);
         _surface->create();
 
-        _fboSaver = new FBOSaver;
-        QThread * fboSaverThread = new QThread;
-
-        _fboSaver->moveToThread(fboSaverThread);
-
-        QObject::connect(this, &AbstractRenderer::contentToSaveRendered, _fboSaver, &FBOSaver::saveToDisk);
-        QObject::connect(_fboSaver, &FBOSaver::destroyed, fboSaverThread, &QThread::quit);
-        QObject::connect(fboSaverThread, &QThread::finished, fboSaverThread, &QThread::deleteLater);
-
-        fboSaverThread->start();
-
         QObject::connect(this, &AbstractRenderer::needToRedraw, this, &AbstractRenderer::renderNext);
     }
 
     AbstractRenderer::~AbstractRenderer() {
-        delete _fboSaver;
+
     }
 
     bool AbstractRenderer::updateContent() {
@@ -128,14 +112,6 @@ namespace Render {
 
         _fboRender->bindDefault();
         std::swap(_fboDisplay, _fboRender);
-
-        if (_takeShot) {
-            QRect screenRect = _selectedScene->screenSaveRect();
-            // cause this texture is flipped on y axis
-            screenRect.setY(0);
-            screenRect.setHeight(_surfaceSize.height() / 2);
-            emit contentToSaveRendered(_fboRender->toImage(), screenRect, _selectedScene->rotation().y());
-        }
 
         emit textureReady(_fboDisplay->texture(), _surfaceSize);
     }

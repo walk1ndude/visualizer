@@ -190,7 +190,7 @@ namespace Parser {
         slices.texture.pixelFormat = QOpenGLTexture::Red;
         slices.texture.target = QOpenGLTexture::Target3D;
 
-        emit slicesProcessed(QVariant::fromValue<SliceInfo::Slices>(slices));
+        emit slicesProcessed(QVariant::fromValue(slices));
     }
 
     QUrl DicomReader::dicomFile() const {

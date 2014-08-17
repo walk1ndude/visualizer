@@ -167,7 +167,7 @@ namespace Parser {
         uchar * srcData = new uchar[srcSize];
         uchar * posSlice = srcData;
 
-        foreach (const cv::Mat & slice, _src) {
+        for (const cv::Mat & slice : _src) {
             memcpy(posSlice, slice.data, slicePitchSrc);
             posSlice += slicePitchSrc;
         }
@@ -454,7 +454,7 @@ namespace Parser {
         }
         
         cv::Mat result;
-        foreach (cv::Mat * slice, _slicesOCL) {
+        for (cv::Mat * slice : _slicesOCL) {
             cv::convertScaleAbs(*slice, *slice,
                                 255.0f / (maxValVolume - minValVolume),
                                 255.0f * minValVolume / (minValVolume - maxValVolume));
@@ -505,7 +505,7 @@ namespace Parser {
         uchar * mergedData = new uchar[oneSliceSize * sliceCount];
         uchar * posSlice = mergedData;
         
-        foreach (const cv::Mat * slice, _slicesOCL) {
+        for (const cv::Mat * slice : _slicesOCL) {
             memcpy(posSlice, slice->data, oneSliceSize);
             posSlice += oneSliceSize;
         }
@@ -533,13 +533,11 @@ namespace Parser {
     }
 
     void Reconstructor::readFiles(const QStringList & fileNames) {
-        QStringListIterator it(fileNames);
-
         cv::Size imSize = cv::Size();
         cv::Mat readerMat;
 
-        while (it.hasNext()) {
-            readerMat = cv::imread(it.next().toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
+        for (QString fileName : fileNames) {
+            readerMat = cv::imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
             readerMat.convertTo(readerMat, CV_32FC1, 1 / 256.0f);
 
            // all images must be the same size or resize

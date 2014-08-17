@@ -87,9 +87,6 @@ namespace Render {
 
             selectedModelScene->addStlModel(buffers);
 
-            // for now just dummy call to show hud
-            emit appearedSmthToDraw();
-
             locker.unlock();
             emit needToRedraw();
         }
@@ -107,8 +104,6 @@ namespace Render {
             activateContext();
 
             selectModelScene->addHeadModel(slices);
-
-            emit appearedSmthToDraw();
 
             locker.unlock();
             emit needToRedraw();

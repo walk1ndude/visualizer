@@ -3,25 +3,35 @@
 
 #include <QtCore/QFile>
 
+#include <QtQuick/QQuickItem>
+
 #include "Model/StlModel.h"
 
 namespace Parser {
-    class StlReader : public QObject {
+    class StlReader : public QQuickItem {
+        Q_PROPERTY(QUrl stlFile READ stlFile WRITE setStlFile NOTIFY stlFileChanged)
+
         Q_OBJECT
     public:
-        explicit StlReader(QObject * parent = 0);
+        explicit StlReader();
         ~StlReader();
 
+        QUrl stlFile() const;
+
     private:
+        QUrl _stlFile;
+
         void readASCII(QFile & stlFile);
         void readBinary(QFile & stlFile);
 
     signals:
         void readingErrorHappened();
-        void modelRead(const ModelInfo::BuffersVN & buffers);
+        void modelRead(QVariant buffers);
+
+        void stlFileChanged();
 
     public slots:
-        void readFile(const QUrl & fileUrl);
+        void setStlFile(const QUrl & stlFile);
     };
 }
 #endif // STLREADER_H

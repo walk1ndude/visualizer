@@ -23,7 +23,6 @@ namespace Parser {
         void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
 
         QUrl dicomFile() const;
-        void setDicomFile(const QUrl & dicomFile);
 
     private:
         size_t _sliceNumber;
@@ -49,6 +48,8 @@ namespace Parser {
 
     public slots:
         Q_INVOKABLE void nextSlice(const int & ds);
+
+        void setDicomFile(const QUrl & dicomFile);
 
         void updateMinHU(const int & minHU);
         void updateMaxHU(const int & maxHU);

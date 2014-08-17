@@ -15,12 +15,6 @@
 #include "Info/TextureInfo.h"
 
 namespace Render {
-    class FBOSaver : public QThread {
-        Q_OBJECT
-    public:
-        void saveToDisk(const QImage & fboContent, const QRect &saveArea, const qreal & angle);
-    };
-
     class AbstractRenderer : public QThread {
         Q_OBJECT
     public:
@@ -54,10 +48,6 @@ namespace Render {
 
         QSize _surfaceSize;
 
-        QRectF _screenSaveRect;
-
-        bool _takeShot;
-
         Scene::AbstractScene * _selectedScene;
 
         QOpenGLFramebufferObject * _fboRender;
@@ -70,12 +60,10 @@ namespace Render {
         // remember all scenes, rendered by this renderer -> for clean up after
         QSet<Scene::AbstractScene *> _sceneHistory;
 
-        FBOSaver * _fboSaver;
     signals:
         void textureReady(const GLuint & fboTexId, const QSize & size);
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void needToRedraw();
-        void appearedSmthToDraw();
 
     public slots:
         virtual void renderNext() final;

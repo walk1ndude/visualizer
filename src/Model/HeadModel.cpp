@@ -98,7 +98,5 @@ namespace Model {
         program->setUniformValue(_shaderNormalMatrix, QMatrix4x4((modelMatrix * viewPort->viewVoxel()).normalMatrix()));
         program->setUniformValue(_shaderScale, _scaleM);
         program->setUniformValue(_shaderStep, _step);
-
-        //_facePointsProgram.setUniformValue(program, _facePoints, viewPort.projection() * viewPort.viewVoxel());
     }
 }

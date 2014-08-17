@@ -30,7 +30,7 @@ namespace Model {
         
         bool updateNeeded = false;
        
-        foreach (PointsInfo::ModelPoint * modelPoint, modelPoints()) {
+        for (PointsInfo::ModelPoint * modelPoint : modelPoints()) {
             if (viewPort->pointInViewport(modelPoint->position) && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
                 

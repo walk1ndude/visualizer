@@ -15,8 +15,6 @@ namespace Quick {
     class ModelViewer : public QQuickItem {
         Q_OBJECT
 
-        Q_PROPERTY(bool takeShot READ takeShot WRITE setTakeShot NOTIFY takeShotChanged)
-
         Q_PROPERTY(QPointF selectedPointPosition READ selectedPointPosition WRITE setSelectedPointPosition)
         Q_PROPERTY(QString selectedPointName READ selectedPointName WRITE setSelectedPointName)
         Q_PROPERTY(QColor selectedPointColor READ selectedPointColor WRITE setSelectedPointColor)
@@ -43,55 +41,30 @@ namespace Quick {
         explicit ModelViewer();
         virtual ~ModelViewer();
 
-        Q_INVOKABLE void mouseRotation(const QPointF & prevPos, const QPointF & finishPos);
-
         QSize fboSize();
-        void setFboSize(const QSize & fboSize);
-
-        bool takeShot();
-        void setTakeShot(const bool & takeShot);
 
         QPointF selectedPointPosition();
-        void setSelectedPointPosition(const QPointF & position);
 
         QString selectedPointName();
-        void setSelectedPointName(const QString & name);
 
         QColor selectedPointColor();
-        void setSelectedPointColor(const QColor & color);
 
         QVector3D rotation();
-        void setRotation(const QVector3D & rotation);
 
         qreal zoomFactor();
-        void setZoomFactor(const qreal & zoomFactor);
 
         ModelInfo::ViewAxisRange xRange();
-        void setXRange(const ModelInfo::ViewAxisRange & xRange);
-
         ModelInfo::ViewAxisRange yRange();
-        void setYRange(const ModelInfo::ViewAxisRange & yRange);
-
         ModelInfo::ViewAxisRange zRange();
-        void setZRange(const ModelInfo::ViewAxisRange & zRange);
 
         QVector2D huRange();
-        void sethuRange(const QVector2D & huRange);
 
         int minHU();
-        void setMinHU(const int & minHU);
-
         int maxHU();
-        void setMaxHU(const int & maxHU);
 
         int modelID();
-        void setModelID(const int & modelID);
 
         Viewport::ViewportArray * viewportArray();
-        void setViewportArray(Viewport::ViewportArray * viewportArray);
-
-        // for now just add empty scene
-        void addModelScene();
 
     protected:
         bool _needsInitialize;
@@ -104,8 +77,6 @@ namespace Quick {
         Viewport::ViewportArray * _viewportArray;
 
         QVector<Scene::AbstractScene *> _scenes;
-
-        bool _takeShot;
 
         PointsInfo::Point _selectedPoint;
 
@@ -129,9 +100,6 @@ namespace Quick {
         uint _modelID;
 
     signals:
-        void appearedSmthToDraw();
-
-        void takeShotChanged(const bool & takeShot);
         void rotationChanged(const QVector3D & rotation);
         void zoomFactorChanged(const qreal & zoomFactor);
 
@@ -152,7 +120,7 @@ namespace Quick {
 
         void slicesProcessed(SliceInfo::Slices slices);
 
-        void modelRead(ModelInfo::BuffersVN buffers);
+        Q_INVOKABLE void modelRead(ModelInfo::BuffersVN buffers);
 
         void pointUpdated(const QVariantMap & point);
 
@@ -161,6 +129,35 @@ namespace Quick {
     public slots:
         Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);
         void updatePoint(const PointsInfo::UpdatedPoint & point);
+
+        Q_INVOKABLE void mouseRotation(const QPointF & prevPos, const QPointF & finishPos);
+
+        void setFboSize(const QSize & fboSize);
+
+        void setSelectedPointPosition(const QPointF & position);
+        void setSelectedPointName(const QString & name);
+        void setSelectedPointColor(const QColor & color);
+
+        void setRotation(const QVector3D & rotation);
+
+        void setZoomFactor(const qreal & zoomFactor);
+
+        void setXRange(const ModelInfo::ViewAxisRange & xRange);
+        void setYRange(const ModelInfo::ViewAxisRange & yRange);
+        void setZRange(const ModelInfo::ViewAxisRange & zRange);
+
+        void sethuRange(const QVector2D & huRange);
+
+        void setMinHU(const int & minHU);
+        void setMaxHU(const int & maxHU);
+
+        void setModelID(const int & modelID);
+
+        void setViewportArray(Viewport::ViewportArray * viewportArray);
+
+        // for now just add empty scene
+        void addModelScene();
+
     };
 }
 

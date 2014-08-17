@@ -45,6 +45,8 @@ namespace ModelInfo {
     };
 }
 
+Q_DECLARE_METATYPE(ModelInfo::BuffersVN)
+
 namespace Model {
     class StlModel : public AbstractModelWithPoints {
         Q_OBJECT
