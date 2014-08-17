@@ -53,6 +53,10 @@ namespace Model {
         _scaleM.scale(scale);
     }
 
+    void HeadModel::rotate(const QVector3D & rotation) {
+        AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()));
+    }
+
     void HeadModel::glStatesEnable() {
         glEnable(GL_CULL_FACE);
 

@@ -66,15 +66,13 @@ namespace Model {
     public:
         virtual void addPoint(const QString & name, PointsInfo::ModelPoint * point);
 
-        virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
-
         virtual void setViewRange(const ModelInfo::ViewAxisRange & xRange,
                                   const ModelInfo::ViewAxisRange & yRange,
                                   const ModelInfo::ViewAxisRange & zRange,
-                                  const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+                                  const ShaderInfo::ShaderVariablesNames & shaderVariables);
 
         virtual void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
-                                      const ModelInfo::ViewAxis viewAxis = ModelInfo::XAXIS) final;
+                                      const ModelInfo::ViewAxis viewAxis = ModelInfo::XAXIS);
 
         virtual void processChildren() final;
 

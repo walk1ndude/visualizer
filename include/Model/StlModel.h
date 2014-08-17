@@ -59,8 +59,6 @@ namespace Model {
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/stlFragment.glsl")
                               ));
 
-        virtual ModelInfo::ViewAxisRange correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange);
-
     protected:
         void initShaderVariables(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);

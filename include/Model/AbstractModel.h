@@ -25,7 +25,7 @@ namespace Model {
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
-        virtual void rotate(const QVector3D & rotation) final;
+        virtual void rotate(const QVector3D & rotation);
 
         virtual void drawModel(Viewport::Viewport * viewPort) final;
 

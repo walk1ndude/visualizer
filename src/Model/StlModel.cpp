@@ -31,10 +31,6 @@ namespace Model {
         glDisable(GL_DEPTH_TEST);
     }
 
-    ModelInfo::ViewAxisRange StlModel::correctedViewwAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange) {
-        return viewAxisRange;
-    }
-
     void StlModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
         program->enableAttributeArray(_shaderVertex);
         program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, stride());

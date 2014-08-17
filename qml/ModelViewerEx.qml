@@ -110,19 +110,7 @@ Item {
 
                                break;
                            }
-
-                onPressed: {
-                    prevMouseX = mouseX;
-                    prevMouseY = mouseY;
-                }
-
-                onPositionChanged: {
-                    parent.mouseRotation(Qt.point(prevMouseX, height - prevMouseY), Qt.point(mouseX, height - mouseY));
-                }
-
-                onWheel: zoomFactor += wheel.angleDelta.y * 0.001;
-
-                z: -1;
+                z: - 1;
             }
         }
     }

@@ -65,6 +65,8 @@ namespace Model {
 
         void scale(const QVector3D & scale);
 
+        virtual void rotate(const QVector3D & rotation);
+
     protected:
         void initShaderVariables(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);

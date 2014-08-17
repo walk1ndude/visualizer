@@ -27,30 +27,3 @@ function createObjects(objectsDataDict, objectsDict, parent, componentPath) {
         }
     }
 }
-
-function show(objects) {
-    for (var object in objects) {
-        object.visible = true;
-    }
-}
-
-function hide(objects) {
-    for (var object in objects) {
-        object.visible = false;
-    }
-}
-
-function mouseInViewPort(mouseX, mouseY, viewports, viewport) {
-    for (var viewportId in viewports) {
-        var viewport = viewports[viewportId];
-
-        if (viewport.x <= mouseX && viewport.y <= mouseY
-            && viewport.x + viewport.width > mouseX
-            && viewport.y + viewport.height > mouseY) {
-            viewport.color = "red";
-        }
-        else {
-            viewport.color = "green";
-        }
-    }
-}

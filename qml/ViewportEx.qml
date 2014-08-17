@@ -68,6 +68,10 @@ Viewport {
 
         enabled: true;
 
+        property bool rotating: false;
+
+        hoverEnabled: true;
+
         anchors.fill: parent;
         onClicked: switch (mouse.button) {
                    case Qt.LeftButton:
@@ -80,11 +84,13 @@ Viewport {
             if (parent.projectionType == Viewport.PERSPECTIVE) {
                 prevMouseX = mouseX;
                 prevMouseY = mouseY;
+
+                rotating = !rotating;
             }
         }
 
         onPositionChanged: {
-            if (parent.projectionType == Viewport.PERSPECTIVE) {
+            if (parent.projectionType == Viewport.PERSPECTIVE && rotating) {
                 parent.array.parent.rotation = Qt.vector3d(
                             (parent.invertedYAxis ? 1 : -1) * (prevMouseY - mouseY) / parent.rotationSpeed,
                             (prevMouseX - mouseX) / parent.rotationSpeed,
@@ -93,9 +99,20 @@ Viewport {
             }
         }
 
+        onReleased: {
+            rotating = false;
+        }
+
+        onEntered: {
+            parent.color = "red";
+        }
+
         onExited: {
             prevMouseX = 0.0;
             prevMouseY = 0.0;
+
+            parent.color = "green";
+            rotating = false;
         }
 
         onWheel: {
