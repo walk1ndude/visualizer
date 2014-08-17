@@ -90,7 +90,7 @@ namespace Model {
         virtual PointsModel * pointsModel() final;
         virtual PointsInfo::ModelPoints modelPoints() final;
         
-        virtual bool checkDepthBuffer(Viewport::Viewport * viewPort) final;
+        virtual bool checkDepthBuffer(Viewport::Viewport * viewport) final;
 
     private:
         PointsModel * _points;

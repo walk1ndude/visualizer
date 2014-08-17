@@ -52,10 +52,7 @@ namespace Viewport {
 
         bool unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const;
 
-        bool pointInViewport(const QVector4D & point) const;
-        bool pointInViewport(const QPointF & point) const;
-
-        QVector3D placeXYZAccordingToViewPort(const QVector3D & xyz);
+        QVector3D placeXYZAccordingToViewport(const QVector3D & xyz);
 
     private:
         QSize _surfaceSize;

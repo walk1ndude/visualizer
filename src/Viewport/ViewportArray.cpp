@@ -1,7 +1,5 @@
 #include "Viewport/ViewportArray.h"
 
-static int viewPortId = 0;
-
 namespace Viewport {
     ViewportArray::ViewportArray(const ViewportInfos & viewports, const QSize & windowSize) {
         setViewports(viewports, windowSize);
@@ -26,11 +24,8 @@ namespace Viewport {
     void ViewportArray::setViewports(const ViewportInfos & viewports, const QSize & windowSize) {
         _viewportArray.clear();
 
-        QPair<QRectF, Viewport::ProjectionType> viewPortInfo;
-        QVectorIterator<QPair<QRectF, Viewport::ProjectionType> >it(viewports);
-
         for (const QPair<QRectF, Viewport::ProjectionType> & viewportInfo : viewports) {
-            _viewportArray.push_back(new Viewport(viewPortInfo.first, windowSize, viewPortInfo.second));
+            _viewportArray.push_back(new Viewport(viewportInfo.first, windowSize, viewportInfo.second));
         }
     }
 
@@ -44,19 +39,6 @@ namespace Viewport {
         for (Viewport * viewport : _viewportArray) {
             viewport->setZoom(zoomFactor);
         }
-    }
-
-    bool ViewportArray::canRotate(const QPointF & startPos, const QPointF & finishPos) {
-        // find viewport with perspective projection that contains both mouse positions
-        /*foreach (Viewport * viewport, data()) {
-            if (viewport->projectionType() == Viewport::PERSPECTIVE
-                    && viewport->pointInViewport(startPos)
-                    && viewport->pointInViewport(finishPos)) {
-                return true;
-            }
-        }*/
-
-        return false;
     }
 
     void ViewportArray::render(QListIterator<Model::AbstractModel *> & modelIterator) {

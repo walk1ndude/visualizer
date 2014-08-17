@@ -76,6 +76,12 @@ Viewport {
         onClicked: switch (mouse.button) {
                    case Qt.LeftButton:
 
+                       parent.array.parent.addPoint(
+                                   Qt.point(
+                                       mouseX / width,
+                                       mouseY / height
+                                       ), parent
+                                   );
 
                        break;
                    }

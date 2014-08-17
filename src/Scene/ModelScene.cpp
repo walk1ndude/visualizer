@@ -38,17 +38,6 @@ namespace Scene {
         }
     }
 
-    void ModelScene::setMouseRotation(const QPointF & startPos, const QPointF & finishPos) {
-        if (!viewportArray()->canRotate(startPos, finishPos)) {
-            // mouse is not in right viewport, do nothing
-            return;
-        }
-
-        if (_selectedModel) {
-            _selectedModel->rotate(QVector3D((finishPos.y() - startPos.y()) / 20.0f, (finishPos.x() - startPos.x()) / 20.0f, 0.0f));
-        }
-    }
-
     void ModelScene::setXRange(const ModelInfo::ViewAxisRange & xRange) {
         if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
             model->setViewAxisRange(xRange, ModelInfo::XAXIS);
@@ -164,7 +153,7 @@ namespace Scene {
         if (!_selectedModel) {
             return;
         } else if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->addPoint(point.name, new PointsInfo::ModelPoint(QVector3D(point.position), point.color, 0));
+            model->addPoint(point.name, new PointsInfo::ModelPoint(QVector3D(point.position), point.color, point.viewport, 0));
         }
     }
 

@@ -59,10 +59,6 @@ Item {
                 modelViewerEx.pointUpdated(point);
             }
 
-            function updateViewPortInfo(viewPortArray) {
-                //Helpers.createObjects(viewPortArray, Settings.ViewPorts, modelViewer, "/qml/ViewPort.qml");
-            }
-
             ViewportArray {
                 id: viewportArray;
 
@@ -87,30 +83,6 @@ Item {
                     projectionType: Viewport.LEFT;
                     boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
                 }
-            }
-
-            MouseArea {
-                id: mouseAreaModelItem;
-                property real prevMouseX: -1.0;
-                property real prevMouseY: -1.0;
-
-                enabled: true;
-
-                anchors.fill: parent;
-                onClicked: switch (mouse.button) {
-                           case Qt.LeftButton: if (!!modelViewerEx.selectedPointName) {
-                               modelViewer.selectedPointPosition = Qt.point(
-                                           mouseX * parent.fboSize.width / width,
-                                           (height - mouseY) * parent.fboSize.height / height);
-                               }
-
-                               if (mouse.modifiers && Qt.ShiftModifier) {
-                                   Helpers.mouseInViewPort(mouseX, height - mouseY, Settings.ViewPorts[modelViewer]);
-                               }
-
-                               break;
-                           }
-                z: - 1;
             }
         }
     }

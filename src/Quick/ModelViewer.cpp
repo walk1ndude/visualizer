@@ -67,6 +67,8 @@ namespace Quick {
 
         addModelScene();
 
+        _selectedPoint.viewport = nullptr;
+
         QObject::connect(this, &ModelViewer::childrenChanged, [=]() {
             _viewportArray = nullptr;
 
@@ -103,12 +105,6 @@ namespace Quick {
 
     QPointF ModelViewer::selectedPointPosition() {
         return _selectedPoint.position;
-    }
-
-    void ModelViewer::setSelectedPointPosition(const QPointF & position) {
-        _selectedPoint.position = position;
-        emit pointAdded(_selectedPoint);
-        update();
     }
 
     QString ModelViewer::selectedPointName() {
@@ -295,6 +291,17 @@ namespace Quick {
         emit huRangeChanged();
 
         emit slicesProcessed(slices);
+    }
+
+    void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {
+        _selectedPoint.position = QPointF(
+                    position.x() * _fboSize.width(),
+                    position.y() * _fboSize.height()
+                    );
+        _selectedPoint.viewport = viewport;
+
+        emit pointAdded(_selectedPoint);
+        update();
     }
 
 }

@@ -15,7 +15,6 @@ namespace Quick {
     class ModelViewer : public QQuickItem {
         Q_OBJECT
 
-        Q_PROPERTY(QPointF selectedPointPosition READ selectedPointPosition WRITE setSelectedPointPosition)
         Q_PROPERTY(QString selectedPointName READ selectedPointName WRITE setSelectedPointName)
         Q_PROPERTY(QColor selectedPointColor READ selectedPointColor WRITE setSelectedPointColor)
 
@@ -126,11 +125,12 @@ namespace Quick {
 
     public slots:
         Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);
+        Q_INVOKABLE void addPoint(const QPointF & point, Viewport::Viewport * viewport);
+
         void updatePoint(const PointsInfo::UpdatedPoint & point);
 
         void setFboSize(const QSize & fboSize);
 
-        void setSelectedPointPosition(const QPointF & position);
         void setSelectedPointName(const QString & name);
         void setSelectedPointColor(const QColor & color);
 

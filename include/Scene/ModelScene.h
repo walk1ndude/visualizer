@@ -47,7 +47,6 @@ namespace Scene {
         void addTexture(TextureInfo::Texture & textureInfo);
 
         virtual void setRotation(const QVector3D & rotation);
-        virtual void setMouseRotation(const QPointF & startPos, const QPointF & finishPos);
 
         // to clip selected model
         virtual void setXRange(const ModelInfo::ViewAxisRange & xRange);

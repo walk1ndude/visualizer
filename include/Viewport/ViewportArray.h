@@ -24,8 +24,6 @@ namespace Viewport {
 
         void resize(const QSize & surfaceSize);
 
-        bool canRotate(const QPointF & startPos, const QPointF & finishPos);
-
         void render(QListIterator<Model::AbstractModel *> & modelIterator);
         bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator);
 

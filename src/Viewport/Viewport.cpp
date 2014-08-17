@@ -144,23 +144,6 @@ namespace Viewport {
         return modelMatrix;
     }
 
-    bool Viewport::pointInViewport(const QVector4D & point) const {
-        return pointInViewport(QPointF(point.x(), point.y()));
-    }
-
-    bool Viewport::pointInViewport(const QPointF & point) const {
-        float pX = point.x();
-        float pY = point.y();
-
-        float x = _boundingRectNormalized.x() * _surfaceSize.width();
-        float y = _boundingRectNormalized.y() * _surfaceSize.height();
-
-        float w = _boundingRectNormalized.width() * _surfaceSize.width();
-        float h = _boundingRectNormalized.height() * _surfaceSize.height();
-
-        return (pX >= x && pY >= y && pX < x + w && pY < y + h);
-    }
-
     bool Viewport::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
         float x = _boundingRectNormalized.x() * _surfaceSize.width();
         float y = _boundingRectNormalized.y() * _surfaceSize.height();
@@ -194,7 +177,7 @@ namespace Viewport {
         }
     }
 
-    QVector3D Viewport::placeXYZAccordingToViewPort(const QVector3D & xyz) {
+    QVector3D Viewport::placeXYZAccordingToViewport(const QVector3D & xyz) {
         /* In different viewports axes have different meaning.
          * For example in "Left" z and x axes change their positions,
          * so x axis turns out to be the axis that determines the

@@ -3,6 +3,8 @@
 
 #include "Info/ShaderInfo.h"
 
+#include "Viewport/Viewport.h"
+
 namespace PointsInfo {
     using PointName = QString;
     
@@ -11,15 +13,19 @@ namespace PointsInfo {
         QPointF position;
         PointName name;
         QColor color;
+
+        Viewport::Viewport * viewport;
         
         Point() { }
         
         Point(const QPointF & position,
               const PointName & name,
-              const QColor & color) :
+              const QColor & color,
+              Viewport::Viewport * viewport) :
             position(position),
             name(name),
-            color(color) {
+            color(color),
+            viewport(viewport) {
             
         }
     };
@@ -54,6 +60,8 @@ namespace PointsInfo {
         QColor color;
         uint polygonId;
 
+        Viewport::Viewport * viewport;
+
         bool isPositionCalculated() const {
             return _positionCalculated;
         }
@@ -65,10 +73,12 @@ namespace PointsInfo {
 
         ModelPoint(const QVector3D & position,
                    const QColor & color,
+                   Viewport::Viewport * viewport,
                    const uint & polygonId = 0) :
             position(position),
             color(color),
             polygonId(polygonId),
+            viewport(viewport),
             _positionCalculated(false) {
 
         }
@@ -78,43 +88,6 @@ namespace PointsInfo {
 
 
     class ModelPoints : public QHash<PointName, ModelPoint *> { };
-/*
-    class FacePointsProgram {
-    private:
-        QHash<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> _facePoints;
-    public:
-        FacePointsProgram() { }
-
-        void addPoint(QOpenGLShaderProgram * program,
-                      const ShaderInfo::ShaderVariableName & shaderVariableName) {
-            _facePoints.insert(shaderVariableName, program->uniformLocation(shaderVariableName));
-        }
-
-        void setUniformValue(QOpenGLShaderProgram * program,
-                             const FacePoints & facePoints,
-                             const QMatrix4x4 & projViewMartix) {
-            QHashIterator<ShaderInfo::ShaderVariableName , ShaderInfo::ShaderVariable> itFPShader(_facePoints);
-            QHashIterator<ShaderInfo::ShaderVariableName , FacePoint *> itFP(facePoints);
-
-            bool contains;
-
-            while (itFP.hasNext()) {
-                contains = false;
-                itFP.next();
-
-                while (itFPShader.hasNext() && !contains) {
-                    itFPShader.next();
-                    contains = itFPShader.key().contains(itFP.key());
-                }
-
-                if (contains && itFP.value()->isPositionCalculated()) {
-                    program->setUniformValue(itFPShader.value(), projViewMartix * itFP.value()->position);
-                }
-
-                itFPShader.toFront();
-            }
-       }
-    };*/
 }
 
 

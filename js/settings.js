@@ -2,5 +2,3 @@
 var Points = {};
 
 var Distances = {};
-
-var ViewPorts = {};
