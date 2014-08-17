@@ -1,12 +1,7 @@
 #ifndef PARALLELPROCESSING_HPP
 #define PARALLELPROCESSING_HPP
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-#include <QtCore/QDebug>
-
-#define toRad(x) ((x) * CV_PI / 180.0)
+#include "Parser/Helpers.hpp"
 
 #define PADDED_INCREASE 1.5f;
 

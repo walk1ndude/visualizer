@@ -43,22 +43,6 @@ namespace Gui {
             Quick::ModelViewer * modelViewer = modelItem->findChild<Quick::ModelViewer *>("modelViewer");
 
             QObject::connect(modelViewer, &Quick::ModelViewer::pointUpdated, this, &AppWindow::updatePoint);
-
-            QObject::connect(_appWindow, &QQuickWindow::heightChanged, [=](const int & height) {
-                modelViewer->setHeight(height);
-                modelViewer->update();
-            });
-
-            QObject::connect(_appWindow, &QQuickWindow::widthChanged, [=](const int & width) {
-                modelViewer->setWidth(width * appWindow->property("sideBarWidth").toFloat());
-                modelViewer->update();
-            });
-
-            QObject::connect(_appWindow, &QQuickWindow::visibilityChanged, [=](const QWindow::Visibility & visibility) {
-                if (visibility != QWindow::Minimized || visibility != QWindow::Hidden) {
-                    modelViewer->update();
-                }
-            });
         }
     }
 

@@ -3,7 +3,7 @@
 
 #include <QtCore/QFile>
 
-#include <QtQuick/QQuickItem>
+#include "Parser/Helpers.hpp"
 
 #include "Model/StlModel.h"
 

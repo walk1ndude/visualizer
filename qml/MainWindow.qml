@@ -2,6 +2,8 @@ import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Dialogs 1.2
 
+import ParserTools 1.0
+
 import QtQuick.LocalStorage 2.0
 import "../js/settings.js" as Settings
 
@@ -59,7 +61,7 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogDicom;
         title: "Choose DICOM file";
-        onAccepted: modelViewer.dicomFile = fileUrl;
+        onAccepted: dicomReader.dicomFile = fileUrl;
     }
 
     FileDialog {
@@ -72,7 +74,7 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogStl;
         title: "Choose stl files";
-        onAccepted: modelViewer.stlFile = fileUrl;
+        onAccepted: stlReader.stlFile = fileUrl;
     }
 
     FocusScope {
@@ -82,8 +84,8 @@ ApplicationWindow {
         Keys.onPressed: {
             switch (event.key) {
                 case Qt.Key_Escape: Qt.quit(); break;
-                case Qt.Key_Left: modelViewer.previousSlide(); break;
-                case Qt.Key_Right: modelViewer.nextSlide(); break;
+                case Qt.Key_Left: previousSlide(); break;
+                case Qt.Key_Right: nextSlide(); break;
             }
         }
     }
@@ -125,5 +127,25 @@ ApplicationWindow {
         anchors.left: modelRow.right;
 
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
+    }
+
+    StlReader {
+        id: stlReader;
+
+        onModelRead: modelViewer.modelRead(buffers);
+    }
+
+    function nextSlide() {
+        dicomReader.nextSlice(1);
+    }
+
+    function previousSlide() {
+        dicomReader.nextSlice(-1);
+    }
+
+    DicomReader {
+        id: dicomReader;
+
+        onSlicesProcessed: modelViewer.drawSlices(slices);
     }
 }

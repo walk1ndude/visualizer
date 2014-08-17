@@ -3,14 +3,13 @@
 
 #include <QtCore/QStringList>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
 #ifdef __APPLE__
     #include <OpenCL/opencl.h>
 #else
     #include <CL/cl.h>
 #endif
+
+#include "Parser/Helpers.hpp"
 
 #include "Info/SliceInfo.h"
 

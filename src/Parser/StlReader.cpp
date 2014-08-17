@@ -150,6 +150,10 @@ namespace Parser {
     }
 
     void StlReader::setStlFile(const QUrl & stlFile) {
+        if (stlFile.isEmpty()) {
+            return;
+        }
+
         QString fileName = stlFile.toLocalFile();
 
         QFile file(fileName);

@@ -1,16 +1,12 @@
 import QtQuick 2.3
 
 import RenderTools 1.0
-import ParserTools 1.0
 
 import "../js/settings.js" as Settings
 import "../js/helpers.js" as Helpers
 
 Item {
     id: modelViewerEx;
-
-    property url dicomFile: "";
-    property url stlFile: "";
 
     property vector2d xRange: Qt.vector2d(0.0, 1.0);
     property vector2d yRange: Qt.vector2d(0.0, 1.0);
@@ -130,35 +126,12 @@ Item {
         }
     }
 
-    Connections {
-        target: dicomReader;
-
-        onSlicesProcessed: modelViewer.drawSlices(slices);
+    function modelRead(buffers) {
+        modelViewer.modelRead(buffers);
     }
 
-    Connections {
-        target: stlReader;
-
-        onModelRead: modelViewer.modelRead(buffers);
+    function drawSlices(slices) {
+        modelViewer.drawSlices(slices);
     }
 
-    function nextSlide() {
-        dicomReader.nextSlice(1);
-    }
-
-    function previousSlide() {
-        dicomReader.nextSlice(-1);
-    }
-
-    DicomReader {
-        id: dicomReader;
-
-        dicomFile: modelViewerEx.dicomFile;
-    }
-
-    StlReader {
-        id: stlReader;
-
-        stlFile: modelViewerEx.stlFile;
-    }
 }

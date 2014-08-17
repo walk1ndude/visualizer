@@ -1,21 +1,10 @@
 #ifndef CTPROCESSING_HPP
 #define CTPROCESSING_HPP
 
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/core/core.hpp>
+#include "Parser/Helpers.hpp"
 
 #include "Info/SliceInfo.h"
 #include "Info/TextureInfo.h"
-
-#define RADON_DEGREE_RANGE 180
-#define PI_TIMES_2 (2 * CV_PI)
-#define toRad(x) ((x) * CV_PI / 180.0)
-
-#define FROM_16_TO_8 0.00390625
-#define FROM_8_TO_16 256.0
-
-#define GRAD_WIDTH 256
-#define GRAD_HEIGHT 256
 
 namespace Parser {
     inline void filterSlice(const cv::Mat & src, cv::Mat & dst,

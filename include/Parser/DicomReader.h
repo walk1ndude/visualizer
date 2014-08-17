@@ -4,8 +4,6 @@
 #include <gdcmImage.h>
 #include <gdcmFile.h>
 
-#include <QtQuick/QQuickItem>
-
 #include "Parser/ctprocessing.hpp"
 
 #include "Info/SliceInfo.h"
