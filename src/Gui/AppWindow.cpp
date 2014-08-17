@@ -6,6 +6,7 @@
 
 #include "Parser/DicomReader.h"
 #include "Parser/StlReader.h"
+#include "Parser/Reconstructor.h"
 
 namespace Gui {
     AppWindow::AppWindow(const QString & qmlSource, QObject * parent) :
@@ -35,22 +36,15 @@ namespace Gui {
 
         _appWindow->setFormat(surfaceFormat);
 
-        QObject::connect(appWindow, SIGNAL(filesOpened(QVariant)), this, SLOT(readFiles(QVariant)));
-
         QObject::connect(appWindow, SIGNAL(distsUpdated(const QVariant &)), this, SLOT(updateDists(const QVariant &)));
-
-        for (QObject * modelItem : _appWindow->findChild<QQuickItem *>("modelRow")->children()) {
-            Quick::ModelViewer * modelViewer = modelItem->findChild<Quick::ModelViewer *>("modelViewer");
-
-            QObject::connect(modelViewer, &Quick::ModelViewer::pointUpdated, this, &AppWindow::updatePoint);
-        }
+        QObject::connect(appWindow, SIGNAL(pointUpdated(const QVariant &)), this, SLOT(updatePoint(const QVariant &)));
     }
 
-    void AppWindow::updatePoint(const QVariantMap & point) {
+    void AppWindow::updatePoint(const QVariant & point) {
         // need to serialize our vector3d
-        QVariantMap pointM(point);
+        QVariantMap pointM(point.toMap());
 
-        QVector3D vector = qvariant_cast<QVector3D>(point["position"]);
+        QVector3D vector = qvariant_cast<QVector3D>(pointM["position"]);
         QVariantList vectorV;
 
         vectorV.append(vector.x());
@@ -66,16 +60,6 @@ namespace Gui {
         distsUpdated(QJsonObject::fromVariantMap(qvariant_cast<QVariantMap>(dists)));
     }
 
-    void AppWindow::readFiles(QVariant fileNames) {
-        QStringList fileNamesStr;
-
-        for (const QVariant & item : fileNames.value<QList<QUrl> >()) {
-            fileNamesStr.append(item.toUrl().toLocalFile());
-        }
-
-        emit filesOpened(fileNamesStr);
-    }
-
     void AppWindow::registerQmlTypes() {
         qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
         qmlRegisterType<Viewport::ViewportArray>("RenderTools", 1, 0, "ViewportArray");
@@ -83,6 +67,7 @@ namespace Gui {
 
         qmlRegisterType<Parser::DicomReader>("ParserTools", 1, 0, "DicomReader");
         qmlRegisterType<Parser::StlReader>("ParserTools", 1, 0, "StlReader");
+        qmlRegisterType<Parser::Reconstructor>("ParserTools", 1, 0, "Reconstructor");
     }
 
     void AppWindow::show() {

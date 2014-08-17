@@ -14,16 +14,22 @@
 #include "Info/SliceInfo.h"
 
 namespace Parser {
-    class Reconstructor : public QObject {
+    class Reconstructor : public QQuickItem {
+        Q_PROPERTY(QVariant imgFiles READ imgFiles WRITE setImgFiles NOTIFY imgFilesChanged)
+
         Q_OBJECT
     public:
-        explicit Reconstructor(QObject * parent = 0);
+        explicit Reconstructor();
         ~Reconstructor();
 
         void reset();
 
+        QVariant imgFiles() const;
+
     private:
         int _sliceNumber;
+
+        QVariant _imgFiles;
 
         QVector<cv::Mat>_src;
         QVector<cv::Mat *>_slicesOCL;
@@ -50,11 +56,12 @@ namespace Parser {
         void visualize();
 
     signals:
-        void slicesProcessed(SliceInfo::Slices slices);
+        void slicesProcessed(QVariant slices);
+        void imgFilesChanged();
 
     public slots:
-        void readFiles(const QStringList & fileNames);
-        void changeSliceNumber(const int & ds);
+        void setImgFiles(const QVariant & fileNames);
+        Q_INVOKABLE void nextSlice(const int & ds);
     };
 }
 

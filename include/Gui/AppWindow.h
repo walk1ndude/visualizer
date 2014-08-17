@@ -31,26 +31,11 @@ namespace Gui {
         void fetchConnections();
 
     signals:
-        void fileOpenedDcm(const QUrl & fileName);
-        void fileOpenedStl(const QUrl & fileName);
-
-        void filesOpened(const QStringList & fileNames);
-
-        void sliceNumberChanged(const int & number);
-
-        void minHUChanged(const int & minHU);
-        void maxHUChanged(const int & maxHU);
-
-        void slicesProcessed(SliceInfo::Slices sliceSettings);
-        void modelRead(ModelInfo::BuffersVN buffers);
-
         void pointUpdated(const QJsonObject & json);
         void distsUpdated(const QJsonObject & json);
 
     private slots:
-         void readFiles(QVariant fileNames);
-
-         void updatePoint(const QVariantMap & point);
+         void updatePoint(const QVariant & point);
          void updateDists(const QVariant & dists);
     };
 }

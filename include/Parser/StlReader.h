@@ -1,8 +1,6 @@
 #ifndef STLREADER_H
 #define STLREADER_H
 
-#include <QtCore/QFile>
-
 #include "Parser/Helpers.hpp"
 
 #include "Model/StlModel.h"

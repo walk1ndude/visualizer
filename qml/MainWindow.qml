@@ -18,12 +18,8 @@ ApplicationWindow {
 
     color: "black";
 
-    signal filesOpened(variant fileName);
-    signal fileOpenedStl(url fileName);
-
-    signal sliceNumberChanged(int ds);
-
     signal distsUpdated(variant distanses);
+    signal pointUpdated(variant point);
 
     menuBar: MenuBar {
         id: menubar;
@@ -68,7 +64,7 @@ ApplicationWindow {
         id: openFileDialogReconstructor;
         title: "Choose image files";
         selectMultiple: true;
-        onAccepted: filesOpened(fileUrls);
+        onAccepted: reconstructor.imgFiles = fileUrls;
     }
 
     FileDialog {
@@ -111,7 +107,10 @@ ApplicationWindow {
             selectedPointName: sidebar.selectedPointName;
             selectedPointColor: sidebar.selectedPointColor;
 
-            onUpdateIndividualInfo: sidebar.updateIndividualInfo();
+            onPointUpdated: {
+                sidebar.updateIndividualInfo();
+                appWindow.pointUpdated(point);
+            }
         }
     }
 
@@ -137,14 +136,22 @@ ApplicationWindow {
 
     function nextSlide() {
         dicomReader.nextSlice(1);
+        reconstructor.nextSlice(1);
     }
 
     function previousSlide() {
         dicomReader.nextSlice(-1);
+        reconstructor.nextSlice(-1);
     }
 
     DicomReader {
         id: dicomReader;
+
+        onSlicesProcessed: modelViewer.drawSlices(slices);
+    }
+
+    Reconstructor {
+        id: reconstructor;
 
         onSlicesProcessed: modelViewer.drawSlices(slices);
     }

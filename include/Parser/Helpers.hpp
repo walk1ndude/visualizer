@@ -5,7 +5,11 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <QtCore/QStringList>
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
+#include <QtCore/QTextCodec>
 
 #include <QtQuick/QQuickItem>
 

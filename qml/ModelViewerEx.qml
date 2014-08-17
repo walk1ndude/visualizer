@@ -23,12 +23,11 @@ Item {
 
     property int modelID: modelViewer.modelID;
 
-    signal updateIndividualInfo();
+    signal pointUpdated(variant point);
 
     Rectangle {
         ModelViewer {
             id: modelViewer;
-            objectName: "modelViewer";
 
             width: modelViewerEx.width;
             height: modelViewerEx.height;
@@ -57,7 +56,7 @@ Item {
                 Settings.Points[point.modelID][point.name]["position"] = point.position;
 
                 // need to update sidebar info, so give singal about it
-                updateIndividualInfo();
+                modelViewerEx.pointUpdated(point);
             }
 
             function updateViewPortInfo(viewPortArray) {

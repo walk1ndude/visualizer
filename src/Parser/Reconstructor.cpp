@@ -1,15 +1,5 @@
-#include <QtCore/QStringList>
-#include <QtCore/QDebug>
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
-#include <QtCore/QTextCodec>
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
 #include "Parser/Reconstructor.h"
 #include "Parser/parallelprocessing.hpp"
-#include "Parser/Helpers.hpp"
 
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
@@ -56,8 +46,7 @@
 #define ALL_EVENTS_COMPLETED 8
 
 namespace Parser {
-    Reconstructor::Reconstructor(QObject * parent) :
-        QObject(parent),
+    Reconstructor::Reconstructor() :
         _sliceNumber(0) {
 
         initOpenCL();
@@ -529,28 +518,32 @@ namespace Parser {
         slices.texture.pixelFormat = QOpenGLTexture::Red;
         slices.texture.target = QOpenGLTexture::Target3D;
 
-        emit slicesProcessed(slices);
+        emit slicesProcessed(QVariant::fromValue(slices));
     }
 
-    void Reconstructor::readFiles(const QStringList & fileNames) {
+    QVariant Reconstructor::imgFiles() const {
+        return _imgFiles;
+    }
+
+    void Reconstructor::setImgFiles(const QVariant & imgFiles) {
         cv::Size imSize = cv::Size();
         cv::Mat readerMat;
 
-        for (QString fileName : fileNames) {
-            readerMat = cv::imread(fileName.toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
+        for (const QVariant & imgFile : imgFiles.value<QList<QUrl> >()) {
+            readerMat = cv::imread(imgFile.toUrl().toLocalFile().toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
             readerMat.convertTo(readerMat, CV_32FC1, 1 / 256.0f);
 
-           // all images must be the same size or resize
-           if (imSize != cv::Size(0, 0)) {
-               if (readerMat.size() != imSize) {
-                   cv::resize(readerMat, readerMat, imSize);
-               }
-           }
-           else {
-               imSize = readerMat.size();
-           }
+            // all images must be the same size or resize
+            if (imSize != cv::Size(0, 0)) {
+                if (readerMat.size() != imSize) {
+                    cv::resize(readerMat, readerMat, imSize);
+                }
+            }
+            else {
+                imSize = readerMat.size();
+            }
 
-           _src.push_back(readerMat);
+            _src.push_back(readerMat);
         }
 
         reconstruct();
@@ -560,6 +553,9 @@ namespace Parser {
         cv::namedWindow(SLICE_POSITION);
 
         showSliceWithNumber(0);
+
+        _imgFiles = imgFiles;
+        emit imgFilesChanged();
     }
 
     void Reconstructor::reconstructCPU() {
@@ -575,7 +571,7 @@ namespace Parser {
         visualize();
     }
 
-    void Reconstructor::changeSliceNumber(const int & ds) {
+    void Reconstructor::nextSlice(const int & ds) {
         if (_slicesOCL.size()) {
             _sliceNumber += ds;
             _sliceNumber %= _slicesOCL.size();
