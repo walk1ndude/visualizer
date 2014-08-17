@@ -20,7 +20,7 @@ namespace Viewport {
 
         void setViewports(const ViewportInfos & viewports, const QSize & windowSize);
 
-        void zoom(const qreal & zoomFactor);
+        Q_INVOKABLE void zoom(const qreal & zoomFactor);
 
         void resize(const QSize & surfaceSize);
 

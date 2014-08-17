@@ -15,6 +15,8 @@ namespace Viewport {
         Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType NOTIFY projectionTypeChanged)
         Q_PROPERTY(QString text READ text CONSTANT)
 
+        Q_PROPERTY(qreal zoom READ zoom WRITE setZoom NOTIFY zoomChanged)
+
         Q_ENUMS(ProjectionType)
 
         Q_OBJECT
@@ -46,6 +48,8 @@ namespace Viewport {
 
         QString text() const;
 
+        qreal zoom() const;
+
         bool unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const;
 
         bool pointInViewport(const QVector4D & point) const;
@@ -74,6 +78,8 @@ namespace Viewport {
 
         qreal _fov;
 
+        qreal _zoomFactor;
+
         qreal _aspectRatio;
 
         qreal _nearVal;
@@ -92,6 +98,8 @@ namespace Viewport {
         void boundingRectNormalizedChanged();
         void projectionTypeChanged();
 
+        void zoomChanged();
+
     public slots:
         void setBoundingRectNormalized(const QRectF & boundingRectNormalized);
 
@@ -101,7 +109,7 @@ namespace Viewport {
 
         void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
 
-        void zoom(const qreal & zoomFactor);
+        void setZoom(const qreal & zoomFactor);
 
         void resize(const QSize & windowSize);
     };

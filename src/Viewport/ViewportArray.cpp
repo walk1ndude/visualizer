@@ -42,7 +42,7 @@ namespace Viewport {
 
     void ViewportArray::zoom(const qreal & zoomFactor) {
         for (Viewport * viewport : _viewportArray) {
-            viewport->zoom(zoomFactor);
+            viewport->setZoom(zoomFactor);
         }
     }
 

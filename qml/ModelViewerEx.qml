@@ -121,6 +121,8 @@ Item {
                 }
 
                 onWheel: zoomFactor += wheel.angleDelta.y * 0.001;
+
+                z: -1;
             }
         }
     }

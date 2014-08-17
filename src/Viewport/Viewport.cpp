@@ -1,15 +1,18 @@
 #include "Viewport/Viewport.h"
 
 namespace Viewport {
-    Viewport::Viewport() {
+    Viewport::Viewport() :
+        _zoomFactor(2.0f) {
 
     }
 
     Viewport::Viewport(const ViewportRect & boundingRectNormalized,
                        const QSize & surfaceSize,
                        const ProjectionType & projectionType) :
-        _surfaceSize(surfaceSize),
-        _boundingRectNormalized(boundingRectNormalized) {
+        Viewport() {
+
+        _surfaceSize = surfaceSize;
+        _boundingRectNormalized = boundingRectNormalized;
 
         setProjectionType(projectionType);
     }
@@ -24,7 +27,7 @@ namespace Viewport {
         switch (_projectionType) {
             case PERSPECTIVE :
                 perspective(60.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+                lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
@@ -32,7 +35,7 @@ namespace Viewport {
                 break;
             case LEFT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+                lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
                         QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f);
@@ -41,7 +44,7 @@ namespace Viewport {
                 break;
             case FRONTAL:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
+                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
@@ -49,7 +52,7 @@ namespace Viewport {
                 break;
             case TOP:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
-                lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, -1.0f));
+                lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f));
 
                 _qRotateVoxel = QQuaternion();
 
@@ -101,7 +104,11 @@ namespace Viewport {
         _boundingRectNormalized = boundingRect;
     }
 
-    void Viewport::zoom(const qreal & zoomFactor) {
+    qreal Viewport::zoom() const {
+        return _zoomFactor;
+    }
+
+    void Viewport::setZoom(const qreal & zoomFactor) {
         _pMatrix.setToIdentity();
         if (_projectionType == PERSPECTIVE) {
             // fov will be in 1/4 to 3/2 from initial fov
@@ -113,6 +120,9 @@ namespace Viewport {
         else if (zoomFactor != 0.0f) {
             _pMatrix.ortho(-zoomFactor / 2.0f, zoomFactor / 2.0f, -zoomFactor / 2.0f, zoomFactor / 2.0f, _nearVal, _farVal);
         }
+
+        _zoomFactor = zoomFactor;
+        emit zoomChanged();
     }
 
     QMatrix4x4 Viewport::projection() const {

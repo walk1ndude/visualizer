@@ -300,7 +300,7 @@ namespace Quick {
         paintNodeTransformMatrix.scale(1.0f, -1.0f);
         paintNodeTransformMatrix.translate(-width() * 0.5f, -height() * 0.5f);
 
-        paintNodeData->transformNode->setMatrix(paintNodeTransformMatrix);
+        //paintNodeData->transformNode->setMatrix(paintNodeTransformMatrix);
 
         return node;
     }
