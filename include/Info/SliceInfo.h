@@ -22,4 +22,6 @@ namespace SliceInfo {
     };
 }
 
+Q_DECLARE_METATYPE(SliceInfo::Slices)
+
 #endif // SLICEINFO_H

@@ -16,7 +16,6 @@ ApplicationWindow {
 
     color: "black";
 
-    signal fileOpenedDcm(url fileName);
     signal filesOpened(variant fileName);
     signal fileOpenedStl(url fileName);
 
@@ -60,7 +59,7 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogDicom;
         title: "Choose DICOM file";
-        onAccepted: fileOpenedDcm(fileUrl);
+        onAccepted: modelViewer.dicomFile = fileUrl;
     }
 
     FileDialog {
@@ -83,9 +82,8 @@ ApplicationWindow {
         Keys.onPressed: {
             switch (event.key) {
                 case Qt.Key_Escape: Qt.quit(); break;
-                case Qt.Key_Left: sliceNumberChanged(-1); break;
-                case Qt.Key_Right: sliceNumberChanged(1); break;
-                case Qt.Key_S: modelItem.takeShot = true; break;
+                case Qt.Key_Left: modelViewer.previousSlide(); break;
+                case Qt.Key_Right: modelViewer.nextSlide(); break;
             }
         }
     }
@@ -93,10 +91,23 @@ ApplicationWindow {
     Row {
         id: modelRow;
         objectName: "modelRow";
-        ModelItem {
-            id: modelItem;
+        ModelViewerEx {
+            id: modelViewer;
             width: appWindow.width * sideBarWidth;
             height: appWindow.height;
+
+            xRange: sidebar.xRange;
+            yRange: sidebar.yRange;
+            zRange: sidebar.zRange;
+
+            minHU: sidebar.minHU;
+            maxHU: sidebar.maxHU;
+
+            rotation: sidebar.angle;
+            zoomFactor: sidebar.zoomFactor;
+
+            selectedPointName: sidebar.selectedPointName;
+            selectedPointColor: sidebar.selectedPointColor;
 
             onUpdateIndividualInfo: sidebar.updateIndividualInfo();
         }
@@ -106,25 +117,12 @@ ApplicationWindow {
         id: sidebar;
         color: "#FFFFFF";
 
-        modelID: modelItem.modelID;
+        modelID: modelViewer.modelID;
 
         width: appWindow.width - modelRow.width;
         height: appWindow.height;
 
         anchors.left: modelRow.right;
-
-        onXRangeChanged: modelItem.xRange = xRange;
-        onYRangeChanged: modelItem.yRange = yRange;
-        onZRangeChanged: modelItem.zRange = zRange;
-
-        onMinHUChanged: modelItem.minHU = minHU;
-        onMaxHUChanged: modelItem.maxHU = maxHU;
-
-        onAngleChanged: modelItem.rotation = angle;
-        onZoomFactorChanged: modelItem.zoomFactor = zoomFactor;
-
-        onSelectedPointNameChanged: modelItem.selectedPointName = selectedPointName;
-        onSelectedPointColorChanged: modelItem.selectedPointColor = selectedPointColor;
 
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }

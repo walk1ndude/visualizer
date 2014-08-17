@@ -4,6 +4,8 @@
 
 #include "Quick/ModelViewer.h"
 
+#include "Parser/DicomReader.h"
+
 namespace Gui {
     AppWindow::AppWindow(const QString & qmlSource, QObject * parent) :
         QObject(parent) {
@@ -32,7 +34,6 @@ namespace Gui {
 
         _appWindow->setFormat(surfaceFormat);
 
-        QObject::connect(appWindow, SIGNAL(fileOpenedDcm(const QUrl &)), this, SIGNAL(fileOpenedDcm(const QUrl &)));
         QObject::connect(appWindow, SIGNAL(fileOpenedStl(const QUrl &)), this, SIGNAL(fileOpenedStl(const QUrl &)));
 
         QObject::connect(appWindow, SIGNAL(filesOpened(QVariant)), this, SLOT(readFiles(QVariant)));
@@ -42,7 +43,6 @@ namespace Gui {
         foreach (QObject * modelItem, _appWindow->findChild<QQuickItem *>("modelRow")->children()) {
             Quick::ModelViewer * modelViewer = modelItem->findChild<Quick::ModelViewer *>("modelViewer");
 
-            QObject::connect(this, &AppWindow::slicesProcessed, modelViewer, &Quick::ModelViewer::drawSlices);
             QObject::connect(this, &AppWindow::modelRead, modelViewer, &Quick::ModelViewer::modelRead);
 
             QObject::connect(modelViewer, &Quick::ModelViewer::minHUChanged, this, &AppWindow::minHUChanged);
@@ -105,6 +105,8 @@ namespace Gui {
         qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
         qmlRegisterType<Viewport::ViewportArray>("RenderTools", 1, 0, "ViewportArray");
         qmlRegisterType<Viewport::Viewport>("RenderTools", 1, 0, "Viewport");
+
+        qmlRegisterType<Parser::DicomReader>("ParserTools", 1, 0, "DicomReader");
     }
 
     void AppWindow::show() {

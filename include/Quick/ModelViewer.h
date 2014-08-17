@@ -151,6 +151,7 @@ namespace Quick {
         void pointAdded(const PointsInfo::Point & point);
 
         void slicesProcessed(SliceInfo::Slices slices);
+
         void modelRead(ModelInfo::BuffersVN buffers);
 
         void pointUpdated(const QVariantMap & point);
@@ -158,7 +159,7 @@ namespace Quick {
         void modelIDChanged(const uint & modelID);
 
     public slots:
-        void drawSlices(SliceInfo::Slices slices);
+        Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);
         void updatePoint(const PointsInfo::UpdatedPoint & point);
     };
 }

@@ -4,43 +4,54 @@
 #include <gdcmImage.h>
 #include <gdcmFile.h>
 
+#include <QtQuick/QQuickItem>
+
 #include "Parser/ctprocessing.hpp"
 
 #include "Info/SliceInfo.h"
 
 namespace Parser {
-    class DicomReader : public QObject {
-      Q_OBJECT
-    public:
-      explicit DicomReader(QObject * parent = 0);
-      ~DicomReader();
+    class DicomReader : public QQuickItem {
+        Q_PROPERTY(QUrl dicomFile READ dicomFile WRITE setDicomFile NOTIFY dicomFileChanged)
 
-      void reset(const int & newSize = 0);
-      void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
+        Q_OBJECT
+    public:
+        explicit DicomReader();
+        ~DicomReader();
+
+        void reset(const int & newSize = 0);
+        void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
+
+        QUrl dicomFile() const;
+        void setDicomFile(const QUrl & dicomFile);
 
     private:
-      size_t _sliceNumber;
+        size_t _sliceNumber;
 
-      std::vector<cv::Mat *> _noisy;
-      std::vector<cv::Mat *> _filtered;
+        QUrl _dicomFile;
 
-      DicomData _dicomData;
+        std::vector<cv::Mat *> _noisy;
+        std::vector<cv::Mat *> _filtered;
 
-      void showSliceWithNumber(const size_t & sliceNumber);
-      void readImage(gdcm::File &dFile, const gdcm::Image & dImage);
+        DicomData _dicomData;
 
-      void fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage);
-      void runSliceProcessing(const bool & tellAboutHURange = false);
-      void updateDicomData();
+        void showSliceWithNumber(const size_t & sliceNumber);
+        void readImage(gdcm::File &dFile, const gdcm::Image & dImage);
+
+        void fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage);
+        void runSliceProcessing(const bool & tellAboutHURange = false);
+        void updateDicomData();
+
     signals:
-      void slicesProcessed(SliceInfo::Slices & slices);
+        void slicesProcessed(QVariant slices);
+
+        void dicomFileChanged();
 
     public slots:
-      void readFile(const QUrl & fileUrl);
-      void changeSliceNumber(const int & ds);
+        Q_INVOKABLE void nextSlice(const int & ds);
 
-      void updateMinHU(const int & minHU);
-      void updateMaxHU(const int & maxHU);
+        void updateMinHU(const int & minHU);
+        void updateMaxHU(const int & maxHU);
     };
 }
 

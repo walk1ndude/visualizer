@@ -1,14 +1,15 @@
 import QtQuick 2.3
 
 import RenderTools 1.0
+import ParserTools 1.0
 
 import "../js/settings.js" as Settings
 import "../js/helpers.js" as Helpers
 
 Item {
-    id: modelItem;
+    id: modelViewerEx;
 
-    property bool takeShot: false;
+    property url dicomFile: "";
 
     property vector2d xRange: Qt.vector2d(0.0, 1.0);
     property vector2d yRange: Qt.vector2d(0.0, 1.0);
@@ -32,27 +33,25 @@ Item {
             id: modelViewer;
             objectName: "modelViewer";
 
-            width: modelItem.width;
-            height: modelItem.height;
+            width: modelViewerEx.width;
+            height: modelViewerEx.height;
             z: -2;
 
             fboSize: Qt.size(768, 768);
 
-            xRange: modelItem.xRange;
-            yRange: modelItem.yRange;
-            zRange: modelItem.zRange;
+            xRange: modelViewerEx.xRange;
+            yRange: modelViewerEx.yRange;
+            zRange: modelViewerEx.zRange;
 
-            rotation: modelItem.rotation;
+            rotation: modelViewerEx.rotation;
 
-            zoomFactor: modelItem.zoomFactor;
+            zoomFactor: modelViewerEx.zoomFactor;
 
-            minHU: modelItem.minHU;
-            maxHU: modelItem.maxHU;
+            minHU: modelViewerEx.minHU;
+            maxHU: modelViewerEx.maxHU;
 
-            takeShot: modelItem.takeShot;
-
-            selectedPointColor: modelItem.selectedPointColor;
-            selectedPointName: modelItem.selectedPointName;
+            selectedPointColor: modelViewerEx.selectedPointColor;
+            selectedPointName: modelViewerEx.selectedPointName;
 
             onPointUpdated: {
                 // update info about points
@@ -103,7 +102,7 @@ Item {
 
                 anchors.fill: parent;
                 onClicked: switch (mouse.button) {
-                           case Qt.LeftButton: if (!!modelItem.selectedPointName) {
+                           case Qt.LeftButton: if (!!modelViewerEx.selectedPointName) {
                                modelViewer.selectedPointPosition = Qt.point(
                                            mouseX * parent.fboSize.width / width,
                                            (height - mouseY) * parent.fboSize.height / height);
@@ -128,15 +127,29 @@ Item {
                 onWheel: zoomFactor += wheel.angleDelta.y * 0.001;
             }
         }
+
+        Connections {
+            target: dicomReader;
+
+            onSlicesProcessed: modelViewer.drawSlices(slices);
+        }
     }
 
-    onTakeShotChanged: {
-        if (modelItem.takeShot) {
-            angleShotTimer.running = true;
-        }
+    function nextSlide() {
+        dicomReader.nextSlice(1);
+    }
+
+    function previousSlide() {
+        dicomReader.nextSlice(-1);
     }
 
     function show() {
         mouseAreaModelItem.enabled = true;
+    }
+
+    DicomReader {
+        id: dicomReader;
+
+        dicomFile: modelViewerEx.dicomFile;
     }
 }

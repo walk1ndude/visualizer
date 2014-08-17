@@ -5,7 +5,7 @@
         <file>qml/GeometryGrid.qml</file>
         <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
-        <file>qml/ModelItem.qml</file>
+        <file>qml/ModelViewerEx.qml</file>
         <file>js/helpers.js</file>
         <file>cl/reconstructor.cl</file>
         <file>shaders/stlVertex.glsl</file>

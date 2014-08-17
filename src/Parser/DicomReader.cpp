@@ -17,8 +17,7 @@
 #define MAX_HU 3600
 
 namespace Parser {
-    DicomReader::DicomReader(QObject * parent) :
-        QObject(parent),
+    DicomReader::DicomReader() :
         _sliceNumber(0) {
 
     }
@@ -191,23 +190,34 @@ namespace Parser {
         slices.texture.pixelFormat = QOpenGLTexture::Red;
         slices.texture.target = QOpenGLTexture::Target3D;
 
-        emit slicesProcessed(slices);
+        emit slicesProcessed(QVariant::fromValue<SliceInfo::Slices>(slices));
     }
 
-    void DicomReader::readFile(const QUrl & fileUrl) {
+    QUrl DicomReader::dicomFile() const {
+        return _dicomFile;
+    }
+
+    void DicomReader::setDicomFile(const QUrl & dicomFile) {
+        if (dicomFile.isEmpty()) {
+            return;
+        }
+
         gdcm::ImageReader dIReader;
 
-        dIReader.SetFileName(fileUrl.toLocalFile().toStdString().c_str());
+        dIReader.SetFileName(dicomFile.toLocalFile().toStdString().c_str());
 
         if (dIReader.Read()) {
             readImage(dIReader.GetFile(), dIReader.GetImage());
+            _dicomFile = dicomFile;
         }
         else {
             qDebug() << "can't read file";
         }
+
+        emit dicomFileChanged();
     }
 
-    void DicomReader::changeSliceNumber(const int & ds) {
+    void DicomReader::nextSlice(const int & ds) {
         if (_noisy.size()) {
             _sliceNumber += ds;
             _sliceNumber %= _noisy.size();
