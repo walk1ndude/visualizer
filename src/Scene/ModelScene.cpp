@@ -49,10 +49,6 @@ namespace Scene {
         }
     }
 
-    void ModelScene::setZoomFactor(const qreal & zoomFactor) {
-        viewportArray()->zoom(zoomFactor);
-    }
-
     void ModelScene::setXRange(const ModelInfo::ViewAxisRange & xRange) {
         if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
             model->setViewAxisRange(xRange, ModelInfo::XAXIS);

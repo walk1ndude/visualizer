@@ -18,8 +18,12 @@ Viewport {
     marked by array property */
     property bool propagateToOthers: true;
 
+    property bool invertedYAxis: true;
+
     property real minimumZoom: 0.2;
     property real maximumZoom: 10.0;
+
+    property real rotationSpeed: 20.0;
 
     x: boundingRect.x * parent.width;
     y: boundingRect.y * parent.height;
@@ -59,8 +63,8 @@ Viewport {
 
     MouseArea {
         id: mouseArea;
-        property real prevMouseX: -1.0;
-        property real prevMouseY: -1.0;
+        property real prevMouseX: 0.0;
+        property real prevMouseY: 0.0;
 
         enabled: true;
 
@@ -68,18 +72,30 @@ Viewport {
         onClicked: switch (mouse.button) {
                    case Qt.LeftButton:
 
-                           console.log("yes" + parent.projectionType);
 
                        break;
                    }
 
         onPressed: {
-            prevMouseX = mouseX;
-            prevMouseY = mouseY;
+            if (parent.projectionType == Viewport.PERSPECTIVE) {
+                prevMouseX = mouseX;
+                prevMouseY = mouseY;
+            }
         }
 
         onPositionChanged: {
-            parent.mouseRotation(Qt.point(prevMouseX, height - prevMouseY), Qt.point(mouseX, height - mouseY));
+            if (parent.projectionType == Viewport.PERSPECTIVE) {
+                parent.array.parent.rotation = Qt.vector3d(
+                            (parent.invertedYAxis ? 1 : -1) * (prevMouseY - mouseY) / parent.rotationSpeed,
+                            (prevMouseX - mouseX) / parent.rotationSpeed,
+                            0.0
+                            );
+            }
+        }
+
+        onExited: {
+            prevMouseX = 0.0;
+            prevMouseY = 0.0;
         }
 
         onWheel: {

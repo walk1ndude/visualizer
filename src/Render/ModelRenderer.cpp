@@ -26,23 +26,8 @@ namespace Render {
         cleanUp();
     }
 
-    void ModelRenderer::setTakeShot(const bool & takeShot) {
-        Q_UNUSED(takeShot)
-        //_takeShot = takeShot;
-    }
-
     void ModelRenderer::setRotation(const QVector3D & rotation) {
         selectedScene()->setRotation(rotation);
-        emit needToRedraw();
-    }
-
-    void ModelRenderer::setMouseRotation(const QPointF & startPos, const QPointF & finishPos) {
-        selectedScene()->setMouseRotation(startPos, finishPos);
-        emit needToRedraw();
-    }
-
-    void ModelRenderer::setZoomFactor(const qreal & zoomFactor) {
-        selectedScene()->setZoomFactor(zoomFactor);
         emit needToRedraw();
     }
 

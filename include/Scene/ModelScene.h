@@ -49,9 +49,6 @@ namespace Scene {
         virtual void setRotation(const QVector3D & rotation);
         virtual void setMouseRotation(const QPointF & startPos, const QPointF & finishPos);
 
-        // zoom the whole scene
-        virtual void setZoomFactor(const qreal & zoomFactor);
-
         // to clip selected model
         virtual void setXRange(const ModelInfo::ViewAxisRange & xRange);
         virtual void setYRange(const ModelInfo::ViewAxisRange & yRange);

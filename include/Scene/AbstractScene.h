@@ -28,9 +28,6 @@ namespace Scene {
 
         virtual QRect screenSaveRect() = 0;
 
-        // zoom the whole scene
-        virtual void setZoomFactor(const qreal & zoomFactor) = 0;
-
         // to clip selected model
         virtual void setXRange(const ModelInfo::ViewAxisRange & xRange) = 0;
         virtual void setYRange(const ModelInfo::ViewAxisRange & yRange) = 0;

@@ -33,16 +33,8 @@ namespace Render {
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);
 
-        // to take shots of the rotated model
-        void setTakeShot(const bool & takeShot);
-
         // rotate selected model
         void setRotation(const QVector3D & rotation);
-
-        void setMouseRotation(const QPointF & startPos, const QPointF & finishPos);
-
-        // zoom the whole scene
-        void setZoomFactor(const qreal & zoomFactor);
 
         // to clip selected model
         void setXRange(const ModelInfo::ViewAxisRange & xRange);

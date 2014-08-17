@@ -93,10 +93,6 @@ namespace Quick {
         }
     }
 
-    void ModelViewer::mouseRotation(const QPointF & startPos, const QPointF & finishPos) {
-        mouseRotationChanged(startPos, finishPos);
-    }
-
     QSize ModelViewer::fboSize() {
         return _fboSize;
     }
@@ -232,7 +228,7 @@ namespace Quick {
         _viewportArray = viewPortArray;
     }
 
-    QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * paintNodeData) {
+    QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * ) {
         TextureNode * node = static_cast<TextureNode *>(oldNode);
 
         if (!_modelRenderer) {
@@ -248,9 +244,6 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
 
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
-            QObject::connect(this, &ModelViewer::mouseRotationChanged, _modelRenderer, &Render::ModelRenderer::setMouseRotation, Qt::DirectConnection);
-
-            QObject::connect(this, &ModelViewer::zoomFactorChanged, _modelRenderer, &Render::ModelRenderer::setZoomFactor, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
@@ -293,14 +286,6 @@ namespace Quick {
         QMetaObject::invokeMethod(_modelRenderer, "renderNext");
 
         node->setRect(boundingRect());
-
-        QMatrix4x4 paintNodeTransformMatrix;
-
-        paintNodeTransformMatrix.translate(width() * 0.5f, height() * 0.5f);
-        paintNodeTransformMatrix.scale(1.0f, -1.0f);
-        paintNodeTransformMatrix.translate(-width() * 0.5f, -height() * 0.5f);
-
-        //paintNodeData->transformNode->setMatrix(paintNodeTransformMatrix);
 
         return node;
     }
