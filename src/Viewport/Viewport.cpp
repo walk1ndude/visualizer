@@ -39,7 +39,7 @@ namespace Viewport {
 
                 _text = "LEFT";
                 break;
-            case FRONT:
+            case FRONTAL:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f));
 
@@ -80,12 +80,8 @@ namespace Viewport {
         emit boundingRectNormalizedChanged();
     }
 
-    QString * Viewport::text() {
-        return &_text;
-    }
-
-    int Viewport::id() {
-        return _id;
+    QString Viewport::text() const {
+        return _text;
     }
 
     ViewportRect Viewport::boundingRect() const {
@@ -198,7 +194,7 @@ namespace Viewport {
         switch (_projectionType) {
         case LEFT:
             return QVector3D(xyz.z(), xyz.y(), xyz.x());
-        case FRONT:
+        case FRONTAL:
             return QVector3D(xyz.x(), xyz.z(), xyz.y());
         default:
             return xyz;

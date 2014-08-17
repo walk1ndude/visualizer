@@ -3,10 +3,15 @@ import QtQuick 2.3
 import RenderTools 1.0
 
 Viewport {
-    id: viewPortHud
-    property string text: projectionType;
+    id: viewport;
 
-    property color color: "green"
+    property color color: "green";
+
+    x: boundingRect.x * parent.width;
+    y: boundingRect.y * parent.height;
+
+    width: boundingRect.width * parent.width;
+    height: boundingRect.height * parent.height;
 
     Rectangle {
         color: "transparent";
@@ -14,12 +19,12 @@ Viewport {
         anchors.fill: parent
 
         border {
-            color: viewPortHud.color;
+            color: viewport.color;
         }
 
         Text {
             id: text;
-            text: viewPortHud.text;
+            text: viewport.text;
 
             anchors {
                 left: parent.left;
@@ -29,7 +34,7 @@ Viewport {
                 leftMargin: 0.2 * text.height;
             }
 
-            color: viewPortHud.color;
+            color: viewport.color;
 
             font {
                 capitalization: Font.SmallCaps;

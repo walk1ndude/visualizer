@@ -13,6 +13,7 @@ namespace Viewport {
                    WRITE setBoundingRectNormalized NOTIFY boundingRectNormalizedChanged)
 
         Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType NOTIFY projectionTypeChanged)
+        Q_PROPERTY(QString text READ text CONSTANT)
 
         Q_ENUMS(ProjectionType)
 
@@ -21,7 +22,7 @@ namespace Viewport {
         enum ProjectionType {
             PERSPECTIVE = 0,
             LEFT = 1,
-            FRONT = 2,
+            FRONTAL = 2,
             TOP = 3
         };
 
@@ -52,9 +53,7 @@ namespace Viewport {
 
         QMatrix4x4 projection() const;
 
-        QString * text();
-
-        int id();
+        QString text() const;
 
         void resize(const QSize & windowSize);
 
@@ -66,8 +65,6 @@ namespace Viewport {
         QVector3D placeXYZAccordingToViewPort(const QVector3D & xyz);
 
     private:
-        int _id;
-
         QSize _surfaceSize;
 
         QRectF _boundingRectNormalized;

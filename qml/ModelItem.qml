@@ -84,7 +84,7 @@ Item {
                 }
 
                 ViewportEx {
-                    projectionType: Viewport.FRONT;
+                    projectionType: Viewport.FRONTAL;
                     boundingRect: Qt.rect(0, 0, 0.5, 0.5);
                 }
 

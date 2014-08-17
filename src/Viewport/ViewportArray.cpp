@@ -59,17 +59,6 @@ namespace Viewport {
         return false;
     }
 
-    ViewPortInfoArray ViewportArray::viewportsInfo() {
-        ViewPortInfoArray infoArray;
-
-        for (Viewport * viewport : _viewportArray) {
-            qDebug() << viewport->boundingRectNormalized();
-            infoArray.append(ViewportInfo(viewport->boundingRectNormalized(), viewport->text()));
-        }
-
-        return infoArray;
-    }
-
     void ViewportArray::render(QListIterator<Model::AbstractModel *> & modelIterator) {
         ViewportRect boundingRect;
 
