@@ -73,25 +73,28 @@ Viewport {
         hoverEnabled: true;
 
         anchors.fill: parent;
-        onClicked: switch (mouse.button) {
-                   case Qt.LeftButton:
-
-                       parent.array.parent.addPoint(
-                                   Qt.point(
-                                       mouseX / width,
-                                       mouseY / height
-                                       ), parent
-                                   );
-
-                       break;
-                   }
 
         onPressed: {
-            if (parent.projectionType == Viewport.PERSPECTIVE) {
-                prevMouseX = mouseX;
-                prevMouseY = mouseY;
+            switch (mouse.button) {
+                case Qt.LeftButton:
 
-                rotating = !rotating;
+                if (!rotating) {
+                    parent.array.parent.addPoint(
+                        Qt.point(
+                            mouseX / width,
+                            mouseY / height
+                            ), parent
+                        );
+                }
+
+                if (parent.projectionType == Viewport.PERSPECTIVE) {
+                    prevMouseX = mouseX;
+                    prevMouseY = mouseY;
+
+                    rotating = !rotating;
+                }
+
+                break;
             }
         }
 

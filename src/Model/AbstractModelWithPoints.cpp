@@ -45,7 +45,7 @@ namespace Model {
                 
                 qDebug() << modelPoint->position << posZ;
 
-                modelPoint->position.setZ(posZ / 65536.0f);
+                modelPoint->position.setZ(posZ / 65535.0f);
 
                 modelPoint->position = viewport->placeXYZAccordingToViewport(modelPoint->position);
 

@@ -31,7 +31,7 @@ namespace Viewport {
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
-                _text = "PERSPECTIVE";
+                _text = "perspective";
                 break;
             case LEFT:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
@@ -40,7 +40,7 @@ namespace Viewport {
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
                         QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f);
 
-                _text = "LEFT";
+                _text = "left";
                 break;
             case FRONTAL:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
@@ -48,7 +48,7 @@ namespace Viewport {
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
-                _text = "FRONT";
+                _text = "frontal";
                 break;
             case TOP:
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
@@ -56,7 +56,7 @@ namespace Viewport {
 
                 _qRotateVoxel = QQuaternion();
 
-                _text = "TOP";
+                _text = "top";
                 break;
         }
 
