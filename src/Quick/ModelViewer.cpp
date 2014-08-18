@@ -302,10 +302,7 @@ namespace Quick {
             return;
         }
 
-        _selectedPoint.position = QPointF(
-                    position.x() * _fboSize.width(),
-                    position.y() * _fboSize.height()
-                    );
+        _selectedPoint.position = QPointF(position.x(), position.y());
         _selectedPoint.viewport = viewport;
 
         emit pointAdded(_selectedPoint);

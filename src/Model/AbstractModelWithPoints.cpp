@@ -33,17 +33,18 @@ namespace Model {
         for (PointsInfo::ModelPoint * modelPoint : modelPoints()) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
-                
-                modelPoint->position.setX(std::round(modelPoint->position.x()));
-                modelPoint->position.setY(std::round(modelPoint->position.y()));
-                
+
+                Viewport::ViewportRect boundingRect = viewport->boundingRect();
+
                 // usage of GL_UNSIGNED_SHORT explaned here http://www.opengl.org/wiki/Common_Mistakes#Depth_Buffer_Precision
                 glReadPixels(
-                             (int) modelPoint->position.x(),
-                             (int) modelPoint->position.y(),
+                             std::round(boundingRect.x() + modelPoint->position.x() * boundingRect.width()),
+                             std::round(boundingRect.y() + modelPoint->position.y() * boundingRect.height()),
                              1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ
                              );
                 
+                qDebug() << modelPoint->position << posZ;
+
                 modelPoint->position.setZ(posZ / 65536.0f);
 
                 modelPoint->position = viewport->placeXYZAccordingToViewport(modelPoint->position);

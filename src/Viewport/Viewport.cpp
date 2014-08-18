@@ -145,12 +145,6 @@ namespace Viewport {
     }
 
     bool Viewport::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
-        float x = _boundingRectNormalized.x() * _surfaceSize.width();
-        float y = _boundingRectNormalized.y() * _surfaceSize.height();
-
-        float w = _boundingRectNormalized.width() * _surfaceSize.width();
-        float h = _boundingRectNormalized.height() * _surfaceSize.height();
-
         bool invertible;
 
         QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
@@ -160,10 +154,14 @@ namespace Viewport {
         }
 
         QVector4D unprojectedPointVector = QVector4D(
-                    2.0 * (projection.x() - x) / w - 1.0f,
-                    - 2.0 * (projection.y() - y) / h - 1.0f,
-                    projection.z(),
-                    1.0f) * invVP;
+                    2.0f * projection.x() - 1.0f,
+                    - 2.0f * projection.y() + 1.0f,
+                    2.0f * projection.z() - 1.0f,
+                    1.0f);
+
+        qDebug() << unprojectedPointVector;
+
+        unprojectedPointVector = unprojectedPointVector * invVP;
 
         if (unprojectedPointVector.w() == 0.0f) {
             return false;
