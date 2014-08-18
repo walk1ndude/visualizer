@@ -508,10 +508,18 @@ namespace Parser {
         slices.texture.size.setY(slice.rows);
         slices.texture.size.setZ(sliceCount);
 
+        // how to calculate / get these ?
+        QVector3D worldSpacings(0.3, 0.3, 1.0);
+
         slices.texture.scaling = scaleVector<float, QVector3D>(
-            slices.texture.size.x(),
-            slices.texture.size.y(),
-            slices.texture.size.z());
+                    slices.texture.size.x() * worldSpacings.x(),
+                    slices.texture.size.y() * worldSpacings.y(),
+                    slices.texture.size.z() * worldSpacings.z()
+                    ) * QVector3D(
+                    1.0f / worldSpacings.x(),
+                    1.0f / worldSpacings.y(),
+                    1.0f / worldSpacings.z()
+                    );
 
         slices.texture.pixelType = QOpenGLTexture::UInt8;
         slices.texture.textureFormat = QOpenGLTexture::R8_UNorm;

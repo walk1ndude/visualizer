@@ -166,9 +166,9 @@ namespace Parser {
 
         slices.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
         slices.texture.scaling = scaleVector<float, QVector3D>(
-                _dicomData.width * _dicomData.imageSpacings[0],
-                _dicomData.height * _dicomData.imageSpacings[1],
-                depth * _dicomData.imageSpacings[2]
+                _dicomData.width * _dicomData.imageSpacings.x(),
+                _dicomData.height * _dicomData.imageSpacings.y(),
+                depth * _dicomData.imageSpacings.z()
                 ) *
                 QVector3D(
                     1.0f / _dicomData.imageSpacings.x(),
