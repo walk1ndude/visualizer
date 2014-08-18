@@ -84,6 +84,25 @@ Item {
                     boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
                 }
             }
+
+            modelScene: ModelScene {
+                id: modelScene;
+
+                viewportArray: viewportArray;
+
+                LightSource {
+                    position: Qt.vector4d(10.0, -10.0, 10.0, 1.0);
+                    color: Qt.vector4d(0.8, 0.8, 0.8, 0.6);
+                    ambientIntensity: 0.002;
+                }
+
+                Material {
+                    emissive: Qt.vector4d(0.6, 0.6, 0.6, 1.0);
+                    diffuse: Qt.vector4d(0.7, 0.8, 0.6, 1.0);
+                    specular: Qt.vector4d(0.01, 0.02, 0.02, 0.02);
+                    shininess: 0.001;
+                }
+            }
         }
     }
 

@@ -12,24 +12,66 @@ namespace LightInfo {
 
     using AmbientIntensity = GLfloat;
 
-    class LightSource {
-    public:
-        Position position;
-        Color color;
-        AmbientIntensity ambientIntensity;
+    class LightSource : public QQuickItem {
+        Q_PROPERTY(QVector4D position READ position WRITE setPosition NOTIFY positionChanged)
+        Q_PROPERTY(QVector4D color READ color WRITE setColor NOTIFY colorChanged)
+        Q_PROPERTY(qreal ambientIntensity READ ambientIntensity WRITE setAmbientIntensity NOTIFY ambientIntensityChanged)
+        Q_OBJECT
 
+    public:
+        LightSource() { }
         LightSource(const Position & position,
                     const Color & color,
                     const AmbientIntensity & ambientIntensity) :
-            position(position),
-            color(color),
-            ambientIntensity(ambientIntensity),
+            _position(position),
+            _color(color),
+            _ambientIntensity(ambientIntensity),
             _id(lightSourceNumber ++) {
+        }
+
+        Position position() const {
+            return _position;
+        }
+
+        Color color() const {
+            return _color;
+        }
+
+        AmbientIntensity ambientIntensity() const {
+            return _ambientIntensity;
         }
 
         uint id() { return _id; }
     private:
+        Position _position;
+        Color _color;
+        AmbientIntensity _ambientIntensity;
+
         uint _id;
+
+    signals:
+        void positionChanged();
+        void colorChanged();
+        void ambientIntensityChanged();
+
+    public slots:
+        void setPosition(const Position & position) {
+            _position = position;
+
+            emit positionChanged();
+        }
+
+        void setColor(const Color & color) {
+            _color = color;
+
+            emit colorChanged();
+        }
+
+        void setAmbientIntensity(const AmbientIntensity & ambientIntensity) {
+            _ambientIntensity = ambientIntensity;
+
+            emit ambientIntensityChanged();
+        }
     };
 
     class LightProgram {
@@ -43,9 +85,9 @@ namespace LightInfo {
 
         void setUniformValue(QOpenGLShaderProgram * program,
                              LightSource * lightSource) {
-            program->setUniformValue(shaderPosition, lightSource->position);
-            program->setUniformValue(shaderColor, lightSource->color);
-            program->setUniformValue(shaderAmbientIntensity, lightSource->ambientIntensity);
+            program->setUniformValue(shaderPosition, lightSource->position());
+            program->setUniformValue(shaderColor, lightSource->color());
+            program->setUniformValue(shaderAmbientIntensity, lightSource->ambientIntensity());
         }
 
     private:

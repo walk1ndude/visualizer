@@ -59,10 +59,6 @@ namespace Render {
     void AbstractRenderer::selectScene(Scene::AbstractScene * scene) {
         QMutexLocker locker(&_renderMutex);
 
-        if (!scene->isInitialized()) {
-            scene->initScene();
-        }
-
         // no more connection with previous scene
         if (_selectedScene) {
             disconnectWithScene(_selectedScene);

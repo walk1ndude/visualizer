@@ -34,6 +34,8 @@ namespace Quick {
 
         Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
 
+        Q_PROPERTY(Scene::ModelScene * modelScene READ modelScene WRITE setModelScene NOTIFY modelSceneChanged)
+
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
 
     public:
@@ -65,6 +67,8 @@ namespace Quick {
 
         Viewport::ViewportArray * viewportArray();
 
+        Scene::ModelScene * modelScene();
+
     protected:
         bool _needsInitialize;
 
@@ -75,7 +79,7 @@ namespace Quick {
 
         Viewport::ViewportArray * _viewportArray;
 
-        QVector<Scene::AbstractScene *> _scenes;
+        QVector<Scene::ModelScene *> _modelScenes;
 
         PointsInfo::Point _selectedPoint;
 
@@ -123,9 +127,13 @@ namespace Quick {
 
         void modelIDChanged(const uint & modelID);
 
+        void modelSceneChanged();
+
     public slots:
         Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);
         Q_INVOKABLE void addPoint(const QPointF & point, Viewport::Viewport * viewport);
+
+        void setModelScene(Scene::ModelScene * modelScene);
 
         void updatePoint(const PointsInfo::UpdatedPoint & point);
 
@@ -150,10 +158,6 @@ namespace Quick {
         void setModelID(const int & modelID);
 
         void setViewportArray(Viewport::ViewportArray * viewportArray);
-
-        // for now just add empty scene
-        void addModelScene();
-
     };
 }
 

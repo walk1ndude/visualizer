@@ -8,16 +8,14 @@
 #include "Viewport/ViewportArray.h"
 
 namespace Scene {
-    class AbstractScene : public QObject {
+    class AbstractScene : public QQuickItem {
+        Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
+
         Q_OBJECT
     public:
-        AbstractScene(Viewport::ViewportArray ** viewportArray = nullptr);
+        AbstractScene() { }
 
-        virtual void initScene() = 0;
         virtual void renderScene(const QSize & surfaceSize) = 0;
-
-        virtual bool isEmpty() = 0;
-        virtual bool isInitialized() final { return _isInitialized; }
 
         virtual void cleanUp() = 0;
 
@@ -34,17 +32,19 @@ namespace Scene {
         
         virtual void addPoint(const PointsInfo::Point & point) = 0;
 
-    protected:
-        Viewport::ViewportArray * viewportArray();
+        Viewport::ViewportArray * viewportArray() const;
 
     private:
-        Viewport::ViewportArray ** _viewportArray;
-
-        bool _isInitialized;
+        Viewport::ViewportArray * _viewportArray;
 
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
         void redraw();
+
+        void viewportArrayChanged();
+
+    public slots:
+        void setViewportArray(Viewport::ViewportArray * viewportArray);
     };
 }
 

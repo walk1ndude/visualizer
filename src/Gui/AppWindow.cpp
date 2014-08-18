@@ -68,6 +68,10 @@ namespace Gui {
         qmlRegisterType<Parser::DicomReader>("ParserTools", 1, 0, "DicomReader");
         qmlRegisterType<Parser::StlReader>("ParserTools", 1, 0, "StlReader");
         qmlRegisterType<Parser::Reconstructor>("ParserTools", 1, 0, "Reconstructor");
+
+        qmlRegisterType<Scene::ModelScene>("RenderTools", 1, 0, "ModelScene");
+        qmlRegisterType<LightInfo::LightSource>("RenderTools", 1, 0, "LightSource");
+        qmlRegisterType<MaterialInfo::Material>("RenderTools", 1, 0, "Material");
     }
 
     void AppWindow::show() {

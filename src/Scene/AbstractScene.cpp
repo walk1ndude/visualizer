@@ -1,12 +1,13 @@
 #include "Scene/AbstractScene.h"
 
 namespace Scene {
-    AbstractScene::AbstractScene(Viewport::ViewportArray ** viewportArray) :
-        _viewportArray(viewportArray),
-        _isInitialized(false) {
+    Viewport::ViewportArray * AbstractScene::viewportArray() const {
+        return _viewportArray;
     }
 
-    Viewport::ViewportArray * AbstractScene::viewportArray() {
-        return *_viewportArray;
+    void AbstractScene::setViewportArray(Viewport::ViewportArray * viewportArray) {
+        _viewportArray = viewportArray;
+
+        emit viewportArrayChanged();
     }
 }

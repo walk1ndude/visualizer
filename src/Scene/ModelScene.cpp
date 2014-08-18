@@ -5,22 +5,25 @@
 #include "Model/PointsModel.h"
 
 namespace Scene {
-    ModelScene::ModelScene(Viewport::ViewportArray ** viewPortArray) :
-        AbstractScene(viewPortArray) {
+    ModelScene::ModelScene() :
+        AbstractScene() {
+        QObject::connect(this, &ModelScene::childrenChanged, [=]() {
+            _lightSources.clear();
+            _materials.clear();
 
+            for (QQuickItem * child : childItems()) {
+                if (LightInfo::LightSource * lightSource = dynamic_cast<LightInfo::LightSource *>(child)) {
+                    _lightSources.append(lightSource);
+                }
+                else if (MaterialInfo::Material * material = dynamic_cast<MaterialInfo::Material *>(child)) {
+                    _materials.append(material);
+                }
+            }
+        });
     }
 
     ModelScene::~ModelScene() {
 
-    }
-
-    void ModelScene::initScene() {
-        initMaterials();
-        initLightSources();
-    }
-
-    bool ModelScene::isEmpty() {
-        return _models.empty();
     }
 
     QVector3D ModelScene::rotation() {
@@ -84,38 +87,8 @@ namespace Scene {
         qDeleteAll(_models.begin(), _models.end());
         _models.clear();
 
-        qDeleteAll(_materials.begin(), _materials.end());
         _materials.clear();
-
-        qDeleteAll(_lightSources.begin(), _lightSources.end());
         _lightSources.clear();
-    }
-
-    // need some good defaults here
-    void ModelScene::initMaterials() {
-        addMaterial(MaterialInfo::Emissive(0.6, 0.6, 0.6, 1.0),
-                    MaterialInfo::Diffuse(0.7, 0.8, 0.6, 1.0),
-                    MaterialInfo::Specular(0.01, 0.02, 0.02, 0.02),
-                    MaterialInfo::Shininess(0.0001));
-    }
-
-    void ModelScene::initLightSources() {
-        addLightSource(LightInfo::Position(10.0, -10.0, 10.0, 1.0),
-                       LightInfo::Color(0.8, 0.8, 0.8, 0.6),
-                       LightInfo::AmbientIntensity((GLfloat) 0.002));
-    }
-
-    void ModelScene::addMaterial(const MaterialInfo::Emissive & emissive,
-                                    const MaterialInfo::Diffuse & diffuse,
-                                    const MaterialInfo::Specular & specular,
-                                    const MaterialInfo::Shininess & shininess) {
-        _materials.append(new MaterialInfo::Material(emissive, diffuse, specular, shininess));
-    }
-
-    void ModelScene::addLightSource(const LightInfo::Position & position,
-                                       const LightInfo::Color & color,
-                                       const LightInfo::AmbientIntensity & ambientIntensity) {
-        _lightSources.append(new LightInfo::LightSource(position, color, ambientIntensity));
     }
 
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {

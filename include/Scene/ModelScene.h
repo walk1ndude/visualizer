@@ -17,32 +17,17 @@ namespace Scene {
     class ModelScene : public AbstractScene {
         Q_OBJECT
     public:
+        explicit ModelScene();
         explicit ModelScene(Viewport::ViewportArray ** viewPortArray);
         ~ModelScene();
 
-        virtual void initScene();
         virtual void renderScene(const QSize & surfaceSize);
-
-        bool isEmpty();
 
         virtual void cleanUp();
 
         QVector3D rotation();
 
         QRect screenSaveRect();
-
-        // some constants here
-        void initMaterials();
-        void initLightSources();
-
-        void addMaterial(const MaterialInfo::Emissive & emissive,
-                         const MaterialInfo::Diffuse & diffuse,
-                         const MaterialInfo::Specular & specular,
-                         const MaterialInfo::Shininess & shininess);
-
-        void addLightSource(const LightInfo::Position & position,
-                            const LightInfo::Color & color,
-                            const LightInfo::AmbientIntensity & ambientIntensity);
 
         void addTexture(TextureInfo::Texture & textureInfo);
 

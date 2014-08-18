@@ -65,8 +65,6 @@ namespace Quick {
 
         setFlag(QQuickItem::ItemHasContents);
 
-        addModelScene();
-
         _selectedPoint.viewport = nullptr;
 
         QObject::connect(this, &ModelViewer::childrenChanged, [=]() {
@@ -204,8 +202,14 @@ namespace Quick {
         emit modelIDChanged(_modelID);
     }
 
-    void ModelViewer::addModelScene() {
-        _scenes.push_back(new Scene::ModelScene(&_viewportArray));
+    Scene::ModelScene * ModelViewer::modelScene() {
+        return _modelScenes.last();
+    }
+
+    void ModelViewer::setModelScene(Scene::ModelScene * modelScene) {
+        _modelScenes.push_back(modelScene);
+
+        emit modelSceneChanged();
     }
     
     void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint &point) {
@@ -232,7 +236,7 @@ namespace Quick {
             current->doneCurrent();
 
             _modelRenderer = new Render::ModelRenderer(current, _fboSize);
-            _modelRenderer->selectScene(_scenes.at(0));
+            _modelRenderer->selectScene(_modelScenes.last());
 
             current->makeCurrent(window());
 
@@ -294,6 +298,10 @@ namespace Quick {
     }
 
     void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {
+        if (!_selectedPoint.name.length()) {
+            return;
+        }
+
         _selectedPoint.position = QPointF(
                     position.x() * _fboSize.width(),
                     position.y() * _fboSize.height()
