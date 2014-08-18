@@ -68,17 +68,17 @@ namespace Viewport {
     }
 
     void Viewport::setBoundingRectNormalized(const QRectF & boundingRectNormalized) {
-        QRectF normalized = QRectF(
+        QRectF clamped = QRectF(
                     std::min(std::max((float) boundingRectNormalized.x(), 0.0f), 1.0f),
                     std::min(std::max((float) boundingRectNormalized.y(), 0.0f), 1.0f),
                     boundingRectNormalized.width(),
                     boundingRectNormalized.height()
-        );
+                    );
 
-        normalized.setWidth(std::min(1.0f - normalized.x(), normalized.width()));
-        normalized.setHeight(std::min(1.0f - normalized.y(), normalized.height()));
+        clamped.setWidth(std::min(1.0f - clamped.x(), clamped.width()));
+        clamped.setHeight(std::min(1.0f - clamped.y(), clamped.height()));
 
-        _boundingRectNormalized = normalized;
+        _boundingRectNormalized = clamped;
 
         emit boundingRectNormalizedChanged();
     }
