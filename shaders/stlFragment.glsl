@@ -5,6 +5,10 @@ layout(location = 2) in highp vec4 N;
 
 uniform highp vec4 colorU;
 
+uniform highp sampler2D points;
+
+uniform lowp uint pointCount;
+
 struct Ranges {
    vec2 xRange;
    vec2 yRange;
@@ -32,10 +36,11 @@ uniform highp LightSource lightSource;
 
 layout(location = 0) out highp vec4 fragColor;
 
+bool needToRender(vec3 point, vec2 xRange, vec2 yRange, vec2 zRange, vec2 xab, vec2 yab, vec2 zab);
+
 void main(void) {
-    if (vertexTest.x >= ranges.xRange.x && vertexTest.x <= ranges.xRange.y &&
-        vertexTest.y >= ranges.yRange.x && vertexTest.y <= ranges.yRange.y &&
-        vertexTest.z >= ranges.zRange.x && vertexTest.z <= ranges.zRange.y) {
+    if (needToRender(vertexTest, ranges.xRange, ranges.yRange, ranges.zRange,
+                     vec2(1.0, 0.0), vec2(1.0, 0.0), vec2(1.0, 0.0))) {
 
         vec4 L = normalize(lightSource.position - pos);
 

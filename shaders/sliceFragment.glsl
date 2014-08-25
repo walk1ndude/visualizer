@@ -99,11 +99,11 @@ vec4 sobel3(vec3 position) {
     return vec4(normalize(n - p), 0.0f);
 }
 
-void main(void) {
-    if (fragPos.s >= ranges.xRange[0] * 0.5f + 0.5f && fragPos.s <= ranges.xRange[1] * 0.5f + 0.5f
-            && fragPos.t >= ranges.yRange[0] * 0.5f + 0.5f && fragPos.t <= ranges.yRange[1] * 0.5f + 0.5f
-            && fragPos.p >= ranges.zRange[0] * 0.5f + 0.5f && fragPos.p <= ranges.zRange[1] * 0.5f + 0.5f) {
+bool needToRender(vec3 point, vec2 xRange, vec2 yRange, vec2 zRange, vec2 xab, vec2 yab, vec2 zab);
 
+void main(void) {
+    if (needToRender(vec3(fragPos), ranges.xRange, ranges.yRange, ranges.zRange,
+                     vec2(0.5, 0.5), vec2(0.5, 0.5), vec2(0.5, 0.5))) {
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
         if (headColor.r > 0.05f) {

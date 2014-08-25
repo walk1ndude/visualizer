@@ -26,7 +26,7 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE :
-                perspective(60.0f, 1.0f, 0.0001f, 10.0f);
+                perspective(60.0f, 1.0f, 0.0001f, 3.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
@@ -144,7 +144,25 @@ namespace Viewport {
         return modelMatrix;
     }
 
-    bool Viewport::unproject(const QVector4D & projection, QVector4D & unprojectedPoint) const {
+    bool Viewport::unprojectPoint(const QVector3D & point, QVector4D & unprojectedPoint) const {
+        QVector4D _unprojectedPoint;
+
+        QVector3D pointNear = placeXYZAccordingToViewport(QVector3D(point.x(), point.y(), 0.0f));
+        QVector3D pointFar = placeXYZAccordingToViewport(QVector3D(point.x(), point.y(), point.z()));
+
+        QVector4D unprojectedPointNear;
+        QVector4D unprojectedPointFar;
+
+        if (unproject(pointNear, unprojectedPointNear) && unproject(pointFar, unprojectedPointFar)) {
+            qDebug() << unprojectedPointNear << unprojectedPointFar;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    bool Viewport::unproject(const QVector3D & projection, QVector4D & unprojectedPoint) const {
         bool invertible;
 
         QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
@@ -153,13 +171,13 @@ namespace Viewport {
             return false;
         }
 
-        QVector4D unprojectedPointVector = QVector4D(
-                    2.0f * projection.x() - 1.0f,
-                    - 2.0f * projection.y() + 1.0f,
-                    2.0f * projection.z() - 1.0f,
-                    1.0f);
+        QVector4D projectionViewport = projection;//placeXYZAccordingToViewport(projection);
 
-        qDebug() << unprojectedPointVector;
+        QVector4D unprojectedPointVector = QVector4D(
+                    2.0f * projectionViewport.x() - 1.0f,
+                    2.0f * projectionViewport.y() - 1.0f,
+                    2.0f * projectionViewport.z() - 1.0f,
+                    1.0f);
 
         unprojectedPointVector = unprojectedPointVector * invVP;
 
@@ -167,15 +185,19 @@ namespace Viewport {
             return false;
         }
         else {
-            unprojectedPoint.setX(unprojectedPointVector.x() / unprojectedPointVector.w());
-            unprojectedPoint.setY(unprojectedPointVector.y() / unprojectedPointVector.w());
-            unprojectedPoint.setZ(unprojectedPointVector.z() / unprojectedPointVector.w());
-            unprojectedPoint.setW(1.0f);
+            unprojectedPoint = QVector4D(
+                        unprojectedPointVector.x() / unprojectedPointVector.w(),
+                        unprojectedPointVector.y() / unprojectedPointVector.w(),
+                        unprojectedPointVector.z() / unprojectedPointVector.w(),
+                        1.0f
+            );
+
+            qDebug() << unprojectedPoint;
             return true;
         }
     }
 
-    QVector3D Viewport::placeXYZAccordingToViewport(const QVector3D & xyz) {
+    QVector3D Viewport::placeXYZAccordingToViewport(const QVector3D & xyz) const {
         /* In different viewports axes have different meaning.
          * For example in "Left" z and x axes change their positions,
          * so x axis turns out to be the axis that determines the

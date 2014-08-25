@@ -57,6 +57,7 @@ namespace Model {
                 ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
+                    << ShaderInfo::FragmentShaderFile(":shaders/helpers.glsl")
                               ));
 
         ~HeadModel();

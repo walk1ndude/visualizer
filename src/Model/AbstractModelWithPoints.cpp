@@ -27,7 +27,7 @@ namespace Model {
     
     bool AbstractModelWithPoints::checkDepthBuffer(Viewport::Viewport * viewport) {
         QVector4D unprojectedPoint;
-        
+
         bool updateNeeded = false;
        
         for (PointsInfo::ModelPoint * modelPoint : modelPoints()) {
@@ -43,12 +43,11 @@ namespace Model {
                              1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ
                              );
                 
-                qDebug() << modelPoint->position << posZ;
+                qDebug() << posZ;
 
                 modelPoint->position.setZ(posZ / 65535.0f);
 
-                modelPoint->position = viewport->placeXYZAccordingToViewport(modelPoint->position);
-
+                //if (viewport->unprojectPoint(modelPoint->position, unprojectedPoint)) {
                 if (viewport->unproject(modelPoint->position, unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     
