@@ -146,8 +146,8 @@ namespace Scene {
                               "lightSource.ambientIntensity");
 
         model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariablesNames() << "stlMaterial.emissive" << "stlMaterial.diffuse" <<
-                           "stlMaterial.specular" << "stlMaterial.shininess");
+                           ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
+                           "material.specular" << "material.shininess");
 
         model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
                             ModelInfo::ViewAxisRange(-1.0, 1.0),
@@ -178,8 +178,8 @@ namespace Scene {
                               "lightSource.ambientIntensity");
 
         model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariablesNames() << "headMaterial.emissive" << "headMaterial.diffuse" <<
-                           "headMaterial.specular" << "headMaterial.shininess");
+                           ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
+                           "material.specular" << "material.shininess");
 
         model->addTexture(_textures.at(0),
                           ShaderInfo::ShaderVariablesNames() << "texHead");

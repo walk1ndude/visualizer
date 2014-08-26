@@ -26,6 +26,6 @@
         <file>js/settings.js</file>
         <file>qml/IndividualInfoModel.qml</file>
         <file>qml/ViewportEx.qml</file>
-        <file>shaders/helpers.glsl</file>
+        <file>shaders/helpersFragment.glsl</file>
     </qresource>
 </RCC>

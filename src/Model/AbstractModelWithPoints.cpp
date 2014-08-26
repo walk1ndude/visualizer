@@ -65,6 +65,8 @@ namespace Model {
         _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) data);
         _pointsTexture->bind(_pointsTexture->textureId());
 
+        _pointsTexture->generateMipMaps();
+
         delete data;
     }
     
@@ -146,13 +148,10 @@ namespace Model {
     void AbstractModelWithPoints::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
         program->setUniformValue(_shaderPoints, _pointsTexture->textureId());
         program->setUniformValue(_shaderPointsCount, _modelPoints.size());
-        
-        qDebug() <<_pointsTexture->textureId();
-        
     }
 
     void AbstractModelWithPoints::deleteModel() {
-        _pointsTexture->release();
+        _pointsTexture->release(_pointsTexture->textureId());
         _pointsTexture->destroy();
 
         AbstractModel::deleteModel();

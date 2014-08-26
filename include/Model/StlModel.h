@@ -57,7 +57,7 @@ namespace Model {
                 ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/stlVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/stlFragment.glsl")
-                    << ShaderInfo::FragmentShaderFile(":shaders/helpers.glsl")
+                    << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
                               ));
 
     protected:
