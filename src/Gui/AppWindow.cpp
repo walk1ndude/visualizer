@@ -28,13 +28,14 @@ namespace Gui {
 
         _appWindow = qobject_cast<QQuickWindow *>(appWindow);
 
+#ifdef Q_OS_OSX
         QSurfaceFormat surfaceFormat = _appWindow->format();
         surfaceFormat.setVersion(4, 1);
         surfaceFormat.setRenderableType(QSurfaceFormat::OpenGL);
         surfaceFormat.setProfile(QSurfaceFormat::CoreProfile);
-        surfaceFormat.setSwapInterval(10);
 
         _appWindow->setFormat(surfaceFormat);
+#endif
 
         QObject::connect(appWindow, SIGNAL(distsUpdated(const QVariant &)), this, SLOT(updateDists(const QVariant &)));
         QObject::connect(appWindow, SIGNAL(pointUpdated(const QVariant &)), this, SLOT(updatePoint(const QVariant &)));
