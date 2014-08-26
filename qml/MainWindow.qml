@@ -80,8 +80,8 @@ ApplicationWindow {
         Keys.onPressed: {
             switch (event.key) {
                 case Qt.Key_Escape: Qt.quit(); break;
-                case Qt.Key_Left: previousSlide(); break;
-                case Qt.Key_Right: nextSlide(); break;
+                case Qt.Key_Left: previousSlice(); break;
+                case Qt.Key_Right: nextSlice(); break;
             }
         }
     }
@@ -134,12 +134,12 @@ ApplicationWindow {
         onModelRead: modelViewer.modelRead(buffers);
     }
 
-    function nextSlide() {
+    function nextSlice() {
         dicomReader.nextSlice(1);
         reconstructor.nextSlice(1);
     }
 
-    function previousSlide() {
+    function previousSlice() {
         dicomReader.nextSlice(-1);
         reconstructor.nextSlice(-1);
     }
