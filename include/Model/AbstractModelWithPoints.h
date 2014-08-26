@@ -1,6 +1,8 @@
 #ifndef ABSTRACTMODELWITHPOINTS_H
 #define ABSTRACTMODELWITHPOINTS_H
 
+#include <QtGui/QOpenGLTexture>
+
 #include "Model/AbstractModel.h"
 #include "Model/PointsModel.h"
 
@@ -81,8 +83,8 @@ namespace Model {
                                 AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
 
-        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) = 0;
+        virtual void initShaderVariables(QOpenGLShaderProgram * program);
+        virtual void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);
         virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
 
         virtual void setShaderVariables();
@@ -92,15 +94,27 @@ namespace Model {
         
         virtual bool checkDepthBuffer(Viewport::Viewport * viewport) final;
 
+        virtual void deleteModel();
+
     private:
+        ShaderInfo::ShaderVariable _shaderPointsCount;
+        ShaderInfo::ShaderVariable _shaderPoints;
+
         PointsModel * _points;
 
         PointsInfo::ModelPoints _modelPoints;
 
         ModelInfo::ViewRange * _viewRange;
+
+        QOpenGLTexture * _pointsTexture;
+
+        void updatePointsTexture();
         
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
+
+    public slots:
+        virtual void update();
     };
 }
 

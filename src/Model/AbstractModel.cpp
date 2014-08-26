@@ -24,10 +24,17 @@ namespace Model {
         _stride(0),
         _indexCount(0),
         _vertexCount(0),
-        _parent(parent),
         _updateNeeded(false) {
+
+        if (_parent) {
+            QObject::disconnect(this, &AbstractModel::childUpdated, _parent, &AbstractModel::update);
+        }
+
+        _parent = parent;
+
         if (_parent) {
             _parent->addChild(this);
+            QObject::connect(this, &AbstractModel::childUpdated, _parent, &AbstractModel::update);
         }
 
         _id = modelNumber ++;
@@ -118,23 +125,19 @@ namespace Model {
 
     void AbstractModel::bindTextures() {
         QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
-        uint samplerNum = 0;
 
         while (it.hasNext()) {
             it.next();
-            it.key()->bind(samplerNum);
-            it.value()->setUniform(_program, samplerNum);
-
-            ++ samplerNum;
+            it.key()->bind(it.key()->textureId());
+            it.value()->setUniform(_program, it.key()->textureId());
         }
     }
 
     void AbstractModel::releaseTextures() {
         QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
-        uint samplerNum = 0;
 
         while (it.hasNext()) {
-            it.next().key()->release(samplerNum ++);
+            it.next().key()->release(it.key()->textureId());
         }
     }
 
@@ -152,10 +155,6 @@ namespace Model {
 
     void AbstractModel::queueForUpdate() {
         _updateNeeded = true;
-    }
-
-    void AbstractModel::modelUpdated() {
-        _updateNeeded = false;
     }
 
     void AbstractModel::drawModel(Viewport::Viewport * viewPort) {

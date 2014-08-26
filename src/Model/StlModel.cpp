@@ -13,6 +13,8 @@ namespace Model {
         _shaderColorU = program->uniformLocation("colorU");
         _shaderMPV = program->uniformLocation("mvp");
         _shaderNormalMatrix = program->uniformLocation("normalMatrix");
+        
+        AbstractModelWithPoints::initShaderVariables(program);
     }
 
     void StlModel::glStatesEnable() {
@@ -43,5 +45,7 @@ namespace Model {
         program->setUniformValue(_shaderColorU, QVector4D(1.0, 1.0, 1.0, 1.0));
         program->setUniformValue(_shaderMPV, viewPort->projection() * viewPort->view() * model());
         program->setUniformValue(_shaderNormalMatrix, (model() * viewPort->view()).normalMatrix());
+        
+        AbstractModelWithPoints::setShaderVariables(program, viewPort);
     }
 }

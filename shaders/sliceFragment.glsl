@@ -99,11 +99,17 @@ vec4 sobel3(vec3 position) {
     return vec4(normalize(n - p), 0.0f);
 }
 
-bool needToRender(vec3 point, vec2 xRange, vec2 yRange, vec2 zRange, vec2 xab, vec2 yab, vec2 zab);
+
+bool needToRender(const vec3 point,
+                  const vec2 xRange, const vec2 yRange, const vec2 zRange,
+                  const vec2 xab, const vec2 yab, const vec2 zab);
+
+vec4 highlightColor(const vec3 position);
+
 
 void main(void) {
     if (needToRender(vec3(fragPos), ranges.xRange, ranges.yRange, ranges.zRange,
-                     vec2(0.5, 0.5), vec2(0.5, 0.5), vec2(0.5, 0.5))) {
+                     vec2(0.5f, 0.5f), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f))) {
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
         if (headColor.r > 0.05f) {
@@ -123,8 +129,12 @@ void main(void) {
             float NdotH = max(dot(N, H), 0.0f);
 
             vec4 specular = pow(RdotV, headMaterial.shininess) * lightSource.color * headMaterial.specular;
+            
+            vec4 hColor = highlightColor(vec3(fragPos));
+            
+            fragColor = (hColor != vec4(0.0)) ? hColor : headColor;
 
-            fragColor = (headMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * headColor;
+            fragColor = (headMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * fragColor;
 
             //fragColor.a = 1.0;
 /*

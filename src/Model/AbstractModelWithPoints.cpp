@@ -7,6 +7,7 @@ namespace Model {
                                                      const ShaderInfo::ShaderFiles & shaderFiles) :
         AbstractModel(parent, shaderFiles) {
         _points = points;
+        _pointsTexture = nullptr;
     }
 
     PointsModel * AbstractModelWithPoints::pointsModel() {
@@ -23,6 +24,48 @@ namespace Model {
     
     void AbstractModelWithPoints::processChildren() {
         _points->fillBuffers(_modelPoints);
+
+        updatePointsTexture();
+    }
+
+    void AbstractModelWithPoints::updatePointsTexture() {
+        int pointsCount = _modelPoints.size();
+        
+        if (!pointsCount) {
+            return;
+        }
+    
+        if (_pointsTexture->isStorageAllocated()) {
+            _pointsTexture->destroy();
+        }
+        
+        _pointsTexture->create();
+        _pointsTexture->setFormat(QOpenGLTexture::RGBA8_UNorm);
+        // columns: point coords, radius, color
+        _pointsTexture->setSize(pointsCount, 2);
+        _pointsTexture->allocateStorage();
+        
+        float * data = new float[8 * pointsCount];
+
+        int i = 0;
+
+        for (const PointsInfo::ModelPoint * modelPoint : _modelPoints) {
+            data[i ++] = modelPoint->position.x();
+            data[i ++] = modelPoint->position.y();
+            data[i ++] = modelPoint->position.z();
+            
+            data[i ++] = modelPoint->radius;
+
+            data[i ++] = modelPoint->color.redF();
+            data[i ++] = modelPoint->color.greenF();
+            data[i ++] = modelPoint->color.blueF();
+            data[i ++] = modelPoint->color.alphaF();
+        }
+
+        _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, (void *) data);
+        _pointsTexture->bind(_pointsTexture->textureId());
+
+        delete data;
     }
     
     bool AbstractModelWithPoints::checkDepthBuffer(Viewport::Viewport * viewport) {
@@ -30,7 +73,7 @@ namespace Model {
 
         bool updateNeeded = false;
        
-        for (PointsInfo::ModelPoint * modelPoint : modelPoints()) {
+        for (PointsInfo::ModelPoint * modelPoint : _modelPoints) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
 
@@ -93,4 +136,27 @@ namespace Model {
         AbstractModel::setShaderVariables();
     }
 
+    void AbstractModelWithPoints::initShaderVariables(QOpenGLShaderProgram * program) {
+        _pointsTexture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+
+        _shaderPoints = program->uniformLocation("points");
+        _shaderPointsCount = program->uniformLocation("pointsCount");
+    }
+
+    void AbstractModelWithPoints::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
+        program->setUniformValue(_shaderPoints, _pointsTexture->textureId());
+        program->setUniformValue(_shaderPointsCount, _modelPoints.size());
+        
+    }
+
+    void AbstractModelWithPoints::deleteModel() {
+        _pointsTexture->release();
+        _pointsTexture->destroy();
+
+        AbstractModel::deleteModel();
+    }
+
+    void AbstractModelWithPoints::update() {
+
+    }
 }

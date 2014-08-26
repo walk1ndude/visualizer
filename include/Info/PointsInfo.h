@@ -57,6 +57,7 @@ namespace PointsInfo {
     class ModelPoint {
     public:
         QVector3D position;
+        qreal radius;
         QColor color;
         uint polygonId;
 
@@ -74,8 +75,10 @@ namespace PointsInfo {
         ModelPoint(const QVector3D & position,
                    const QColor & color,
                    Viewport::Viewport * viewport,
-                   const uint & polygonId = 0) :
+                   const uint & polygonId = 0,
+                   const qreal & radius = 0.5f) :
             position(position),
+            radius(radius),
             color(color),
             polygonId(polygonId),
             viewport(viewport),

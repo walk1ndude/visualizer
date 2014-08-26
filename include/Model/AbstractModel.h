@@ -132,9 +132,10 @@ namespace Model {
         virtual QOpenGLShaderProgram * program() final;
 
         virtual bool updateNeeded() final;
-        virtual void modelUpdated() final;
 
         virtual void processChildren() { }
+
+        virtual void deleteModel();
 
     private:
         QOpenGLBuffer _vboVert;
@@ -174,8 +175,10 @@ namespace Model {
         void shaderProgramInitErrorHappened();
         void shaderProgramSetVariableErrorHappened();
 
+        void childUpdated();
+
     public slots:
-        virtual void deleteModel() final;
+        virtual void update() { }
     };
 }
 

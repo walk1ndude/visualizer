@@ -5,9 +5,12 @@
 namespace Model {
     PointsModel::PointsModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
         AbstractModel(parent, shaderFiles) {
+
     }
 
     void PointsModel::fillBuffers(const PointsInfo::ModelPoints & modelPoints) {
+        _modelPoints = modelPoints;
+
         if (updateNeeded()) {
             ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
 
@@ -27,8 +30,6 @@ namespace Model {
             buffers.vertices = ModelInfo::VerticesVCPPointer(vertices);
 
             AbstractModel::fillBuffers<ModelInfo::BuffersVCP>(buffers, QOpenGLBuffer::DynamicDraw);
-
-            modelUpdated();
         }
     }
 

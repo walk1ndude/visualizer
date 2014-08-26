@@ -5,10 +5,6 @@ layout(location = 2) in highp vec4 N;
 
 uniform highp vec4 colorU;
 
-uniform highp sampler2D points;
-
-uniform lowp uint pointCount;
-
 struct Ranges {
    vec2 xRange;
    vec2 yRange;
@@ -36,7 +32,13 @@ uniform highp LightSource lightSource;
 
 layout(location = 0) out highp vec4 fragColor;
 
-bool needToRender(vec3 point, vec2 xRange, vec2 yRange, vec2 zRange, vec2 xab, vec2 yab, vec2 zab);
+
+bool needToRender(const vec3 point,
+                  const vec2 xRange, const vec2 yRange, const vec2 zRange,
+                  const vec2 xab, const vec2 yab, const vec2 zab);
+
+vec4 highlightColor(const vec3 position);
+
 
 void main(void) {
     if (needToRender(vertexTest, ranges.xRange, ranges.yRange, ranges.zRange,
@@ -56,7 +58,11 @@ void main(void) {
 
         vec4 specular = pow(RdotV, stlMaterial.shininess) * lightSource.color * stlMaterial.specular;
 
-        fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * colorU;
+        vec4 hColor = highlightColor(vec3(pos));
+        
+        fragColor = (hColor != vec4(0.0)) ? hColor : colorU;
+        
+        fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * fragColor;
 /*
         if (fragColor.r > 0.75 && fragColor.r < 0.85) {
         //if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {

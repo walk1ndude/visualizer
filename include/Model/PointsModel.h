@@ -80,6 +80,8 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderColor;
         ShaderInfo::ShaderVariable _shaderPolygon;
 
+        PointsInfo::ModelPoints _modelPoints;
+
         ShaderInfo::ShaderVariable _shaderMVP;
     };
 }

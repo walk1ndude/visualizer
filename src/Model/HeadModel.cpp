@@ -83,6 +83,8 @@ namespace Model {
         _shaderNormalMatrix = program->uniformLocation("normalMatrix");
         _shaderScale = program->uniformLocation("scale");
         _shaderStep = program->uniformLocation("stepSlices");
+        
+        AbstractModelWithPoints::initShaderVariables(program);
     }
 
     void HeadModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
