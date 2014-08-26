@@ -47,7 +47,7 @@ unix:!macx {
 }
 
 win32 {
-    INCLUDEPATH += C:\opencv\build\include \
+    INCLUDEPATH += "C:\Program Files\OpenCV_249\build\include" \
                    C:\GDCM\gdcm\include
 
     !contains(QMAKE_HOST.arch, x86_64) {
@@ -60,7 +60,7 @@ win32 {
     }
 
     LIBS += -L"C:\GDCM\gdcm\bin\MinSizeRel" \
-            -L"C:\opencv\build\lib\Release"
+            -L"C:\Program Files\OpenCV_249\build\x86\vc12\lib"
 
     LIBS += -lopencv_core249 \
             -lopencv_highgui249 \
@@ -119,6 +119,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/PointsModel.h \
             include/Model/AbstractModelWithPoints.h \
             include/Viewport/Viewport.h \
-            include/Viewport/ViewportArray.h
+            include/Viewport/ViewportArray.h \
+    include/Quick/TextureNode.h
 
 RESOURCES += resources.qrc
