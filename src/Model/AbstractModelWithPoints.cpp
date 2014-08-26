@@ -40,9 +40,9 @@ namespace Model {
         }
         
         _pointsTexture->create();
-        _pointsTexture->setFormat(QOpenGLTexture::RGBA8_UNorm);
+        _pointsTexture->setFormat(QOpenGLTexture::RGBA32F);
         // columns: point coords, radius, color
-        _pointsTexture->setSize(pointsCount, 2);
+        _pointsTexture->setSize(2, pointsCount);
         _pointsTexture->allocateStorage();
         
         float * data = new float[8 * pointsCount];
@@ -62,7 +62,7 @@ namespace Model {
             data[i ++] = modelPoint->color.alphaF();
         }
 
-        _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, (void *) data);
+        _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) data);
         _pointsTexture->bind(_pointsTexture->textureId());
 
         delete data;
@@ -146,6 +146,8 @@ namespace Model {
     void AbstractModelWithPoints::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
         program->setUniformValue(_shaderPoints, _pointsTexture->textureId());
         program->setUniformValue(_shaderPointsCount, _modelPoints.size());
+        
+        qDebug() <<_pointsTexture->textureId();
         
     }
 

@@ -60,6 +60,11 @@ void main(void) {
 
         vec4 hColor = highlightColor(vec3(pos));
         
+        if (hColor != vec4(0.0)) {
+            fragColor = hColor;
+            return;
+        }
+        
         fragColor = (hColor != vec4(0.0)) ? hColor : colorU;
         
         fragColor = (stlMaterial.emissive + lightSource.ambientIntensity + diffuse + specular) * fragColor;

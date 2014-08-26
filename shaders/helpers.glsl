@@ -19,17 +19,14 @@ vec4 highlightColor(const vec3 position) {
     vec4 color = vec4(0.0f);
 
     vec4 pointPos;
-    vec4 radius;
     for (int i = 0; i != pointsCount; ++ i) {
         // x, y, z - point coords, w - color radius
-        pointPos = texture(points, vec2(i, 0));
-        radius = texture(points, vec2(i, 1));
+        pointPos = texture(points, vec2(0, i));
 
         if ((position.x - pointPos.x) * (position.x - pointPos.x) +
             (position.y - pointPos.y) * (position.y - pointPos.y) +
             (position.z - pointPos.z) * (position.z - pointPos.z) < pointPos.w * pointPos.w) {
-            color = texture(points, vec2(i, 2));
-            break;
+            color += texture(points, vec2(1, i));
         }
     }
 
