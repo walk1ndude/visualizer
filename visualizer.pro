@@ -6,7 +6,7 @@
 
 greaterThan(QT_VERSION, 5.2): QT += quick
 
-TARGET = dicom
+TARGET = visualizer
 TEMPLATE = app
 
 CONFIG += c++11 qtquickcompiler

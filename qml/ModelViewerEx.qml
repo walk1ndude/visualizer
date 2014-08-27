@@ -25,83 +25,80 @@ Item {
 
     signal pointUpdated(variant point);
 
-    Rectangle {
-        ModelViewer {
-            id: modelViewer;
+    ModelViewer {
+        id: modelViewer;
 
-            width: modelViewerEx.width;
-            height: modelViewerEx.height;
-            z: -2;
+        width: modelViewerEx.width;
+        height: modelViewerEx.height;
 
-            fboSize: Qt.size(768, 768);
+        fboSize: Qt.size(768, 768);
 
-            xRange: modelViewerEx.xRange;
-            yRange: modelViewerEx.yRange;
-            zRange: modelViewerEx.zRange;
+        xRange: modelViewerEx.xRange;
+        yRange: modelViewerEx.yRange;
+        zRange: modelViewerEx.zRange;
 
-            rotation: modelViewerEx.rotation;
+        rotation: modelViewerEx.rotation;
 
-            zoomFactor: modelViewerEx.zoomFactor;
+        zoomFactor: modelViewerEx.zoomFactor;
 
-            minHU: modelViewerEx.minHU;
-            maxHU: modelViewerEx.maxHU;
+        minHU: modelViewerEx.minHU;
+        maxHU: modelViewerEx.maxHU;
 
-            selectedPointColor: modelViewerEx.selectedPointColor;
-            selectedPointName: modelViewerEx.selectedPointName;
+        selectedPointColor: modelViewerEx.selectedPointColor;
+        selectedPointName: modelViewerEx.selectedPointName;
 
-            onPointUpdated: {
-                // update info about points
-                Settings.Points[point.modelID] = Settings.Points[point.modelID] || { };
-                Settings.Points[point.modelID][point.name] = Settings.Points[point.modelID][point.name] || { };
-                Settings.Points[point.modelID][point.name]["position"] = point.position;
+        onPointUpdated: {
+            // update info about points
+            Settings.Points[point.modelID] = Settings.Points[point.modelID] || { };
+            Settings.Points[point.modelID][point.name] = Settings.Points[point.modelID][point.name] || { };
+            Settings.Points[point.modelID][point.name]["position"] = point.position;
 
-                // need to update sidebar info, so give singal about it
-                modelViewerEx.pointUpdated(point);
+            // need to update sidebar info, so give singal about it
+            modelViewerEx.pointUpdated(point);
+        }
+
+        ViewportArray {
+            id: viewportArray;
+
+            anchors.fill: parent;
+
+            ViewportEx  {
+                projectionType: Viewport.PERSPECTIVE;
+                boundingRect: Qt.rect(0.5, 0.5, 0.5, 0.5);
             }
 
-            ViewportArray {
-                id: viewportArray;
-
-                anchors.fill: parent;
-
-                ViewportEx  {
-                    projectionType: Viewport.PERSPECTIVE;
-                    boundingRect: Qt.rect(0.5, 0.5, 0.5, 0.5);
-                }
-
-                ViewportEx {
-                    projectionType: Viewport.TOP;
-                    boundingRect: Qt.rect(0, 0.5, 0.5, 0.5);
-                }
-
-                ViewportEx {
-                    projectionType: Viewport.FRONTAL;
-                    boundingRect: Qt.rect(0, 0, 0.5, 0.5);
-                }
-
-                ViewportEx {
-                    projectionType: Viewport.LEFT;
-                    boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
-                }
+            ViewportEx {
+                projectionType: Viewport.TOP;
+                boundingRect: Qt.rect(0, 0.5, 0.5, 0.5);
             }
 
-            modelScene: ModelScene {
-                id: modelScene;
+            ViewportEx {
+                projectionType: Viewport.FRONTAL;
+                boundingRect: Qt.rect(0, 0, 0.5, 0.5);
+            }
 
-                viewportArray: viewportArray;
+            ViewportEx {
+                projectionType: Viewport.LEFT;
+                boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
+            }
+        }
 
-                LightSource {
-                    position: Qt.vector4d(10.0, -10.0, 10.0, 1.0);
-                    color: Qt.vector4d(0.8, 0.8, 0.8, 0.6);
-                    ambientIntensity: 0.002;
-                }
+        modelScene: ModelScene {
+            id: modelScene;
 
-                Material {
-                    emissive: Qt.vector4d(0.6, 0.6, 0.6, 1.0);
-                    diffuse: Qt.vector4d(0.7, 0.8, 0.6, 1.0);
-                    specular: Qt.vector4d(0.01, 0.02, 0.02, 0.02);
-                    shininess: 0.001;
-                }
+            viewportArray: viewportArray;
+
+            LightSource {
+                position: Qt.vector4d(10.0, -10.0, 10.0, 1.0);
+                color: Qt.vector4d(0.8, 0.8, 0.8, 0.6);
+                ambientIntensity: 0.002;
+            }
+
+            Material {
+                emissive: Qt.vector4d(0.6, 0.6, 0.6, 1.0);
+                diffuse: Qt.vector4d(0.7, 0.8, 0.6, 1.0);
+                specular: Qt.vector4d(0.01, 0.02, 0.02, 0.02);
+                shininess: 0.001;
             }
         }
     }
