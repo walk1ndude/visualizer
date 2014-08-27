@@ -54,45 +54,14 @@ Rectangle {
         Column {
             width: sidebar.width;
 
-            Rectangle {
-                border {
-                    color: "black";
-                    width: 5;
-                }
-
-                color: "white";
-
-                height: 50;
+            Heading {
                 width: sidebar.width;
 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter;
-                    x: 15;
-                    font.pixelSize: 14;
-                    text: sectionName;
-                }
+                text: sectionName;
 
-                Image {
-                    id: icon
-                    width: 20;
-                    height: 20;
+                collapsed: collapsed;
 
-                    anchors {
-                        right: parent.right;
-                        rightMargin: 15;
-                        topMargin: 5;
-                        verticalCenter: parent.verticalCenter;
-                    }
-
-                    source: collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
-                }
-
-                MouseArea {
-                    anchors.fill: parent;
-                    onClicked: if (mouse.button === Qt.LeftButton) {
-                                   sidebarListModel.setProperty(index, "collapsed", !collapsed);
-                               }
-                }
+                onCollapsedChanged: sidebarListModel.setProperty(index, "collapsed", !collapsed);
             }
 
             Loader {

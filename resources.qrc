@@ -27,5 +27,6 @@
         <file>qml/IndividualInfoModel.qml</file>
         <file>qml/ViewportEx.qml</file>
         <file>shaders/helpersFragment.glsl</file>
+        <file>qml/Heading.qml</file>
     </qresource>
 </RCC>

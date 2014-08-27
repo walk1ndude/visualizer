@@ -12,7 +12,7 @@ ApplicationWindow {
     width: 1100;
     height: 768;
 
-    property real sideBarWidth: 0.65
+    property real sideBarWidth: 0.35
 
     title: "visualizer";
 
@@ -88,11 +88,11 @@ ApplicationWindow {
 
     Row {
         id: modelRow;
-        objectName: "modelRow";
+
         ModelViewerEx {
             id: modelViewer;
-            width: appWindow.width * sideBarWidth;
-            height: appWindow.height;
+            width: appWindow.width - sidebar.width;
+            height: appWindow.height - consoleOutput.height;
 
             xRange: sidebar.xRange;
             yRange: sidebar.yRange;
@@ -120,10 +120,12 @@ ApplicationWindow {
 
         modelID: modelViewer.modelID;
 
-        width: appWindow.width - modelRow.width;
+        width: appWindow.width * sideBarWidth;
         height: appWindow.height;
 
-        anchors.left: modelRow.right;
+        anchors {
+            left: modelRow.right;
+        }
 
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
@@ -154,5 +156,24 @@ ApplicationWindow {
         id: reconstructor;
 
         onSlicesProcessed: modelViewer.drawSlices(slices);
+    }
+
+    Rectangle {
+        id: consoleOutput;
+
+        width: parent.width;
+        height: 30;
+
+        color: "green"
+
+        anchors {
+            top: modelRow.bottom;
+            right: sidebar.left;
+        }
+/*
+        TextArea {
+            width: parent.width;
+        }
+*/
     }
 }
