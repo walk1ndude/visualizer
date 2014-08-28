@@ -52,13 +52,14 @@ SideDockVertical {
         }
 
         anchors {
-            //left: parent.head.right;
             right: parent.right;
             top: parent.top;
             bottom: parent.bottom;
         }
 
         width: parent.width - parent.head.height;
+
+        visible: !!width;
 
         delegate: sectionDelegate;
     }
