@@ -12,7 +12,7 @@ SideDockVertical {
 
     heading: "Sidebar";
 
-    width: head.collapsed ? head.height : sidebarWidth;
+    dX: sidebarWidth;
 
     property vector2d xRange: Qt.vector2d(0, 0);
     property vector2d yRange: Qt.vector2d(0, 0);
@@ -51,22 +51,25 @@ SideDockVertical {
             }
         }
 
-        width: parent.width
-        height: parent.height;
+        anchors {
+            //left: parent.head.right;
+            right: parent.right;
+            top: parent.top;
+            bottom: parent.bottom;
+        }
 
-        z: -1;
+        width: parent.width - parent.head.height;
 
-        anchors.fill: parent;
         delegate: sectionDelegate;
     }
 
     Component {
         id: sectionDelegate;
         Column {
-            width: sidebar.width;
+            width: sidebarListView.width;
 
             Heading {
-                width: sidebar.width;
+                width: parent.width;
 
                 text: sectionName;
 
@@ -101,12 +104,12 @@ SideDockVertical {
 
         Column {
             property alias model : repeater.model;
-            width: sidebar.width;
+            width: sidebarListView.width;
             Repeater {
                 id: repeater;
                 delegate:
                     ShaderGrid {
-                    width: sidebar.width;
+                    width: sidebarListView.width;
 
                     onXRangeChanged: sidebar.xRange = xRange;
                     onYRangeChanged: sidebar.yRange = yRange;
@@ -124,12 +127,12 @@ SideDockVertical {
 
         Column {
             property alias model : repeater.model;
-            width: sidebar.width;
+            width: sidebarListView.width;
             Repeater {
                 id: repeater;
                 delegate:
                     GeometryGrid {
-                    width: sidebar.width;
+                    width: sidebarListView.width;
 
                     onAngleChanged: sidebar.angle = angle;
                     onZoomFactorChanged: sidebar.zoomFactor = zoomFactor;
@@ -143,13 +146,13 @@ SideDockVertical {
 
         Column {
             property alias model : repeater.model;
-            width: sidebar.width;
+            width: sidebarListView.width;
             Repeater {
                 id: repeater;
                 delegate:
                     MeasureGrid {
                     id: measureGrid;
-                    width: sidebar.width;
+                    width: sidebarListView.width;
 
                     onSelectedPointNameChanged: sidebar.selectedPointName = selectedPointName;
                     onSelectedPointColorChanged: sidebar.selectedPointColor = selectedPointColor;
@@ -163,13 +166,13 @@ SideDockVertical {
 
         Column {
             property alias model : repeater.model;
-            width: sidebar.width;
+            width: sidebarListView.width;
             Repeater {
                 id: repeater;
                 delegate:
                     IndividualInfo {
                         id: individualInfo
-                        width: sidebar.width;
+                        width: sidebarListView.width;
 
                         modelID: sidebar.modelID;
 

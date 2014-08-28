@@ -5,6 +5,8 @@ Rectangle {
 
     property string heading: "";
 
+    property variant head: heading;
+
     Heading {
         id: heading;
         text: parent.heading;

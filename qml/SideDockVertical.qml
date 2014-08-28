@@ -21,7 +21,8 @@ Rectangle {
         onCollapsedChanged: {
             parent.width = collapsed ? height : height + dX;
 
-            x = parentX > parent.x ? parent.height - height : 0;
+            x = parentX < parent.x ? height - parent.width : 0;
+
             parentX = parent.x;
         }
 
@@ -42,7 +43,7 @@ Rectangle {
             },
 
             Translate {
-                x: height / 2 - parent.height + width;
+                x: height / 2 + width - height;
                 y: width / 2;
             }
 
