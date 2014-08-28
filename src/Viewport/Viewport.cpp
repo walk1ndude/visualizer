@@ -122,6 +122,7 @@ namespace Viewport {
         }
 
         _zoomFactor = zoomFactor;
+
         emit zoomChanged();
     }
 

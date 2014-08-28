@@ -7,6 +7,8 @@ Rectangle {
 
     property variant head: heading;
 
+    property real dY: 300;
+
     Heading {
         id: heading;
         text: parent.heading;
@@ -19,11 +21,11 @@ Rectangle {
         }
 
         onCollapsedChanged: {
-            parent.height = collapsed ? height : height + 300;
+            parent.height = collapsed ? height : height + dY;
 
             y = parentY < parent.y ? parent.height - height : 0;
-            parentY = parent.y;
 
+            parentY = parent.y;
         }
     }
 

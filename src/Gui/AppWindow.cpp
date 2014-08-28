@@ -3,6 +3,7 @@
 #include "Gui/AppWindow.h"
 
 #include "Quick/ModelViewer.h"
+#include "Quick/ConsoleLogger.h"
 
 #include "Parser/DicomReader.h"
 #include "Parser/StlReader.h"
@@ -13,6 +14,8 @@ namespace Gui {
         QObject(parent) {
 
         registerQmlTypes();
+
+        qInstallMessageHandler(Quick::ConsoleLogger::customMessageHandler);
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
 
@@ -63,6 +66,8 @@ namespace Gui {
 
     void AppWindow::registerQmlTypes() {
         qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
+        qmlRegisterType<Quick::ConsoleLogger>("RenderTools", 1, 0, "ConsoleLogger");
+
         qmlRegisterType<Viewport::ViewportArray>("RenderTools", 1, 0, "ViewportArray");
         qmlRegisterType<Viewport::Viewport>("RenderTools", 1, 0, "Viewport");
 
