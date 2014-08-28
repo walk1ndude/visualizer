@@ -28,5 +28,8 @@
         <file>qml/ViewportEx.qml</file>
         <file>shaders/helpersFragment.glsl</file>
         <file>qml/Heading.qml</file>
+        <file>qml/Console.qml</file>
+        <file>qml/SideDockVertical.qml</file>
+        <file>qml/SideDockHorizontal.qml</file>
     </qresource>
 </RCC>

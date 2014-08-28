@@ -89,10 +89,12 @@ ApplicationWindow {
     Row {
         id: modelRow;
 
+        anchors.left: consoleDock.right;
+
         ModelViewerEx {
             id: modelViewer;
             width: appWindow.width - sidebar.width;
-            height: appWindow.height - consoleOutput.height;
+            height: appWindow.height - consoleDock.height;
 
             xRange: sidebar.xRange;
             yRange: sidebar.yRange;
@@ -158,22 +160,19 @@ ApplicationWindow {
         onSlicesProcessed: modelViewer.drawSlices(slices);
     }
 
-    Rectangle {
-        id: consoleOutput;
-
-        width: parent.width;
-        height: 30;
-
-        color: "green"
-
-        anchors {
-            top: modelRow.bottom;
-            right: sidebar.left;
-        }
+    Console {
+        id: consoleDock;
 /*
-        TextArea {
-            width: parent.width;
+        anchors {
+            left: parent.left;
+            right: sidebar.left;
+            top: modelRow.bottom;
+            //top: appWindow.top;
+        }*/
+        anchors {
+            top: appWindow.top;
+            bottom: appWindow.bottom;
+            left: appWindow.left;
         }
-*/
     }
 }

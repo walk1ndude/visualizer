@@ -24,7 +24,7 @@ Rectangle {
     }
 
     Image {
-        id: icon
+        id: icon;
         width: 20;
         height: 20;
 
@@ -35,14 +35,13 @@ Rectangle {
             verticalCenter: parent.verticalCenter;
         }
 
-        source: collapsed ? "qrc:/icons/expand.svg" : "qrc:/icons/collapse.svg";
+        source: collapsed ? "qrc:/icons/collapse.svg" : "qrc:/icons/expand.svg";
     }
 
     MouseArea {
         anchors.fill: parent;
         onClicked: if (mouse.button === Qt.LeftButton) {
                        parent.collapsed = !parent.collapsed;
-                       //model.setProperty(index, "collapsed", !collapsed);
                    }
     }
 }
