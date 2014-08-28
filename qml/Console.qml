@@ -1,6 +1,6 @@
 import QtQuick 2.3
 
-SideDockVertical {
+SideDockHorizontal {
     id: consoleOutput;
 
     heading: "Console output";

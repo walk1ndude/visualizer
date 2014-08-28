@@ -5,10 +5,14 @@ import QtQuick.Controls.Styles 1.2
 import "../js/sidebarcontent.js" as SideBar
 import "../js/helpers.js" as Helpers
 
-Rectangle {
+SideDockVertical {
     id: sidebar;
 
     color: "#FFFFFF";
+
+    heading: "Sidebar";
+
+    width: head.collapsed ? head.height : sidebarWidth;
 
     property vector2d xRange: Qt.vector2d(0, 0);
     property vector2d yRange: Qt.vector2d(0, 0);
@@ -24,6 +28,8 @@ Rectangle {
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
 
     property int modelID: -1;
+
+    property real sidebarWidth: 200;
 
     signal updateIndividualInfo();
     signal distsUpdated();
@@ -44,6 +50,11 @@ Rectangle {
                 }
             }
         }
+
+        width: parent.width
+        height: parent.height;
+
+        z: -1;
 
         anchors.fill: parent;
         delegate: sectionDelegate;

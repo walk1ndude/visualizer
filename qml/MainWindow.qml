@@ -89,8 +89,6 @@ ApplicationWindow {
     Row {
         id: modelRow;
 
-        anchors.left: consoleDock.right;
-
         ModelViewerEx {
             id: modelViewer;
             width: appWindow.width - sidebar.width;
@@ -118,16 +116,16 @@ ApplicationWindow {
 
     SideBar {
         id: sidebar;
-        color: "#FFFFFF";
-
-        modelID: modelViewer.modelID;
-
-        width: appWindow.width * sideBarWidth;
-        height: appWindow.height;
-
         anchors {
             left: modelRow.right;
+            top: appWindow.top;
+            bottom: appWindow.bottom;
+            right: appWindow.right;
         }
+
+        sidebarWidth: appWindow.width * sideBarWidth;
+
+        modelID: modelViewer.modelID;
 
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
@@ -162,17 +160,11 @@ ApplicationWindow {
 
     Console {
         id: consoleDock;
-/*
+
         anchors {
             left: parent.left;
             right: sidebar.left;
             top: modelRow.bottom;
-            //top: appWindow.top;
-        }*/
-        anchors {
-            top: appWindow.top;
-            bottom: appWindow.bottom;
-            left: appWindow.left;
         }
     }
 }

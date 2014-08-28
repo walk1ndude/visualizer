@@ -8,6 +8,8 @@ Rectangle {
 
     property int dX: 300;
 
+    property variant head: heading;
+
     Heading {
         id: heading;
         text: parent.heading;
@@ -18,6 +20,9 @@ Rectangle {
 
         onCollapsedChanged: {
             parent.width = collapsed ? height : height + dX;
+
+            x = parentX > parent.x ? parent.height - height : 0;
+            parentX = parent.x;
         }
 
         transform: [

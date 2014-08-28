@@ -21,6 +21,7 @@ Rectangle {
 
             y = parentY < parent.y ? parent.height - height : 0;
             parentY = parent.y;
+
         }
     }
 
@@ -28,6 +29,7 @@ Rectangle {
         if (!!heading.parentY) {
             heading.parentY = parent.y;
         }
+
     }
 
     color: "#AAFFFFFF";
