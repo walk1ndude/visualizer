@@ -123,7 +123,7 @@ ApplicationWindow {
             right: appWindow.right;
         }
 
-        sidebarWidth: appWindow.width * appWindow.sideBarWidth;
+        dX: appWindow.width * appWindow.sideBarWidth;
 
         modelID: modelViewer.modelID;
 

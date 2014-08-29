@@ -12,8 +12,6 @@ SideDockVertical {
 
     heading: "Sidebar";
 
-    dX: sidebarWidth;
-
     property vector2d xRange: Qt.vector2d(0, 0);
     property vector2d yRange: Qt.vector2d(0, 0);
     property vector2d zRange: Qt.vector2d(0, 0);
@@ -28,8 +26,6 @@ SideDockVertical {
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
 
     property int modelID: -1;
-
-    property real sidebarWidth: 200;
 
     signal updateIndividualInfo();
     signal distsUpdated();
