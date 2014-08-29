@@ -10,21 +10,25 @@ Rectangle {
 
     property variant head: heading;
 
+    onDXChanged: heading.recalcWidth();
+
     Heading {
         id: heading;
         text: parent.heading;
 
         property int parentX: 0;
 
-        width: parent.height;
-
-        onCollapsedChanged: {
+        function recalcWidth() {
             parent.width = collapsed ? height : height + dX;
 
             x = parentX < parent.x ? height - parent.width : 0;
 
             parentX = parent.x;
         }
+
+        width: parent.height;
+
+        onCollapsedChanged: recalcWidth();
 
         transform: [
             Translate {

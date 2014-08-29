@@ -16,6 +16,9 @@ Rectangle {
 
     property variant model: null;
 
+    property url collapsedIcon: "qrc:/icons/collapse.svg";
+    property url uncollapsedIcon: "qrc:/icons/expand.svg";
+
     Text {
         anchors.verticalCenter: parent.verticalCenter;
         x: 15;
@@ -35,7 +38,7 @@ Rectangle {
             verticalCenter: parent.verticalCenter;
         }
 
-        source: collapsed ? "qrc:/icons/collapse.svg" : "qrc:/icons/expand.svg";
+        source: collapsed ? parent.collapsedIcon : parent.uncollapsedIcon;
     }
 
     MouseArea {
