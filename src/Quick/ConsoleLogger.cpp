@@ -1,9 +1,15 @@
+#include <QtCore/QRegExp>
+
 #include "Quick/ConsoleLogger.h"
 
 Quick::ConsoleLogger * _instance = nullptr;
 
+QRegExp logRx("<p>([^<]*)</p>");
+
 namespace Quick {
     QString ConsoleLogger::_output;
+
+    int ConsoleLogger::_lineCount = 5;
 
     ConsoleLogger::ConsoleLogger() {
         if (!_instance) {
@@ -12,21 +18,58 @@ namespace Quick {
     }
 
     void ConsoleLogger::customMessageHandler(QtMsgType type, const QMessageLogContext & , const QString & msg) {
+        QString appendStr;
+
         switch (type) {
            case QtDebugMsg:
-              _output += QString("<p>[Debug] \t\t %1</p>").arg(msg);
+              appendStr = QString("[Debug] \t\t %1").arg(msg);
               break;
            case QtWarningMsg:
-              _output += QString("<p><font color='yellow'>[Warning] \t %1</font></p>").arg(msg);
+              appendStr = QString("[Warning] \t %1").arg(msg);
               break;
            case QtCriticalMsg:
-              _output += QString("<p><font color='red'>[Critical] \t %1</font></p>").arg(msg);
+              appendStr = QString("[Critical] \t %1").arg(msg);
               break;
            case QtFatalMsg:
-              _output += QString("<p><font color='red'>[Fatal] \t\t %1</font></p>").arg(msg);
-              abort();
+              appendStr = QString("[Fatal] \t\t %1").arg(msg);
               break;
         }
+
+        if (_instance) {
+            _instance->writeToFile(appendStr);
+        }
+
+        switch (type) {
+           case QtWarningMsg:
+              appendStr = QString("<font color='yellow'>") + appendStr + QString("</font>");
+              break;
+           case QtCriticalMsg:
+              appendStr = QString("<font color='red'>") + appendStr + QString("</font>");
+              break;
+           case QtFatalMsg:
+              appendStr = QString("<font color='red'>") + appendStr + QString("</font>");
+              abort();
+              break;
+           default:
+            break;
+        }
+
+        _output += (QString("<p>") + appendStr + QString("</p>"));
+
+        int pos = 0;
+        int position = 0;
+        int count = 0;
+
+        while (count != _lineCount && (pos = logRx.indexIn(_output, pos)) != -1) {
+            count ++;
+            pos += logRx.matchedLength();
+
+            if (!position) {
+                position = pos;
+            }
+        }
+
+        _output = _output.mid(count == _lineCount - 1 ? position : 0);
 
         if (_instance) {
             _instance->outputChanged();
@@ -41,6 +84,28 @@ namespace Quick {
         _output = output;
 
         emit outputChanged();
+    }
+
+    QString ConsoleLogger::logFile() {
+        return _logFile;
+    }
+
+    void ConsoleLogger::setLogFile(const QString & logFile) {
+        _logFile = logFile;
+
+        emit logFileChanged();
+    }
+
+    void ConsoleLogger::writeToFile(const QString & output) {
+        if (!_logFile.isEmpty()) {
+            QFile outFile(_logFile);
+            outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+            QTextStream textStream(&outFile);
+            textStream << output << endl;
+
+            outFile.close();
+        }
     }
 
     int ConsoleLogger::lineCount() {

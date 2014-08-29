@@ -6,6 +6,7 @@
 namespace Quick {
     class ConsoleLogger : public QQuickItem {
         Q_PROPERTY(QString output READ output WRITE setOutput NOTIFY outputChanged)
+        Q_PROPERTY(QString logFile READ logFile WRITE setLogFile NOTIFY logFileChanged)
         Q_PROPERTY(int lineCount READ lineCount WRITE setLineCount NOTIFY lineCountChanged)
 
         Q_OBJECT
@@ -17,17 +18,25 @@ namespace Quick {
         QString output();
         void setOutput(const QString & output);
 
+        QString logFile();
+        void setLogFile(const QString & logFile);
+
         int lineCount();
         void setLineCount(const int & lineCount);
 
     private:
         static QString _output;
 
-        int _lineCount;
+        QString _logFile;
+
+        static int _lineCount;
+
+        void writeToFile(const QString & output);
 
     signals:
         void outputChanged();
         void lineCountChanged();
+        void logFileChanged();
     };
 }
 

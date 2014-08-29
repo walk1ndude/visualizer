@@ -13,9 +13,9 @@ namespace Gui {
     AppWindow::AppWindow(const QString & qmlSource, QObject * parent) :
         QObject(parent) {
 
-        registerQmlTypes();
-
         qInstallMessageHandler(Quick::ConsoleLogger::customMessageHandler);
+
+        registerQmlTypes();
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
 
