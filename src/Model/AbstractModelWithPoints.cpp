@@ -62,6 +62,8 @@ namespace Model {
             data[i ++] = modelPoint->color.alphaF();
         }
 
+        qDebug() << _modelPoints;
+
         _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) data);
         _pointsTexture->bind(_pointsTexture->textureId());
 
@@ -92,7 +94,6 @@ namespace Model {
 
                 modelPoint->position.setZ(posZ / 65535.0f);
 
-                //if (viewport->unprojectPoint(modelPoint->position, unprojectedPoint)) {
                 if (viewport->unproject(modelPoint->position, unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     

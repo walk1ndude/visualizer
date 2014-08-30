@@ -15,6 +15,8 @@ INCLUDEPATH += include
 
 unix:macx {
 
+    QMAKE_MAC_SDK = macosx10.10
+
     INCLUDEPATH += /usr/local/include/gdcm-2.4 \
                    /usr/local/include
 
