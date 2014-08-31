@@ -65,6 +65,7 @@ namespace Model {
         }
         
         _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) &data);
+        _pointsTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
        
         _pointsTexture->bind(_pointsTexture->textureId());
 
