@@ -64,8 +64,6 @@ namespace Model {
             i ++;
         }
         
-        qDebug() << data;
-        
         _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) &data);
        
         _pointsTexture->bind(_pointsTexture->textureId());
