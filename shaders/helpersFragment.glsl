@@ -32,9 +32,10 @@ uniform highp Ranges ranges;
 bool needToRender(const vec3 position,
                   const vec2 xab, const vec2 yab, const vec2 zab);
 
-vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color);
+vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
+                   const mat4 mvp);
 
-vec4 highlightColor(const vec3 position);
+vec4 highlightColor(const vec3 position, const mat4 mvp);
 
 
 bool needToRender(const vec3 position,
@@ -48,7 +49,8 @@ bool needToRender(const vec3 position,
 }
 
 
-vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color) {
+vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
+                   const mat4 mvp) {
     vec4 L = normalize(lightSource.position - position);
 
     float NdotL = max(dot(normal, L), 0);
@@ -63,26 +65,34 @@ vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color) {
 
     vec4 specular = pow(RdotV, material.shininess) * lightSource.color * material.specular;
 
-    vec4 hColor = highlightColor(vec3(position));
+    vec4 hColor = highlightColor(position.xyz, mvp);
 
     return (material.emissive + lightSource.ambientIntensity + diffuse + specular) *
             ((hColor != vec4(0.0)) ? hColor : color);
 }
 
 
-vec4 highlightColor(const vec3 position) {
+vec4 highlightColor(const vec3 position, const mat4 mvp) {
     vec4 color = vec4(0.0f);
 
     vec4 pointPos;
-    for (int i = 0; i != pointsCount; ++ i) {
+    float i = 0.0f;
+    
+    if (pointsCount == 0) {
+        return color;
+    }
+    
+    float step = 1.0f / pointsCount;
+    
+    while (i != 1.0f) {
         // x, y, z - point coords, w - color radius
-        pointPos = texture(points, vec2(0, i));
+        pointPos = texture(points, vec2(0.0f, i));
 
-        if ((position.x - pointPos.x) * (position.x - pointPos.x) +
-            (position.y - pointPos.y) * (position.y - pointPos.y) +
-            (position.z - pointPos.z) * (position.z - pointPos.z) < pointPos.w * pointPos.w) {
-            color += texture(points, vec2(1, i));
+        if (length(position - (mvp * pointPos).xyz) < pointPos.w * pointPos.w) {
+            color += texture(points, vec2(0.5f, i));
         }
+        
+        i += step;
     }
 
     return color;

@@ -76,7 +76,7 @@ namespace PointsInfo {
                    const QColor & color,
                    Viewport::Viewport * viewport,
                    const uint & polygonId = 0,
-                   const qreal & radius = 1.5f) :
+                   const qreal & radius = 0.2f) :
             position(position),
             radius(radius),
             color(color),
