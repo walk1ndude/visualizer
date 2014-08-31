@@ -180,7 +180,7 @@ namespace Viewport {
                     2.0f * projectionViewport.z() - 1.0f,
                     1.0f);
 
-        unprojectedPointVector = unprojectedPointVector * invVP;
+        unprojectedPointVector = invVP.map(unprojectedPointVector);
 
         if (unprojectedPointVector.w() == 0.0f) {
             return false;

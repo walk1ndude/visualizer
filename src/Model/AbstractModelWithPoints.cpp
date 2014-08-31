@@ -61,9 +61,7 @@ namespace Model {
             data[i ++] = modelPoint->color.blueF();
             data[i ++] = modelPoint->color.alphaF();
         }
-
-        qDebug() << _modelPoints;
-
+        
         _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) data);
         _pointsTexture->bind(_pointsTexture->textureId());
 
@@ -84,15 +82,13 @@ namespace Model {
                 Viewport::ViewportRect boundingRect = viewport->boundingRect();
 
                 // usage of GL_UNSIGNED_SHORT explaned here http://www.opengl.org/wiki/Common_Mistakes#Depth_Buffer_Precision
-                glReadPixels(
-                             std::round(boundingRect.x() + modelPoint->position.x() * boundingRect.width()),
+                glReadPixels(std::round(boundingRect.x() + modelPoint->position.x() * boundingRect.width()),
                              std::round(boundingRect.y() + modelPoint->position.y() * boundingRect.height()),
-                             1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ
-                             );
-                
-                qDebug() << posZ;
+                             1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ);
 
                 modelPoint->position.setZ(posZ / 65535.0f);
+                
+                qDebug() << modelPoint->position << "before";
 
                 if (viewport->unproject(modelPoint->position, unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);

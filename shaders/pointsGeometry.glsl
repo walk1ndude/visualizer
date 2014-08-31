@@ -1,6 +1,7 @@
 #version 410
 layout(points) in;
-layout(line_strip, max_vertices = 3) out;
+layout(points, max_vertices = 1) out;
+//layout(line_strip, max_vertices = 3) out;
 
 in vData {
     highp vec4 vColor;
@@ -13,6 +14,7 @@ out fData {
     highp vec4 fColor;
 } frag;
 
+/*
 void main(void) {
     for(int i = 0; i < gl_in.length(); i++) {
         // copy attributes
@@ -23,5 +25,15 @@ void main(void) {
             EmitVertex();
         }
     }
+    EndPrimitive();
+}*/
+
+void main(void) {
+    for(int i = 0; i <= gl_in.length(); ++ i) {
+        gl_Position = mvp * gl_in[i].gl_Position;
+        frag.fColor = vertices[i].vColor;
+        EmitVertex();
+    }
+    
     EndPrimitive();
 }
