@@ -49,7 +49,6 @@ namespace Quick {
            case QtFatalMsg:
               appendStr = QString("<font color='red'>") + appendStr + QString("</font>");
               abort();
-              break;
            default:
             break;
         }

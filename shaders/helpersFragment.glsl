@@ -76,7 +76,7 @@ vec4 highlightColor(const vec3 position, const mat4 mvp) {
     vec4 color = vec4(0.0f);
 
     vec4 pointPos;
-    float i = 0.0f;
+    float i = 1.0f;
     
     if (pointsCount == 0) {
         return color;
@@ -84,7 +84,7 @@ vec4 highlightColor(const vec3 position, const mat4 mvp) {
     
     float step = 1.0f / pointsCount;
     
-    while (i != 1.0f) {
+    while (i != 0.0f) {
         // x, y, z - point coords, w - color radius
         pointPos = texture(points, vec2(0.0f, i));
 
@@ -92,7 +92,7 @@ vec4 highlightColor(const vec3 position, const mat4 mvp) {
             color += texture(points, vec2(0.5f, i));
         }
         
-        i += step;
+        i -= step;
     }
 
     return color;

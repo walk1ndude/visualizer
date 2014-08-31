@@ -94,12 +94,7 @@ namespace Parser {
 
         gdcm::PhotometricInterpretation photometricInterpretation = dImage.GetPhotometricInterpretation();
 
-        if (photometricInterpretation != gdcm::PhotometricInterpretation::MONOCHROME2) {
-            dicomData.inverseNeeded = true;
-        }
-        else {
-            dicomData.inverseNeeded = false;
-        }
+        dicomData.inverseNeeded = (photometricInterpretation != gdcm::PhotometricInterpretation::MONOCHROME2);
 
         gdcm::PixelFormat pixelFormat = dImage.GetPixelFormat();
         if (pixelFormat.GetScalarType() == gdcm::PixelFormat::UINT16) {
@@ -126,7 +121,7 @@ namespace Parser {
         dicomData.minHUPossible = dicomData.slope * dicomData.minValue + dicomData.intercept;
         dicomData.maxHUPossible = dicomData.slope * dicomData.maxValue + dicomData.intercept;
 
-        dicomData.isLittleEndian = (pixelFormat.GetBitsAllocated() - pixelFormat.GetHighBit() == 1) ? true : false;
+        dicomData.isLittleEndian = (pixelFormat.GetBitsAllocated() - pixelFormat.GetHighBit() == 1);
 
         dicomData.neighbourRadius = 0;
 

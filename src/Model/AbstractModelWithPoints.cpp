@@ -45,29 +45,32 @@ namespace Model {
         _pointsTexture->setSize(2, pointsCount);
         _pointsTexture->allocateStorage();
         
-        float * data = new float[8 * pointsCount];
+        float data[pointsCount][2][4];
 
         int i = 0;
 
         for (const PointsInfo::ModelPoint * modelPoint : _modelPoints) {
-            data[i ++] = modelPoint->position.x();
-            data[i ++] = modelPoint->position.y();
-            data[i ++] = modelPoint->position.z();
+            data[i][0][0] = modelPoint->position.x();
+            data[i][0][1] = modelPoint->position.y();
+            data[i][0][2] = modelPoint->position.z();
             
-            data[i ++] = modelPoint->radius;
+            data[i][0][3] = modelPoint->radius;
 
-            data[i ++] = modelPoint->color.redF();
-            data[i ++] = modelPoint->color.greenF();
-            data[i ++] = modelPoint->color.blueF();
-            data[i ++] = modelPoint->color.alphaF();
+            data[i][1][0] = modelPoint->color.redF();
+            data[i][1][1] = modelPoint->color.greenF();
+            data[i][1][2]= modelPoint->color.blueF();
+            data[i][1][3] = modelPoint->color.alphaF();
+            
+            i ++;
         }
         
-        _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) data);
+        qDebug() << data;
+        
+        _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) &data);
+       
         _pointsTexture->bind(_pointsTexture->textureId());
 
         _pointsTexture->generateMipMaps();
-
-        delete data;
     }
     
     bool AbstractModelWithPoints::checkDepthBuffer(Viewport::Viewport * viewport) {
