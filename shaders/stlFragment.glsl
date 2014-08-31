@@ -14,12 +14,12 @@ bool needToRender(const vec3 point,
                   const vec2 xab, const vec2 yab, const vec2 zab);
 
 vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
-                   const mat4 mvp);
+                   const vec3 positionModel);
 
 
 void main(void) {
     if (needToRender(vertexTest, vec2(1.0, 0.0), vec2(1.0, 0.0), vec2(1.0, 0.0))) {
-        fragColor = calcFragColor(pos, N, colorU, mvp);
+        fragColor = calcFragColor(pos, N, colorU, vertexTest);
     }
     else {
         discard;

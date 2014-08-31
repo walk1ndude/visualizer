@@ -71,18 +71,19 @@ vec4 sobel3(vec3 position) {
     return vec4(normalize(n - p), 0.0f);
 }
 
-vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color);
+vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
+                   const vec3 positionModel);
 
 bool needToRender(const vec3 point,
                   const vec2 xab, const vec2 yab, const vec2 zab);
 
 
 void main(void) {
-    if (needToRender(vec3(fragPos), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f))) {
+    if (needToRender(fragPos.xyz, vec2(0.5f, 0.5f), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f))) {
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
         if (headColor.r > 0.05f) {
-            fragColor = calcFragColor(fragPos, sobel3(fragPos.stp), headColor);
+            fragColor = calcFragColor(fragPos, sobel3(fragPos.stp), headColor, fragPos.xyz);
 
             // for greater good
 /*
