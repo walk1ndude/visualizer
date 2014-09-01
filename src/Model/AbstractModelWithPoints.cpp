@@ -91,8 +91,6 @@ namespace Model {
 
                 modelPoint->position.setZ(posZ / 65535.0f);
                 
-                qDebug() << modelPoint->position << "before";
-
                 if (viewport->unproject(modelPoint->position, model(), unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     

@@ -1,7 +1,7 @@
 #version 410
 layout(points) in;
-layout(points, max_vertices = 1) out;
-//layout(line_strip, max_vertices = 3) out;
+//layout(points, max_vertices = 1) out;
+layout(triangles, max_vertices = 4) out;
 
 in vData {
     highp vec4 vColor;
@@ -29,10 +29,20 @@ void main(void) {
 }*/
 
 void main(void) {
-    for(int i = 0; i <= gl_in.length(); ++ i) {
-        gl_Position = mvp * gl_in[i].gl_Position;
+    for(int i = 0; i != gl_in.length(); ++ i) {
+        gl_Position = mvp * (gl_in[i].gl_Position + vec4(0.1f, 0.1f, 0.0f, 1.0f);
         frag.fColor = vertices[i].vColor;
         EmitVertex();
+        
+        gl_Position = mvp * (gl_in[i].gl_Position + vec4(0.1f, -0.1f, 0.0f, 1.0f);
+        frag.fColor = vertices[i].vColor;
+        EmitVertex();
+
+        gl_Position = mvp * (gl_in[i].gl_Position + vec4(-0.1f, -0.1f, 0.0f, 1.0f);
+        frag.fColor = vertices[i].vColor;
+        EmitVertex();
+        
+        
     }
     
     EndPrimitive();
