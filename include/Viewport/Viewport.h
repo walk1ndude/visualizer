@@ -50,10 +50,7 @@ namespace Viewport {
 
         qreal zoom() const;
 
-        bool unprojectPoint(const QVector3D & projection, QVector4D & unprojectedPoint) const;
         bool unproject(const QVector3D & point, QVector4D & unprojectedPoint) const;
-
-        QVector3D placeXYZAccordingToViewport(const QVector3D & xyz) const;
 
     private:
         QSize _surfaceSize;

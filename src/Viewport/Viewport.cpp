@@ -145,24 +145,6 @@ namespace Viewport {
         return modelMatrix;
     }
 
-    bool Viewport::unprojectPoint(const QVector3D & point, QVector4D & unprojectedPoint) const {
-        QVector4D _unprojectedPoint;
-
-        QVector3D pointNear = placeXYZAccordingToViewport(QVector3D(point.x(), point.y(), 0.0f));
-        QVector3D pointFar = placeXYZAccordingToViewport(QVector3D(point.x(), point.y(), point.z()));
-
-        QVector4D unprojectedPointNear;
-        QVector4D unprojectedPointFar;
-
-        if (unproject(pointNear, unprojectedPointNear) && unproject(pointFar, unprojectedPointFar)) {
-            qDebug() << unprojectedPointNear << unprojectedPointFar;
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
     bool Viewport::unproject(const QVector3D & projection, QVector4D & unprojectedPoint) const {
         bool invertible;
 
@@ -193,25 +175,7 @@ namespace Viewport {
                         1.0f
             );
 
-            qDebug() << unprojectedPoint;
             return true;
-        }
-    }
-
-    QVector3D Viewport::placeXYZAccordingToViewport(const QVector3D & xyz) const {
-        /* In different viewports axes have different meaning.
-         * For example in "Left" z and x axes change their positions,
-         * so x axis turns out to be the axis that determines the
-         * distantion between model and camera, and z takes the role
-         * of x in return
-         */
-        switch (_projectionType) {
-        case LEFT:
-            return QVector3D(xyz.z(), xyz.y(), xyz.x());
-        case FRONTAL:
-            return QVector3D(xyz.x(), xyz.z(), xyz.y());
-        default:
-            return xyz;
         }
     }
 
