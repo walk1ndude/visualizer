@@ -15,6 +15,7 @@ namespace Model {
             ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
 
             for (const PointsInfo::ModelPoint * modelPoint : modelPoints) {
+                qDebug() << modelPoint->groups;
                 for (int i = 0; i != 3; ++ i) {
                     vertices->push_back(ModelInfo::VertexVC(modelPoint->position.x(),
                                                             modelPoint->position.y(),

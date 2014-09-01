@@ -103,6 +103,8 @@ namespace Model {
 
         virtual bool checkDepthBuffer(Viewport::Viewport * viewPort);
 
+        virtual void processChildren() { }
+
     protected:
         QMutex _modelMutex;
 
@@ -132,8 +134,6 @@ namespace Model {
         virtual QOpenGLShaderProgram * program() final;
 
         virtual bool updateNeeded() final;
-
-        virtual void processChildren() { }
 
         virtual void deleteModel();
 

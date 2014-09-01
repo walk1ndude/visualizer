@@ -66,6 +66,10 @@ namespace Viewport {
             for (Viewport * viewport : _viewportArray) {
                 needToRedraw |= model->checkDepthBuffer(viewport);
             }
+
+            if (needToRedraw) {
+                model->processChildren();
+            }
         }
 
         return needToRedraw;

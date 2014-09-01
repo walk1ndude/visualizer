@@ -48,8 +48,6 @@ ListModel {
                         modelDists[pointFrom] = modelDists[pointFrom] || { };
                         modelDists[pointFrom][pointTo] = calculatedDist;
 
-                        console.log(pointFrom, pointTo)
-
                         distUpdatedCount ++;
                     }
                     else {

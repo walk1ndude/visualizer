@@ -91,7 +91,7 @@ Rectangle {
                         measureGrid.selectedPoint = (listModel.prevIndex === -1) ? { } : {
                                     "name" : itemId,
                                     "color" : parent.color,
-                                    "groups" : Helpers.pointInGroups["itemId"]
+                                    "groups" : Helpers.pointInGroups[itemId]
                         };
                     }
                 }
