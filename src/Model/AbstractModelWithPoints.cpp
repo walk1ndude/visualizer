@@ -65,7 +65,7 @@ namespace Model {
         }
         
         _pointsTexture->setData(QOpenGLTexture::RGBA, QOpenGLTexture::Float32, (void *) &data);
-        _pointsTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
+        _pointsTexture->setWrapMode(QOpenGLTexture::Repeat);
         _pointsTexture->setMinMagFilters(QOpenGLTexture::Nearest, QOpenGLTexture::Nearest);
        
         _pointsTexture->bind(_pointsTexture->textureId());
