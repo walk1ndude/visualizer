@@ -70,15 +70,9 @@ namespace Model {
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
         void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
 
-    protected:
-        virtual void drawModelWithoutIndices();
-
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderColor;
-        ShaderInfo::ShaderVariable _shaderPolygon;
-
-        PointsInfo::ModelPoints _modelPoints;
 
         ShaderInfo::ShaderVariable _shaderMVP;
     };

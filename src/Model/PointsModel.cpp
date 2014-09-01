@@ -9,8 +9,6 @@ namespace Model {
     }
 
     void PointsModel::fillBuffers(const PointsInfo::ModelPoints & modelPoints) {
-        _modelPoints = modelPoints;
-
         if (updateNeeded()) {
             ModelInfo::VertexVC vertex;
             ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
@@ -86,15 +84,10 @@ namespace Model {
     void PointsModel::glStatesDisable() {
         glDisable(GL_DEPTH_TEST);
     }
-    
-    void PointsModel::drawModelWithoutIndices() {
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount());
-    }
 
     void PointsModel::initShaderVariables(QOpenGLShaderProgram * program) {
         _shaderVertex = program->attributeLocation("vertex");
         _shaderColor = program->attributeLocation("color");
-        _shaderPolygon = program->attributeLocation("polygon");
 
         _shaderMVP = program->uniformLocation("mvp");
     }
@@ -105,9 +98,6 @@ namespace Model {
 
         program->enableAttributeArray(_shaderColor);
         program->setAttributeBuffer(_shaderColor, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
-
-        program->enableAttributeArray(_shaderPolygon);
-        program->setAttributeValue(_shaderPolygon, GL_FLOAT, sizeof(GLfloat), 1, stride());
     }
 
     void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
