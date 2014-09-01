@@ -93,7 +93,7 @@ namespace Model {
                 
                 qDebug() << modelPoint->position << "before";
 
-                if (viewport->unproject(modelPoint->position, unprojectedPoint)) {
+                if (viewport->unproject(modelPoint->position, model(), unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     
                     updateNeeded = true;

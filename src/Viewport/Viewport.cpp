@@ -145,10 +145,10 @@ namespace Viewport {
         return modelMatrix;
     }
 
-    bool Viewport::unproject(const QVector3D & projection, QVector4D & unprojectedPoint) const {
+    bool Viewport::unproject(const QVector3D & projection, const QMatrix4x4 & model, QVector4D & unprojectedPoint) const {
         bool invertible;
 
-        QMatrix4x4 invVP = (_pMatrix * _vMatrix).inverted(&invertible);
+        QMatrix4x4 invVP = (_pMatrix * _vMatrix * model).inverted(&invertible);
 
         if (!invertible) {
             return false;
