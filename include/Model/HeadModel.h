@@ -67,6 +67,8 @@ namespace Model {
         void scale(const QVector3D & scale);
 
         virtual void rotate(const QVector3D & rotation);
+        
+        virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
 
     protected:
         void initShaderVariables(QOpenGLShaderProgram * program);

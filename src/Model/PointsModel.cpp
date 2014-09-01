@@ -65,13 +65,7 @@ namespace Model {
         program->setAttributeValue(_shaderPolygon, GL_FLOAT, sizeof(GLfloat), 1, stride());
     }
 
-    void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) {
-        QMatrix4x4 model = parent()->model();
-
-        if (dynamic_cast<Model::HeadModel *>(parent())) {
-            model = viewPort->modelVoxel(model);
-        }
-
-        program->setUniformValue(_shaderMVP, viewPort->projection() * viewPort->view() * model);
+    void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+        program->setUniformValue(_shaderMVP, viewport->projection() * viewport->view() * parent()->model(viewport));
     }
 }

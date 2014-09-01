@@ -48,6 +48,16 @@ namespace Model {
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()));
     }
     
+    QMatrix4x4 HeadModel::model(Viewport::Viewport * viewport) {
+        QMatrix4x4 model = AbstractModel::model();
+        
+        if (viewport) {
+            model = viewport->modelVoxel(model);
+        }
+        
+        return model;
+    }
+    
     void HeadModel::drawModelWithoutIndices() {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount());
     }

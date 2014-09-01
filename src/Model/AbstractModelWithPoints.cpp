@@ -58,7 +58,7 @@ namespace Model {
 
             data[i][1][0] = modelPoint->color.redF();
             data[i][1][1] = modelPoint->color.greenF();
-            data[i][1][2]= modelPoint->color.blueF();
+            data[i][1][2] = modelPoint->color.blueF();
             data[i][1][3] = modelPoint->color.alphaF();
             
             i ++;
@@ -91,7 +91,7 @@ namespace Model {
 
                 modelPoint->position.setZ(posZ / 65535.0f);
                 
-                if (viewport->unproject(modelPoint->position, model(), unprojectedPoint)) {
+                if (viewport->unproject(modelPoint->position, model(viewport), unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
                     
                     updateNeeded = true;

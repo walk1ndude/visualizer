@@ -99,7 +99,7 @@ namespace Model {
         _children.append(child);
     }
 
-    QMatrix4x4 AbstractModel::model() {
+    QMatrix4x4 AbstractModel::model(Viewport::Viewport * ) {
         return _mMatrix;
     }
 

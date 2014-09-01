@@ -96,7 +96,7 @@ namespace Model {
             releaseShaderProgram();
         }
 
-        virtual QMatrix4x4 model() final;
+        virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
         virtual void setParent(AbstractModel * parent) final;
 
         virtual void queueForUpdate() final;
