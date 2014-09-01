@@ -18,10 +18,6 @@ Item {
     property int minHU: 0;
     property int maxHU: 65535;
 
-    property string selectedPointName: "";
-    property string selectedPointGroup: "";
-    property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
-
     property variant selectedPoint: ({});
 
     property int modelID: modelViewer.modelID;
@@ -46,9 +42,6 @@ Item {
 
         minHU: modelViewerEx.minHU;
         maxHU: modelViewerEx.maxHU;
-
-        selectedPointColor: modelViewerEx.selectedPointColor;
-        selectedPointName: modelViewerEx.selectedPointName;
 
         selectedPoint: modelViewerEx.selectedPoint;
 

@@ -22,8 +22,7 @@ SideDockVertical {
     property vector3d angle: Qt.vector3d(0, 0, 0);
     property real zoomFactor: 1.0;
 
-    property string selectedPointName: "";
-    property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
+    property variant selectedPoint: ({});
 
     property int modelID: -1;
 
@@ -148,11 +147,10 @@ SideDockVertical {
                 id: repeater;
                 delegate:
                     MeasureGrid {
-                    id: measureGrid;
-                    width: sidebarListView.width;
+                        id: measureGrid;
+                        width: sidebarListView.width;
 
-                    onSelectedPointNameChanged: sidebar.selectedPointName = selectedPointName;
-                    onSelectedPointColorChanged: sidebar.selectedPointColor = selectedPointColor;
+                        onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
                 }
             }
         }

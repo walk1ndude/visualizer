@@ -12,12 +12,7 @@
 #include "Render/ModelRenderer.h"
 
 namespace Quick {
-    class ModelViewer : public QQuickItem {
-        Q_OBJECT
-
-        Q_PROPERTY(QString selectedPointName READ selectedPointName WRITE setSelectedPointName)
-        Q_PROPERTY(QColor selectedPointColor READ selectedPointColor WRITE setSelectedPointColor)
-        
+    class ModelViewer : public QQuickItem {        
         Q_PROPERTY(QVariantMap selectedPoint READ selectedPoint WRITE setSelectedPoint)
 
         Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize)
@@ -40,20 +35,14 @@ namespace Quick {
 
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
 
+        Q_OBJECT
     public:
         explicit ModelViewer();
         virtual ~ModelViewer();
 
         QSize fboSize();
-
-        QPointF selectedPointPosition();
-
-        QString selectedPointName();
-
-        QColor selectedPointColor();
         
         QVariantMap selectedPoint();
-        void setSelectedPoint(const QVariantMap & selectedPoint);
 
         QVector3D rotation();
 
@@ -86,7 +75,7 @@ namespace Quick {
 
         QVector<Scene::ModelScene *> _modelScenes;
 
-        PointsInfo::Point _selectedPoint;
+        QVariantMap _selectedPoint;
 
         QVector3D _step;
 
@@ -144,8 +133,7 @@ namespace Quick {
 
         void setFboSize(const QSize & fboSize);
 
-        void setSelectedPointName(const QString & name);
-        void setSelectedPointColor(const QColor & color);
+        void setSelectedPoint(const QVariantMap & selectedPoint);
 
         void setRotation(const QVector3D & rotation);
 

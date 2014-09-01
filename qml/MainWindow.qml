@@ -104,8 +104,7 @@ ApplicationWindow {
             rotation: sidebar.angle;
             zoomFactor: sidebar.zoomFactor;
 
-            selectedPointName: sidebar.selectedPointName;
-            selectedPointColor: sidebar.selectedPointColor;
+            selectedPoint: sidebar.selectedPoint;
 
             onPointUpdated: {
                 sidebar.updateIndividualInfo();

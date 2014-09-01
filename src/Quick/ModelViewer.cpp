@@ -9,14 +9,12 @@ namespace Quick {
 
         setFlag(QQuickItem::ItemHasContents);
 
-        _selectedPoint.viewport = nullptr;
-
         QObject::connect(this, &ModelViewer::childrenChanged, [=]() {
             _viewportArray = nullptr;
 
             //find viewportArray that is the nearest to the viewer, if many are present
             for (QQuickItem * child : childItems()) {
-                if (Viewport::ViewportArray * viewportArray = dynamic_cast<Viewport::ViewportArray *>(child)) {
+                if (Viewport::ViewportArray * viewportArray = qobject_cast<Viewport::ViewportArray *>(child)) {
                     if (_viewportArray) {
                         if (_viewportArray->z() < viewportArray->z()) {
                             _viewportArray = viewportArray;
@@ -45,43 +43,12 @@ namespace Quick {
         _fboSize = fboSize;
     }
 
-    QPointF ModelViewer::selectedPointPosition() {
-        return _selectedPoint.position;
-    }
-
-    QString ModelViewer::selectedPointName() {
-        return _selectedPoint.name;
-    }
-
-    void ModelViewer::setSelectedPointName(const QString & name) {
-        _selectedPoint.name = name;
-    }
-
-    QColor ModelViewer::selectedPointColor() {
-        return _selectedPoint.color;
-    }
-
-    void ModelViewer::setSelectedPointColor(const QColor & color) {
-        _selectedPoint.color = color;
-    }
-    
     QVariantMap ModelViewer::selectedPoint() {
-        QVariantMap map;
-        
-        map["name"] = _selectedPoint.name;
-        map["group"] = _selectedPoint.group;
-        map["color"] = _selectedPoint.color;
-        map["position"] = _selectedPoint.position;
-        
-        return map;
+        return _selectedPoint;
     }
     
     void ModelViewer::setSelectedPoint(const QVariantMap & selectedPoint) {
-        _selectedPoint.position = qvariant_cast<PointsInfo::Position2D>(selectedPoint["position"]);
-        
-        _selectedPoint.name = qvariant_cast<PointsInfo::Name>(selectedPoint["name"]);
-        _selectedPoint.group = qvariant_cast<PointsInfo::Group>(selectedPoint["group"]);
-        _selectedPoint.color = qvariant_cast<PointsInfo::Color>(selectedPoint["color"]);
+        _selectedPoint = selectedPoint;
     }
 
     QVector3D ModelViewer::rotation() {
@@ -263,14 +230,20 @@ namespace Quick {
     }
 
     void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {
-        if (!_selectedPoint.name.length()) {
+        if (_selectedPoint.isEmpty()) {
             return;
         }
 
-        _selectedPoint.position = QPointF(position.x(), position.y());
-        _selectedPoint.viewport = viewport;
+        PointsInfo::Point selectedPoint;
 
-        emit pointAdded(_selectedPoint);
+        selectedPoint.position = QPointF(position.x(), position.y());
+        selectedPoint.viewport = viewport;
+
+        selectedPoint.name = qvariant_cast<PointsInfo::Name>(_selectedPoint["name"]);
+        selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
+        selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
+
+        emit pointAdded(selectedPoint);
         update();
     }
 

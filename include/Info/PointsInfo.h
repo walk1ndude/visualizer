@@ -10,7 +10,7 @@ namespace PointsInfo {
     using Position3D = QVector3D;
     
     using Name = QString;
-    using Group = QString;
+    using Groups = QStringList;
     using Color = QColor;
     
     class Point {
@@ -19,7 +19,7 @@ namespace PointsInfo {
         Name name;
         Color color;
         
-        Group group;
+        Groups groups;
 
         Viewport::Viewport * viewport;
         
@@ -67,7 +67,7 @@ namespace PointsInfo {
         qreal radius;
         Color color;
         
-        Group group;
+        Groups groups;
 
         Viewport::Viewport * viewport;
 
@@ -83,12 +83,12 @@ namespace PointsInfo {
         ModelPoint(const Position3D & position,
                    const Color & color,
                    Viewport::Viewport * viewport,
-                   const Group & group = "",
+                   const Groups & groups = Groups(),
                    const qreal & radius = 0.5f) :
             position(position),
             radius(radius),
             color(color),
-            group(group),
+            groups(groups),
             viewport(viewport),
             _positionCalculated(false) {
 

@@ -10,7 +10,7 @@ namespace Viewport {
             _viewportArray.clear();
 
             for (QQuickItem * child : childItems()) {
-                if (Viewport * viewport = dynamic_cast<Viewport *>(child)) {
+                if (Viewport * viewport = qobject_cast<Viewport *>(child)) {
                     _viewportArray.append(viewport);
                 }
             }

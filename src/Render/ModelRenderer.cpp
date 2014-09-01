@@ -47,7 +47,7 @@ namespace Render {
     }
 
     void ModelRenderer::connectWithScene(Scene::AbstractScene * scene) {
-        Scene::ModelScene * modelScene = dynamic_cast<Scene::ModelScene *>(scene);
+        Scene::ModelScene * modelScene = qobject_cast<Scene::ModelScene *>(scene);
 
         QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged, Qt::DirectConnection);
         QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated, Qt::DirectConnection);
@@ -56,7 +56,7 @@ namespace Render {
     }
 
     void ModelRenderer::disconnectWithScene(Scene::AbstractScene * scene) {
-        Scene::ModelScene * modelScene = dynamic_cast<Scene::ModelScene *>(scene);
+        Scene::ModelScene * modelScene = qobject_cast<Scene::ModelScene *>(scene);
 
         QObject::disconnect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
         QObject::disconnect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
@@ -67,7 +67,7 @@ namespace Render {
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
         QMutexLocker locker(&_renderMutex);
 
-        if (Scene::ModelScene * selectedModelScene = dynamic_cast<Scene::ModelScene *>(selectedScene())) {
+        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
             selectedModelScene->addStlModel(buffers);
@@ -85,7 +85,7 @@ namespace Render {
     void ModelRenderer::addHeadModel(SliceInfo::Slices slices) {
         QMutexLocker locker(&_renderMutex);
 
-        if (Scene::ModelScene * selectModelScene = dynamic_cast<Scene::ModelScene *>(selectedScene())) {
+        if (Scene::ModelScene * selectModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
             selectModelScene->addHeadModel(slices);

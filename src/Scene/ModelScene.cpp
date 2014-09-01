@@ -12,10 +12,10 @@ namespace Scene {
             _materials.clear();
 
             for (QQuickItem * child : childItems()) {
-                if (LightInfo::LightSource * lightSource = dynamic_cast<LightInfo::LightSource *>(child)) {
+                if (LightInfo::LightSource * lightSource = qobject_cast<LightInfo::LightSource *>(child)) {
                     _lightSources.append(lightSource);
                 }
-                else if (MaterialInfo::Material * material = dynamic_cast<MaterialInfo::Material *>(child)) {
+                else if (MaterialInfo::Material * material = qobject_cast<MaterialInfo::Material *>(child)) {
                     _materials.append(material);
                 }
             }
@@ -42,19 +42,19 @@ namespace Scene {
     }
 
     void ModelScene::setXRange(const ModelInfo::ViewAxisRange & xRange) {
-        if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+        if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
             model->setViewAxisRange(xRange, ModelInfo::XAXIS);
         }
     }
 
     void ModelScene::setYRange(const ModelInfo::ViewAxisRange & yRange) {
-        if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+        if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
             model->setViewAxisRange(yRange, ModelInfo::YAXIS);
         }
     }
 
     void ModelScene::setZRange(const ModelInfo::ViewAxisRange & zRange) {
-        if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+        if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
             model->setViewAxisRange(zRange, ModelInfo::ZAXIS);
         }
     }
@@ -125,8 +125,8 @@ namespace Scene {
     void ModelScene::addPoint(const PointsInfo::Point & point) {
         if (!_selectedModel) {
             return;
-        } else if (Model::AbstractModelWithPoints * model = dynamic_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->addPoint(point.name, new PointsInfo::ModelPoint(QVector3D(point.position), point.color, point.viewport, 0));
+        } else if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
+            model->addPoint(point.name, new PointsInfo::ModelPoint(PointsInfo::Position3D(point.position), point.color, point.viewport, point.groups));
         }
     }
 
