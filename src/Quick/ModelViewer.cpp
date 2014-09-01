@@ -64,6 +64,25 @@ namespace Quick {
     void ModelViewer::setSelectedPointColor(const QColor & color) {
         _selectedPoint.color = color;
     }
+    
+    QVariantMap ModelViewer::selectedPoint() {
+        QVariantMap map;
+        
+        map["name"] = _selectedPoint.name;
+        map["group"] = _selectedPoint.group;
+        map["color"] = _selectedPoint.color;
+        map["position"] = _selectedPoint.position;
+        
+        return map;
+    }
+    
+    void ModelViewer::setSelectedPoint(const QVariantMap & selectedPoint) {
+        _selectedPoint.position = qvariant_cast<PointsInfo::Position2D>(selectedPoint["position"]);
+        
+        _selectedPoint.name = qvariant_cast<PointsInfo::Name>(selectedPoint["name"]);
+        _selectedPoint.group = qvariant_cast<PointsInfo::Group>(selectedPoint["group"]);
+        _selectedPoint.color = qvariant_cast<PointsInfo::Color>(selectedPoint["color"]);
+    }
 
     QVector3D ModelViewer::rotation() {
         return _rotation;
@@ -156,7 +175,7 @@ namespace Quick {
         emit modelSceneChanged();
     }
     
-    void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint &point) {
+    void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint & point) {
         QVariantMap map;
 
         map["name"] = point.name;

@@ -16,6 +16,8 @@ Rectangle {
     property string selectedPointName: "";
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
 
+    property variant selectedPoint: null;
+
     ListView {
         model: ListModel {
             id: listModel;
@@ -71,19 +73,34 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent;
-                onClicked: if (mouse.button === Qt.LeftButton) {
-                    listModel.get(index).selected = !selected;
+                onClicked: {
+                    function pointGroups(point) {
+                        var groups = PointsDict.pointsDict.groups;
+                        var pointGroups = [];
 
-                    if (listModel.prevIndex > -1) {
-                        listModel.setProperty(listModel.prevIndex, "selected", false);
+                        for (var group in groups) {
+                            if (groups[group] !== "") {
+
+                            }
+                        }
                     }
 
-                    listModel.prevIndex = listModel.prevIndex === index ? -1 : index;
+                    if (mouse.button === Qt.LeftButton) {
+                        listModel.get(index).selected = !selected;
 
-                    parent.color = selected ? itemColor : "white";
+                        if (listModel.prevIndex > -1) {
+                            listModel.setProperty(listModel.prevIndex, "selected", false);
+                        }
 
-                    measureGrid.selectedPointName = itemId;
-                    measureGrid.selectedPointColor = parent.color;
+                        listModel.prevIndex = listModel.prevIndex === index ? -1 : index;
+
+                        parent.color = selected ? itemColor : "white";
+
+                        measureGrid.selectedPoint = {
+                            "name" : itemId,
+                            "color" : parent.color
+                        };
+                    }
                 }
             }
         }

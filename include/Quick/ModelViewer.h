@@ -17,6 +17,8 @@ namespace Quick {
 
         Q_PROPERTY(QString selectedPointName READ selectedPointName WRITE setSelectedPointName)
         Q_PROPERTY(QColor selectedPointColor READ selectedPointColor WRITE setSelectedPointColor)
+        
+        Q_PROPERTY(QVariantMap selectedPoint READ selectedPoint WRITE setSelectedPoint)
 
         Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize)
 
@@ -49,6 +51,9 @@ namespace Quick {
         QString selectedPointName();
 
         QColor selectedPointColor();
+        
+        QVariantMap selectedPoint();
+        void setSelectedPoint(const QVariantMap & selectedPoint);
 
         QVector3D rotation();
 

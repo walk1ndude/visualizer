@@ -19,7 +19,10 @@ Item {
     property int maxHU: 65535;
 
     property string selectedPointName: "";
+    property string selectedPointGroup: "";
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
+
+    property variant selectedPoint: null;
 
     property int modelID: modelViewer.modelID;
 
@@ -46,6 +49,8 @@ Item {
 
         selectedPointColor: modelViewerEx.selectedPointColor;
         selectedPointName: modelViewerEx.selectedPointName;
+
+        selectedPoint: modelViewerEx.selectedPoint;
 
         onPointUpdated: {
             // update info about points

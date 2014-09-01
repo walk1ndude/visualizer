@@ -39,7 +39,7 @@ var pointsDict = {
                 }
             }
         },
-        "ungrouped" : {
+        "" : {
             "distances" : {
                 "header" : "Измеренные расстояния",
                 "point2point" : {
@@ -63,7 +63,6 @@ var measuresOrder = {
 
 var groupsOrder = {
     "IndividualInfo" : [
-        "bonvile",
-        "ungrouped"
+        "bonvile"
     ]
 }

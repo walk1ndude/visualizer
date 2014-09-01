@@ -6,21 +6,28 @@
 #include "Viewport/Viewport.h"
 
 namespace PointsInfo {
-    using PointName = QString;
+    using Position2D = QPointF;
+    using Position3D = QVector3D;
+    
+    using Name = QString;
+    using Group = QString;
+    using Color = QColor;
     
     class Point {
     public:
-        QPointF position;
-        PointName name;
-        QColor color;
+        Position2D position;
+        Name name;
+        Color color;
+        
+        Group group;
 
         Viewport::Viewport * viewport;
         
         Point() { }
         
-        Point(const QPointF & position,
-              const PointName & name,
-              const QColor & color,
+        Point(const Position2D & position,
+              const Name & name,
+              const Color & color,
               Viewport::Viewport * viewport) :
             position(position),
             name(name),
@@ -32,13 +39,13 @@ namespace PointsInfo {
     
     class UpdatedPoint {
     public:
-        QVector3D position;
-        PointName name;
+        Position3D position;
+        Name name;
 
         UpdatedPoint() { }
 
-        UpdatedPoint(const QVector3D & position,
-                     const PointName & name,
+        UpdatedPoint(const Position3D & position,
+                     const Name & name,
                      const uint & modelId) :
                     position(position),
                     name(name),
@@ -56,10 +63,11 @@ namespace PointsInfo {
 
     class ModelPoint {
     public:
-        QVector3D position;
+        Position3D position;
         qreal radius;
-        QColor color;
-        uint polygonId;
+        Color color;
+        
+        Group group;
 
         Viewport::Viewport * viewport;
 
@@ -68,19 +76,19 @@ namespace PointsInfo {
         }
 
         void positionCalculated(const QVector4D & position) {
-            this->position = QVector3D(position);
+            this->position = Position3D(position);
             _positionCalculated = true;
         }
 
-        ModelPoint(const QVector3D & position,
-                   const QColor & color,
+        ModelPoint(const Position3D & position,
+                   const Color & color,
                    Viewport::Viewport * viewport,
-                   const uint & polygonId = 0,
+                   const Group & group = "",
                    const qreal & radius = 0.5f) :
             position(position),
             radius(radius),
             color(color),
-            polygonId(polygonId),
+            group(group),
             viewport(viewport),
             _positionCalculated(false) {
 
@@ -90,7 +98,7 @@ namespace PointsInfo {
     };
 
 
-    class ModelPoints : public QHash<PointName, ModelPoint *> { };
+    class ModelPoints : public QHash<Name, ModelPoint *> { };
 }
 
 

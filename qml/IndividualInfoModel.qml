@@ -65,7 +65,10 @@ ListModel {
 
         var measures = PointsDict.pointsDict.measures;
         var groups = PointsDict.pointsDict.groups;
-        var groupOrder = PointsDict.groupsOrder.IndividualInfo;
+        var groupOrder = Array(PointsDict.groupsOrder.IndividualInfo);
+
+        // for ungrouped entity
+        groupOrder.push("");
 
         distUpdatedCount = 0;
 
@@ -76,7 +79,7 @@ ListModel {
                        "itemName" : group.name,
                        "itemText" : group.distances.header,
                        "subItems" : populateListElements(group.distances.point2point, measures),
-                       "grouped" : groupOrder[i] !== "ungrouped",
+                       "grouped" : groupOrder[i] !== "",
                        "elementHeight" : 0
                    });
         }
