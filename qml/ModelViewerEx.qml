@@ -22,7 +22,7 @@ Item {
     property string selectedPointGroup: "";
     property color selectedPointColor: Qt.rgba(0, 0, 0, 0);
 
-    property variant selectedPoint: null;
+    property variant selectedPoint: ({});
 
     property int modelID: modelViewer.modelID;
 

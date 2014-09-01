@@ -65,7 +65,7 @@ ListModel {
 
         var measures = PointsDict.pointsDict.measures;
         var groups = PointsDict.pointsDict.groups;
-        var groupOrder = Array(PointsDict.groupsOrder.IndividualInfo);
+        var groupOrder = PointsDict.groupsOrder.IndividualInfo.slice();
 
         // for ungrouped entity
         groupOrder.push("");

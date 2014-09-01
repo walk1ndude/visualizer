@@ -1,6 +1,7 @@
 import QtQuick 2.3
 
 import "../js/pointsdictionary.js" as PointsDict
+import "../js/helpers.js" as Helpers
 
 Rectangle {
     id: measureGrid;
@@ -36,6 +37,8 @@ Rectangle {
                                "itemColor" : measure.color,
                                "selected" : false
                            });
+
+                    Helpers.addInPointToGroup(measureOrder[i], PointsDict.pointsDict.groups);
                 }
             }
         }
@@ -74,17 +77,6 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent;
                 onClicked: {
-                    function pointGroups(point) {
-                        var groups = PointsDict.pointsDict.groups;
-                        var pointGroups = [];
-
-                        for (var group in groups) {
-                            if (groups[group] !== "") {
-
-                            }
-                        }
-                    }
-
                     if (mouse.button === Qt.LeftButton) {
                         listModel.get(index).selected = !selected;
 
@@ -98,8 +90,11 @@ Rectangle {
 
                         measureGrid.selectedPoint = {
                             "name" : itemId,
-                            "color" : parent.color
+                            "color" : parent.color,
+                            "groups" : Helpers.pointInGroups["itemId"]
                         };
+
+                        console.log(Helpers.pointInGroups[itemId])
                     }
                 }
             }
