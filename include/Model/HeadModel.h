@@ -76,7 +76,7 @@ namespace Model {
         void glStatesEnable();
         void glStatesDisable();
         
-        virtual void drawModelWithIndices();
+        virtual void drawModelWithoutIndices();
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;

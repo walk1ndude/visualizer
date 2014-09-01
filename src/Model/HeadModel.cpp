@@ -14,8 +14,7 @@ namespace Model {
 
     void HeadModel::init(const QVector3D & size) {
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
-        ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
-
+        
         GLfloat step = 2.0f / size.z();
         GLfloat stepTexture = 1.0f / size.z();
 
@@ -28,11 +27,6 @@ namespace Model {
             vertices->push_back(ModelInfo::VertexVT(1.0f, 1.0f, zCurrent, 1.0f, 0.0f, zCurrentTexture));
             vertices->push_back(ModelInfo::VertexVT(1.0f, -1.0f, zCurrent, 1.0f, 1.0f, zCurrentTexture));
 
-            indices->push_back(4 * i);
-            indices->push_back(4 * i + 1);
-            indices->push_back(4 * i + 2);
-            indices->push_back(4 * i + 3);
-
             zCurrent += step;
             zCurrentTexture += stepTexture;
         };
@@ -42,8 +36,7 @@ namespace Model {
         ModelInfo::BuffersVT buffers;
 
         buffers.vertices = ModelInfo::VerticesVTPointer(vertices);
-        buffers.indices = ModelInfo::IndicesPointer(indices);
-
+        
         fillBuffers<ModelInfo::BuffersVT>(buffers);
     }
 
@@ -55,8 +48,8 @@ namespace Model {
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()));
     }
     
-    void HeadModel::drawModelWithIndices() {
-        glDrawElements(GL_TRIANGLE_STRIP, indexCount(), GL_UNSIGNED_INT, 0);
+    void HeadModel::drawModelWithoutIndices() {
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount());
     }
 
     void HeadModel::glStatesEnable() {
