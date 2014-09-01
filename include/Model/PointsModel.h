@@ -7,7 +7,7 @@
 
 // extend vertex types, add type which stores x,y,z; r,g,b and polygon id
 namespace ModelInfo {
-    class VertexVCP {
+    class VertexVC {
     public:
         GLfloat x;
         GLfloat y;
@@ -15,35 +15,33 @@ namespace ModelInfo {
         GLfloat r;
         GLfloat g;
         GLfloat b;
-        GLfloat p;
 
-        VertexVCP() { }
-        VertexVCP(
+        VertexVC() { }
+        VertexVC(
                 const GLfloat x,
                 const GLfloat y,
                 const GLfloat z,
                 const GLfloat r,
                 const GLfloat g,
-                const GLfloat b,
-                const GLfloat p
+                const GLfloat b
                 ) :
             x(x), y(y), z(z),
-            r(r), g(g), b(b), p(p) {
+            r(r), g(g), b(b) {
         }
     };
 
-    using VerticesVCP = QVector<VertexVCP>;
-    using VerticesVCPPtr = VerticesVCP *;
+    using VerticesVC = QVector<VertexVC>;
+    using VerticesVCPtr = VerticesVC *;
 
-    using VerticesVCPPointer = QSharedPointer<VerticesVCP>;
+    using VerticesVCPointer = QSharedPointer<VerticesVC>;
 
-    class BuffersVCP : public BuffersV {
+    class BuffersVC : public BuffersV {
     public:
-        VerticesVCPPointer vertices;
+        VerticesVCPointer vertices;
 
-        BuffersVCP() { }
-        BuffersVCP(const VerticesVCPPointer & vertices,
-                   const IndicesPointer & indices) {
+        BuffersVC() { }
+        BuffersVC(const VerticesVCPointer & vertices,
+                  const IndicesPointer & indices) {
             this->vertices = vertices;
             this->indices = indices;
         }

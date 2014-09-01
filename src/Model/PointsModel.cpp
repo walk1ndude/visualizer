@@ -12,24 +12,24 @@ namespace Model {
         _modelPoints = modelPoints;
 
         if (updateNeeded()) {
-            ModelInfo::VerticesVCPPtr vertices = new ModelInfo::VerticesVCP;
+            ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
 
             for (const PointsInfo::ModelPoint * modelPoint : modelPoints) {
-                vertices->push_back(ModelInfo::VertexVCP(
-                                        modelPoint->position.x(),
-                                        modelPoint->position.y(),
-                                        modelPoint->position.z(),
-                                        modelPoint->color.redF(),
-                                        modelPoint->color.greenF(),
-                                        modelPoint->color.blueF(),
-                                        modelPoint->polygonId
-                                        ));
+                for (int i = 0; i != 3; ++ i) {
+                    vertices->push_back(ModelInfo::VertexVC(modelPoint->position.x(),
+                                                            modelPoint->position.y(),
+                                                            modelPoint->position.z(),
+                                                            modelPoint->color.redF(),
+                                                            modelPoint->color.greenF(),
+                                                            modelPoint->color.blueF()
+                                                            ));
+                }
             }
 
-            ModelInfo::BuffersVCP buffers;
-            buffers.vertices = ModelInfo::VerticesVCPPointer(vertices);
+            ModelInfo::BuffersVC buffers;
+            buffers.vertices = ModelInfo::VerticesVCPointer(vertices);
 
-            AbstractModel::fillBuffers<ModelInfo::BuffersVCP>(buffers, QOpenGLBuffer::DynamicDraw);
+            AbstractModel::fillBuffers<ModelInfo::BuffersVC>(buffers, QOpenGLBuffer::DynamicDraw);
         }
     }
 
@@ -43,7 +43,7 @@ namespace Model {
     }
     
     void PointsModel::drawModelWithoutIndices() {
-        glDrawArrays(GL_POINTS, 0, vertexCount());
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount());
     }
 
     void PointsModel::initShaderVariables(QOpenGLShaderProgram * program) {

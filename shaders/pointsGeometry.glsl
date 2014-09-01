@@ -1,5 +1,5 @@
 #version 410
-layout(points) in;
+layout(triangles) in;
 layout(triangle_strip, max_vertices = 24) out;
 
 #define HALF_SIDE 0.05f
@@ -19,7 +19,10 @@ void main(void) {
     const int sideXY = 0x285E31C7;
     const int sideZ = 0x00003D0B;
     
-    for(int i = 0; i != gl_in.length(); ++ i) {
+    int vertexCount = (gl_in[0].gl_Position == gl_in[1].gl_Position
+                       && gl_in[1].gl_Position == gl_in[2].gl_Position) ? 1 : gl_in.length();
+    
+    for(int i = 0; i != vertexCount; ++ i) {
         frag.fColor = vertices[i].vColor;
         
         for (int j = 0; j != 14; ++ j) {
@@ -34,6 +37,15 @@ void main(void) {
             EmitVertex();
         }
         
+        EndPrimitive();
+    }
+    
+    if (vertexCount > 1) {
+        for(int i = 0; i != vertexCount; ++ i) {
+            frag.fColor = vertices[i].vColor;
+            gl_Position = mvp * gl_in[i].gl_Position;
+            EmitVertex();
+        }
         EndPrimitive();
     }
 }
