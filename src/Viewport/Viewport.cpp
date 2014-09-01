@@ -154,12 +154,10 @@ namespace Viewport {
             return false;
         }
 
-        QVector4D projectionViewport = projection;//placeXYZAccordingToViewport(projection);
-
         QVector4D unprojectedPointVector = QVector4D(
-                    2.0f * projectionViewport.x() - 1.0f,
-                    2.0f * projectionViewport.y() - 1.0f,
-                    2.0f * projectionViewport.z() - 1.0f,
+                    2.0f * projection.x() - 1.0f,
+                    2.0f * projection.y() - 1.0f,
+                    2.0f * projection.z() - 1.0f,
                     1.0f);
 
         unprojectedPointVector = invVP.map(unprojectedPointVector);

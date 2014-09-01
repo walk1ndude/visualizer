@@ -14,7 +14,7 @@ function addInPointToGroup(name, groups) {
     var nameInGroups = [];
 
     for (var group in groups) {
-        if (group !== "") {
+        if (group !== "ungrouped") {
             var ptp = groups[group].distances.point2point;
             for (var point in ptp) {
                 var i = 0;
