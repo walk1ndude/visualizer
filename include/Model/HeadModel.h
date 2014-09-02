@@ -69,10 +69,11 @@ namespace Model {
         virtual void rotate(const QVector3D & rotation);
         
         virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
+        virtual QMatrix4x4 view(Viewport::Viewport * viewport);
 
     protected:
         void initShaderVariables(QOpenGLShaderProgram * program);
-        void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);
+        void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
         void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
 
         void glStatesEnable();

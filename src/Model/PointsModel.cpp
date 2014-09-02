@@ -105,6 +105,6 @@ namespace Model {
     }
 
     void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
-        program->setUniformValue(_shaderMVP, viewport->projection() * viewport->view() * parent()->model(viewport));
+        program->setUniformValue(_shaderMVP, projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
     }
 }

@@ -57,6 +57,10 @@ namespace Model {
         
         return model;
     }
+
+    QMatrix4x4 HeadModel::view(Viewport::Viewport * viewport) {
+        return viewport->viewVoxel();
+    }
     
     void HeadModel::drawModelWithoutIndices() {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount());
@@ -100,13 +104,11 @@ namespace Model {
         program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) {
-        QMatrix4x4 modelMatrix = viewPort->modelVoxel(model());
-
-        program->setUniformValue(_shaderView, viewPort->viewVoxel());
-        program->setUniformValue(_shaderModel, modelMatrix);
-        program->setUniformValue(_shaderProjection, viewPort->projection());
-        program->setUniformValue(_shaderNormalMatrix, QMatrix4x4((modelMatrix * viewPort->viewVoxel()).normalMatrix()));
+    void HeadModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+        program->setUniformValue(_shaderView, view(viewport));
+        program->setUniformValue(_shaderModel, model(viewport));
+        program->setUniformValue(_shaderProjection, projection(viewport));
+        program->setUniformValue(_shaderNormalMatrix, normalMatrix(viewport));
         program->setUniformValue(_shaderScale, _scaleM);
         program->setUniformValue(_shaderStep, _step);
     }

@@ -103,8 +103,19 @@ namespace Model {
         return _mMatrix;
     }
 
-    bool AbstractModel::checkDepthBuffer(Viewport::Viewport * viewPort) {
-        Q_UNUSED(viewPort);
+    QMatrix4x4 AbstractModel::view(Viewport::Viewport * viewport) {
+        return viewport->view();
+    }
+
+    QMatrix4x4 AbstractModel::projection(Viewport::Viewport * viewport) {
+        return viewport->projection();
+    }
+
+    QMatrix3x3 AbstractModel::normalMatrix(Viewport::Viewport * viewport) {
+        return (model(viewport) * view(viewport)).normalMatrix();
+    }
+
+    bool AbstractModel::checkDepthBuffer(Viewport::Viewport * ) {
         return false;
     }
 

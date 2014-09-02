@@ -97,6 +97,11 @@ namespace Model {
         }
 
         virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
+        virtual QMatrix4x4 view(Viewport::Viewport * viewport);
+        virtual QMatrix4x4 projection(Viewport::Viewport * viewport);
+
+        virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
+
         virtual void setParent(AbstractModel * parent) final;
 
         virtual void queueForUpdate() final;
