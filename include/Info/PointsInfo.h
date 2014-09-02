@@ -84,7 +84,7 @@ namespace PointsInfo {
                    const Color & color,
                    Viewport::Viewport * viewport,
                    const Groups & groups = Groups(),
-                   const qreal & radius = 0.5f) :
+                   const qreal & radius = 0.05f) :
             position(position),
             radius(radius),
             color(color),

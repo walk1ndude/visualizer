@@ -2,7 +2,7 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 75) out;
 
-#define HALF_SIDE 0.05f
+#define HALF_SIDE 0.01f
 
 in vData {
     highp vec4 vColor;
