@@ -120,10 +120,12 @@ namespace Model {
     }
 
     void AbstractModel::rotate(const QVector3D & rotation) {
-        _mMatrix.rotate(QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, normalizedAngle(rotation.x())) *
-                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, normalizedAngle(rotation.y())) *
-                        QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, normalizedAngle(rotation.z()))
-        );
+        QQuaternion rot = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, normalizedAngle(rotation.x())) *
+                          QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, normalizedAngle(rotation.y())) *
+                          QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, normalizedAngle(rotation.z()));
+
+        _rotation = rot * _rotation.conjugate();
+        _mMatrix.rotate(_rotation);
     }
 
     bool AbstractModel::bindShaderProgram() {

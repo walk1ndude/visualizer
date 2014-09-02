@@ -38,7 +38,7 @@ namespace Viewport {
                 lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
-                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f);
+                        QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f);
 
                 _text = "left";
                 break;

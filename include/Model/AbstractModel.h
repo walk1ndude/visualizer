@@ -167,6 +167,8 @@ namespace Model {
         AbstractModel * _parent;
         QList<AbstractModel *> _children;
 
+        QQuaternion _rotation;
+
         QMatrix4x4 _mMatrix;
 
         bool _updateNeeded;

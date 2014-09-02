@@ -23,7 +23,7 @@ Viewport {
     property real minimumZoom: 0.2;
     property real maximumZoom: 10.0;
 
-    property real rotationSpeed: 20.0;
+    property vector2d rotationSpeed: Qt.vector2d(width / 4, height / 4);
 
     x: boundingRect.x * parent.width;
     y: boundingRect.y * parent.height;
@@ -101,8 +101,8 @@ Viewport {
         onPositionChanged: {
             if (parent.projectionType == Viewport.PERSPECTIVE && rotating) {
                 parent.array.parent.rotation = Qt.vector3d(
-                            (parent.invertedYAxis ? 1 : -1) * (prevMouseY - mouseY) / parent.rotationSpeed,
-                            (prevMouseX - mouseX) / parent.rotationSpeed,
+                            (parent.invertedYAxis ? 1 : -1) * (prevMouseY - mouseY) / parent.rotationSpeed.y,
+                            (prevMouseX - mouseX) / parent.rotationSpeed.x,
                             0.0
                             );
             }
