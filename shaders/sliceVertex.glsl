@@ -1,6 +1,6 @@
 #version 410
-layout(location = 0) in highp vec3 vertex;
-layout(location = 1) in highp vec3 tex;
+layout(location = 0) in highp vec4 vertex;
+layout(location = 1) in highp vec4 tex;
 
 uniform highp mat4 projection;
 uniform highp mat4 model;
@@ -10,8 +10,8 @@ uniform highp mat4 scale;
 out vec4 fragPos;
 
 void main(void) {
-    gl_Position = projection * view * vec4(vertex, 1.0f);
+    gl_Position = projection * view * vertex;
 
-    vec3 texVec = vec3(0.5, 0.5, 0.5);
-    fragPos = scale * model * vec4(tex - texVec, 1.0f) + vec4(texVec, 1.0f);
+    vec4 texVec = vec4(0.5f, 0.5f, 0.5f, 0.0f);
+    fragPos = scale * model * (tex - texVec) + texVec;
 }

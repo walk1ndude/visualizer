@@ -3,6 +3,10 @@ uniform highp sampler2D points;
 
 uniform highp int pointsCount;
 
+uniform highp mat4 model;
+uniform highp mat4 view;
+uniform highp mat4 scale;
+
 struct Material {
     vec4 emissive;
     vec4 diffuse;
