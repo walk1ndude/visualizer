@@ -69,6 +69,10 @@ namespace Model {
                 }
             }
 
+            for (int i = 0; i < vertices->length(); ++ i) {
+                qDebug() << vertices->at(i).x << vertices->at(i).y << vertices->at(i).z;
+            }
+
             ModelInfo::BuffersVC buffers;
             buffers.vertices = ModelInfo::VerticesVCPointer(vertices);
 
