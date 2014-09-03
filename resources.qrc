@@ -10,7 +10,7 @@
         <file>cl/reconstructor.cl</file>
         <file>shaders/stlVertex.glsl</file>
         <file>shaders/stlFragment.glsl</file>
-        <file>qml/SideBar.qml</file>
+        <file>qml/Sidebar.qml</file>
         <file>qml/MeasureGrid.qml</file>
         <file>js/pointsdictionary.js</file>
         <file>js/sidebarcontent.js</file>
@@ -28,8 +28,7 @@
         <file>qml/ViewportEx.qml</file>
         <file>shaders/helpersFragment.glsl</file>
         <file>qml/Heading.qml</file>
-        <file>qml/Console.qml</file>
-        <file>qml/SideDockVertical.qml</file>
-        <file>qml/SideDockHorizontal.qml</file>
+        <file>qml/ConsoleDock.qml</file>
+        <file>qml/Sidedock.qml</file>
     </qresource>
 </RCC>

@@ -113,8 +113,9 @@ ApplicationWindow {
         }
     }
 
-    SideBar {
+    Sidebar {
         id: sidebar;
+
         anchors {
             left: modelRow.right;
             top: appWindow.top;
@@ -157,7 +158,7 @@ ApplicationWindow {
         onSlicesProcessed: modelViewer.drawSlices(slices);
     }
 
-    Console {
+    ConsoleDock {
         id: consoleDock;
 
         anchors {

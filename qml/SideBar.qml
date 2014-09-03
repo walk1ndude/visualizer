@@ -5,12 +5,14 @@ import QtQuick.Controls.Styles 1.2
 import "../js/sidebarcontent.js" as SideBar
 import "../js/helpers.js" as Helpers
 
-SideDockVertical {
+Sidedock {
     id: sidebar;
 
     color: "#FFFFFF";
 
     heading: "Sidebar";
+
+    state: "vertical";
 
     property vector2d xRange: Qt.vector2d(0, 0);
     property vector2d yRange: Qt.vector2d(0, 0);

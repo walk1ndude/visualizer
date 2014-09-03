@@ -124,8 +124,9 @@ namespace Model {
                           QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, normalizedAngle(rotation.y())) *
                           QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, normalizedAngle(rotation.z()));
 
-        _rotation = rot * _rotation.conjugate();
-        _mMatrix.rotate(_rotation);
+            _mMatrix.rotate(_rotation.conjugate() * rot);
+
+            _rotation = rot;
     }
 
     bool AbstractModel::bindShaderProgram() {
