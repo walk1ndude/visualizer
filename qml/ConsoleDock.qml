@@ -14,8 +14,6 @@ Rectangle {
 
         color: "#880000FF";
 
-        state: "horizontal";
-
         ConsoleLogger {
             id: logger;
 

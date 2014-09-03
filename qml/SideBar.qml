@@ -13,6 +13,7 @@ Sidedock {
     heading: "Sidebar";
 
     state: "vertical";
+    inverseFolding: false;
 
     property vector2d xRange: Qt.vector2d(0, 0);
     property vector2d yRange: Qt.vector2d(0, 0);

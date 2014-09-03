@@ -7,6 +7,9 @@ Rectangle {
     property string heading: "";
     property variant head: heading;
 
+    // means where heading goes: below or above dock content, true - below
+    property bool inverseFolding: true;
+
     property real dX: 300;
     property real dY: 300;
 
@@ -59,6 +62,8 @@ Rectangle {
         }
     ]
 
+    state: "horizontal";
+
     Translate {
         id: translateTo;
         x: - width / 2;
@@ -97,7 +102,7 @@ Rectangle {
         function recalcWidth() {
             parent.width = collapsed ? height : height + dX;
 
-            x = parentX < parent.x ? height - parent.width : 0;
+            x = parentX < parent.x ? (inverseFolding  ? 1 : -1) * (parent.width - height) : 0;
 
             parentX = parent.x;
         }
@@ -105,19 +110,14 @@ Rectangle {
         function recalcHeight() {
             parent.height = collapsed ? height : height + dY;
 
-            parent.y = parentY <= parent.y ? (height - parent.height) : 0;
-            y = parent.height - height;
+            parent.y = parentY <= parent.y ? (inverseFolding  ? 1 : -1) * (height - parent.height) : 0;
+            y = (inverseFolding  ? 1 : -1) * (parent.height - height);
 
             parentY = parent.y;
         }
 
         onCollapsedChanged: {
-            if (parent.state === "horizontal") {
-                recalcHeight();
-            }
-            else {
-                recalcWidth();
-            }
+            parent.state === "horizontal" ? recalcHeight() : recalcWidth();
         }
     }
 
