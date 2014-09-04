@@ -74,6 +74,8 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderVertex;
         ShaderInfo::ShaderVariable _shaderColor;
 
+        ShaderInfo::ShaderVariable _shaderViewportSize;
+
         ShaderInfo::ShaderVariable _shaderMVP;
     };
 }

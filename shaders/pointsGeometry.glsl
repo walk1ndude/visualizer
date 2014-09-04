@@ -1,8 +1,8 @@
 #version 410
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 75) out;
+layout(triangle_strip, max_vertices = 15) out;
 
-#define HALF_SIDE 0.01f
+#define HALF_SIDE 16.0f
 
 in vData {
     highp vec4 vColor;
@@ -10,28 +10,27 @@ in vData {
 
 uniform highp mat4 mvp;
 
+uniform mediump vec4 viewportSize;
+
 out fData {
     highp vec4 fColor;
+    flat int isBillboard;
 } frag;
 
-void drawCube(const int i);
+void drawMarker(const int i);
 
-void drawCube(const int i) {
-    // 14 vertices for cube
-    const int sideXY = 0x285E31C7;
-    const int sideZ = 0x00003D0B;
-
+void drawMarker(const int i) {
     frag.fColor = vertices[i].vColor;
+    frag.isBillboard = 1;
 
-    for (int j = 0; j != 14; ++ j) {
-        gl_Position = mvp * (
-                             gl_in[i].gl_Position +
-                             vec4(
-                                  (bool(sideXY & (1 << j)) ? 1 : -1) * HALF_SIDE,
-                                  (bool(sideXY & (1 << (j + 16))) ? 1 : -1) * HALF_SIDE,
-                                  (bool(sideZ & (1 << j)) ? 1 : -1) * HALF_SIDE,
-                                  0.0f)
-                             );
+    vec4 vertex;
+
+    for (int j = 0; j != 4; ++ j) {
+        vertex = mvp * gl_in[i].gl_Position;
+        gl_Position = vertex
+                + vec4((j / 2 == 1 ? 1 : -1) * HALF_SIDE / viewportSize.x * vertex.w,
+                       (j % 2 == 0 ? -1 : 1) * HALF_SIDE / viewportSize.y * vertex.w,
+                       0.0f, 0.0f);
         EmitVertex();
     }
 
@@ -42,15 +41,20 @@ void main(void) {
     int i = 0;
     int l = gl_in.length();
 
-    drawCube(i);
+    bool needToDraw = true;
 
-    while (i < l - 1 && gl_in[i].gl_Position != gl_in[i + 1].gl_Position) {
-        drawCube(++ i);
+    while (needToDraw) {
+        drawMarker(i);
+        needToDraw = (i < l - 1 && gl_in[i].gl_Position != gl_in[i + 1].gl_Position);
+
+        ++ i;
     }
 
-    if (i == l - 1) {
+    if (i == l) {
         for (int k = 0; k != gl_in.length(); ++ k) {
             frag.fColor = vertices[k].vColor;
+            frag.isBillboard = 0;
+
             gl_Position = mvp * gl_in[k].gl_Position;
             EmitVertex();
         }

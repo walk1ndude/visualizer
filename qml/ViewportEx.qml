@@ -23,7 +23,7 @@ Viewport {
     property real minimumZoom: 0.2;
     property real maximumZoom: 10.0;
 
-    property vector2d rotationSpeed: Qt.vector2d(width / 100, height / 100);
+    property vector2d rotationSpeed: Qt.vector2d(width / 10, height / 10);
 
     x: boundingRect.x * parent.width;
     y: boundingRect.y * parent.height;

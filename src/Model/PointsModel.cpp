@@ -94,6 +94,8 @@ namespace Model {
         _shaderColor = program->attributeLocation("color");
 
         _shaderMVP = program->uniformLocation("mvp");
+
+        _shaderViewportSize = program->uniformLocation("viewportSize");
     }
 
     void PointsModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
@@ -106,5 +108,7 @@ namespace Model {
 
     void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
         program->setUniformValue(_shaderMVP, projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
+
+        program->setUniformValue(_shaderViewportSize, QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
     }
 }
