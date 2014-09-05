@@ -1,8 +1,13 @@
 #version 410
 in fData {
     highp vec4 fColor;
+    highp vec2 fPos;
     flat int isBillboard;
 } frag;
+
+uniform mediump vec4 viewportSize;
+
+const highp vec2 center = vec2(0.5f, 0.5f);
 
 out highp vec4 fragColor;
 
@@ -10,17 +15,15 @@ void main(void) {
     fragColor = frag.fColor;
 
     if (frag.isBillboard == 1) {
-        vec3 N;
+        highp float dist = distance(center, frag.fPos);
 
-        N.xy = gl_PointCoord * 2.0 - vec2(1.0);
-        float mag = dot(N.xy, N.xy);
+        lowp float delta = 0.001f;
+        highp float alpha = smoothstep(0.4f - delta, 0.45f, dist);
 
-        if (mag > 1.0) {
-            //discard; // kill pixels outside circle
+        fragColor = mix(fragColor, vec4(0.0f), alpha);
+
+        if (fragColor.r < 0.1f && fragColor.g < 0.1f && fragColor.b < 0.1f) {
+            discard;
         }
-
-        N.z = sqrt(1.0 - mag);
-
-        fragColor *= vec4(1.0f);//max(0.0, dot(N, N));
     }
 }

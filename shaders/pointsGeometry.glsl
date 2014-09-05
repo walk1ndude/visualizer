@@ -14,6 +14,7 @@ uniform mediump vec4 viewportSize;
 
 out fData {
     highp vec4 fColor;
+    highp vec2 fPos;
     flat int isBillboard;
 } frag;
 
@@ -27,10 +28,21 @@ void drawMarker(const int i) {
 
     for (int j = 0; j != 4; ++ j) {
         vertex = mvp * gl_in[i].gl_Position;
-        gl_Position = vertex
-                + vec4((j / 2 == 1 ? 1 : -1) * HALF_SIDE / viewportSize.x * vertex.w,
-                       (j % 2 == 0 ? -1 : 1) * HALF_SIDE / viewportSize.y * vertex.w,
-                       0.0f, 0.0f);
+
+        frag.fPos = vec2(
+                    (j / 2 == 1 ? 1 : -1),
+                    (j % 2 == 0 ? -1 : 1)
+                    );
+
+        lowp float radius = max(HALF_SIDE / viewportSize.x * vertex.w,
+                                HALF_SIDE / viewportSize.y * vertex.w);
+
+        gl_Position = vertex + vec4(frag.fPos.x * radius, frag.fPos.y * radius,
+                                    0.0f, 0.0f);
+
+        frag.fPos *= 0.5f;
+        frag.fPos += 0.5;
+
         EmitVertex();
     }
 
