@@ -48,9 +48,9 @@ namespace Quick {
 
         qreal zoomFactor();
 
-        ModelInfo::ViewAxisRange xRange();
-        ModelInfo::ViewAxisRange yRange();
-        ModelInfo::ViewAxisRange zRange();
+        ViewRangeInfo::ViewAxisRange xRange();
+        ViewRangeInfo::ViewAxisRange yRange();
+        ViewRangeInfo::ViewAxisRange zRange();
 
         QVector2D huRange();
 
@@ -81,9 +81,9 @@ namespace Quick {
 
         QSize _fboSize;
 
-        ModelInfo::ViewAxisRange _xRange;
-        ModelInfo::ViewAxisRange _yRange;
-        ModelInfo::ViewAxisRange _zRange;
+        ViewRangeInfo::ViewAxisRange _xRange;
+        ViewRangeInfo::ViewAxisRange _yRange;
+        ViewRangeInfo::ViewAxisRange _zRange;
 
         QVector2D _huRange;
 
@@ -100,9 +100,9 @@ namespace Quick {
         void rotationChanged(const QVector3D & rotation);
         void zoomFactorChanged(const qreal & zoomFactor);
 
-        void xRangeChanged(const ModelInfo::ViewAxisRange & xRange);
-        void yRangeChanged(const ModelInfo::ViewAxisRange & yRange);
-        void zRangeChanged(const ModelInfo::ViewAxisRange & zRange);
+        void xRangeChanged(const ViewRangeInfo::ViewAxisRange & xRange);
+        void yRangeChanged(const ViewRangeInfo::ViewAxisRange & yRange);
+        void zRangeChanged(const ViewRangeInfo::ViewAxisRange & zRange);
 
         void viewportArrayChanged();
 
@@ -139,9 +139,9 @@ namespace Quick {
 
         void setZoomFactor(const qreal & zoomFactor);
 
-        void setXRange(const ModelInfo::ViewAxisRange & xRange);
-        void setYRange(const ModelInfo::ViewAxisRange & yRange);
-        void setZRange(const ModelInfo::ViewAxisRange & zRange);
+        void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
+        void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
+        void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
         void sethuRange(const QVector2D & huRange);
 

@@ -7,60 +7,7 @@
 #include "Model/PointsModel.h"
 
 #include "Info/PointsInfo.h"
-
-namespace ModelInfo {
-    using ViewAxisRange = QVector2D;
-
-    enum ViewAxis {
-        XAXIS,
-        YAXIS,
-        ZAXIS
-    };
-
-    class ViewRange {
-    public:
-        ViewAxisRange xRange;
-        ViewAxisRange yRange;
-        ViewAxisRange zRange;
-
-        ViewRange(const ViewAxisRange & xRange,
-                  const ViewAxisRange & yRange,
-                  const ViewAxisRange & zRange,
-                  QOpenGLShaderProgram * program,
-                  const ShaderInfo::ShaderVariablesNames & shaderVariables) :
-            xRange(xRange), yRange(yRange), zRange(zRange),
-            shaderXRange(program->uniformLocation(shaderVariables.at(0))),
-            shaderYRange(program->uniformLocation(shaderVariables.at(1))),
-            shaderZRange(program->uniformLocation(shaderVariables.at(2))) {
-        }
-
-        void setUniformValue(QOpenGLShaderProgram * program) {
-            program->setUniformValue(shaderXRange, xRange);
-            program->setUniformValue(shaderYRange, yRange);
-            program->setUniformValue(shaderZRange, zRange);
-        }
-
-        void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
-                               const ModelInfo::ViewAxis viewAxis) {
-            switch (viewAxis) {
-            case ModelInfo::XAXIS:
-                xRange = viewAxisRange;
-                break;
-            case ModelInfo::YAXIS:
-                yRange = viewAxisRange;
-                break;
-            case ModelInfo::ZAXIS:
-                zRange = viewAxisRange;
-                break;
-            }
-        }
-
-    private:
-        ShaderInfo::ShaderVariable shaderXRange;
-        ShaderInfo::ShaderVariable shaderYRange;
-        ShaderInfo::ShaderVariable shaderZRange;
-    };
-}
+#include "Info/ViewRangeInfo.h"
 
 namespace Model {
     class AbstractModelWithPoints : public AbstractModel {
@@ -68,13 +15,13 @@ namespace Model {
     public:
         virtual void addPoint(const QString & name, PointsInfo::ModelPoint * point);
 
-        virtual void setViewRange(const ModelInfo::ViewAxisRange & xRange,
-                                  const ModelInfo::ViewAxisRange & yRange,
-                                  const ModelInfo::ViewAxisRange & zRange,
+        virtual void setViewRange(const ViewRangeInfo::ViewAxisRange & xRange,
+                                  const ViewRangeInfo::ViewAxisRange & yRange,
+                                  const ViewRangeInfo::ViewAxisRange & zRange,
                                   const ShaderInfo::ShaderVariablesNames & shaderVariables);
 
-        virtual void setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
-                                      const ModelInfo::ViewAxis viewAxis = ModelInfo::XAXIS);
+        virtual void setViewAxisRange(const ViewRangeInfo::ViewAxisRange & viewAxisRange,
+                                      const ViewRangeInfo::ViewAxis viewAxis = ViewRangeInfo::XAXIS);
 
         virtual void processChildren() final;
 
@@ -104,7 +51,7 @@ namespace Model {
 
         PointsInfo::ModelPoints _modelPoints;
 
-        ModelInfo::ViewRange * _viewRange;
+        ViewRangeInfo::ViewRange * _viewRange;
 
         QOpenGLTexture * _pointsTexture;
 

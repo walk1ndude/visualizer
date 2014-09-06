@@ -31,17 +31,17 @@ namespace Render {
         emit needToRedraw();
     }
 
-    void ModelRenderer::setXRange(const ModelInfo::ViewAxisRange & xRange) {
+    void ModelRenderer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
         selectedScene()->setXRange(xRange);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setYRange(const ModelInfo::ViewAxisRange & yRange) {
+    void ModelRenderer::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
         selectedScene()->setYRange(yRange);
         emit needToRedraw();
     }
 
-    void ModelRenderer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
+    void ModelRenderer::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
         selectedScene()->setZRange(zRange);
         emit needToRedraw();
     }

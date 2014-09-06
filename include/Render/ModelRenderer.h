@@ -37,9 +37,9 @@ namespace Render {
         void setRotation(const QVector3D & rotation);
 
         // to clip selected model
-        void setXRange(const ModelInfo::ViewAxisRange & xRange);
-        void setYRange(const ModelInfo::ViewAxisRange & yRange);
-        void setZRange(const ModelInfo::ViewAxisRange & zRange);
+        void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
+        void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
+        void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
         void addPoint(const PointsInfo::Point & point);
     };

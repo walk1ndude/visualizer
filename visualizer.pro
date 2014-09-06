@@ -94,7 +94,7 @@ SOURCES +=  src/main.cpp \
             src/Scene/AbstractScene.cpp \
             src/Viewport/Viewport.cpp \
             src/Viewport/ViewportArray.cpp \
-    src/Quick/ConsoleLogger.cpp
+            src/Quick/ConsoleLogger.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -123,7 +123,11 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/AbstractModelWithPoints.h \
             include/Viewport/Viewport.h \
             include/Viewport/ViewportArray.h \
-    include/Quick/TextureNode.h \
-    include/Quick/ConsoleLogger.h
+            include/Quick/TextureNode.h \
+            include/Quick/ConsoleLogger.h \
+            include/Model/VertexVC.h \
+            include/Model/VertexVN.h \
+            include/Model/VertexVT.h \
+            include/Info/ViewRangeInfo.h
 
 RESOURCES += resources.qrc

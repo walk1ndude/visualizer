@@ -41,21 +41,21 @@ namespace Scene {
         }
     }
 
-    void ModelScene::setXRange(const ModelInfo::ViewAxisRange & xRange) {
+    void ModelScene::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
         if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->setViewAxisRange(xRange, ModelInfo::XAXIS);
+            model->setViewAxisRange(xRange, ViewRangeInfo::XAXIS);
         }
     }
 
-    void ModelScene::setYRange(const ModelInfo::ViewAxisRange & yRange) {
+    void ModelScene::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
         if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->setViewAxisRange(yRange, ModelInfo::YAXIS);
+            model->setViewAxisRange(yRange, ViewRangeInfo::YAXIS);
         }
     }
 
-    void ModelScene::setZRange(const ModelInfo::ViewAxisRange & zRange) {
+    void ModelScene::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
         if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->setViewAxisRange(zRange, ModelInfo::ZAXIS);
+            model->setViewAxisRange(zRange, ViewRangeInfo::ZAXIS);
         }
     }
 
@@ -149,9 +149,9 @@ namespace Scene {
                            ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
                            "material.specular" << "material.shininess");
 
-        model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ModelInfo::ViewAxisRange(-1.0, 1.0),
+        model->setViewRange(ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
+                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
+                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
         QObject::connect(model, &Model::StlModel::pointUpdated, this, &Scene::AbstractScene::pointUpdated, Qt::DirectConnection);
@@ -184,9 +184,9 @@ namespace Scene {
         model->addTexture(_textures.at(0),
                           ShaderInfo::ShaderVariablesNames() << "texHead");
 
-        model->setViewRange(ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ModelInfo::ViewAxisRange(-1.0, 1.0),
-                            ModelInfo::ViewAxisRange(-1.0, 1.0),
+        model->setViewRange(ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
+                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
+                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
         

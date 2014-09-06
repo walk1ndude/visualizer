@@ -26,9 +26,9 @@ namespace Scene {
         virtual QRect screenSaveRect() = 0;
 
         // to clip selected model
-        virtual void setXRange(const ModelInfo::ViewAxisRange & xRange) = 0;
-        virtual void setYRange(const ModelInfo::ViewAxisRange & yRange) = 0;
-        virtual void setZRange(const ModelInfo::ViewAxisRange & zRange) = 0;
+        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange) = 0;
+        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange) = 0;
+        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange) = 0;
         
         virtual void addPoint(const PointsInfo::Point & point) = 0;
 

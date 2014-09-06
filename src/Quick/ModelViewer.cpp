@@ -69,29 +69,29 @@ namespace Quick {
         emit zoomFactorChanged(_zoomFactor);
     }
 
-    ModelInfo::ViewAxisRange ModelViewer::xRange() {
+    ViewRangeInfo::ViewAxisRange ModelViewer::xRange() {
         return _xRange;
     }
 
-    void ModelViewer::setXRange(const ModelInfo::ViewAxisRange & xRange) {
+    void ModelViewer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
         _xRange = xRange;
         emit xRangeChanged(_xRange);
     }
 
-    ModelInfo::ViewAxisRange ModelViewer::yRange() {
+    ViewRangeInfo::ViewAxisRange ModelViewer::yRange() {
         return _yRange;
     }
 
-    void ModelViewer::setYRange(const ModelInfo::ViewAxisRange & yRange) {
+    void ModelViewer::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
         _yRange = yRange;
         emit yRangeChanged(_yRange);
     }
 
-    ModelInfo::ViewAxisRange ModelViewer::zRange() {
+    ViewRangeInfo::ViewAxisRange ModelViewer::zRange() {
         return _zRange;
     }
 
-    void ModelViewer::setZRange(const ModelInfo::ViewAxisRange & zRange) {
+    void ModelViewer::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
         _zRange = zRange;
         emit zRangeChanged(_zRange);
     }

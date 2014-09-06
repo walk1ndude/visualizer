@@ -34,9 +34,9 @@ namespace Scene {
         virtual void setRotation(const QVector3D & rotation);
 
         // to clip selected model
-        virtual void setXRange(const ModelInfo::ViewAxisRange & xRange);
-        virtual void setYRange(const ModelInfo::ViewAxisRange & yRange);
-        virtual void setZRange(const ModelInfo::ViewAxisRange & zRange);
+        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
+        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
+        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
         virtual void addPoint(const PointsInfo::Point & point);
 

@@ -108,19 +108,19 @@ namespace Model {
         return updateNeeded;
     }
 
-    void AbstractModelWithPoints::setViewAxisRange(const ModelInfo::ViewAxisRange & viewAxisRange,
-                                                   const ModelInfo::ViewAxis viewAxis) {
+    void AbstractModelWithPoints::setViewAxisRange(const ViewRangeInfo::ViewAxisRange & viewAxisRange,
+                                                   const ViewRangeInfo::ViewAxis viewAxis) {
         _viewRange->setViewAxisRange(viewAxisRange, viewAxis);
     }
 
-    void AbstractModelWithPoints::setViewRange(const ModelInfo::ViewAxisRange & xRange,
-                                               const ModelInfo::ViewAxisRange & yRange,
-                                               const ModelInfo::ViewAxisRange & zRange,
+    void AbstractModelWithPoints::setViewRange(const ViewRangeInfo::ViewAxisRange & xRange,
+                                               const ViewRangeInfo::ViewAxisRange & yRange,
+                                               const ViewRangeInfo::ViewAxisRange & zRange,
                                                const ShaderInfo::ShaderVariablesNames & shaderVariables) {
         QMutexLocker locker(&_modelMutex);
 
         if (program()) {
-            _viewRange = new ModelInfo::ViewRange(xRange, yRange, zRange,
+            _viewRange = new ViewRangeInfo::ViewRange(xRange, yRange, zRange,
                                                   program(), shaderVariables);
         }
         else {
