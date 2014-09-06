@@ -49,8 +49,9 @@ unix:!macx {
 }
 
 win32 {
-    INCLUDEPATH += "C:\Program Files\OpenCV_249\build\include" \
-                   C:\GDCM\gdcm\include
+    INCLUDEPATH += "C:\opencv\build\include" \
+                   "C:\Program Files (x86)\GDCM 2.4\include\gdcm-2.4" \
+                   "C:\Program Files (x86)\AMD APP SDK\2.9-1\include"
 
     !contains(QMAKE_HOST.arch, x86_64) {
             QMAKE_LFLAGS *= /MACHINE:X86
@@ -61,8 +62,8 @@ win32 {
         }
     }
 
-    LIBS += -L"C:\GDCM\gdcm\bin\MinSizeRel" \
-            -L"C:\Program Files\OpenCV_249\build\x86\vc12\lib"
+    LIBS += -L"C:\GDCM\build\bin\Debug" \
+            -L"C:\opencv\build\x64\vc12\lib"
 
     LIBS += -lopencv_core249 \
             -lopencv_highgui249 \
