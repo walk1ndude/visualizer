@@ -26,7 +26,7 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE :
-                perspective(60.0f, 1.0f, 0.0001f, 3.0f);
+                perspective(60.0f, 1.0f, 0.0001f, 5.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);

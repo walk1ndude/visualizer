@@ -1,19 +1,8 @@
 #include "Model/AbstractModel.h"
 
+#include <cmath>
+
 static int modelNumber = 0;
-
-static float normalizedAngle(const float & angle) {
-    float normalized = angle;
-
-    while (normalized < 0.0f) {
-        normalized += 360.0f;
-    }
-    while (normalized > 360.0f) {
-        normalized -= 360.0f;
-    }
-
-    return normalized;
-}
 
 namespace Model {
     AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
@@ -100,7 +89,39 @@ namespace Model {
     }
 
     QMatrix4x4 AbstractModel::model(Viewport::Viewport * ) {
-        return _mMatrix;
+        QMatrix4x4 mMatrix;
+        mMatrix.translate(_position);
+        mMatrix.rotate(_orientation);
+
+        return mMatrix;
+    }
+
+    QVector3D AbstractModel::orientationEuler() {
+        qreal q1 = _orientation.scalar();
+        qreal q2 = _orientation.x();
+        qreal q3 = _orientation.y();
+        qreal q4 = _orientation.z();
+
+        qreal q13 = q1 * q3;
+        qreal q24 = q2 * q4;
+        qreal q14 = q1 * q4;
+        qreal q23 = q2 * q3;
+
+        return QVector3D(atan2(q13 + q24, q14 - q23),
+                         acos(-q1 * q1 - q2 * q2 + q3 * q3 + q4 * q4),
+                         atan2(q13 - q24, q23 + q14));
+    }
+
+    QQuaternion AbstractModel::orientationQuat() {
+        return _orientation;
+    }
+
+    QVector3D AbstractModel::scale() {
+        return _scale;
+    }
+
+    QVector3D AbstractModel::position() {
+        return _position;
     }
 
     QMatrix4x4 AbstractModel::view(Viewport::Viewport * viewport) {
@@ -115,20 +136,35 @@ namespace Model {
         return (model(viewport) * view(viewport)).normalMatrix();
     }
 
+    QMatrix4x4 AbstractModel::scaleMatrix() {
+        return _scaleM;
+    }
+
     bool AbstractModel::checkDepthBuffer(Viewport::Viewport * ) {
         return false;
     }
 
-    void AbstractModel::rotate(const QVector3D & rotation) {
-        _rotation.setX(normalizedAngle(_rotation.x() + 8 * rotation.x()));
-        _rotation.setY(normalizedAngle(_rotation.y() + 8 * rotation.y()));
-        _rotation.setZ(normalizedAngle(_rotation.z() + 8 * rotation.z()));
+    void AbstractModel::translate(const QVector3D & translation) {
+        _position += translation;
+    }
 
-        QQuaternion rot = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rotation.x() / 16.0f) *
-                          QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() / 16.0f) *
-                          QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() / 16.0f);
+    void AbstractModel::scale(const QVector3D & scale) {
+        if (_scale.isNull()) {
+            _scale = scale;
+        }
+        else {
+            _scale *= scale;
+        }
 
-        _mMatrix.rotate(rot);
+        _scaleM.scale(_scale);
+    }
+
+    void AbstractModel::rotate(const QVector3D & rotation, const qreal & speed) {
+        QQuaternion rot = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rotation.x() * speed) *
+               QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() * speed) *
+               QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed);
+
+        _orientation *= rot;
     }
 
     bool AbstractModel::bindShaderProgram() {
@@ -191,12 +227,7 @@ namespace Model {
             
             _vao.bind();
             
-            if (_indexCount) {
-                drawModelWithIndices();
-            }
-            else {
-                drawModelWithoutIndices();
-            }
+            drawingRoutine();
             
             glFinish();
             _vao.release();
@@ -207,12 +238,13 @@ namespace Model {
         }
     }
 
-    void AbstractModel::drawModelWithIndices() {
-        glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
-    }
-
-    void AbstractModel::drawModelWithoutIndices() {
-        glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
+    void AbstractModel::drawingRoutine() {
+        if (_indexCount) {
+            glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
+        }
+        else {
+            glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
+        }
     }
 
     void AbstractModel::setShaderVariables() {

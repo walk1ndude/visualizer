@@ -2,7 +2,7 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 15) out;
 
-#define HALF_SIDE 16.0f
+#define HALF_SIDE 12.0f
 
 in vData {
     highp vec4 vColor;
@@ -25,6 +25,7 @@ void drawMarker(const int i) {
     frag.isBillboard = 1;
 
     vec4 vertex;
+    float radius;
 
     for (int j = 0; j != 4; ++ j) {
         vertex = mvp * gl_in[i].gl_Position;
@@ -34,8 +35,8 @@ void drawMarker(const int i) {
                     (j % 2 == 0 ? -1 : 1)
                     );
 
-        lowp float radius = max(HALF_SIDE / viewportSize.x * vertex.w,
-                                HALF_SIDE / viewportSize.y * vertex.w);
+        radius = max(HALF_SIDE / viewportSize.x * vertex.w,
+                     HALF_SIDE / viewportSize.y * vertex.w);
 
         gl_Position = vertex + vec4(frag.fPos.x * radius, frag.fPos.y * radius,
                                     0.0f, 0.0f);

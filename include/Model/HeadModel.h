@@ -64,9 +64,7 @@ namespace Model {
 
         void init(const QVector3D & size);
 
-        void scale(const QVector3D & scale);
-
-        virtual void rotate(const QVector3D & rotation);
+        virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         
         virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
         virtual QMatrix4x4 view(Viewport::Viewport * viewport);
@@ -79,7 +77,7 @@ namespace Model {
         void glStatesEnable();
         void glStatesDisable();
         
-        virtual void drawModelWithoutIndices();
+        virtual void drawingRoutine();
 
     private:
         ShaderInfo::ShaderVariable _shaderVertex;
@@ -93,8 +91,6 @@ namespace Model {
         ShaderInfo::ShaderVariable _shaderStep;
 
         PointsInfo::ModelPoints _facePoints;
-        
-        QMatrix4x4 _scaleM;
 
         QVector3D _step;
     };

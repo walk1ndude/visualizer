@@ -43,7 +43,7 @@ Rectangle {
 
             visible: !consoleOutput.head.collapsed;
 
-            clip: true
+            clip: true;
 
             function ensureVisible(r) {
                 if (contentX >= r.x)

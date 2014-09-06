@@ -40,12 +40,8 @@ namespace Model {
         fillBuffers<ModelInfo::BuffersVT>(buffers);
     }
 
-    void HeadModel::scale(const QVector3D & scale) {
-        _scaleM.scale(scale);
-    }
-
-    void HeadModel::rotate(const QVector3D & rotation) {
-        AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()));
+    void HeadModel::rotate(const QVector3D & rotation, const qreal & speed) {
+        AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()), speed);
     }
     
     QMatrix4x4 HeadModel::model(Viewport::Viewport * viewport) {
@@ -62,7 +58,7 @@ namespace Model {
         return viewport->viewVoxel();
     }
     
-    void HeadModel::drawModelWithoutIndices() {
+    void HeadModel::drawingRoutine() {
         glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount());
     }
 
@@ -109,7 +105,7 @@ namespace Model {
         program->setUniformValue(_shaderModel, model(viewport));
         program->setUniformValue(_shaderProjection, projection(viewport));
         program->setUniformValue(_shaderNormalMatrix, normalMatrix(viewport));
-        program->setUniformValue(_shaderScale, _scaleM);
+        program->setUniformValue(_shaderScale, scaleMatrix());
         program->setUniformValue(_shaderStep, _step);
     }
 }

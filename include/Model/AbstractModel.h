@@ -22,29 +22,6 @@ namespace Model {
     public:
         virtual ~AbstractModel();
 
-        virtual bool bindShaderProgram() final;
-        virtual void releaseShaderProgram() final;
-
-        virtual void rotate(const QVector3D & rotation);
-
-        virtual void drawModel(Viewport::Viewport * viewPort) final;
-
-        virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-        virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-        virtual void addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-
-        template <class Key, class Value>
-        void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-            QMutexLocker locker(&_modelMutex);
-
-            if (_program) {
-                map.insert(key, new Value(_program, shaderVariables));
-            }
-            else {
-                emit shaderProgramSetVariableErrorHappened();
-            }
-        }
-
         virtual int id() final;
 
         template <class BuffersT>
@@ -99,16 +76,15 @@ namespace Model {
         virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
         virtual QMatrix4x4 view(Viewport::Viewport * viewport);
         virtual QMatrix4x4 projection(Viewport::Viewport * viewport);
+        virtual QMatrix4x4 scaleMatrix();
+
+        virtual QVector3D orientationEuler();
+        virtual QQuaternion orientationQuat();
+
+        virtual QVector3D scale();
+        virtual QVector3D position();
 
         virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
-
-        virtual void setParent(AbstractModel * parent) final;
-
-        virtual void queueForUpdate() final;
-
-        virtual bool checkDepthBuffer(Viewport::Viewport * viewPort);
-
-        virtual void processChildren() { }
 
     protected:
         QMutex _modelMutex;
@@ -131,8 +107,7 @@ namespace Model {
         virtual AbstractModel * parent() final;
         virtual void addChild(AbstractModel * child) final;
 
-        virtual void drawModelWithIndices();
-        virtual void drawModelWithoutIndices();
+        virtual void drawingRoutine();
 
         virtual void setShaderVariables();
 
@@ -167,9 +142,11 @@ namespace Model {
         AbstractModel * _parent;
         QList<AbstractModel *> _children;
 
-        QVector3D _rotation;
+        QQuaternion _orientation;
+        QVector3D _position;
+        QVector3D _scale;
 
-        QMatrix4x4 _mMatrix;
+        QMatrix4x4 _scaleM;
 
         bool _updateNeeded;
 
@@ -177,6 +154,18 @@ namespace Model {
 
         void bindTextures();
         void releaseTextures();
+
+        template <class Key, class Value>
+        void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
+            QMutexLocker locker(&_modelMutex);
+
+            if (_program) {
+                map.insert(key, new Value(_program, shaderVariables));
+            }
+            else {
+                emit shaderProgramSetVariableErrorHappened();
+            }
+        }
 
     signals:
         void shaderProgramInitErrorHappened();
@@ -186,6 +175,29 @@ namespace Model {
 
     public slots:
         virtual void update() { }
+
+        virtual bool bindShaderProgram() final;
+        virtual void releaseShaderProgram() final;
+
+        virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5f);
+
+        virtual void translate(const QVector3D & translation);
+
+        virtual void scale(const QVector3D & scale);
+
+        virtual void drawModel(Viewport::Viewport * viewPort) final;
+
+        virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+
+        virtual void setParent(AbstractModel * parent) final;
+
+        virtual void queueForUpdate() final;
+
+        virtual bool checkDepthBuffer(Viewport::Viewport * viewPort);
+
+        virtual void processChildren() { }
     };
 }
 

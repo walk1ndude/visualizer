@@ -18,7 +18,7 @@ void main(void) {
         highp float dist = distance(center, frag.fPos);
 
         lowp float delta = 0.001f;
-        highp float alpha = smoothstep(0.4f - delta, 0.45f, dist);
+        highp float alpha = smoothstep(0.45f - delta, 0.45f, dist);
 
         fragColor = mix(fragColor, vec4(0.0f), alpha);
 
