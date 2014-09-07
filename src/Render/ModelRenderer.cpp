@@ -99,11 +99,36 @@ namespace Render {
         }
     }
 
+    void ModelRenderer::addEvaluatorModel(const QSize & size,
+                                          const qreal & stepX, const qreal & stepY,
+                                          const QVector3D & color) {
+        addEvaluatorModel(size.width(), size.height(), stepX, stepY, color);
+    }
+
+    void ModelRenderer::addEvaluatorModel(const int & width, const int & height,
+                                          const qreal & stepX, const qreal & stepY,
+                                          const QVector3D & color) {
+        QMutexLocker locker(&_renderMutex);
+
+        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
+            activateContext();
+
+            selectedModelScene->addEvaluatorModel(width, height, stepX, stepY, color);
+
+            locker.unlock();
+            emit needToRedraw();
+        }
+    }
+
     void ModelRenderer::render() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         if (selectedScene()) {
+            if (!selectedScene()->isInitialized()) {
+                selectedScene()->initializeScene();
+            }
+
             selectedScene()->renderScene(surfaceSize());
         }
     }

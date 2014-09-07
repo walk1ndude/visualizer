@@ -24,6 +24,8 @@ namespace Model {
                           const ShaderInfo::ShaderVariablesNames & uniformValues =
                           ShaderInfo::ShaderVariablesNames() << "colorU" << "mvp" << "normalMatrix");
 
+        void init(ModelInfo::BuffersVN buffers);
+
     protected:
         void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
         void bindAttributeArrays(QOpenGLShaderProgram * program);

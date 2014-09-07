@@ -24,6 +24,56 @@ namespace Model {
 
         virtual int id() final;
 
+        virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
+        virtual QMatrix4x4 view(Viewport::Viewport * viewport);
+        virtual QMatrix4x4 projection(Viewport::Viewport * viewport);
+        virtual QMatrix4x4 scaleMatrix();
+
+        virtual QVector3D orientationEuler();
+        virtual QQuaternion orientationQuat();
+
+        virtual QVector3D scale();
+        virtual QVector3D position();
+
+        virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
+
+        virtual bool depthTest();
+
+    protected:
+        QMutex modelMutex;
+
+        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
+        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
+
+        explicit AbstractModel(AbstractModel * parent = nullptr,
+                               const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
+                               const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
+                               const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
+        
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) = 0;
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
+
+        virtual void glStatesEnable();
+        virtual void glStatesDisable();
+
+        virtual int stride() final;
+
+        virtual GLsizei indexCount() final;
+        virtual GLsizei vertexCount() final;
+
+        virtual AbstractModel * parent() final;
+        virtual void addChild(AbstractModel * child) final;
+
+        virtual void drawingRoutine();
+
+        virtual void bindUniformValues();
+
+        virtual QOpenGLShaderProgram * program() final;
+
+        virtual bool updateNeeded() final;
+
+        virtual void deleteModel();
+
         template <class BuffersT>
         void fillBuffers(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
             if (!_program) {
@@ -73,54 +123,6 @@ namespace Model {
             releaseShaderProgram();
         }
 
-        virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
-        virtual QMatrix4x4 view(Viewport::Viewport * viewport);
-        virtual QMatrix4x4 projection(Viewport::Viewport * viewport);
-        virtual QMatrix4x4 scaleMatrix();
-
-        virtual QVector3D orientationEuler();
-        virtual QQuaternion orientationQuat();
-
-        virtual QVector3D scale();
-        virtual QVector3D position();
-
-        virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
-
-    protected:
-        QMutex modelMutex;
-
-        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
-        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
-
-        explicit AbstractModel(AbstractModel * parent = nullptr,
-                               const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
-                               const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
-                               const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
-        
-        virtual void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) = 0;
-        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
-
-        virtual void glStatesEnable() { }
-        virtual void glStatesDisable() { } 
-
-        virtual int stride() final;
-
-        virtual GLsizei indexCount() final;
-        virtual GLsizei vertexCount() final;
-
-        virtual AbstractModel * parent() final;
-        virtual void addChild(AbstractModel * child) final;
-
-        virtual void drawingRoutine();
-
-        virtual void bindUniformValues();
-
-        virtual QOpenGLShaderProgram * program() final;
-
-        virtual bool updateNeeded() final;
-
-        virtual void deleteModel();
-
     private:
         QOpenGLBuffer _vboVert;
         QOpenGLBuffer _vboInd;
@@ -134,11 +136,13 @@ namespace Model {
 
         QMap<QOpenGLTexture *, TextureInfo::TextureProgram *> _textures;
 
-        int _id;
-
         ShaderInfo::ShaderFiles _shaderFiles;
 
+        int _id;
+
         int _stride;
+
+        bool _depthTest;
 
         GLsizei _indexCount;
         GLsizei _vertexCount;
@@ -180,8 +184,6 @@ namespace Model {
         void childUpdated();
 
     public slots:
-        virtual void update() { }
-
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
@@ -203,7 +205,8 @@ namespace Model {
 
         virtual bool checkDepthBuffer(Viewport::Viewport * viewPort);
 
-        virtual void processChildren() { }
+        virtual void update();
+        virtual void processChildren();
     };
 }
 

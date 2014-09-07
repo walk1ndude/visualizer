@@ -8,6 +8,10 @@ namespace Model {
             points->setParent(this);
     }
 
+    void StlModel::init(ModelInfo::BuffersVN buffers) {
+        fillBuffers<ModelInfo::BuffersVN>(buffers);
+    }
+
     void StlModel::glStatesEnable() {
         //glEnable(GL_CULL_FACE);
 

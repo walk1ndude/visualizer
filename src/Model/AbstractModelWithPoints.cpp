@@ -32,7 +32,7 @@ namespace Model {
     }
     
     void AbstractModelWithPoints::processChildren() {
-        _points->fillBuffers(_modelPoints);
+        _points->init(_modelPoints);
 
         updatePointsTexture();
     }

@@ -27,7 +27,7 @@ namespace Model {
 
         void setStep(const qreal & stepX, const qreal & stepY = 0.0f);
 
-        void fillBuffers();
+        void init();
 
     protected:
         void bindAttributeArrays(QOpenGLShaderProgram * program);

@@ -3,6 +3,7 @@
 #include "Model/StlModel.h"
 #include "Model/HeadModel.h"
 #include "Model/PointsModel.h"
+#include "Model/EvaluatorModel.h"
 
 namespace Scene {
     ModelScene::ModelScene() :
@@ -126,7 +127,12 @@ namespace Scene {
         if (!_selectedModel) {
             return;
         } else if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->addPoint(point.name, new PointsInfo::ModelPoint(PointsInfo::Position3D(point.position), point.color, point.viewport, point.groups));
+            model->addPoint(point.name,
+                            new PointsInfo::ModelPoint(
+                                PointsInfo::Position3D(point.position),
+                                point.color, point.viewport, point.groups
+                                )
+                            );
         }
     }
 
@@ -136,10 +142,9 @@ namespace Scene {
 
         Model::StlModel * model = new Model::StlModel(pointsInModel);
 
-        // select newly created model
         selectModel(model);
 
-        model->fillBuffers<ModelInfo::BuffersVN>(buffers);
+        model->init(buffers);
 
         model->addLightSource(_lightSources.at(0),
                               ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
@@ -193,5 +198,23 @@ namespace Scene {
         QObject::connect(model, &Model::HeadModel::pointUpdated, this, &Scene::AbstractScene::pointUpdated, Qt::DirectConnection);
 
         _models.append(model);
+    }
+
+    void ModelScene::addEvaluatorModel(const int & width, const int & height,
+                                       const qreal & stepX, const qreal & stepY,
+                                       const QVector3D & color) {
+        Model::EvaluatorModel * model = new Model::EvaluatorModel;
+
+        model->setSize(width, height);
+        model->setStep(stepX, stepY);
+        model->setColor(color);
+
+        model->init();
+
+        _models.append(model);
+    }
+
+    void ModelScene::initScene() {
+        addEvaluatorModel();
     }
 }

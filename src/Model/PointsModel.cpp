@@ -11,7 +11,7 @@ namespace Model {
 
     }
 
-    void PointsModel::fillBuffers(const PointsInfo::ModelPoints & modelPoints) {
+    void PointsModel::init(const PointsInfo::ModelPoints & modelPoints) {
         if (updateNeeded()) {
             ModelInfo::VertexVC vertex;
             ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;

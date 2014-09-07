@@ -13,7 +13,7 @@ namespace Scene {
 
         Q_OBJECT
     public:
-        AbstractScene() { }
+        AbstractScene();
 
         virtual void renderScene(const QSize & surfaceSize) = 0;
 
@@ -32,10 +32,19 @@ namespace Scene {
         
         virtual void addPoint(const PointsInfo::Point & point) = 0;
 
+        virtual void initializeScene() final;
+
         Viewport::ViewportArray * viewportArray() const;
+
+        bool isInitialized();
+
+    protected:
+        virtual void initScene() = 0;
 
     private:
         Viewport::ViewportArray * _viewportArray;
+
+        bool _isInitialized;
 
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);

@@ -41,6 +41,9 @@ namespace Scene {
 
         virtual void addPoint(const PointsInfo::Point & point);
 
+    protected:
+        virtual void initScene();
+
     private:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
         QList<Model::AbstractModel *> _models;
@@ -67,6 +70,10 @@ namespace Scene {
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);
+
+        void addEvaluatorModel(const int & width = 100, const int & height = 100,
+                               const qreal & stepX = 0.1f, const qreal & stepY = 0.0f,
+                               const QVector3D & color = QVector3D(0.0f, 1.0f, 0.0f));
     };
 
 }

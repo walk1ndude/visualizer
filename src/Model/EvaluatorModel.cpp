@@ -1,5 +1,7 @@
 #include "Model/EvaluatorModel.h"
 
+#include <cmath>
+
 namespace Model {
     EvaluatorModel::EvaluatorModel(AbstractModel * parent,
                                    const ShaderInfo::ShaderFiles & shaderFiles,
@@ -26,11 +28,11 @@ namespace Model {
     }
 
     void EvaluatorModel::setStep(const qreal & stepX, const qreal & stepY) {
-        _stepX = abs(stepX);
-        _stepY = stepY ? abs(stepY) : stepX;
+        _stepX = fabs(stepX);
+        _stepY = stepY ? fabs(stepY) : stepX;
     }
 
-    void EvaluatorModel::fillBuffers() {
+    void EvaluatorModel::init() {
         ModelInfo::VerticesVPtr vertices = new ModelInfo::VerticesV;
 
         GLfloat xLeft = - _width / 2 * _stepX;
@@ -39,28 +41,19 @@ namespace Model {
         GLfloat xCur = xLeft;
         GLfloat yCur = yTop;
 
-        for (int i = 0; i != _height; ++ i) {
-            for (int j = 0; j != _width; ++ j) {
-                vertices->push_back(ModelInfo::VertexV(xCur, yCur, 0.0f));
+        for (int i = 0; i <= _height; ++ i) {
+            vertices->push_back(ModelInfo::VertexV(xLeft, yCur, 0.0f));
+            vertices->push_back(ModelInfo::VertexV(- xLeft, yCur, 0.0f));
 
-                xCur += _stepX;
-            }
-
-            xCur = xLeft;
             yCur += _stepY;
         }
 
-        for (int i = 0; i != _height; ++ i) {
-            for (int j = 0; j != _width; ++ j) {
-                vertices->push_back(ModelInfo::VertexV(xCur, yCur, 0.0f));
-
-                yCur += _stepY;
-            }
+        for (int i = 0; i <= _width; ++ i) {
+            vertices->push_back(ModelInfo::VertexV(xCur, yTop, 0.0f));
+            vertices->push_back(ModelInfo::VertexV(xCur, - yTop, 0.0f));
 
             xCur += _stepX;
-            yCur = yTop;
         }
-
 
         ModelInfo::BuffersV buffers;
 
@@ -80,6 +73,6 @@ namespace Model {
 
     void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
         program->setUniformValue(uniformValues["vp"], view(viewport) * projection(viewport));
-        program->setUniformValue(uniformValues["color"], _color);
+        program->setUniformValue(uniformValues["color"], QVector4D(_color, 1.0f));
     }
 }

@@ -13,6 +13,7 @@ namespace Model {
         _program(nullptr),
         _shaderFiles(shaderFiles),
         _stride(0),
+        _depthTest(true),
         _indexCount(0),
         _vertexCount(0),
         _updateNeeded(false) {
@@ -324,5 +325,25 @@ namespace Model {
         for (ShaderInfo::ShaderVariableName value : uniformValues.keys()) {
             uniformValues[value] = _program->uniformLocation(value);
         }
+    }
+
+    void AbstractModel::update() {
+
+    }
+
+    void AbstractModel::processChildren() {
+
+    }
+
+    bool AbstractModel::depthTest() {
+        return true;
+    }
+
+    void AbstractModel::glStatesEnable() {
+
+    }
+
+    void AbstractModel::glStatesDisable() {
+
     }
 }

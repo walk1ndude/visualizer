@@ -33,6 +33,14 @@ namespace Render {
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);
 
+        void addEvaluatorModel(const int & width, const int & height = 100,
+                               const qreal & stepX = 0.1f, const qreal & stepY = 0.0f,
+                               const QVector3D & color = QVector3D(0.0f, 1.0f, 0.0f));
+
+        void addEvaluatorModel(const QSize & size = QSize(100, 100),
+                               const qreal & stepX = 0.1f, const qreal & stepY = 0.0f,
+                               const QVector3D & color = QVector3D(0.0f, 1.0f, 0.0f));
+
         // rotate selected model
         void setRotation(const QVector3D & rotation);
 
