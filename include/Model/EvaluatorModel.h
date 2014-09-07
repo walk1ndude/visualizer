@@ -4,7 +4,7 @@
 #include "Model/AbstractModel.h"
 
 namespace Model {
-    class EvaluatorModel {
+    class EvaluatorModel : public AbstractModel {
         Q_OBJECT
 
     public:

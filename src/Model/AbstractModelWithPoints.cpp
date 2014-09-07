@@ -41,7 +41,7 @@ namespace Model {
         
         _pointsTexture->create();
         _pointsTexture->setFormat(QOpenGLTexture::RGBA32F);
-        // columns: point coords, radius, color
+
         _pointsTexture->setSize(2, pointsCount);
         _pointsTexture->allocateStorage();
         
