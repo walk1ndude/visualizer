@@ -18,15 +18,31 @@ namespace Model {
                                 ShaderInfo::ShaderVariablesNames() << "vertex",
 
                                 const ShaderInfo::ShaderVariablesNames & uniformValues =
-                                ShaderInfo::ShaderVariablesNames() << "mvp" << "color");
+                                ShaderInfo::ShaderVariablesNames() << "vp" << "color");
 
         void setSize(const QSize & size);
         void setSize(const int & width, const int & height);
 
-        void setColor(const QVector4D & color);
+        void setColor(const QVector3D & color);
+
+        void setStep(const qreal & stepX, const qreal & stepY = 0.0f);
+
+        void fillBuffers();
 
     protected:
+        void bindAttributeArrays(QOpenGLShaderProgram * program);
+        void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
+
         virtual void drawingRoutine();
+
+    private:
+        int _width;
+        int _height;
+
+        QVector3D _color;
+
+        qreal _stepX;
+        qreal _stepY;
     };
 }
 

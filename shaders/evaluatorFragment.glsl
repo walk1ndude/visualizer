@@ -1,8 +1,8 @@
 #version 410
-layout(location = 0) in highp vec4 fColor;
+uniform highp vec4 color;
 
-layout(location = 0) out highp vec4 oColor;
+layout(location = 0) out highp vec4 fColor;
 
 void main(void) {
-    oColor = fColor;
+    fColor = color;
 }

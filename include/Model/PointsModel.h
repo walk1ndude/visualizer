@@ -23,6 +23,7 @@ namespace Model {
 
         void fillBuffers(const PointsInfo::ModelPoints & modelPoints);
 
+    protected:
         void glStatesEnable();
         void glStatesDisable();
 
