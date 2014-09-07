@@ -24,6 +24,9 @@ namespace Model {
         void setSize(const int & width, const int & height);
 
         void setColor(const QVector4D & color);
+
+    protected:
+        virtual void drawingRoutine();
     };
 }
 

@@ -7,7 +7,7 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
-out vec4 fragPos;
+layout(location = 0) out highp vec4 fragPos;
 
 void main(void) {
     gl_Position = projection * view * vertex;

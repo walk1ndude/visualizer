@@ -9,7 +9,7 @@ uniform mediump vec4 viewportSize;
 
 const highp vec2 center = vec2(0.5f, 0.5f);
 
-out highp vec4 fragColor;
+layout(location = 0) out highp vec4 fragColor;
 
 void main(void) {
     fragColor = frag.fColor;

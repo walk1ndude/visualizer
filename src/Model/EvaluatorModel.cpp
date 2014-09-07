@@ -20,4 +20,8 @@ namespace Model {
     void EvaluatorModel::setColor(const QVector4D & color) {
 
     }
+
+    void EvaluatorModel::drawingRoutine() {
+        glDrawArrays(GL_LINES, 0, vertexCount());
+    }
 }

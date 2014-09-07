@@ -1,5 +1,5 @@
 #version 410
-in highp vec4 fragPos;
+layout(location = 0) in highp vec4 fragPos;
 
 uniform highp sampler3D texHead;
 
@@ -7,8 +7,7 @@ uniform highp mat4 normalMatrix;
 
 uniform highp vec3 stepSlices;
 
-out highp vec4 fragColor;
-
+layout(location = 0) out highp vec4 fragColor;
 
 vec4 sobel3(vec3 position);
 

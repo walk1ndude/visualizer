@@ -30,5 +30,7 @@
         <file>qml/Heading.qml</file>
         <file>qml/ConsoleDock.qml</file>
         <file>qml/Sidedock.qml</file>
+        <file>shaders/evaluatorFragment.glsl</file>
+        <file>shaders/evaluatorVertex.glsl</file>
     </qresource>
 </RCC>
