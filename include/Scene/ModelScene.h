@@ -10,6 +10,7 @@
 #include "Info/PointsInfo.h"
 
 #include "Model/StlModel.h"
+#include "Model/VertexVN.h"
 
 #include "Viewport/ViewportArray.h"
 

@@ -1,6 +1,7 @@
 #include "Model/PointsModel.h"
 #include "Model/HeadModel.h"
 #include "Model/StlModel.h"
+#include "Model/VertexVC.h"
 
 namespace Model {
     PointsModel::PointsModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :

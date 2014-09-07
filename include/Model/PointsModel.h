@@ -2,7 +2,6 @@
 #define POINTSMODEL_H
 
 #include "Model/AbstractModel.h"
-#include "Model/VertexVC.h"
 
 namespace Model {
     class PointsModel : public AbstractModel {

@@ -94,7 +94,8 @@ SOURCES +=  src/main.cpp \
             src/Scene/AbstractScene.cpp \
             src/Viewport/Viewport.cpp \
             src/Viewport/ViewportArray.cpp \
-            src/Quick/ConsoleLogger.cpp
+            src/Quick/ConsoleLogger.cpp \
+            src/Model/EvaluatorModel.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -128,6 +129,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/VertexVC.h \
             include/Model/VertexVN.h \
             include/Model/VertexVT.h \
-            include/Info/ViewRangeInfo.h
+            include/Info/ViewRangeInfo.h \
+            include/Model/EvaluatorModel.h
 
 RESOURCES += resources.qrc

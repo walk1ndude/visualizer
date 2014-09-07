@@ -10,6 +10,8 @@
 #include "Parser/StlReader.h"
 #include "Parser/Helpers.hpp"
 
+#include "Model/VertexVN.h"
+
 #include <opencv2/core/core.hpp>
 
 inline QString removeWhitespaes(QString & str) {
