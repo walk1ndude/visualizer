@@ -10,30 +10,26 @@ namespace Model {
     public:
         explicit StlModel(PointsModel * points = nullptr,
                           AbstractModel * parent = nullptr,
+
                           const ShaderInfo::ShaderFiles & shaderFiles =
-                ShaderInfo::ShaderFiles(
+                          ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/stlVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/stlFragment.glsl")
-                    << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
-                              ));
+                              << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
+                          ),
+
+                          const ShaderInfo::ShaderVariablesNames & attributeArrays =
+                          ShaderInfo::ShaderVariablesNames() << "vertex" << "normal",
+
+                          const ShaderInfo::ShaderVariablesNames & uniformValues =
+                          ShaderInfo::ShaderVariablesNames() << "colorU" << "mvp" << "normalMatrix");
 
     protected:
-        void initShaderVariables(QOpenGLShaderProgram * program);
-        void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
-        void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
+        void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
+        void bindAttributeArrays(QOpenGLShaderProgram * program);
 
         void glStatesEnable();
         void glStatesDisable();
-
-    private:
-        ShaderInfo::ShaderVariable _shaderVertex;
-        ShaderInfo::ShaderVariable _shaderNormal;
-
-        // assume that this have uniform color
-        ShaderInfo::ShaderVariable _shaderColorU;
-
-        ShaderInfo::ShaderVariable _shaderMPV;
-        ShaderInfo::ShaderVariable _shaderNormalMatrix;
     };
 }
 #endif // STLMODEL_H

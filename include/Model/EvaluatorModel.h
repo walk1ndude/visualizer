@@ -10,15 +10,20 @@ namespace Model {
     public:
         explicit EvaluatorModel(AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(
-                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/evaluatorVertex.glsl"),
-                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/evaluatorFragment.glsl")));
 
-        void resizeMesh(const QSize & size);
-        void resizeMesh(const int & width, const int & height);
+                                ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/evaluatorVertex.glsl"),
+                                ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/evaluatorFragment.glsl")),
 
-    private:
-        ShaderInfo::ShaderVariable _shaderView;
-        ShaderInfo::ShaderVariable _shaderProjection;
+                                const ShaderInfo::ShaderVariablesNames & attributeArrays =
+                                ShaderInfo::ShaderVariablesNames() << "vertex",
+
+                                const ShaderInfo::ShaderVariablesNames & uniformValues =
+                                ShaderInfo::ShaderVariablesNames() << "mvp" << "color");
+
+        void setSize(const QSize & size);
+        void setSize(const int & width, const int & height);
+
+        void setColor(const QVector4D & color);
     };
 }
 

@@ -5,7 +5,9 @@
 static int modelNumber = 0;
 
 namespace Model {
-    AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
+    AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
+                                 const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
+                                 const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(nullptr),
@@ -27,6 +29,14 @@ namespace Model {
         }
 
         _id = modelNumber ++;
+
+        for (const ShaderInfo::ShaderVariableName & attrArray : shaderAttributeArrays) {
+            attributeArrays.insert(attrArray, -1);
+        }
+
+        for (const ShaderInfo::ShaderVariableName & value : shaderUniformValues) {
+            uniformValues.insert(value, -1);
+        }
     }
 
     AbstractModel::~AbstractModel() {
@@ -34,7 +44,7 @@ namespace Model {
     }
 
     void AbstractModel::deleteModel() {
-        QMutexLocker locker(&_modelMutex);
+        QMutexLocker locker(&modelMutex);
 
         if (_program) {
             delete _program;
@@ -218,8 +228,8 @@ namespace Model {
         if (_program && _vertexCount) {
             bindShaderProgram();
             
-            setShaderVariables(_program, viewPort);
-            setShaderVariables();
+            bindUniformValues(_program, viewPort);
+            bindUniformValues();
             
             bindTextures();
             
@@ -247,7 +257,7 @@ namespace Model {
         }
     }
 
-    void AbstractModel::setShaderVariables() {
+    void AbstractModel::bindUniformValues() {
         QMapIterator<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> itM (_materials);
 
         while (itM.hasNext()) {
@@ -297,12 +307,22 @@ namespace Model {
                 return false;
             }
 
-            initShaderVariables(_program);
+            initShaderVariables();
         }
         else {
             return !programIsInited;
         }
 
         return programIsInited;
+    }
+
+    void AbstractModel::initShaderVariables() {
+        for (ShaderInfo::ShaderVariableName attrArray : attributeArrays.keys()) {
+            attributeArrays[attrArray] = _program->attributeLocation(attrArray);
+        }
+
+        for (ShaderInfo::ShaderVariableName value : uniformValues.keys()) {
+            uniformValues[value] = _program->uniformLocation(value);
+        }
     }
 }

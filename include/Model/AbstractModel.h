@@ -62,7 +62,7 @@ namespace Model {
                     buffers.indices.clear();
                 }
 
-                bindShaderVariablesToBuffers(_program);
+                bindAttributeArrays(_program);
             } else {
                 buffers.indices.clear();
             }
@@ -87,14 +87,18 @@ namespace Model {
         virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
 
     protected:
-        QMutex _modelMutex;
+        QMutex modelMutex;
+
+        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
+        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
 
         explicit AbstractModel(AbstractModel * parent = nullptr,
-                               const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
+                               const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
+                               const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
+                               const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
         
-        virtual void initShaderVariables(QOpenGLShaderProgram * program) = 0;
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) = 0;
-        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) = 0;
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
 
         virtual void glStatesEnable() { }
         virtual void glStatesDisable() { } 
@@ -109,7 +113,7 @@ namespace Model {
 
         virtual void drawingRoutine();
 
-        virtual void setShaderVariables();
+        virtual void bindUniformValues();
 
         virtual QOpenGLShaderProgram * program() final;
 
@@ -152,12 +156,14 @@ namespace Model {
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
 
+        virtual void initShaderVariables() final;
+
         void bindTextures();
         void releaseTextures();
 
         template <class Key, class Value>
         void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-            QMutexLocker locker(&_modelMutex);
+            QMutexLocker locker(&modelMutex);
 
             if (_program) {
                 map.insert(key, new Value(_program, shaderVariables));

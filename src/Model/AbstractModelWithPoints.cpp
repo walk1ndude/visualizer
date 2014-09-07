@@ -2,12 +2,21 @@
 
 #include <cmath>
 
+ShaderInfo::ShaderVariablesNames appendToNames(const ShaderInfo::ShaderVariablesNames & names) {
+    ShaderInfo::ShaderVariablesNames appended = names;
+    appended << ShaderInfo::ShaderVariableName("points") << ShaderInfo::ShaderVariableName("pointsCount");
+    return appended;
+}
+
 namespace Model {
     AbstractModelWithPoints::AbstractModelWithPoints(PointsModel * points, AbstractModel * parent,
-                                                     const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModel(parent, shaderFiles) {
-        _points = points;
-        _pointsTexture = nullptr;
+                                                     const ShaderInfo::ShaderFiles & shaderFiles,
+                                                     const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
+                                                     const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
+        AbstractModel::AbstractModel(parent, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
+        _points(points),
+        _pointsTexture(nullptr) {
+
     }
 
     PointsModel * AbstractModelWithPoints::pointsModel() {
@@ -33,6 +42,10 @@ namespace Model {
         
         if (!pointsCount) {
             return;
+        }
+
+        if (!_pointsTexture) {
+            _pointsTexture = new QOpenGLTexture(QOpenGLTexture::Target2D);
         }
     
         if (_pointsTexture->isStorageAllocated()) {
@@ -117,7 +130,7 @@ namespace Model {
                                                const ViewRangeInfo::ViewAxisRange & yRange,
                                                const ViewRangeInfo::ViewAxisRange & zRange,
                                                const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-        QMutexLocker locker(&_modelMutex);
+        QMutexLocker locker(&modelMutex);
 
         if (program()) {
             _viewRange = new ViewRangeInfo::ViewRange(xRange, yRange, zRange,
@@ -128,22 +141,17 @@ namespace Model {
         }
     }
 
-    void AbstractModelWithPoints::setShaderVariables() {
+    void AbstractModelWithPoints::bindUniformValues() {
         _viewRange->setUniformValue(program());
 
-        AbstractModel::setShaderVariables();
+        AbstractModel::bindUniformValues();
     }
 
-    void AbstractModelWithPoints::initShaderVariables(QOpenGLShaderProgram * program) {
-        _pointsTexture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-
-        _shaderPoints = program->uniformLocation("points");
-        _shaderPointsCount = program->uniformLocation("pointsCount");
-    }
-
-    void AbstractModelWithPoints::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
-        program->setUniformValue(_shaderPoints, _pointsTexture->textureId());
-        program->setUniformValue(_shaderPointsCount, _modelPoints.size());
+    void AbstractModelWithPoints::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
+        if (_pointsTexture) {
+            program->setUniformValue(uniformValues["points"], _pointsTexture->textureId());
+            program->setUniformValue(uniformValues["pointsCount"], _modelPoints.size());
+        }
     }
 
     void AbstractModelWithPoints::deleteModel() {
@@ -151,9 +159,5 @@ namespace Model {
         _pointsTexture->destroy();
 
         AbstractModel::deleteModel();
-    }
-
-    void AbstractModelWithPoints::update() {
-
     }
 }

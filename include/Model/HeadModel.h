@@ -12,12 +12,19 @@ namespace Model {
     public:
         explicit HeadModel(PointsModel * points = nullptr,
                            AbstractModel * parent = nullptr,
+
                            const ShaderInfo::ShaderFiles & shaderFiles =
-                ShaderInfo::ShaderFiles(
+                           ShaderInfo::ShaderFiles(
                               ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
                               ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
-                    << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
-                              ));
+                              << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
+                           ),
+
+                           const ShaderInfo::ShaderVariablesNames & attributeArrays =
+                           ShaderInfo::ShaderVariablesNames() << "vertex" << "tex",
+
+                           const ShaderInfo::ShaderVariablesNames & uniformValues =
+                           ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" << "normalMatrix" << "scale" << "stepSlices");
 
         ~HeadModel();
 
@@ -29,9 +36,8 @@ namespace Model {
         virtual QMatrix4x4 view(Viewport::Viewport * viewport);
 
     protected:
-        void initShaderVariables(QOpenGLShaderProgram * program);
-        void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
-        void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program);
+        void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
+        void bindAttributeArrays(QOpenGLShaderProgram * program);
 
         void glStatesEnable();
         void glStatesDisable();
@@ -39,16 +45,6 @@ namespace Model {
         virtual void drawingRoutine();
 
     private:
-        ShaderInfo::ShaderVariable _shaderVertex;
-        ShaderInfo::ShaderVariable _shaderTexHead;
-
-        ShaderInfo::ShaderVariable _shaderModel;
-        ShaderInfo::ShaderVariable _shaderView;
-        ShaderInfo::ShaderVariable _shaderProjection;
-        ShaderInfo::ShaderVariable _shaderNormalMatrix;
-        ShaderInfo::ShaderVariable _shaderScale;
-        ShaderInfo::ShaderVariable _shaderStep;
-
         PointsInfo::ModelPoints _facePoints;
 
         QVector3D _step;

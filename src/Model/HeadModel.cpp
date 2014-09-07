@@ -3,9 +3,12 @@
 #include "Model/HeadModel.h"
 
 namespace Model {
-    HeadModel::HeadModel(PointsModel * points, AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModelWithPoints(points, parent, shaderFiles) {
-            points->setParent(this);
+    HeadModel::HeadModel(PointsModel * points, AbstractModel * parent,
+                         const ShaderInfo::ShaderFiles & shaderFiles,
+                         const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
+                         const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
+        AbstractModelWithPoints(points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+        points->setParent(this);
     }
 
     HeadModel::~HeadModel() {
@@ -78,34 +81,20 @@ namespace Model {
         glDisable(GL_DEPTH_TEST);
     }
 
-    void HeadModel::initShaderVariables(QOpenGLShaderProgram * program) {
-        _shaderVertex = program->attributeLocation("vertex");
-        _shaderTexHead = program->attributeLocation("tex");
+    void HeadModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
+        program->enableAttributeArray(attributeArrays["vertex"]);
+        program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
-        _shaderView = program->uniformLocation("view");
-        _shaderModel = program->uniformLocation("model");
-        _shaderProjection = program->uniformLocation("projection");
-        _shaderNormalMatrix = program->uniformLocation("normalMatrix");
-        _shaderScale = program->uniformLocation("scale");
-        _shaderStep = program->uniformLocation("stepSlices");
-        
-        AbstractModelWithPoints::initShaderVariables(program);
+        program->enableAttributeArray(attributeArrays["tex"]);
+        program->setAttributeBuffer(attributeArrays["tex"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
-        program->enableAttributeArray(_shaderVertex);
-        program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, stride());
-
-        program->enableAttributeArray(_shaderTexHead);
-        program->setAttributeBuffer(_shaderTexHead, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
-    }
-
-    void HeadModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
-        program->setUniformValue(_shaderView, view(viewport));
-        program->setUniformValue(_shaderModel, model(viewport));
-        program->setUniformValue(_shaderProjection, projection(viewport));
-        program->setUniformValue(_shaderNormalMatrix, normalMatrix(viewport));
-        program->setUniformValue(_shaderScale, scaleMatrix());
-        program->setUniformValue(_shaderStep, _step);
+    void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+        program->setUniformValue(uniformValues["view"], view(viewport));
+        program->setUniformValue(uniformValues["model"], model(viewport));
+        program->setUniformValue(uniformValues["projection"], projection(viewport));
+        program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));
+        program->setUniformValue(uniformValues["scale"], scaleMatrix());
+        program->setUniformValue(uniformValues["step"], _step);
     }
 }

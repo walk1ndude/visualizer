@@ -28,13 +28,18 @@ namespace Model {
     protected:
         AbstractModelWithPoints(PointsModel * points = nullptr,
                                 AbstractModel * parent = nullptr,
-                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles());
+                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
 
-        virtual void initShaderVariables(QOpenGLShaderProgram * program);
-        virtual void setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);
-        virtual void bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) = 0;
+                                const ShaderInfo::ShaderVariablesNames & attributeArrays =
+                                ShaderInfo::ShaderVariablesNames(),
 
-        virtual void setShaderVariables();
+                                const ShaderInfo::ShaderVariablesNames & uniformValues =
+                                ShaderInfo::ShaderVariablesNames());
+
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort);
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
+
+        virtual void bindUniformValues();
 
         virtual PointsModel * pointsModel() final;
         virtual PointsInfo::ModelPoints modelPoints() final;
@@ -44,9 +49,6 @@ namespace Model {
         virtual void deleteModel();
 
     private:
-        ShaderInfo::ShaderVariable _shaderPointsCount;
-        ShaderInfo::ShaderVariable _shaderPoints;
-
         PointsModel * _points;
 
         PointsInfo::ModelPoints _modelPoints;
@@ -59,9 +61,6 @@ namespace Model {
         
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
-
-    public slots:
-        virtual void update();
     };
 }
 

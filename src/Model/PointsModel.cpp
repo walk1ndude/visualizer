@@ -4,8 +4,10 @@
 #include "Model/VertexVC.h"
 
 namespace Model {
-    PointsModel::PointsModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles) :
-        AbstractModel(parent, shaderFiles) {
+    PointsModel::PointsModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
+                             const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
+                             const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
+        AbstractModel(parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
 
     }
 
@@ -70,10 +72,6 @@ namespace Model {
                 }
             }
 
-            for (int i = 0; i < vertices->length(); ++ i) {
-                qDebug() << vertices->at(i).x << vertices->at(i).y << vertices->at(i).z;
-            }
-
             ModelInfo::BuffersVC buffers;
             buffers.vertices = ModelInfo::VerticesVCPointer(vertices);
 
@@ -90,26 +88,17 @@ namespace Model {
         glDisable(GL_DEPTH_TEST);
     }
 
-    void PointsModel::initShaderVariables(QOpenGLShaderProgram * program) {
-        _shaderVertex = program->attributeLocation("vertex");
-        _shaderColor = program->attributeLocation("color");
+    void PointsModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
+        program->enableAttributeArray(attributeArrays["vertex"]);
+        program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
-        _shaderMVP = program->uniformLocation("mvp");
-
-        _shaderViewportSize = program->uniformLocation("viewportSize");
+        program->enableAttributeArray(attributeArrays["color"]);
+        program->setAttributeBuffer(attributeArrays["color"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void PointsModel::bindShaderVariablesToBuffers(QOpenGLShaderProgram * program) {
-        program->enableAttributeArray(_shaderVertex);
-        program->setAttributeBuffer(_shaderVertex, GL_FLOAT, 0, 3, stride());
+    void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+        program->setUniformValue(uniformValues["mvp"], projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
 
-        program->enableAttributeArray(_shaderColor);
-        program->setAttributeBuffer(_shaderColor, GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
-    }
-
-    void PointsModel::setShaderVariables(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
-        program->setUniformValue(_shaderMVP, projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
-
-        program->setUniformValue(_shaderViewportSize, QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
+        program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
     }
 }
