@@ -26,8 +26,6 @@ namespace Model {
                            const ShaderInfo::ShaderVariablesNames & uniformValues =
                            ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" << "normalMatrix" << "scale" << "stepSlices");
 
-        ~HeadModel();
-
         void init(const QVector3D & size);
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
@@ -45,8 +43,6 @@ namespace Model {
         virtual void drawingRoutine();
 
     private:
-        PointsInfo::ModelPoints _facePoints;
-
         QVector3D _step;
     };
 }

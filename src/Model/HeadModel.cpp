@@ -11,10 +11,6 @@ namespace Model {
         points->setParent(this);
     }
 
-    HeadModel::~HeadModel() {
-        qDeleteAll(_facePoints.begin(), _facePoints.end());
-    }
-
     void HeadModel::init(const QVector3D & size) {
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         
