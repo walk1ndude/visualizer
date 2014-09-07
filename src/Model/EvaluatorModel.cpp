@@ -78,7 +78,16 @@ namespace Model {
     }
 
     void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
-        program->setUniformValue(uniformValues["vp"], projection(viewport) * view(viewport));
+        program->setUniformValue(uniformValues["vp"], projection(viewport) * viewport->viewBillboard());
         program->setUniformValue(uniformValues["color"], QVector4D(_color, 1.0f));
+    }
+
+    void EvaluatorModel::glStatesEnable() {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    }
+
+    void EvaluatorModel::glStatesDisable() {
+        glDisable(GL_DEPTH_TEST);
     }
 }

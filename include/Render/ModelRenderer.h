@@ -25,6 +25,9 @@ namespace Render {
         virtual void connectWithScene(Scene::AbstractScene * scene);
         virtual void disconnectWithScene(Scene::AbstractScene * scene);
 
+    private:
+        void reoderDrawingOrder();
+
     signals:
         void modelIDChanged(const uint & modelID);
         void pointUpdated(const PointsInfo::UpdatedPoint & point);

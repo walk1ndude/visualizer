@@ -39,10 +39,10 @@ namespace Viewport {
 
         ProjectionType projectionType() const;
 
-        QMatrix4x4 modelVoxel(const QMatrix4x4 & model) const;
+        QMatrix4x4 modelBillboard(const QMatrix4x4 & model) const;
 
         QMatrix4x4 view() const;
-        QMatrix4x4 viewVoxel() const;
+        QMatrix4x4 viewBillboard() const;
 
         QMatrix4x4 projection() const;
 
@@ -60,11 +60,11 @@ namespace Viewport {
         ProjectionType _projectionType;
 
         QMatrix4x4 _vMatrix;
-        QMatrix4x4 _vMatrixVoxel;
+        QMatrix4x4 _vMatrixBillboard;
 
         QMatrix4x4 _pMatrix;
 
-        QQuaternion _qRotateVoxel;
+        QQuaternion _orientationBillboard;
 
         QVector3D _orientation;
         QVector3D _eye;

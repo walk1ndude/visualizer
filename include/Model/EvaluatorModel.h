@@ -35,6 +35,9 @@ namespace Model {
 
         virtual void drawingRoutine();
 
+        void glStatesEnable();
+        void glStatesDisable();
+
     private:
         int _width;
         int _height;

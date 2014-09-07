@@ -63,7 +63,9 @@ namespace Scene {
     void ModelScene::renderScene(const QSize & surfaceSize) {
         viewportArray()->resize(surfaceSize);
 
+        QList<Model::AbstractModel *> test;
         QListIterator<Model::AbstractModel *> modelIterator (_models);
+
         viewportArray()->render(modelIterator);
 
         /* some children, like pointsmodel can change its values after rendering -

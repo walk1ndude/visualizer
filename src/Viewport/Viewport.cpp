@@ -26,10 +26,10 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE :
-                perspective(60.0f, 1.0f, 0.0001f, 5.0f);
+                perspective(60.0f, 1.0f, 0.0001f, 15.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
-                _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
+                _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
                 _text = "perspective";
                 break;
@@ -37,7 +37,7 @@ namespace Viewport {
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
-                _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
+                _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
                         QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f);
 
                 _text = "left";
@@ -46,7 +46,7 @@ namespace Viewport {
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
-                _qRotateVoxel = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
+                _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
                 _text = "frontal";
                 break;
@@ -54,7 +54,7 @@ namespace Viewport {
                 ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f));
 
-                _qRotateVoxel = QQuaternion();
+                _orientationBillboard = QQuaternion();
 
                 _text = "top";
                 break;
@@ -134,13 +134,13 @@ namespace Viewport {
         return _vMatrix;
     }
 
-    QMatrix4x4 Viewport::viewVoxel() const {
-        return _vMatrixVoxel;
+    QMatrix4x4 Viewport::viewBillboard() const {
+        return _vMatrixBillboard;
     }
 
-    QMatrix4x4 Viewport::modelVoxel(const QMatrix4x4 & model) const {
+    QMatrix4x4 Viewport::modelBillboard(const QMatrix4x4 & model) const {
         QMatrix4x4 modelMatrix(model);
-        modelMatrix.rotate(_qRotateVoxel);
+        modelMatrix.rotate(_orientationBillboard);
 
         return modelMatrix;
     }
@@ -179,14 +179,14 @@ namespace Viewport {
 
     void Viewport::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
         _vMatrix.setToIdentity();
-        _vMatrixVoxel.setToIdentity();
+        _vMatrixBillboard.setToIdentity();
         _vMatrix.lookAt(eye, center, up);
 
         if (_projectionType == PERSPECTIVE) {
-            _vMatrixVoxel.lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+            _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
         }
         else {
-            _vMatrixVoxel.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+            _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
         }
 
         _eye = eye;

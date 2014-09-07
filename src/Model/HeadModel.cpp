@@ -56,14 +56,14 @@ namespace Model {
         QMatrix4x4 model = AbstractModel::model();
         
         if (viewport) {
-            model = viewport->modelVoxel(model);
+            model = viewport->modelBillboard(model);
         }
         
         return model;
     }
 
     QMatrix4x4 HeadModel::view(Viewport::Viewport * viewport) {
-        return viewport->viewVoxel();
+        return viewport->viewBillboard();
     }
     
     void HeadModel::drawingRoutine() {
