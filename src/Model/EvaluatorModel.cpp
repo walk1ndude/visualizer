@@ -55,6 +55,12 @@ namespace Model {
             xCur += _stepX;
         }
 
+        /*
+        for (auto vertex : *vertices) {
+            qDebug() << vertex.x << vertex.y << vertex.z;
+        }
+        */
+
         ModelInfo::BuffersV buffers;
 
         buffers.vertices = ModelInfo::VerticesVPointer(vertices);
@@ -72,7 +78,7 @@ namespace Model {
     }
 
     void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
-        program->setUniformValue(uniformValues["vp"], view(viewport) * projection(viewport));
+        program->setUniformValue(uniformValues["vp"], projection(viewport) * view(viewport));
         program->setUniformValue(uniformValues["color"], QVector4D(_color, 1.0f));
     }
 }
