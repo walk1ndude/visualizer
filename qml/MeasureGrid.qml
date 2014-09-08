@@ -32,7 +32,8 @@ Rectangle {
                                "itemId" : measureOrder[i],
                                "itemName" : measure.name,
                                "itemColor" : measure.color,
-                               "selected" : false
+                               "selected" : false,
+                               "shown" : false
                            });
 
                     Helpers.addInPointToGroup(measureOrder[i], PointsDict.pointsDict.groups);
@@ -78,15 +79,25 @@ Rectangle {
 
                 onClicked: {
                     if (mouse.button === Qt.LeftButton) {
-                        listModel.get(index).selected = !selected;
+                        var currentElement = listModel.get(index);
+
+                        if (currentElement.shown) {
+                            currentElement.selected = false;
+                            currentElement.shown = false;
+                        }
+                        else {
+                            currentElement.selected = !selected;
+                        }
 
                         if (listModel.prevIndex > -1) {
                             listModel.setProperty(listModel.prevIndex, "selected", false);
                         }
 
-                        listModel.prevIndex = listModel.prevIndex === index ? -1 : index;
+                        var clickedOnSame = listModel.prevIndex === index;
 
-                        parent.color = selected ? itemColor : "white";
+                        listModel.prevIndex = clickedOnSame ? -1 : index;
+
+                        parent.color = shown ? itemColor : "white";
 
                         measureGrid.selectedPoint = (listModel.prevIndex === -1) ? { } : {
                                     "name" : itemId,

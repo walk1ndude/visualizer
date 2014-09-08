@@ -44,6 +44,7 @@ public slots:
 
         delete _texture;
         _texture = _window->createTextureFromId(_fboTexId, _size);
+
         setTexture(_texture);
     }
 
