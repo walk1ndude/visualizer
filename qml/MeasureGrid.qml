@@ -16,11 +16,12 @@ Rectangle {
 
     property variant selectedPoint: ({});
 
+    signal removePoint(string name);
+
     ListView {
+        id: listView;
         model: ListModel {
             id: listModel;
-
-            property int prevIndex: -1;
 
             Component.onCompleted: {
                 var measures = PointsDict.pointsDict.measures;
@@ -32,17 +33,24 @@ Rectangle {
                                "itemId" : measureOrder[i],
                                "itemName" : measure.name,
                                "itemColor" : measure.color,
-                               "selected" : false,
                                "shown" : false
                            });
 
                     Helpers.addInPointToGroup(measureOrder[i], PointsDict.pointsDict.groups);
                 }
+
+                listView.currentIndex = -1;
             }
         }
 
         delegate: delegateComponent;
         anchors.fill: parent;
+
+        onCurrentIndexChanged: {
+            if (currentIndex === -1) {
+                measureGrid.selectedPoint = { };
+            }
+        }
     }
 
     Component {
@@ -53,7 +61,8 @@ Rectangle {
                 color: "black";
                 width: 1;
             }
-            color: "white";
+
+            color: shown ? itemColor : "white";
 
             height: 45;
             width: measureGrid.width;
@@ -64,7 +73,7 @@ Rectangle {
 
                 font {
                     pixelSize: 12;
-                    bold: selected;
+                    bold: listView.currentIndex === index;
                 }
 
                 text: itemName;
@@ -77,33 +86,27 @@ Rectangle {
                     fill : parent
                 }
 
+                acceptedButtons: Qt.LeftButton | Qt.RightButton;
+
                 onClicked: {
                     if (mouse.button === Qt.LeftButton) {
-                        var currentElement = listModel.get(index);
+                        listView.currentIndex = (listView.currentIndex === index) ? -1 : index;
 
-                        if (currentElement.shown) {
-                            currentElement.selected = false;
-                            currentElement.shown = false;
+                        if (listView.currentIndex !== -1) {
+                            listModel.setProperty(listView.currentIndex, "shown", true);
+                            measureGrid.selectedPoint = {
+                                        "name" : itemId,
+                                        "color" : parent.color,
+                                        "groups" : Helpers.pointInGroups[itemId]
+                            };
                         }
-                        else {
-                            currentElement.selected = !selected;
+                    }
+                    else if (mouse.button === Qt.RightButton) {
+                        listModel.setProperty(index, "shown", false);
+
+                        if (listView.currentIndex === index) {
+                            listView.currentIndex = -1;
                         }
-
-                        if (listModel.prevIndex > -1) {
-                            listModel.setProperty(listModel.prevIndex, "selected", false);
-                        }
-
-                        var clickedOnSame = listModel.prevIndex === index;
-
-                        listModel.prevIndex = clickedOnSame ? -1 : index;
-
-                        parent.color = shown ? itemColor : "white";
-
-                        measureGrid.selectedPoint = (listModel.prevIndex === -1) ? { } : {
-                                    "name" : itemId,
-                                    "color" : parent.color,
-                                    "groups" : Helpers.pointInGroups[itemId]
-                        };
                     }
                 }
             }
