@@ -34,11 +34,11 @@ namespace Model {
     void AbstractModelWithPoints::processChildren() {
         _points->init(_modelPoints);
 
-        updatePointsTexture();
+        updatePointsTexture(program());
     }
 
-    void AbstractModelWithPoints::updatePointsTexture() {
-        int pointsCount = _modelPoints.size();
+    void AbstractModelWithPoints::updatePointsTexture(QOpenGLShaderProgram * program) {
+        int pointsCount = _modelPoints.sizeShown();
         
         if (!pointsCount) {
             return;
@@ -63,6 +63,10 @@ namespace Model {
         int i = 0;
 
         for (const PointsInfo::ModelPoint * modelPoint : _modelPoints) {
+            if (!modelPoint->shown) {
+                continue;
+            }
+
             data[i ++] = modelPoint->position.x();
             data[i ++] = modelPoint->position.y();
             data[i ++] = modelPoint->position.z();
@@ -84,6 +88,10 @@ namespace Model {
         _pointsTexture->generateMipMaps();
 
         delete [] data;
+
+        /* for obvious reasons we can't do it anywhere else - or we may
+        get different values for pointsCount during (un) hide point operations */
+        program->setUniformValue(uniformValues["pointsCount"], pointsCount);
     }
     
     bool AbstractModelWithPoints::checkDepthBuffer(Viewport::Viewport * viewport) {
@@ -150,7 +158,6 @@ namespace Model {
     void AbstractModelWithPoints::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
         if (_pointsTexture) {
             program->setUniformValue(uniformValues["points"], _pointsTexture->textureId());
-            program->setUniformValue(uniformValues["pointsCount"], _modelPoints.size());
         }
     }
 

@@ -66,6 +66,8 @@ namespace PointsInfo {
         Position3D position;
         qreal radius;
         Color color;
+
+        bool shown;
         
         Groups groups;
 
@@ -84,10 +86,12 @@ namespace PointsInfo {
                    const Color & color,
                    Viewport::Viewport * viewport,
                    const Groups & groups = Groups(),
-                   const qreal & radius = 0.05f) :
+                   const qreal & radius = 0.05f,
+                   const bool & shown = true) :
             position(position),
             radius(radius),
             color(color),
+            shown(shown),
             groups(groups),
             viewport(viewport),
             _positionCalculated(false) {
@@ -98,7 +102,18 @@ namespace PointsInfo {
     };
 
 
-    class ModelPoints : public QHash<Name, ModelPoint *> { };
+    class ModelPoints : public QHash<Name, ModelPoint *> {
+    public:
+        int sizeShown() {
+            int count = 0;
+            for (ModelPoint * point : *this) {
+                if (point->shown) {
+                    count ++;
+                }
+            }
+            return count;
+        }
+    };
 }
 
 

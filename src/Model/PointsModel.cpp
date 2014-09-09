@@ -20,6 +20,10 @@ namespace Model {
             int pos = 0;
 
             for (const PointsInfo::ModelPoint * modelPoint : modelPoints) {
+                if (!modelPoint->shown) {
+                    continue;
+                }
+
                 vertex = ModelInfo::VertexVC(modelPoint->position.x(),
                                              modelPoint->position.y(),
                                              modelPoint->position.z(),

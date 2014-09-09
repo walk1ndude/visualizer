@@ -15,8 +15,7 @@ Rectangle {
     }
 
     property variant selectedPoint: ({});
-
-    signal removePoint(string name);
+    property string hidePoint: "";
 
     ListView {
         id: listView;
@@ -103,6 +102,7 @@ Rectangle {
                     }
                     else if (mouse.button === Qt.RightButton) {
                         listModel.setProperty(index, "shown", false);
+                        measureGrid.hidePoint = itemId;
 
                         if (listView.currentIndex === index) {
                             listView.currentIndex = -1;

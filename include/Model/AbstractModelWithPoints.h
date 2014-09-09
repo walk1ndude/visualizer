@@ -57,7 +57,7 @@ namespace Model {
 
         QOpenGLTexture * _pointsTexture;
 
-        void updatePointsTexture();
+        void updatePointsTexture(QOpenGLShaderProgram * program);
         
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
