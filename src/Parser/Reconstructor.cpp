@@ -49,7 +49,7 @@ namespace Parser {
     Reconstructor::Reconstructor() :
         _sliceNumber(0) {
 
-        initOpenCL();
+        //initOpenCL();
     }
 
     Reconstructor::~Reconstructor() {

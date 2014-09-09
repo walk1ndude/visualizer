@@ -13,7 +13,7 @@ namespace Model {
                                                      const ShaderInfo::ShaderFiles & shaderFiles,
                                                      const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                                      const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModel::AbstractModel(parent, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
+        AbstractModel(parent, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
         _points(points),
         _pointsTexture(nullptr) {
 

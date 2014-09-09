@@ -136,7 +136,7 @@ namespace Parser {
 
         fetchDicomData(_dicomData, dFile, dImage);
 
-        cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE | CV_WINDOW_OPENGL);
+        cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
 
         runSliceProcessing(true);
     }

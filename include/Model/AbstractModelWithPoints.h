@@ -26,7 +26,7 @@ namespace Model {
         virtual void processChildren() final;
 
     protected:
-        AbstractModelWithPoints(PointsModel * points = nullptr,
+        explicit AbstractModelWithPoints(PointsModel * points = nullptr,
                                 AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
 
