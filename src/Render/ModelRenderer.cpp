@@ -65,7 +65,7 @@ namespace Render {
     }
 
     void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
-        QMutexLocker locker(&_renderMutex);
+        QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
@@ -83,7 +83,7 @@ namespace Render {
     }
 
     void ModelRenderer::addHeadModel(SliceInfo::Slices slices) {
-        QMutexLocker locker(&_renderMutex);
+        QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * selectModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
@@ -108,7 +108,7 @@ namespace Render {
     void ModelRenderer::addEvaluatorModel(const int & width, const int & height,
                                           const qreal & stepX, const qreal & stepY,
                                           const QVector3D & color) {
-        QMutexLocker locker(&_renderMutex);
+        QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();

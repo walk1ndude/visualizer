@@ -23,8 +23,8 @@ namespace Model {
         return _points;
     }
     
-    PointsInfo::ModelPoints AbstractModelWithPoints::modelPoints() {
-        return _modelPoints;
+    PointsInfo::ModelPoints * AbstractModelWithPoints::modelPoints() {
+        return &_modelPoints;
     }
 
     void AbstractModelWithPoints::addPoint(const QString & name, PointsInfo::ModelPoint * point) {
@@ -32,13 +32,13 @@ namespace Model {
     }
     
     void AbstractModelWithPoints::processChildren() {
-        _points->init(_modelPoints);
+        _points->init(&_modelPoints);
 
         updatePointsTexture(program());
     }
 
     void AbstractModelWithPoints::updatePointsTexture(QOpenGLShaderProgram * program) {
-        int pointsCount = _modelPoints.sizeShown();
+        int pointsCount = _modelPoints.size();
         
         if (!pointsCount) {
             return;
@@ -62,11 +62,7 @@ namespace Model {
 
         int i = 0;
 
-        for (const PointsInfo::ModelPoint * modelPoint : _modelPoints) {
-            if (!modelPoint->shown) {
-                continue;
-            }
-
+        for (const PointsInfo::ModelPoint * modelPoint : _modelPoints.points()) {
             data[i ++] = modelPoint->position.x();
             data[i ++] = modelPoint->position.y();
             data[i ++] = modelPoint->position.z();
@@ -99,7 +95,7 @@ namespace Model {
 
         bool updateNeeded = false;
        
-        for (PointsInfo::ModelPoint * modelPoint : _modelPoints) {
+        for (PointsInfo::ModelPoint * modelPoint : _modelPoints.points()) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
 
@@ -117,7 +113,7 @@ namespace Model {
                     
                     updateNeeded = true;
                     
-                    emit pointUpdated(PointsInfo::UpdatedPoint(modelPoint->position, modelPoints().key(modelPoint), id()));
+                    emit pointUpdated(PointsInfo::UpdatedPoint(modelPoint->position, modelPoints()->key(modelPoint), id()));
                 }
             }
         }

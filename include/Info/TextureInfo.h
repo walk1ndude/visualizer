@@ -32,14 +32,10 @@ namespace TextureInfo {
     class TextureProgram {
     public:
         TextureProgram(QOpenGLShaderProgram * program,
-                       const ShaderInfo::ShaderVariablesNames & shaderVariables) :
-            _sampler(program->uniformLocation(shaderVariables.at(0))) {
-        }
+                       const ShaderInfo::ShaderVariablesNames & shaderVariables);
 
         void setUniform(QOpenGLShaderProgram * program,
-                        const uint samplerNum) {
-            program->setUniformValue(_sampler, samplerNum);
-        }
+                        const uint samplerNum);
 
     private:
         ShaderInfo::ShaderVariable _sampler;

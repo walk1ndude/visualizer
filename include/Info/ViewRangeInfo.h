@@ -22,33 +22,12 @@ namespace ViewRangeInfo {
                   const ViewAxisRange & yRange,
                   const ViewAxisRange & zRange,
                   QOpenGLShaderProgram * program,
-                  const ShaderInfo::ShaderVariablesNames & shaderVariables) :
-            xRange(xRange), yRange(yRange), zRange(zRange),
-            shaderXRange(program->uniformLocation(shaderVariables.at(0))),
-            shaderYRange(program->uniformLocation(shaderVariables.at(1))),
-            shaderZRange(program->uniformLocation(shaderVariables.at(2))) {
-        }
+                  const ShaderInfo::ShaderVariablesNames & shaderVariables);
 
-        void setUniformValue(QOpenGLShaderProgram * program) {
-            program->setUniformValue(shaderXRange, xRange);
-            program->setUniformValue(shaderYRange, yRange);
-            program->setUniformValue(shaderZRange, zRange);
-        }
+        void setUniformValue(QOpenGLShaderProgram * program);
 
         void setViewAxisRange(const ViewAxisRange & viewAxisRange,
-                               const ViewAxis viewAxis) {
-            switch (viewAxis) {
-            case XAXIS:
-                xRange = viewAxisRange;
-                break;
-            case YAXIS:
-                yRange = viewAxisRange;
-                break;
-            case ZAXIS:
-                zRange = viewAxisRange;
-                break;
-            }
-        }
+                               const ViewAxis viewAxis);
 
     private:
         ShaderInfo::ShaderVariable shaderXRange;

@@ -29,19 +29,12 @@ namespace ShaderInfo {
         TesselationControlShaderFiles tesselationControlShaderFiles;
         TesselationEvaluationShaderFiles tesselationEvaluationShaderFiles;
 
-        ShaderFiles() { }
-
+        ShaderFiles();
         ShaderFiles(const VertexShaderFiles & vertexShaderFiles,
                     const FragmentShaderFiles & fragmentShaderFiles,
                     const GeometryShaderFiles & geometryShaderFiles = QList<GeometryShaderFile>(),
                     const TesselationControlShaderFiles & tesselationControlShaderFiles = QList<TesselationControlShaderFile>(),
-                    const TesselationEvaluationShaderFiles & tesselationEvaluationShaderFiles = QList<TesselationEvaluationShaderFile>()) :
-            vertexShaderFiles(vertexShaderFiles),
-            fragmentShaderFiles(fragmentShaderFiles),
-            geometryShaderFiles(geometryShaderFiles),
-            tesselationControlShaderFiles(tesselationControlShaderFiles),
-            tesselationEvaluationShaderFiles(tesselationEvaluationShaderFiles) {
-        }
+                    const TesselationEvaluationShaderFiles & tesselationEvaluationShaderFiles = QList<TesselationEvaluationShaderFile>());
     };
 }
 

@@ -23,18 +23,11 @@ namespace PointsInfo {
 
         Viewport::Viewport * viewport;
         
-        Point() { }
-        
+        Point();
         Point(const Position2D & position,
               const Name & name,
               const Color & color,
-              Viewport::Viewport * viewport) :
-            position(position),
-            name(name),
-            color(color),
-            viewport(viewport) {
-            
-        }
+              Viewport::Viewport * viewport);
     };
     
     class UpdatedPoint {
@@ -42,20 +35,13 @@ namespace PointsInfo {
         Position3D position;
         Name name;
 
-        UpdatedPoint() { }
+        UpdatedPoint();
 
         UpdatedPoint(const Position3D & position,
                      const Name & name,
-                     const uint & modelId) :
-                    position(position),
-                    name(name),
-                    _modelId(modelId) {
-            
-                    }
+                     const uint & modelId);
 
-        uint modelId() const {
-            return _modelId;
-        }
+        uint modelId() const;
 
     private:
         uint _modelId;
@@ -73,47 +59,36 @@ namespace PointsInfo {
 
         Viewport::Viewport * viewport;
 
-        bool isPositionCalculated() const {
-            return _positionCalculated;
-        }
+        bool isPositionCalculated() const;
 
-        void positionCalculated(const QVector4D & position) {
-            this->position = Position3D(position);
-            _positionCalculated = true;
-        }
+        void positionCalculated(const QVector4D & position);
 
         ModelPoint(const Position3D & position,
                    const Color & color,
                    Viewport::Viewport * viewport,
                    const Groups & groups = Groups(),
                    const qreal & radius = 0.05f,
-                   const bool & shown = true) :
-            position(position),
-            radius(radius),
-            color(color),
-            shown(shown),
-            groups(groups),
-            viewport(viewport),
-            _positionCalculated(false) {
-
-        }
+                   const bool & shown = true);
     private:
         bool _positionCalculated;
     };
 
 
-    class ModelPoints : public QHash<Name, ModelPoint *> {
+    class ModelPoints {
     public:
-        int sizeShown() {
-            int count = 0;
-            for (ModelPoint * point : *this) {
-                if (point->shown) {
-                    count ++;
-                }
-            }
-            return count;
-        }
+        ~ModelPoints();
+
+        Name key(ModelPoint * point) const;
+
+        void insert(const Name & name, ModelPoint * point);
+        int size() const;
+
+        QVector<ModelPoint *> points() const;
+
+    private:
+        QHash<Name, ModelPoint *> _points;
     };
+
 }
 
 

@@ -4,8 +4,6 @@
 #include "Info/Info.h"
 #include "Info/ShaderInfo.h"
 
-static uint lightSourceNumber = 0;
-
 namespace LightInfo {
     using Position = QVector4D;
     using Color = QVector4D;
@@ -19,29 +17,16 @@ namespace LightInfo {
         Q_OBJECT
 
     public:
-        LightSource() { }
+        LightSource();
         LightSource(const Position & position,
                     const Color & color,
-                    const AmbientIntensity & ambientIntensity) :
-            _position(position),
-            _color(color),
-            _ambientIntensity(ambientIntensity),
-            _id(lightSourceNumber ++) {
-        }
+                    const AmbientIntensity & ambientIntensity);
 
-        Position position() const {
-            return _position;
-        }
+        Position position() const;
+        Color color() const;
+        AmbientIntensity ambientIntensity() const;
 
-        Color color() const {
-            return _color;
-        }
-
-        AmbientIntensity ambientIntensity() const {
-            return _ambientIntensity;
-        }
-
-        uint id() { return _id; }
+        uint id() const;
     private:
         Position _position;
         Color _color;
@@ -55,40 +40,18 @@ namespace LightInfo {
         void ambientIntensityChanged();
 
     public slots:
-        void setPosition(const Position & position) {
-            _position = position;
-
-            emit positionChanged();
-        }
-
-        void setColor(const Color & color) {
-            _color = color;
-
-            emit colorChanged();
-        }
-
-        void setAmbientIntensity(const AmbientIntensity & ambientIntensity) {
-            _ambientIntensity = ambientIntensity;
-
-            emit ambientIntensityChanged();
-        }
+        void setPosition(const Position & position);
+        void setColor(const Color & color);
+        void setAmbientIntensity(const AmbientIntensity & ambientIntensity);
     };
 
     class LightProgram {
     public:
         LightProgram(QOpenGLShaderProgram * program,
-                     const ShaderInfo::ShaderVariablesNames & shaderVariables) :
-            shaderPosition(program->uniformLocation(shaderVariables.at(0))),
-            shaderColor(program->uniformLocation(shaderVariables.at(1))),
-            shaderAmbientIntensity(program->uniformLocation(shaderVariables.at(2))) {
-        }
+                     const ShaderInfo::ShaderVariablesNames & shaderVariables);
 
         void setUniformValue(QOpenGLShaderProgram * program,
-                             LightSource * lightSource) {
-            program->setUniformValue(shaderPosition, lightSource->position());
-            program->setUniformValue(shaderColor, lightSource->color());
-            program->setUniformValue(shaderAmbientIntensity, lightSource->ambientIntensity());
-        }
+                             LightSource * lightSource);
 
     private:
         ShaderInfo::ShaderVariable shaderPosition;

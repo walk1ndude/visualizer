@@ -11,7 +11,7 @@ namespace Model {
 
     }
 
-    void PointsModel::init(const PointsInfo::ModelPoints & modelPoints) {
+    void PointsModel::init(PointsInfo::ModelPoints * modelPoints) {
         if (updateNeeded()) {
             ModelInfo::VertexVC vertex;
             ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
@@ -19,11 +19,7 @@ namespace Model {
             QHash<QString, int>groups;
             int pos = 0;
 
-            for (const PointsInfo::ModelPoint * modelPoint : modelPoints) {
-                if (!modelPoint->shown) {
-                    continue;
-                }
-
+            for (const PointsInfo::ModelPoint * modelPoint : modelPoints->points()) {
                 vertex = ModelInfo::VertexVC(modelPoint->position.x(),
                                              modelPoint->position.y(),
                                              modelPoint->position.z(),

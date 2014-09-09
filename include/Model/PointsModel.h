@@ -21,7 +21,7 @@ namespace Model {
                              const ShaderInfo::ShaderVariablesNames & uniformValues =
                                 ShaderInfo::ShaderVariablesNames() << "mvp" << "viewportSize");
 
-        void init(const PointsInfo::ModelPoints & modelPoints);
+        void init(PointsInfo::ModelPoints * modelPoints);
 
     protected:
         void glStatesEnable();

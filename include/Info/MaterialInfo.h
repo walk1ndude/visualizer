@@ -4,8 +4,6 @@
 #include "Info/Info.h"
 #include "Info/ShaderInfo.h"
 
-static uint materialNumber = 0;
-
 namespace MaterialInfo {
     using Emissive = QVector4D;
     using Diffuse = QVector4D;
@@ -20,35 +18,18 @@ namespace MaterialInfo {
 
         Q_OBJECT
     public:
-        Material() { }
+        Material();
         Material(const Emissive & emissive,
                  const Diffuse & diffuse,
                  const Specular & specular,
-                 const Shininess & shininess) :
-            _emissive(emissive),
-            _diffuse(diffuse),
-            _specular(specular),
-            _shininess(shininess),
-            _id(materialNumber ++) {
-        }
+                 const Shininess & shininess);
 
-        Emissive emissive() const {
-            return _emissive;
-        }
+        Emissive emissive() const;
+        Diffuse diffuse() const;
+        Specular specular() const;
+        Shininess shininess() const;
 
-        Diffuse diffuse() const {
-            return _diffuse;
-        }
-
-        Specular specular() const {
-            return _specular;
-        }
-
-        Shininess shininess() const {
-            return _shininess;
-        }
-
-        uint id() { return _id; }
+        uint id() const;
     private:
         Emissive _emissive;
         Diffuse _diffuse;
@@ -64,48 +45,19 @@ namespace MaterialInfo {
         void shininessChanged();
 
     public slots:
-        void setEmissive(const Emissive & emissive) {
-            _emissive = emissive;
-
-            emit emissiveChanged();
-        }
-
-        void setDiffuse(const Diffuse & diffuse) {
-            _diffuse = diffuse;
-
-            emit diffuseChanged();
-        }
-
-        void setSpecular(const Specular & specular) {
-            _specular = specular;
-
-            emit specularChanged();
-        }
-
-        void setShininess(const Shininess & shininess) {
-            _shininess = shininess;
-
-            emit shininessChanged();
-        }
+        void setEmissive(const Emissive & emissive);
+        void setDiffuse(const Diffuse & diffuse);
+        void setSpecular(const Specular & specular);
+        void setShininess(const Shininess & shininess);
     };
 
     class MaterialProgram {
     public:
         MaterialProgram(QOpenGLShaderProgram * program,
-                        const ShaderInfo::ShaderVariablesNames & shaderVariables) :
-            shaderEmissive(program->uniformLocation(shaderVariables.at(0))),
-            shaderDiffuse(program->uniformLocation(shaderVariables.at(1))),
-            shaderSpecular(program->uniformLocation(shaderVariables.at(2))),
-            shaderShininess(program->uniformLocation(shaderVariables.at(3))) {
-        }
+                        const ShaderInfo::ShaderVariablesNames & shaderVariables);
 
         void setUniform(QOpenGLShaderProgram * program,
-                        Material * material) {
-            program->setUniformValue(shaderEmissive, material->emissive());
-            program->setUniformValue(shaderDiffuse, material->diffuse());
-            program->setUniformValue(shaderSpecular, material->specular());
-            program->setUniformValue(shaderShininess, material->shininess());
-        }
+                        Material * material);
 
     private:
         ShaderInfo::ShaderVariable shaderEmissive;

@@ -42,7 +42,7 @@ namespace Model {
         virtual void bindUniformValues();
 
         virtual PointsModel * pointsModel() final;
-        virtual PointsInfo::ModelPoints modelPoints() final;
+        virtual PointsInfo::ModelPoints * modelPoints() final;
         
         virtual bool checkDepthBuffer(Viewport::Viewport * viewport) final;
 

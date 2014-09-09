@@ -57,7 +57,7 @@ namespace Render {
     }
 
     void AbstractRenderer::selectScene(Scene::AbstractScene * scene) {
-        QMutexLocker locker(&_renderMutex);
+        QMutexLocker locker(&renderMutex);
 
         // no more connection with previous scene
         if (_selectedScene) {
@@ -89,7 +89,7 @@ namespace Render {
     }
 
     void AbstractRenderer::renderNext() {
-        QMutexLocker locker(&_renderMutex);
+        QMutexLocker locker(&renderMutex);
         activateContext();
 
         if (!_fboRender) {
@@ -134,7 +134,7 @@ namespace Render {
     }
 
     void AbstractRenderer::cleanUp() {
-        QMutexLocker locker(&_renderMutex);
+        QMutexLocker locker(&renderMutex);
 
         activateContext();
 

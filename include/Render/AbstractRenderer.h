@@ -25,7 +25,7 @@ namespace Render {
         virtual void selectScene(Scene::AbstractScene * scene = nullptr) final;
 
     protected:
-        QMutex _renderMutex;
+        QMutex renderMutex;
 
         virtual void render() = 0;
 
