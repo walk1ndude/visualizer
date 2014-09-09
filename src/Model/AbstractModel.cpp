@@ -200,7 +200,8 @@ namespace Model {
         QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
 
         while (it.hasNext()) {
-            it.next().key()->release(it.key()->textureId());
+            it.next();
+            it.key()->release(it.key()->textureId());
         }
     }
 
