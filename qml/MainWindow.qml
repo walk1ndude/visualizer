@@ -105,7 +105,6 @@ ApplicationWindow {
             zoomFactor: sidebar.zoomFactor;
 
             selectedPoint: sidebar.selectedPoint;
-            hidePoint: sidebar.hidePoint;
 
             onPointUpdated: {
                 sidebar.updateIndividualInfo();
@@ -123,6 +122,8 @@ ApplicationWindow {
             bottom: appWindow.bottom;
             right: appWindow.right;
         }
+
+        onTogglePoint: modelViewer.togglePoint(point);
 
         dX: appWindow.width * appWindow.sideBarWidth;
 

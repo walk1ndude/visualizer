@@ -19,11 +19,14 @@ Item {
     property int maxHU: 65535;
 
     property variant selectedPoint: ({});
-    property string hidePoint: "";
 
     property int modelID: modelViewer.modelID;
 
     signal pointUpdated(variant point);
+
+    function togglePoint(point) {
+        modelViewer.togglePoint(point);
+    }
 
     ModelViewer {
         id: modelViewer;
@@ -45,7 +48,6 @@ Item {
         maxHU: modelViewerEx.maxHU;
 
         selectedPoint: modelViewerEx.selectedPoint;
-        hidePoint: modelViewerEx.hidePoint;
 
         onPointUpdated: {
             // update info about points

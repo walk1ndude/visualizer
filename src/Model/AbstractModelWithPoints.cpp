@@ -32,7 +32,7 @@ namespace Model {
     }
 
     void AbstractModelWithPoints::hidePoint(const PointsInfo::Name & point) {
-        _modelPoints.hidePoint(point);
+        _modelPoints.togglePoint(point);
 
         queueForUpdate();
     }

@@ -26,7 +26,8 @@ Sidedock {
     property real zoomFactor: 1.0;
 
     property variant selectedPoint: ({});
-    property string hidePoint: "";
+
+    signal togglePoint(string point);
 
     property int modelID: -1;
 
@@ -155,7 +156,7 @@ Sidedock {
                         width: sidebarListView.width;
 
                         onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
-                        onHidePointChanged: sidebar.hidePoint = hidePoint;
+                        onTogglePoint: sidebar.togglePoint(point);
                 }
             }
         }

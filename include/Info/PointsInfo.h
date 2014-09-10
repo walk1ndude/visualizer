@@ -83,7 +83,7 @@ namespace PointsInfo {
         void insert(const Name & name, ModelPoint * point);
         int size() const;
 
-        void hidePoint(const Name & point);
+        void togglePoint(const Name & point);
 
         QVector<ModelPoint *> points() const;
 

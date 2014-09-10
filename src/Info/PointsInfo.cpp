@@ -84,7 +84,9 @@ namespace PointsInfo {
         return points;
     }
 
-    void ModelPoints::hidePoint(const Name & point) {
-        _points[point]->shown = false;
+    void ModelPoints::togglePoint(const Name & point) {
+        if (_points.find(point) != _points.end()) {
+            _points[point]->shown = !_points[point]->shown;
+        }
     }
 }

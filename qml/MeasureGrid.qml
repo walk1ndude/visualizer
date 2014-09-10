@@ -14,8 +14,9 @@ Rectangle {
         width: 2;
     }
 
+    signal togglePoint(string point);
+
     property variant selectedPoint: ({});
-    property string hidePoint: "";
 
     ListView {
         id: listView;
@@ -56,6 +57,8 @@ Rectangle {
         id: delegateComponent;
 
         Rectangle {
+            property bool isShown: shown;
+
             border {
                 color: "black";
                 width: 1;
@@ -80,6 +83,8 @@ Rectangle {
                 wrapMode: Text.WordWrap;
             }
 
+            onIsShownChanged: measureGrid.togglePoint(itemId);
+
             MouseArea {
                 anchors {
                     fill : parent
@@ -102,7 +107,6 @@ Rectangle {
                     }
                     else if (mouse.button === Qt.RightButton) {
                         listModel.setProperty(index, "shown", false);
-                        measureGrid.hidePoint = itemId;
 
                         if (listView.currentIndex === index) {
                             listView.currentIndex = -1;

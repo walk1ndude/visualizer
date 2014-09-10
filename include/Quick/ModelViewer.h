@@ -14,7 +14,6 @@
 namespace Quick {
     class ModelViewer : public QQuickItem {        
         Q_PROPERTY(QVariantMap selectedPoint READ selectedPoint WRITE setSelectedPoint)
-        Q_PROPERTY(QString hidePoint READ hidePoint WRITE setHidePoint NOTIFY hidePointChanged)
 
         Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize)
 
@@ -44,7 +43,6 @@ namespace Quick {
         QSize fboSize();
         
         QVariantMap selectedPoint();
-        QString hidePoint();
 
         QVector3D rotation();
 
@@ -78,7 +76,6 @@ namespace Quick {
         QVector<Scene::ModelScene *> _modelScenes;
 
         QVariantMap _selectedPoint;
-        QString _hidePoint;
 
         QVector3D _step;
 
@@ -126,11 +123,13 @@ namespace Quick {
 
         void modelSceneChanged();
 
-        void hidePointChanged(const QString & point);
+        void togglePointChanged(const QString & point);
 
     public slots:
         Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);
         Q_INVOKABLE void addPoint(const QPointF & point, Viewport::Viewport * viewport);
+
+        Q_INVOKABLE void togglePoint(const QString & point);
 
         void setModelScene(Scene::ModelScene * modelScene);
 
@@ -139,7 +138,6 @@ namespace Quick {
         void setFboSize(const QSize & fboSize);
 
         void setSelectedPoint(const QVariantMap & selectedPoint);
-        void setHidePoint(const QString & point);
 
         void setRotation(const QVector3D & rotation);
 

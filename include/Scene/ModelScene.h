@@ -74,7 +74,7 @@ namespace Scene {
         virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
         virtual void addPoint(const PointsInfo::Point & point);
-        void hidePoint(const QString & point);
+        void togglePoint(const QString & point);
 
         virtual void updateScene();
     };

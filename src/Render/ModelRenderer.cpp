@@ -141,7 +141,7 @@ namespace Render {
 
     void ModelRenderer::hidePoint(const QString & point) {
         if (selectedScene()) {
-            selectedScene()->hidePoint(point);
+            selectedScene()->togglePoint(point);
         }
 
         emit redraw();

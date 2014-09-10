@@ -147,7 +147,7 @@ namespace Scene {
         }
     }
 
-    void ModelScene::hidePoint(const QString & point) {
+    void ModelScene::togglePoint(const QString & point) {
         if (!_selectedModel) {
             return;
         }
