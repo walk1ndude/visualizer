@@ -55,6 +55,8 @@ namespace Scene {
         virtual void hidePoint(const PointsInfo::Name & point) = 0;
 
         virtual void initializeScene() final;
+
+        virtual void updateScene() = 0;
     };
 }
 

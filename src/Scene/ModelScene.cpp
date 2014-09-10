@@ -60,14 +60,18 @@ namespace Scene {
         }
     }
 
-    void ModelScene::renderScene(const QSize & surfaceSize) {
-        viewportArray()->resize(surfaceSize);
-
+    void ModelScene::updateScene() {
         for (Model::AbstractModel * model : _models) {
             if (model->updateNeeded()) {
                 model->update();
             }
         }
+    }
+
+    void ModelScene::renderScene(const QSize & surfaceSize) {
+        viewportArray()->resize(surfaceSize);
+
+        updateScene();
 
         QListIterator<Model::AbstractModel *> modelIterator (_models);
 

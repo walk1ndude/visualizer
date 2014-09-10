@@ -62,7 +62,7 @@ namespace Model {
         virtual void setViewAxisRange(const ViewRangeInfo::ViewAxisRange & viewAxisRange,
                                       const ViewRangeInfo::ViewAxis viewAxis = ViewRangeInfo::XAXIS);
 
-        virtual void processChildren() final;
+        virtual void updateRoutine() final;
     };
 }
 

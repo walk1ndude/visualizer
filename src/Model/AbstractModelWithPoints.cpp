@@ -37,7 +37,7 @@ namespace Model {
         queueForUpdate();
     }
     
-    void AbstractModelWithPoints::processChildren() {
+    void AbstractModelWithPoints::updateRoutine() {
         _points->init(&_modelPoints);
 
         updatePointsTexture(program());
@@ -125,7 +125,7 @@ namespace Model {
         }
 
         if (updateNeeded) {
-            _points->queueForUpdate();
+            queueForUpdate();
         }
         
         return updateNeeded;

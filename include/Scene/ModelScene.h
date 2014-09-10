@@ -75,6 +75,8 @@ namespace Scene {
 
         virtual void addPoint(const PointsInfo::Point & point);
         void hidePoint(const QString & point);
+
+        virtual void updateScene();
     };
 
 }

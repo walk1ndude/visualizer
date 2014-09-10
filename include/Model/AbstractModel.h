@@ -67,6 +67,7 @@ namespace Model {
         virtual void addChild(AbstractModel * child) final;
 
         virtual void drawingRoutine();
+        virtual void updateRoutine();
 
         virtual void bindUniformValues();
 
@@ -206,7 +207,6 @@ namespace Model {
         virtual bool checkDepthBuffer(Viewport::Viewport * viewPort);
 
         virtual void update();
-        virtual void processChildren();
 
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
         virtual void hidePoint(const PointsInfo::Name & point);

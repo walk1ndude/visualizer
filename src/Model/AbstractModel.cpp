@@ -329,12 +329,16 @@ namespace Model {
     }
 
     void AbstractModel::update() {
-        processChildren();
+        bindShaderProgram();
+
+        updateRoutine();
+
+        releaseShaderProgram();
 
         _updateNeeded = false;
     }
 
-    void AbstractModel::processChildren() {
+    void AbstractModel::updateRoutine() {
 
     }
 
