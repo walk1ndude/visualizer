@@ -39,6 +39,8 @@ namespace Model {
 
         virtual bool depthTest();
 
+        virtual bool updateNeeded() final;
+
     protected:
         QMutex modelMutex;
 
@@ -69,8 +71,6 @@ namespace Model {
         virtual void bindUniformValues();
 
         virtual QOpenGLShaderProgram * program() final;
-
-        virtual bool updateNeeded() final;
 
         virtual void deleteModel();
 
@@ -207,6 +207,9 @@ namespace Model {
 
         virtual void update();
         virtual void processChildren();
+
+        virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
+        virtual void hidePoint(const PointsInfo::Name & point);
     };
 }
 

@@ -84,4 +84,7 @@ namespace PointsInfo {
         return points;
     }
 
+    void ModelPoints::hidePoint(const Name & point) {
+        _points[point]->shown = false;
+    }
 }

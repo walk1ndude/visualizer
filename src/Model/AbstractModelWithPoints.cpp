@@ -27,8 +27,14 @@ namespace Model {
         return &_modelPoints;
     }
 
-    void AbstractModelWithPoints::addPoint(const QString & name, PointsInfo::ModelPoint * point) {
+    void AbstractModelWithPoints::addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) {
         _modelPoints.insert(name, point);
+    }
+
+    void AbstractModelWithPoints::hidePoint(const PointsInfo::Name & point) {
+        _modelPoints.hidePoint(point);
+
+        queueForUpdate();
     }
     
     void AbstractModelWithPoints::processChildren() {

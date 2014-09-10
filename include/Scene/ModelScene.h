@@ -30,17 +30,6 @@ namespace Scene {
 
         QRect screenSaveRect();
 
-        void addTexture(TextureInfo::Texture & textureInfo);
-
-        virtual void setRotation(const QVector3D & rotation);
-
-        // to clip selected model
-        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
-        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
-        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
-
-        virtual void addPoint(const PointsInfo::Point & point);
-
     protected:
         virtual void initScene();
 
@@ -74,6 +63,18 @@ namespace Scene {
         void addEvaluatorModel(const int & width = 10, const int & height = 10,
                                const qreal & stepX = 0.5f, const qreal & stepY = 0.0f,
                                const QVector3D & color = QVector3D(0.0f, 0.0f, 1.0f));
+
+        void addTexture(TextureInfo::Texture & textureInfo);
+
+        virtual void setRotation(const QVector3D & rotation);
+
+        // to clip selected model
+        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
+        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
+        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
+
+        virtual void addPoint(const PointsInfo::Point & point);
+        void hidePoint(const QString & point);
     };
 
 }

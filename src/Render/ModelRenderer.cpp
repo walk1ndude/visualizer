@@ -138,4 +138,12 @@ namespace Render {
             selectedScene()->addPoint(point);
         }
     }
+
+    void ModelRenderer::hidePoint(const QString & point) {
+        if (selectedScene()) {
+            selectedScene()->hidePoint(point);
+        }
+
+        emit needToRedraw();
+    }
 }

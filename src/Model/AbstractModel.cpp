@@ -329,7 +329,9 @@ namespace Model {
     }
 
     void AbstractModel::update() {
+        processChildren();
 
+        _updateNeeded = false;
     }
 
     void AbstractModel::processChildren() {
@@ -346,5 +348,14 @@ namespace Model {
 
     void AbstractModel::glStatesDisable() {
 
+    }
+
+    void AbstractModel::addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) {
+        Q_UNUSED(name)
+        Q_UNUSED(point)
+    }
+
+    void AbstractModel::hidePoint(const PointsInfo::Name & point) {
+        Q_UNUSED(point)
     }
 }

@@ -68,7 +68,7 @@ namespace Viewport {
             }
 
             if (needToRedraw) {
-                model->processChildren();
+                model->update();
             }
         }
 

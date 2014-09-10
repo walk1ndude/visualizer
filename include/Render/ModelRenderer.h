@@ -53,6 +53,7 @@ namespace Render {
         void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
         void addPoint(const PointsInfo::Point & point);
+        void hidePoint(const QString & point);
     };
 }
 #endif // SLICERENDERER_H

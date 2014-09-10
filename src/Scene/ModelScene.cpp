@@ -63,7 +63,12 @@ namespace Scene {
     void ModelScene::renderScene(const QSize & surfaceSize) {
         viewportArray()->resize(surfaceSize);
 
-        QList<Model::AbstractModel *> test;
+        for (Model::AbstractModel * model : _models) {
+            if (model->updateNeeded()) {
+                model->update();
+            }
+        }
+
         QListIterator<Model::AbstractModel *> modelIterator (_models);
 
         viewportArray()->render(modelIterator);
@@ -128,13 +133,22 @@ namespace Scene {
     void ModelScene::addPoint(const PointsInfo::Point & point) {
         if (!_selectedModel) {
             return;
-        } else if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->addPoint(point.name,
-                            new PointsInfo::ModelPoint(
-                                PointsInfo::Position3D(point.position),
-                                point.color, point.viewport, point.groups
-                                )
-                            );
+        } else {
+            _selectedModel->addPoint(point.name,
+                                     new PointsInfo::ModelPoint(
+                                         PointsInfo::Position3D(point.position),
+                                         point.color, point.viewport, point.groups
+                                         )
+                                     );
+        }
+    }
+
+    void ModelScene::hidePoint(const QString & point) {
+        if (!_selectedModel) {
+            return;
+        }
+        else {
+            _selectedModel->hidePoint(point);
         }
     }
 

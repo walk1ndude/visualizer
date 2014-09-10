@@ -12,18 +12,6 @@
 namespace Model {
     class AbstractModelWithPoints : public AbstractModel {
         Q_OBJECT
-    public:
-        virtual void addPoint(const QString & name, PointsInfo::ModelPoint * point);
-
-        virtual void setViewRange(const ViewRangeInfo::ViewAxisRange & xRange,
-                                  const ViewRangeInfo::ViewAxisRange & yRange,
-                                  const ViewRangeInfo::ViewAxisRange & zRange,
-                                  const ShaderInfo::ShaderVariablesNames & shaderVariables);
-
-        virtual void setViewAxisRange(const ViewRangeInfo::ViewAxisRange & viewAxisRange,
-                                      const ViewRangeInfo::ViewAxis viewAxis = ViewRangeInfo::XAXIS);
-
-        virtual void processChildren() final;
 
     protected:
         explicit AbstractModelWithPoints(PointsModel * points = nullptr,
@@ -61,6 +49,20 @@ namespace Model {
         
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
+
+    public slots:
+        virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) final;
+        virtual void hidePoint(const PointsInfo::Name & point) final;
+
+        virtual void setViewRange(const ViewRangeInfo::ViewAxisRange & xRange,
+                                  const ViewRangeInfo::ViewAxisRange & yRange,
+                                  const ViewRangeInfo::ViewAxisRange & zRange,
+                                  const ShaderInfo::ShaderVariablesNames & shaderVariables);
+
+        virtual void setViewAxisRange(const ViewRangeInfo::ViewAxisRange & viewAxisRange,
+                                      const ViewRangeInfo::ViewAxis viewAxis = ViewRangeInfo::XAXIS);
+
+        virtual void processChildren() final;
     };
 }
 

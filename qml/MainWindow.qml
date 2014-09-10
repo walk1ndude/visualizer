@@ -105,6 +105,7 @@ ApplicationWindow {
             zoomFactor: sidebar.zoomFactor;
 
             selectedPoint: sidebar.selectedPoint;
+            hidePoint: sidebar.hidePoint;
 
             onPointUpdated: {
                 sidebar.updateIndividualInfo();
