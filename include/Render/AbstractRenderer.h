@@ -63,7 +63,7 @@ namespace Render {
     signals:
         void textureReady(const GLuint & fboTexId, const QSize & size);
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
-        void needToRedraw();
+        void redraw();
 
     public slots:
         virtual void renderNext() final;

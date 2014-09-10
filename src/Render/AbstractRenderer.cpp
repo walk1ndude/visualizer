@@ -29,7 +29,7 @@ namespace Render {
         _surface->setFormat(surfaceFormat);
         _surface->create();
 
-        QObject::connect(this, &AbstractRenderer::needToRedraw, this, &AbstractRenderer::renderNext);
+        QObject::connect(this, &AbstractRenderer::redraw, this, &AbstractRenderer::renderNext);
     }
 
     AbstractRenderer::~AbstractRenderer() {

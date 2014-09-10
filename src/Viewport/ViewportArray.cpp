@@ -58,20 +58,20 @@ namespace Viewport {
     }
 
     bool ViewportArray::postProcess(QListIterator<Model::AbstractModel *> & modelIterator) {
-        bool needToRedraw = false;
+        bool redraw = false;
 
         while (modelIterator.hasNext()) {
             Model::AbstractModel * model = modelIterator.next();
 
             for (Viewport * viewport : _viewportArray) {
-                needToRedraw |= model->checkDepthBuffer(viewport);
+                redraw |= model->checkDepthBuffer(viewport);
             }
 
-            if (needToRedraw) {
+            if (redraw) {
                 model->update();
             }
         }
 
-        return needToRedraw;
+        return redraw;
     }
 }

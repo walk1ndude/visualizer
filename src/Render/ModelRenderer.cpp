@@ -28,22 +28,22 @@ namespace Render {
 
     void ModelRenderer::setRotation(const QVector3D & rotation) {
         selectedScene()->setRotation(rotation);
-        emit needToRedraw();
+        emit redraw();
     }
 
     void ModelRenderer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
         selectedScene()->setXRange(xRange);
-        emit needToRedraw();
+        emit redraw();
     }
 
     void ModelRenderer::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
         selectedScene()->setYRange(yRange);
-        emit needToRedraw();
+        emit redraw();
     }
 
     void ModelRenderer::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
         selectedScene()->setZRange(zRange);
-        emit needToRedraw();
+        emit redraw();
     }
 
     void ModelRenderer::connectWithScene(Scene::AbstractScene * scene) {
@@ -73,7 +73,7 @@ namespace Render {
             selectedModelScene->addStlModel(buffers);
 
             locker.unlock();
-            emit needToRedraw();
+            emit redraw();
         }
         else {
             // selected scene doesn't seem like modelScene -> don't risk to add to id, free buffers
@@ -91,7 +91,7 @@ namespace Render {
             selectModelScene->addHeadModel(slices);
 
             locker.unlock();
-            emit needToRedraw();
+            emit redraw();
         }
         else {
             // sorry, different scene
@@ -116,7 +116,7 @@ namespace Render {
             selectedModelScene->addEvaluatorModel(width, height, stepX, stepY, color);
 
             locker.unlock();
-            emit needToRedraw();
+            emit redraw();
         }
     }
 
@@ -144,6 +144,6 @@ namespace Render {
             selectedScene()->hidePoint(point);
         }
 
-        emit needToRedraw();
+        emit redraw();
     }
 }
