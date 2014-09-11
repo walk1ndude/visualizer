@@ -25,10 +25,6 @@ namespace Quick {
                     }
                 }
             }
-
-            if (_viewportArray) {
-                _viewportArray->update();
-            }
         });
     }
 
