@@ -2,6 +2,7 @@
 
 TextureNode::TextureNode(QQuickWindow * window) :
     _size(0, 0),
+    _fboTexId(GLuint(0)),
     _texture(nullptr),
     _window(window) {
 
