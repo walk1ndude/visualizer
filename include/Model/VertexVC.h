@@ -45,4 +45,6 @@ namespace ModelInfo {
     };
 }
 
+Q_DECLARE_METATYPE(ModelInfo::BuffersVC)
+
 #endif // VERTEXVC_H

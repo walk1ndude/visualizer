@@ -8,18 +8,7 @@
 namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
         AbstractRenderer(context, size) {
-        /* because renderer and its gl context live in the separate thread,
-        * so we cannot simply add new model - gl funcs
-        * (for buffers creation, shader compilation and so on)
-        * would be called from wrong thread and app would simply crash.
-        * we need to queue apropriate signals, but sending parameters don't
-        * belong to qt family - need to use qRegisterMetaType
-        */
-        qRegisterMetaType<ModelInfo::BuffersVN>("ModelInfo::BuffersVN");
-        qRegisterMetaType<ModelInfo::BuffersVT>("ModelInfo::BuffersVT");
-
-        qRegisterMetaType<SliceInfo::Slices>("SliceInfo::Slices");
-        qRegisterMetaType<PointsInfo::Point>("PointsInfo::Point");
+        qDebug() << thread();
     }
 
     ModelRenderer::~ModelRenderer() {

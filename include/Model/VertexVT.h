@@ -45,4 +45,6 @@ namespace ModelInfo {
     };
 }
 
+Q_DECLARE_METATYPE(ModelInfo::BuffersVT)
+
 #endif // VERTEXVT_H

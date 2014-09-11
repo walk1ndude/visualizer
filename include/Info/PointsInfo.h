@@ -90,8 +90,9 @@ namespace PointsInfo {
     private:
         QHash<Name, ModelPoint *> _points;
     };
-
 }
 
+Q_DECLARE_METATYPE(PointsInfo::Point)
+Q_DECLARE_METATYPE(PointsInfo::UpdatedPoint)
 
 #endif // POINTSINFO_H
