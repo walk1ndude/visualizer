@@ -72,8 +72,7 @@ namespace Render {
     }
 
     void AbstractRenderer::connectWithScene(Scene::AbstractScene * scene) {
-        // calling render here is legit 'cause sender and reciever are in the same thread
-        QObject::connect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render, Qt::DirectConnection);
+        QObject::connect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
     }
 
     void AbstractRenderer::disconnectWithScene(Scene::AbstractScene * scene) {

@@ -56,6 +56,8 @@ namespace Scene {
     signals:
         void modelIDChanged(const uint & modelID);
 
+        void pointUpdated(const PointsInfo::UpdatedPoint & point);
+
     public slots:
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);

@@ -43,7 +43,6 @@ namespace Scene {
         bool _isInitialized;
 
     signals:
-        void pointUpdated(const PointsInfo::UpdatedPoint & point);
         void redraw();
 
         void viewportArrayChanged();

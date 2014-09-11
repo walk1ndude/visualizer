@@ -179,7 +179,7 @@ namespace Scene {
                             ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
-        QObject::connect(model, &Model::StlModel::pointUpdated, this, &Scene::AbstractScene::pointUpdated, Qt::DirectConnection);
+        QObject::connect(model, &Model::StlModel::pointUpdated, this, &Scene::ModelScene::pointUpdated);
 
         _models.append(model);
     }
@@ -216,7 +216,7 @@ namespace Scene {
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
         
-        QObject::connect(model, &Model::HeadModel::pointUpdated, this, &Scene::AbstractScene::pointUpdated, Qt::DirectConnection);
+        QObject::connect(model, &Model::HeadModel::pointUpdated, this, &Scene::ModelScene::pointUpdated);
 
         _models.append(model);
     }

@@ -8,7 +8,7 @@
 namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
         AbstractRenderer(context, size) {
-        qDebug() << thread();
+        qRegisterMetaType<PointsInfo::UpdatedPoint>("PointsInfo::UpdatedPoint");
     }
 
     ModelRenderer::~ModelRenderer() {
@@ -38,8 +38,8 @@ namespace Render {
     void ModelRenderer::connectWithScene(Scene::AbstractScene * scene) {
         Scene::ModelScene * modelScene = qobject_cast<Scene::ModelScene *>(scene);
 
-        QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged, Qt::DirectConnection);
-        QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated, Qt::DirectConnection);
+        QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
+        QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
 
         AbstractRenderer::connectWithScene(scene);
     }

@@ -118,7 +118,7 @@ namespace Model {
                     modelPoint->positionCalculated(unprojectedPoint);
                     
                     updateNeeded = true;
-                    
+
                     emit pointUpdated(PointsInfo::UpdatedPoint(modelPoint->position * imageSpacings(), modelPoints()->key(modelPoint), id()));
                 }
             }
