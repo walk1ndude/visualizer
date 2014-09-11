@@ -25,6 +25,10 @@ namespace Quick {
                     }
                 }
             }
+
+            if (_viewportArray) {
+                _viewportArray->update();
+            }
         });
     }
 
@@ -195,6 +199,9 @@ namespace Quick {
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
+
+            update();
+            return nullptr;
         }
 
         if (!node) {

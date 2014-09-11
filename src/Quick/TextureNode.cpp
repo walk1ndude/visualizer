@@ -29,11 +29,17 @@ void TextureNode::newTexture(const GLuint & fboTexId, const QSize & size) {
 }
 
 void TextureNode::prepareNode() {
-    QMutexLocker locker (&_textureMutex);
+    _textureMutex.lock();
+    int newId = _fboTexId;
+    QSize size = _size;
+    _fboTexId = 0;
+    _textureMutex.unlock();
 
-    delete _texture;
-    _texture = _window->createTextureFromId(_fboTexId, _size);
+    if (newId) {
+        delete _texture;
+        _texture = _window->createTextureFromId(newId, size);
 
-    setTexture(_texture);
+        setTexture(_texture);
+    }
 }
 
