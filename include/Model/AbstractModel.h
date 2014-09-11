@@ -35,6 +35,8 @@ namespace Model {
         virtual QVector3D scale();
         virtual QVector3D position();
 
+        virtual QVector3D imageSpacings() const;
+
         virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
 
         virtual bool depthTest();
@@ -139,6 +141,8 @@ namespace Model {
 
         ShaderInfo::ShaderFiles _shaderFiles;
 
+        ModelInfo::ImageSpacings _imageSpacings;
+
         int _id;
 
         int _stride;
@@ -210,6 +214,8 @@ namespace Model {
 
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
         virtual void hidePoint(const PointsInfo::Name & point);
+
+        virtual void setImageSpacings(const ModelInfo::ImageSpacings & imageSpacings);
     };
 }
 

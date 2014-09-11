@@ -10,6 +10,7 @@
 namespace Scene {
     class AbstractScene : public QQuickItem {
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
+        Q_PROPERTY(qreal scalingFactor READ scalingFactor WRITE setScalingFactor NOTIFY scalingFactorChanged)
 
         Q_OBJECT
     public:
@@ -27,13 +28,17 @@ namespace Scene {
 
         Viewport::ViewportArray * viewportArray() const;
 
-        bool isInitialized();
+        bool isInitialized() const;
+
+        qreal scalingFactor() const;
 
     protected:
         virtual void initScene() = 0;
 
     private:
         Viewport::ViewportArray * _viewportArray;
+
+        qreal _scalingFactor;
 
         bool _isInitialized;
 
@@ -42,9 +47,11 @@ namespace Scene {
         void redraw();
 
         void viewportArrayChanged();
+        void scalingFactorChanged();
 
     public slots:
         void setViewportArray(Viewport::ViewportArray * viewportArray);
+        void setScalingFactor(const qreal & scalingFactor);
 
         // to clip selected model
         virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange) = 0;

@@ -2,11 +2,12 @@
 
 namespace Scene {
     AbstractScene::AbstractScene() :
+        _scalingFactor(1.0f),
         _isInitialized(false) {
 
     }
 
-    bool AbstractScene::isInitialized() {
+    bool AbstractScene::isInitialized() const {
         return _isInitialized;
     }
 
@@ -18,6 +19,16 @@ namespace Scene {
         _viewportArray = viewportArray;
 
         emit viewportArrayChanged();
+    }
+
+    qreal AbstractScene::scalingFactor() const {
+        return _scalingFactor;
+    }
+
+    void AbstractScene::setScalingFactor(const qreal & scalingFactor) {
+        _scalingFactor = scalingFactor;
+
+        emit scalingFactorChanged();
     }
 
     void AbstractScene::initializeScene() {

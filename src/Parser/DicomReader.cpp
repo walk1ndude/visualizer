@@ -136,7 +136,7 @@ namespace Parser {
 
         fetchDicomData(_dicomData, dFile, dImage);
 
-        cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
+        //cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
 
         runSliceProcessing(true);
     }
@@ -170,6 +170,11 @@ namespace Parser {
                     1.0f / _dicomData.imageSpacings.y(),
                     1.0f / _dicomData.imageSpacings.z()
                     );
+
+        slices.imageSpacings = ModelInfo::ImageSpacings(_dicomData.width * _dicomData.imageSpacings.x() / (0.5f * slices.texture.scaling.x()),
+                                                        _dicomData.height * _dicomData.imageSpacings.y() / (0.5f * slices.texture.scaling.y()),
+                                                        depth * _dicomData.imageSpacings.z() / (0.5f * slices.texture.scaling.z())
+                                                        );
 
         slices.texture.size.setX(_dicomData.width);
         slices.texture.size.setY(_dicomData.height);

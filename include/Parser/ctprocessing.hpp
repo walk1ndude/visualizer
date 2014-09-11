@@ -280,8 +280,8 @@ namespace Parser {
                 processSlice(i, _noisy, _filtered, _hasMerged, _dicomData->sliceSize,
                              _dilateMat, _gaussSize, _neighbourDiameter, *(_dicomData->mergeLocation));
 
-                _dicomData->noisy->at(i) = new cv::Mat(_noisy.at(i));
-                _dicomData->filtered->at(i) = new cv::Mat(_filtered.at(i));
+                //_dicomData->noisy->at(i) = new cv::Mat(_noisy.at(i));
+                //_dicomData->filtered->at(i) = new cv::Mat(_filtered.at(i));
             }
         }
     };

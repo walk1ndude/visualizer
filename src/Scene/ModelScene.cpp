@@ -195,6 +195,7 @@ namespace Scene {
         model->init(slices.texture.size);
 
         model->scale(slices.texture.scaling);
+        model->setImageSpacings(slices.imageSpacings);
 
         addTexture(slices.texture);
 

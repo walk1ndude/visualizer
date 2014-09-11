@@ -3,6 +3,7 @@
 
 #include "Info/Info.h"
 #include "Info/TextureInfo.h"
+#include "Info/ModelInfo.h"
 
 namespace SliceInfo {
     using HuRange = QVector2D;
@@ -11,10 +12,12 @@ namespace SliceInfo {
     public:
         TextureInfo::Texture texture;
         HuRange huRange;
+        ModelInfo::ImageSpacings imageSpacings;
 
         Slices();
         Slices(TextureInfo::Texture texture,
-               const HuRange & huRange);
+               const HuRange & huRange,
+               const ModelInfo::ImageSpacings & imageSpacings);
     };
 }
 

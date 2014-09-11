@@ -5,6 +5,8 @@
 #include "Info/ShaderInfo.h"
 
 namespace ModelInfo {
+    using ImageSpacings = QVector3D;
+
     class VertexV {
     public:
         GLfloat x;

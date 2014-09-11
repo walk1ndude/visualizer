@@ -22,6 +22,8 @@ Item {
 
     property int modelID: modelViewer.modelID;
 
+    property real scalingFactor: 1.0;
+
     signal pointUpdated(variant point);
 
     function togglePoint(point) {
@@ -102,6 +104,8 @@ Item {
                 specular: Qt.vector4d(0.01, 0.02, 0.02, 0.02);
                 shininess: 0.001;
             }
+
+            onScalingFactorChanged: modelViewerEx.scalingFactor = scalingFactor;
         }
     }
 
