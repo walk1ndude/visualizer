@@ -2,7 +2,7 @@
 
 namespace Viewport {
     Viewport::Viewport() :
-        _zoomFactor(4.0f) {
+        _zoomFactor(2.0f) {
         QObject::connect(this, &QQuickItem::widthChanged, this, &Viewport::setProjection);
         QObject::connect(this, &QQuickItem::heightChanged, this, &Viewport::setProjection);
     }
@@ -39,6 +39,8 @@ namespace Viewport {
                 ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
                 break;
         }
+
+        setZoom(_zoomFactor);
     }
 
     void Viewport::setProjectionType(const ProjectionType & projectionType) {
