@@ -95,7 +95,6 @@ namespace Model {
     }
 
     void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
-        qDebug() << parent()->view(viewport) << viewport->text();
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
 
         program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));

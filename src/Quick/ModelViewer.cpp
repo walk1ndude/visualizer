@@ -55,24 +55,6 @@ namespace Quick {
         emit togglePointChanged(point);
     }
 
-    QVector3D ModelViewer::rotation() {
-        return _rotation;
-    }
-
-    void ModelViewer::setRotation(const QVector3D & rotation) {
-        _rotation = rotation;
-        emit rotationChanged(_rotation);
-    }
-
-    qreal ModelViewer::zoomFactor() {
-        return _zoomFactor;
-    }
-
-    void ModelViewer::setZoomFactor(const qreal & zoomFactor) {
-        _zoomFactor = zoomFactor;
-        emit zoomFactorChanged(_zoomFactor);
-    }
-
     ViewRangeInfo::ViewAxisRange ModelViewer::xRange() {
         return _xRange;
     }
@@ -178,8 +160,6 @@ namespace Quick {
 
             QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::addHeadModel);
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
-
-            QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
