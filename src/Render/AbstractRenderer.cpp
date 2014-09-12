@@ -103,7 +103,7 @@ namespace Render {
 
         render();
 
-        glFinish();
+        glFlush();
 
         _fboRender->bindDefault();
         std::swap(_fboDisplay, _fboRender);
