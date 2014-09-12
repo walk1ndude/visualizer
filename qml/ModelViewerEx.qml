@@ -30,8 +30,6 @@ Item {
         modelViewer.togglePoint(point);
     }
 
-    onWidthChanged: viewportArray.zoom(width / modelViewer.fboSize.width)
-
     ModelViewer {
         id: modelViewer;
 

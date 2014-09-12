@@ -29,7 +29,7 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE:
-                perspective(60.0f, aspectRatio, 0.0001f, 15.0f);
+                perspective(_fovZoom, aspectRatio, 0.0001f, 15.0f);
                 break;
             case LEFT:
             case FRONTAL:
@@ -38,8 +38,6 @@ namespace Viewport {
                 ortho(- side * aspectRatio, side * aspectRatio, - side, side, 0.0001f, 10.0f);
                 break;
         }
-
-        setZoom(_zoomFactor);
     }
 
     void Viewport::setProjectionType(const ProjectionType & projectionType) {
