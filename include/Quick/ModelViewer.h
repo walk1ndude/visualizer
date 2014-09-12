@@ -15,7 +15,7 @@ namespace Quick {
     class ModelViewer : public QQuickItem {        
         Q_PROPERTY(QVariantMap selectedPoint READ selectedPoint WRITE setSelectedPoint)
 
-        Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize)
+        Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize NOTIFY fboSizeChanged)
 
         Q_PROPERTY(QVector2D xRange READ xRange WRITE setXRange NOTIFY xRangeChanged)
         Q_PROPERTY(QVector2D yRange READ yRange WRITE setYRange NOTIFY yRangeChanged)
@@ -108,6 +108,8 @@ namespace Quick {
         void modelSceneChanged();
 
         void togglePointChanged(const QString & point);
+
+        void fboSizeChanged(const QSize & fboSize);
 
     public slots:
         Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);

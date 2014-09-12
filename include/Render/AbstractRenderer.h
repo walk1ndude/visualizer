@@ -24,6 +24,8 @@ namespace Render {
         virtual void setSurface(QOffscreenSurface * surface) final;
         virtual void selectScene(Scene::AbstractScene * scene = nullptr) final;
 
+        virtual void setSurfaceSize(const QSize & surfaceSize) final;
+
     protected:
         QMutex renderMutex;
 

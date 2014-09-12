@@ -30,11 +30,7 @@ Item {
         modelViewer.togglePoint(point);
     }
 
-    onWidthChanged: {
-        modelViewer.viewportArray.zoom(width / modelViewer.fboSize.width);
-        console.log(modelViewer.zoomFactor)
-    }
-    onHeightChanged: modelViewer.viewportArray.zoom(height / modelViewer.fboSize.height);
+    onWidthChanged: viewportArray.zoom(width / modelViewer.fboSize.width)
 
     ModelViewer {
         id: modelViewer;

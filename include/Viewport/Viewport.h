@@ -107,6 +107,8 @@ namespace Viewport {
         void setZoom(const qreal & zoomFactor);
 
         void resize(const QSize & windowSize);
+
+        void setProjection();
     };
 }
 #endif // VIEWPORT_H

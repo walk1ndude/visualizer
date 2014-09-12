@@ -2,8 +2,9 @@
 
 namespace Viewport {
     Viewport::Viewport() :
-        _zoomFactor(2.0f) {
-
+        _zoomFactor(4.0f) {
+        QObject::connect(this, &QQuickItem::widthChanged, this, &Viewport::setProjection);
+        QObject::connect(this, &QQuickItem::heightChanged, this, &Viewport::setProjection);
     }
 
     Viewport::Viewport(const ViewportRect & boundingRectNormalized,
@@ -21,12 +22,30 @@ namespace Viewport {
         return _projectionType;
     }
 
+    void Viewport::setProjection() {
+        qreal aspectRatio = width() / height();
+
+        switch (_projectionType) {
+            case PERSPECTIVE :
+                perspective(60.0f, aspectRatio, 0.0001f, 15.0f);
+                break;
+            case LEFT:
+                ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
+                break;
+            case FRONTAL:
+                ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
+                break;
+            case TOP:
+                ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
+                break;
+        }
+    }
+
     void Viewport::setProjectionType(const ProjectionType & projectionType) {
         _projectionType = projectionType;
 
         switch (_projectionType) {
             case PERSPECTIVE :
-                perspective(60.0f, 1.0f, 0.0001f, 15.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
@@ -34,7 +53,6 @@ namespace Viewport {
                 _text = "perspective";
                 break;
             case LEFT:
-                ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
@@ -43,7 +61,6 @@ namespace Viewport {
                 _text = "left";
                 break;
             case FRONTAL:
-                ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
@@ -51,7 +68,6 @@ namespace Viewport {
                 _text = "frontal";
                 break;
             case TOP:
-                ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0001f, 10.0f);
                 lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f));
 
                 _orientationBillboard = QQuaternion();
@@ -109,16 +125,18 @@ namespace Viewport {
     }
 
     void Viewport::setZoom(const qreal & zoomFactor) {
+        qreal aspectRatio = width() / height();
+
         _pMatrix.setToIdentity();
         if (_projectionType == PERSPECTIVE) {
             // fov will be in 1/4 to 3/2 from initial fov
             float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
             float b = (_eye.z() + a) / 4.0f;
 
-            _pMatrix.perspective(_fov * (zoomFactor + b) / (_eye.z() + a), _aspectRatio, _nearVal, _farVal);
+            _pMatrix.perspective(_fov * (zoomFactor + b) / (_eye.z() + a), aspectRatio, _nearVal, _farVal);
         }
         else if (zoomFactor != 0.0f) {
-            _pMatrix.ortho(-zoomFactor / 2.0f, zoomFactor / 2.0f, -zoomFactor / 2.0f, zoomFactor / 2.0f, _nearVal, _farVal);
+            _pMatrix.ortho(-zoomFactor / 2.0f * aspectRatio, zoomFactor / 2.0f * aspectRatio, -zoomFactor / 2.0f, zoomFactor / 2.0f, _nearVal, _farVal);
         }
 
         _zoomFactor = zoomFactor;

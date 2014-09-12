@@ -41,6 +41,8 @@ namespace Quick {
 
     void ModelViewer::setFboSize(const QSize & fboSize) {
         _fboSize = fboSize;
+
+        emit fboSizeChanged(fboSize);
     }
 
     QVariantMap ModelViewer::selectedPoint() {
@@ -172,6 +174,8 @@ namespace Quick {
 
             QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
+
+            QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();

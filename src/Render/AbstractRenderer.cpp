@@ -87,6 +87,10 @@ namespace Render {
         return _surfaceSize;
     }
 
+    void AbstractRenderer::setSurfaceSize(const QSize & surfaceSize) {
+        _surfaceSize = surfaceSize;
+    }
+
     void AbstractRenderer::renderNext() {
         QMutexLocker locker(&renderMutex);
         activateContext();
