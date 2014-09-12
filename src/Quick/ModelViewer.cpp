@@ -115,6 +115,15 @@ namespace Quick {
         return _modelID;
     }
 
+    QVector3D ModelViewer::rotation() {
+        return _rotation;
+    }
+
+    void ModelViewer::setRotation(const QVector3D & rotation) {
+        _rotation = rotation;
+        emit rotationChanged(_rotation);
+    }
+
     void ModelViewer::setModelID(const int & modelID) {
         _modelID = modelID;
         emit modelIDChanged(_modelID);
@@ -162,6 +171,8 @@ namespace Quick {
 
             QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::addHeadModel);
             QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
+
+            QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);

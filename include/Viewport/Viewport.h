@@ -72,6 +72,9 @@ namespace Viewport {
         QVector3D _up;
 
         qreal _fov;
+        qreal _fovZoom;
+
+        qreal _side;
 
         qreal _zoomFactor;
 

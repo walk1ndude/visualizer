@@ -2,6 +2,8 @@
 
 namespace Viewport {
     Viewport::Viewport() :
+        _fovZoom(60.0f),
+        _side(1.0f),
         _zoomFactor(2.0f) {
         QObject::connect(this, &QQuickItem::widthChanged, this, &Viewport::setProjection);
         QObject::connect(this, &QQuickItem::heightChanged, this, &Viewport::setProjection);
@@ -26,17 +28,14 @@ namespace Viewport {
         qreal aspectRatio = width() / height();
 
         switch (_projectionType) {
-            case PERSPECTIVE :
+            case PERSPECTIVE:
                 perspective(60.0f, aspectRatio, 0.0001f, 15.0f);
                 break;
             case LEFT:
-                ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
-                break;
             case FRONTAL:
-                ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
-                break;
             case TOP:
-                ortho(-1.0f * aspectRatio, 1.0f * aspectRatio, -1.0f, 1.0f, 0.0001f, 10.0f);
+                qreal side = _zoomFactor / (2 * _side);
+                ortho(- side * aspectRatio, side * aspectRatio, - side, side, 0.0001f, 10.0f);
                 break;
         }
 
@@ -135,10 +134,12 @@ namespace Viewport {
             float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
             float b = (_eye.z() + a) / 4.0f;
 
-            _pMatrix.perspective(_fov * (zoomFactor + b) / (_eye.z() + a), aspectRatio, _nearVal, _farVal);
+            _fovZoom = _fov * (zoomFactor + b) / (_eye.z() + a);
+            _pMatrix.perspective(_fovZoom, aspectRatio, _nearVal, _farVal);
         }
         else if (zoomFactor != 0.0f) {
-            _pMatrix.ortho(-zoomFactor / 2.0f * aspectRatio, zoomFactor / 2.0f * aspectRatio, -zoomFactor / 2.0f, zoomFactor / 2.0f, _nearVal, _farVal);
+            qreal side = zoomFactor / (2 * _side);
+            _pMatrix.ortho(- side * aspectRatio, side * aspectRatio, - side, side, _nearVal, _farVal);
         }
 
         _zoomFactor = zoomFactor;

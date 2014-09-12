@@ -17,6 +17,8 @@ namespace Quick {
 
         Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize NOTIFY fboSizeChanged)
 
+        Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
+
         Q_PROPERTY(QVector2D xRange READ xRange WRITE setXRange NOTIFY xRangeChanged)
         Q_PROPERTY(QVector2D yRange READ yRange WRITE setYRange NOTIFY yRangeChanged)
         Q_PROPERTY(QVector2D zRange READ zRange WRITE setZRange NOTIFY zRangeChanged)
@@ -45,6 +47,8 @@ namespace Quick {
         ViewRangeInfo::ViewAxisRange yRange();
         ViewRangeInfo::ViewAxisRange zRange();
 
+        QVector3D rotation();
+
         QVector2D huRange();
 
         int minHU();
@@ -72,6 +76,8 @@ namespace Quick {
 
         QSize _fboSize;
 
+        QVector3D _rotation;
+
         ViewRangeInfo::ViewAxisRange _xRange;
         ViewRangeInfo::ViewAxisRange _yRange;
         ViewRangeInfo::ViewAxisRange _zRange;
@@ -91,6 +97,8 @@ namespace Quick {
         void viewportArrayChanged();
 
         void huRangeChanged();
+
+        void rotationChanged(const QVector3D & rotation);
 
         void minHUChanged(const int & minHU);
         void maxHUChanged(const int & maxHU);
@@ -124,6 +132,8 @@ namespace Quick {
         void setFboSize(const QSize & fboSize);
 
         void setSelectedPoint(const QVariantMap & selectedPoint);
+
+        void setRotation(const QVector3D & rotation);
 
         void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
         void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
