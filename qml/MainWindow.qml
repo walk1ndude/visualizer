@@ -113,6 +113,8 @@ ApplicationWindow {
         }
     }
 
+    onPointUpdated: sidebar.updatePoint(point);
+
     Sidebar {
         id: sidebar;
 

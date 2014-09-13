@@ -34,6 +34,14 @@ Sidedock {
     signal updateIndividualInfo();
     signal distsUpdated();
 
+    function updatePoint(point) {
+        measuredPoint = point.name;
+        measuredPosition = point.position;
+    }
+
+    property string measuredPoint: "";
+    property vector3d measuredPosition: Qt.vector3d(0, 0, 0);
+
     ListView {
         id: sidebarListView;
         model: ListModel {
@@ -157,6 +165,26 @@ Sidedock {
 
                         onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
                         onTogglePoint: sidebar.togglePoint(point);
+
+                        Connections {
+                            target: sidebar;
+                            onMeasuredPositionChanged: {
+                                updatePoint({
+                                                "name" : measuredPoint,
+                                                "position" : measuredPosition
+                                            });
+                            }
+                        }
+
+                        Connections {
+                            target: sidebar;
+                            onMeasuredPositionChanged: {
+                                updatePoint({
+                                                "name" : measuredPoint,
+                                                "position" : measuredPosition
+                                            });
+                            }
+                        }
                 }
             }
         }

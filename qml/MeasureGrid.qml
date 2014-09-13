@@ -33,7 +33,8 @@ Rectangle {
                                "itemId" : measureOrder[i],
                                "itemName" : measure.name,
                                "itemColor" : measure.color,
-                               "shown" : false
+                               "shown" : false,
+                               "position" : ""
                            });
 
                     Helpers.addInPointToGroup(measureOrder[i], PointsDict.pointsDict.groups);
@@ -49,6 +50,16 @@ Rectangle {
         onCurrentIndexChanged: {
             if (currentIndex === -1) {
                 measureGrid.selectedPoint = { };
+            }
+        }
+    }
+
+    function updatePoint(point) {
+        for (var i = 0; i !== listModel.count; ++ i) {
+            if (listModel.get(i).itemId === point.name) {
+                listModel.setProperty(i, "position", " [" + point.position.x.toFixed(2) + ", "
+                                      + point.position.y.toFixed(2) + ", "
+                                      + point.position.z.toFixed(2) + "]");
             }
         }
     }
@@ -78,7 +89,7 @@ Rectangle {
                     bold: listView.currentIndex === index;
                 }
 
-                text: itemName;
+                text: itemName + position;
                 clip: true;
                 wrapMode: Text.WordWrap;
             }

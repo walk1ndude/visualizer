@@ -18,11 +18,11 @@ Rectangle {
 
     width: 200;
     height: 200;
-
+/*
     CircleSlider {
         id: circle;
     }
-
+*/
     Grid {
         columns: 3;
         rows: 4;
