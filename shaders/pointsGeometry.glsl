@@ -35,10 +35,9 @@ void drawMarker(const int i) {
                     (j % 2 == 0 ? -1 : 1)
                     );
 
-        radius = max(HALF_SIDE / viewportSize.x * vertex.w,
-                     HALF_SIDE / viewportSize.y * vertex.w);
+        radius = HALF_SIDE / min(viewportSize.x, viewportSize.y) * vertex.w;
 
-        gl_Position = vertex + vec4(frag.fPos.x * radius, frag.fPos.y * radius,
+        gl_Position = vertex + vec4(frag.fPos.x * radius * viewportSize.y / viewportSize.x, frag.fPos.y * radius,
                                     0.0f, 0.0f);
 
         frag.fPos *= 0.5f;
