@@ -153,13 +153,13 @@ ApplicationWindow {
 
         onSlicesProcessed: modelViewer.drawSlices(slices);
     }
-
+/*
     Reconstructor {
         id: reconstructor;
 
         onSlicesProcessed: modelViewer.drawSlices(slices);
     }
-
+*/
     ConsoleDock {
         id: consoleDock;
 

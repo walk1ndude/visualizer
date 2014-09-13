@@ -151,6 +151,7 @@ namespace Parser {
 
         float startTime = cv::getTickCount() / cv::getTickFrequency();
 
+        qDebug() << _dicomData.depth;
         cv::parallel_for_(cv::Range(0, (int) _dicomData.depth), SliceProcessing(&_dicomData));
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;

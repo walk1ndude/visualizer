@@ -55,16 +55,20 @@ win32 {
 
     !contains(QMAKE_HOST.arch, x86_64) {
             QMAKE_LFLAGS *= /MACHINE:X86
+            LIBS += -L"C:\GDCM\build\bin\Debug" \
+                    -L"C:\opencv\build\x86\vc12\lib" \
+                    -L"C:\Program Files (x86)\AMD APP SDK\2.9-1\lib\x86"
     }
     else {
         contains(QMAKE_HOST.arch, x86_64):{
             QMAKE_LFLAGS *= /MACHINE:X64
+            LIBS += -L"C:\GDCM\build64\bin\Debug" \
+                    -L"C:\opencv\build\x64\vc12\lib" \
+                    -L"C:\Program Files (x86)\AMD APP SDK\2.9-1\lib\x86_64"
         }
     }
 
-    LIBS += -L"C:\GDCM\build\bin\Debug" \
-            -L"C:\opencv\build\x64\vc12\lib" \
-            -L"C:\Program Files (x86)\AMD APP SDK\2.9-1\lib\x86_64"
+
 
     LIBS += -lopencv_core249 \
             -lopencv_highgui249 \
