@@ -4,7 +4,6 @@ import QtQuick.Dialogs 1.2
 
 import ParserTools 1.0
 
-import QtQuick.LocalStorage 2.0
 import "../js/settings.js" as Settings
 
 ApplicationWindow {
