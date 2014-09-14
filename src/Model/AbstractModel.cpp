@@ -106,7 +106,7 @@ namespace Model {
         _children.append(child);
     }
 
-    QMatrix4x4 AbstractModel::model(Viewport::Viewport * ) {
+    QMatrix4x4 AbstractModel::model(const Viewport::Viewport * ) {
         QMatrix4x4 mMatrix;
         mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
@@ -142,15 +142,15 @@ namespace Model {
         return _position;
     }
 
-    QMatrix4x4 AbstractModel::view(Viewport::Viewport * viewport) {
+    QMatrix4x4 AbstractModel::view(const Viewport::Viewport * viewport) {
         return viewport->view();
     }
 
-    QMatrix4x4 AbstractModel::projection(Viewport::Viewport * viewport) {
+    QMatrix4x4 AbstractModel::projection(const Viewport::Viewport * viewport) {
         return viewport->projection();
     }
 
-    QMatrix3x3 AbstractModel::normalMatrix(Viewport::Viewport * viewport) {
+    QMatrix3x3 AbstractModel::normalMatrix(const Viewport::Viewport * viewport) {
         return (model(viewport) * view(viewport)).normalMatrix();
     }
 
@@ -158,7 +158,7 @@ namespace Model {
         return _scaleM;
     }
 
-    bool AbstractModel::checkDepthBuffer(Viewport::Viewport * ) {
+    bool AbstractModel::checkDepthBuffer(const Viewport::Viewport * ) {
         return false;
     }
 
@@ -236,7 +236,7 @@ namespace Model {
         _updateNeeded = true;
     }
 
-    void AbstractModel::drawModel(Viewport::Viewport * viewPort) {
+    void AbstractModel::drawModel(const Viewport::Viewport * viewPort) {
         /* model can contain no vertices or | and no program
         so it can serve as a "root" model, containing some
         number of children: models with vertices and program.

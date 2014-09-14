@@ -77,7 +77,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
     }
 
-    void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+    void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
         program->setUniformValue(uniformValues["vp"], projection(viewport) * viewport->viewBillboard());
         program->setUniformValue(uniformValues["color"], QVector4D(_color, 1.0f));
     }

@@ -28,7 +28,7 @@ namespace Model {
         void glStatesDisable();
 
         void bindAttributeArrays(QOpenGLShaderProgram * program);
-        void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
+        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
     };
 }
 

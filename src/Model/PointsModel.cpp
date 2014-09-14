@@ -95,7 +95,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["color"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+    void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
 
         program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));

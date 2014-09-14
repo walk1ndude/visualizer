@@ -41,37 +41,7 @@ namespace Viewport {
         }
     }
 
-    void ViewportArray::render(QListIterator<Model::AbstractModel *> & modelIterator) {
-        ViewportRect boundingRect;
-
-        for (Viewport * viewport : _viewportArray) {
-            boundingRect = viewport->boundingRect();
-            glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
-
-            // draw each model
-            while (modelIterator.hasNext()) {
-                modelIterator.next()->drawModel(viewport);
-            }
-
-            modelIterator.toFront();
-        }
-    }
-
-    bool ViewportArray::postProcess(QListIterator<Model::AbstractModel *> & modelIterator) {
-        bool redraw = false;
-
-        while (modelIterator.hasNext()) {
-            Model::AbstractModel * model = modelIterator.next();
-
-            for (Viewport * viewport : _viewportArray) {
-                redraw |= model->checkDepthBuffer(viewport);
-            }
-
-            if (redraw) {
-                model->update();
-            }
-        }
-
-        return redraw;
+    QList<Viewport *> ViewportArray::array() const {
+        return _viewportArray;
     }
 }

@@ -3,8 +3,6 @@
 
 #include "Viewport/Viewport.h"
 
-#include "Model/AbstractModel.h"
-
 namespace Viewport {
     using ViewportInfos = QVector< QPair<QRectF, Viewport::ProjectionType> >;
     using ViewportsIterator = QVectorIterator<Viewport *>;
@@ -22,11 +20,10 @@ namespace Viewport {
 
         void resize(const QSize & surfaceSize);
 
-        void render(QListIterator<Model::AbstractModel *> & modelIterator);
-        bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator);
+        QList<Viewport *> array() const;
 
     private:
-        QVector<Viewport *>  _viewportArray;
+        QList<Viewport *>  _viewportArray;
 
     signals:
         void viewportsChanged();

@@ -31,11 +31,11 @@ namespace Model {
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         
-        virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
-        virtual QMatrix4x4 view(Viewport::Viewport * viewport);
+        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr);
+        virtual QMatrix4x4 view(const Viewport::Viewport * viewport);
 
     protected:
-        void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
+        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
         void bindAttributeArrays(QOpenGLShaderProgram * program);
 
         void glStatesEnable();

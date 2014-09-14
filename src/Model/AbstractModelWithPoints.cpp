@@ -96,12 +96,12 @@ namespace Model {
         get different values for pointsCount during (un) hide point operations */
         program->setUniformValue(uniformValues["pointsCount"], pointsCount);
     }
-    
-    bool AbstractModelWithPoints::checkDepthBuffer(Viewport::Viewport * viewport) {
+
+    bool AbstractModelWithPoints::checkDepthBuffer(const Viewport::Viewport * viewport) {
         QVector4D unprojectedPoint;
 
         bool updateNeeded = false;
-       
+
         for (PointsInfo::ModelPoint * modelPoint : _modelPoints.points()) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
                 GLushort posZ;
@@ -114,13 +114,13 @@ namespace Model {
                              1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ);
 
                 modelPoint->position.setZ(posZ / 65535.0f);
-                
+
                 if (viewport->unproject(modelPoint->position, projection(viewport) * view(viewport) * model(viewport), unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
-                    
+
                     updateNeeded = true;
 
-                    emit pointUpdated(PointsInfo::UpdatedPoint(modelPoint->position * imageSpacings(), modelPoints()->key(modelPoint), id()));
+                    emit pointUpdated(PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), modelPoints()->key(modelPoint), id()));
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace Model {
         if (updateNeeded) {
             queueForUpdate();
         }
-        
+
         return updateNeeded;
     }
 
@@ -158,7 +158,7 @@ namespace Model {
         AbstractModel::bindUniformValues();
     }
 
-    void AbstractModelWithPoints::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * ) {
+    void AbstractModelWithPoints::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * ) {
         if (_pointsTexture) {
             program->setUniformValue(uniformValues["points"], _pointsTexture->textureId());
         }

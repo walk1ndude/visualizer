@@ -6,10 +6,10 @@
 #include "Viewport/ViewportArray.h"
 
 #include "Info/ViewRangeInfo.h"
+#include "Info/PointsInfo.h"
 
 namespace Scene {
     class AbstractScene : public QQuickItem {
-        Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
         Q_PROPERTY(qreal scalingFactor READ scalingFactor WRITE setScalingFactor NOTIFY scalingFactorChanged)
 
         Q_PROPERTY(MeasureUnits measureUnits READ measureUnits WRITE setMeasureUnits NOTIFY measureUnitsChanged)
@@ -36,8 +36,6 @@ namespace Scene {
 
         virtual QRect screenSaveRect() = 0;
 
-        Viewport::ViewportArray * viewportArray() const;
-
         MeasureUnits measureUnits() const;
 
         bool isInitialized() const;
@@ -50,8 +48,6 @@ namespace Scene {
         virtual void initScene() = 0;
 
     private:
-        Viewport::ViewportArray * _viewportArray;
-
         // to convert to gl coordinates, meaning 1 gl =
         qreal _scalingFactor;
 
@@ -62,13 +58,11 @@ namespace Scene {
     signals:
         void redraw();
 
-        void viewportArrayChanged();
         void scalingFactorChanged();
 
         void measureUnitsChanged();
 
     public slots:
-        void setViewportArray(Viewport::ViewportArray * viewportArray);
         void setScalingFactor(const qreal & scalingFactor);
 
         // to clip selected model

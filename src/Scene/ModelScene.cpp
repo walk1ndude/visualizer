@@ -27,6 +27,16 @@ namespace Scene {
 
     }
 
+    Viewport::ViewportArray * ModelScene::viewportArray() const {
+        return _viewportArray;
+    }
+
+    void ModelScene::setViewportArray(Viewport::ViewportArray * viewportArray) {
+        _viewportArray = viewportArray;
+
+        emit viewportArrayChanged();
+    }
+
     QVector3D ModelScene::rotation() {
         return _rotation;
     }
@@ -74,15 +84,61 @@ namespace Scene {
         updateScene();
 
         QListIterator<Model::AbstractModel *> modelIterator (_models);
+        QListIterator<Viewport::Viewport *> viewportIterator (_viewportArray->array());
 
-        viewportArray()->render(modelIterator);
+        render(modelIterator, viewportIterator);
 
         /* some children, like pointsmodel can change its values after rendering -
         * for example depth buffer check affects values of points (z-coordinate)
         */
-        if (viewportArray()->postProcess(modelIterator)) {
+        if (postProcess(modelIterator, viewportIterator)) {
             emit redraw();
         }
+    }
+
+    void ModelScene::render(QListIterator<Model::AbstractModel *> & modelIterator,
+                            QListIterator<Viewport::Viewport *> & viewportIterator) {
+        Viewport::ViewportRect boundingRect;
+        const Viewport::Viewport * viewport;
+
+        while (viewportIterator.hasNext()) {
+            viewport = viewportIterator.next();
+
+            boundingRect = viewport->boundingRect();
+            glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
+
+            // draw each model
+            while (modelIterator.hasNext()) {
+                modelIterator.next()->drawModel(viewport);
+            }
+
+            modelIterator.toFront();
+        }
+
+        viewportIterator.toFront();
+    }
+
+    bool ModelScene::postProcess(QListIterator<Model::AbstractModel *> & modelIterator,
+                                 QListIterator<Viewport::Viewport *> & viewportIterator) {
+        bool redraw = false;
+
+        while (modelIterator.hasNext()) {
+            Model::AbstractModel * model = modelIterator.next();
+
+            while (viewportIterator.hasNext()) {
+                redraw |= model->checkDepthBuffer(viewportIterator.next());
+            }
+
+            viewportIterator.toFront();
+
+            if (redraw) {
+                model->update();
+            }
+        }
+
+        modelIterator.toFront();
+
+        return redraw;
     }
 
     void ModelScene::cleanUp() {

@@ -14,11 +14,7 @@
 #include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
 
-#include "Viewport/Viewport.h"
-
-namespace Scene {
-    class AbstractScene;
-}
+#include "Scene/AbstractScene.h"
 
 namespace Model {
     class AbstractModel : public QObject {
@@ -28,9 +24,9 @@ namespace Model {
 
         virtual int id() final;
 
-        virtual QMatrix4x4 model(Viewport::Viewport * viewport = nullptr);
-        virtual QMatrix4x4 view(Viewport::Viewport * viewport);
-        virtual QMatrix4x4 projection(Viewport::Viewport * viewport);
+        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr);
+        virtual QMatrix4x4 view(const Viewport::Viewport * viewport);
+        virtual QMatrix4x4 projection(const Viewport::Viewport * viewport);
         virtual QMatrix4x4 scaleMatrix();
 
         virtual QVector3D orientationEuler();
@@ -41,7 +37,7 @@ namespace Model {
 
         virtual QVector3D imageSpacings() const;
 
-        virtual QMatrix3x3 normalMatrix(Viewport::Viewport * viewport);
+        virtual QMatrix3x3 normalMatrix(const Viewport::Viewport * viewport);
 
         virtual bool depthTest();
 
@@ -61,7 +57,7 @@ namespace Model {
                                const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
                                const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
         
-        virtual void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewPort) = 0;
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewPort) = 0;
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
 
         virtual void glStatesEnable();
@@ -207,7 +203,7 @@ namespace Model {
 
         virtual void scale(const QVector3D & scale);
 
-        virtual void drawModel(Viewport::Viewport * viewPort) final;
+        virtual void drawModel(const Viewport::Viewport * viewPort) final;
 
         virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
         virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
@@ -217,7 +213,7 @@ namespace Model {
 
         virtual void queueForUpdate() final;
 
-        virtual bool checkDepthBuffer(Viewport::Viewport * viewPort);
+        virtual bool checkDepthBuffer(const Viewport::Viewport * viewPort);
 
         virtual void update();
 

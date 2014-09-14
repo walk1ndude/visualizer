@@ -53,7 +53,7 @@ namespace Model {
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()), speed);
     }
     
-    QMatrix4x4 HeadModel::model(Viewport::Viewport * viewport) {
+    QMatrix4x4 HeadModel::model(const Viewport::Viewport * viewport) {
         QMatrix4x4 model = AbstractModel::model();
         
         if (viewport) {
@@ -63,7 +63,7 @@ namespace Model {
         return model;
     }
 
-    QMatrix4x4 HeadModel::view(Viewport::Viewport * viewport) {
+    QMatrix4x4 HeadModel::view(const Viewport::Viewport * viewport) {
         return viewport->viewBillboard();
     }
     
@@ -95,7 +95,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["tex"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+    void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));

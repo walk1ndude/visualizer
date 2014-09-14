@@ -28,7 +28,7 @@ namespace Model {
         void init(ModelInfo::BuffersVN buffers);
 
     protected:
-        void bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport);
+        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
         void bindAttributeArrays(QOpenGLShaderProgram * program);
 
         void glStatesEnable();

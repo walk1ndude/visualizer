@@ -102,14 +102,14 @@ SOURCES +=  src/main.cpp \
             src/Viewport/ViewportArray.cpp \
             src/Quick/ConsoleLogger.cpp \
             src/Model/EvaluatorModel.cpp \
-    src/Info/PointsInfo.cpp \
-    src/Info/LightInfo.cpp \
-    src/Info/MaterialInfo.cpp \
-    src/Info/ViewRangeInfo.cpp \
-    src/Info/TextureInfo.cpp \
-    src/Info/SliceInfo.cpp \
-    src/Info/ShaderInfo.cpp \
-    src/Quick/TextureNode.cpp
+            src/Info/PointsInfo.cpp \
+            src/Info/LightInfo.cpp \
+            src/Info/MaterialInfo.cpp \
+            src/Info/ViewRangeInfo.cpp \
+            src/Info/TextureInfo.cpp \
+            src/Info/SliceInfo.cpp \
+            src/Info/ShaderInfo.cpp \
+            src/Quick/TextureNode.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \

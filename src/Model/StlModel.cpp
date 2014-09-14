@@ -35,7 +35,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["normal"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void StlModel::bindUniformValues(QOpenGLShaderProgram * program, Viewport::Viewport * viewport) {
+    void StlModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
         program->setUniformValue(uniformValues["colorU"], QVector4D(1.0, 1.0, 1.0, 1.0));
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
         program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));

@@ -16,6 +16,8 @@
 
 namespace Scene {
     class ModelScene : public AbstractScene {
+        Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
+
         Q_OBJECT
     public:
         explicit ModelScene();
@@ -29,6 +31,8 @@ namespace Scene {
         QVector3D rotation();
 
         QRect screenSaveRect();
+
+        Viewport::ViewportArray * viewportArray() const;
 
     protected:
         virtual void initScene();
@@ -49,16 +53,28 @@ namespace Scene {
 
         QVector3D _rotation;
 
+        Viewport::ViewportArray * _viewportArray;
+
         Viewport::ViewportRect _screenSaveRect;
 
         void selectModel(Model::AbstractModel * model);
+
+        void render(QListIterator<Model::AbstractModel *> & modelIterator,
+                    QListIterator<Viewport::Viewport *> & viewportIterator);
+
+        bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator,
+                         QListIterator<Viewport::Viewport *> & viewportIterator);
 
     signals:
         void modelIDChanged(const uint & modelID);
 
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
+        void viewportArrayChanged();
+
     public slots:
+        void setViewportArray(Viewport::ViewportArray * viewportArray);
+
         void addStlModel(ModelInfo::BuffersVN buffers);
         void addHeadModel(SliceInfo::Slices slices);
 
