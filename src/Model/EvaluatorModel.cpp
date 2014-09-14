@@ -35,24 +35,29 @@ namespace Model {
     void EvaluatorModel::init() {
         ModelInfo::VerticesVPtr vertices = new ModelInfo::VerticesV;
 
-        GLfloat xLeft = - _width / 2 * _stepX;
-        GLfloat yTop = - _height / 2 * _stepY;
+        GLfloat scalingFactor = (GLfloat) (1.0f / scene()->scalingFactor());
+
+        GLfloat xLeft = - _width / 2 * _stepX * scalingFactor;
+        GLfloat yTop = - _height / 2 * _stepY * scalingFactor;
 
         GLfloat xCur = xLeft;
         GLfloat yCur = yTop;
+
+        GLfloat stepX = _stepX * scalingFactor;
+        GLfloat stepY = _stepY * scalingFactor;
 
         for (int i = 0; i <= _height; ++ i) {
             vertices->push_back(ModelInfo::VertexV(xLeft, yCur, 0.0f));
             vertices->push_back(ModelInfo::VertexV(- xLeft, yCur, 0.0f));
 
-            yCur += _stepY;
+            yCur += stepY;
         }
 
         for (int i = 0; i <= _width; ++ i) {
             vertices->push_back(ModelInfo::VertexV(xCur, yTop, 0.0f));
             vertices->push_back(ModelInfo::VertexV(xCur, - yTop, 0.0f));
 
-            xCur += _stepX;
+            xCur += stepX;
         }
 
         /*

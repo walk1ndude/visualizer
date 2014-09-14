@@ -7,6 +7,8 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
+uniform highp mat4 mvp;
+
 struct Material {
     vec4 emissive;
     vec4 diffuse;

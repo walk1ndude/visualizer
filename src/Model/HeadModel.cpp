@@ -18,9 +18,9 @@ namespace Model {
 
         GLfloat scalingFactor = (GLfloat) scene()->scalingFactor();
 
-        GLfloat zCurrent = - physicalSize.z() * scaling.z() / scalingFactor;
+        GLfloat zCurrent = - physicalSize.z() * scaling.z() / scalingFactor / 2.0f;
         
-        GLfloat step = fabs(zCurrent / 2.0f) / size.z();
+        GLfloat step = fabs(zCurrent * 2.0f) / size.z();
         GLfloat stepTexture = 1.0f / size.z();
 
         GLfloat zCurrentTexture = 0.0f;

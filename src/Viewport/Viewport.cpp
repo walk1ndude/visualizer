@@ -45,8 +45,9 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE :
-                lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
+                _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
                 _text = "perspective";
@@ -54,6 +55,7 @@ namespace Viewport {
             case LEFT:
                 lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
+                _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f) *
                         QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f);
 
@@ -62,6 +64,7 @@ namespace Viewport {
             case FRONTAL:
                 lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
+                _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
                 _text = "frontal";
@@ -69,6 +72,7 @@ namespace Viewport {
             case TOP:
                 lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f));
 
+                _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
                 _orientationBillboard = QQuaternion();
 
                 _text = "top";
@@ -198,15 +202,7 @@ namespace Viewport {
 
     void Viewport::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
         _vMatrix.setToIdentity();
-        _vMatrixBillboard.setToIdentity();
         _vMatrix.lookAt(eye, center, up);
-
-        if (_projectionType == PERSPECTIVE) {
-            _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
-        }
-        else {
-            _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
-        }
 
         _eye = eye;
         _center = center;
