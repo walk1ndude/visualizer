@@ -10,7 +10,8 @@ namespace Model {
     class HeadModel : public AbstractModelWithPoints {
         Q_OBJECT
     public:
-        explicit HeadModel(PointsModel * points = nullptr,
+        explicit HeadModel(Scene::AbstractScene * scene,
+                           PointsModel * points = nullptr,
                            AbstractModel * parent = nullptr,
 
                            const ShaderInfo::ShaderFiles & shaderFiles =

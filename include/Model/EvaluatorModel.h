@@ -8,7 +8,7 @@ namespace Model {
         Q_OBJECT
 
     public:
-        explicit EvaluatorModel(AbstractModel * parent = nullptr,
+        explicit EvaluatorModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(
 
                                 ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/evaluatorVertex.glsl"),

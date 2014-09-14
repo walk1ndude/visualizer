@@ -3,11 +3,11 @@
 #include "Model/HeadModel.h"
 
 namespace Model {
-    HeadModel::HeadModel(PointsModel * points, AbstractModel * parent,
+    HeadModel::HeadModel(Scene::AbstractScene * scene, PointsModel * points, AbstractModel * parent,
                          const ShaderInfo::ShaderFiles & shaderFiles,
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModelWithPoints(points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+        AbstractModelWithPoints(scene, points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         points->setParent(this);
     }
 

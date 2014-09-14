@@ -157,10 +157,10 @@ namespace Scene {
     }
 
     void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {
-        Model::PointsModel * pointsInModel = new Model::PointsModel;
+        Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
 
-        Model::StlModel * model = new Model::StlModel(pointsInModel);
+        Model::StlModel * model = new Model::StlModel(this, pointsInModel);
 
         selectModel(model);
 
@@ -185,10 +185,10 @@ namespace Scene {
     }
 
     void ModelScene::addHeadModel(SliceInfo::Slices slices) {
-        Model::PointsModel * pointsInModel = new Model::PointsModel;
+        Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
 
-        Model::HeadModel * model = new Model::HeadModel(pointsInModel);
+        Model::HeadModel * model = new Model::HeadModel(this, pointsInModel);
 
         selectModel(model);
 
@@ -224,7 +224,7 @@ namespace Scene {
     void ModelScene::addEvaluatorModel(const int & width, const int & height,
                                        const qreal & stepX, const qreal & stepY,
                                        const QVector3D & color) {
-        Model::EvaluatorModel * model = new Model::EvaluatorModel;
+        Model::EvaluatorModel * model = new Model::EvaluatorModel(this);
 
         model->setSize(width, height);
         model->setStep(stepX, stepY);

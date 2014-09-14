@@ -14,7 +14,8 @@ namespace Model {
         Q_OBJECT
 
     protected:
-        explicit AbstractModelWithPoints(PointsModel * points = nullptr,
+        explicit AbstractModelWithPoints(Scene::AbstractScene * scene,
+                                PointsModel * points = nullptr,
                                 AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
 

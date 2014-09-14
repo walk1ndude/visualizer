@@ -9,11 +9,12 @@ ShaderInfo::ShaderVariablesNames appendToNames(const ShaderInfo::ShaderVariables
 }
 
 namespace Model {
-    AbstractModelWithPoints::AbstractModelWithPoints(PointsModel * points, AbstractModel * parent,
+    AbstractModelWithPoints::AbstractModelWithPoints(Scene::AbstractScene * scene,
+                                                     PointsModel * points, AbstractModel * parent,
                                                      const ShaderInfo::ShaderFiles & shaderFiles,
                                                      const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                                      const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModel(parent, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
+        AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
         _points(points),
         _pointsTexture(nullptr) {
 

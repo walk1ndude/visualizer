@@ -1,10 +1,12 @@
 #include "Model/StlModel.h"
 
 namespace Model {
-    StlModel::StlModel(PointsModel * points, AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
+    StlModel::StlModel(Scene::AbstractScene * scene,
+                       PointsModel * points, AbstractModel * parent,
+                       const ShaderInfo::ShaderFiles & shaderFiles,
                        const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                        const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-            AbstractModelWithPoints(points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+            AbstractModelWithPoints(scene, points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
             points->setParent(this);
     }
 

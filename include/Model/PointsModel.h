@@ -7,7 +7,7 @@ namespace Model {
     class PointsModel : public AbstractModel {
         Q_OBJECT
     public:
-        explicit PointsModel(AbstractModel * parent = nullptr,
+        explicit PointsModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr,
                              const ShaderInfo::ShaderFiles & shaderFiles =
                              ShaderInfo::ShaderFiles(
                                 ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/pointsVertex.glsl"),

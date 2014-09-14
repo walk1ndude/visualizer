@@ -5,12 +5,14 @@
 static int modelNumber = 0;
 
 namespace Model {
-    AbstractModel::AbstractModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
+    AbstractModel::AbstractModel(Scene::AbstractScene * scene,
+                                 AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
                                  const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                  const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         _vboVert(QOpenGLBuffer::VertexBuffer),
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(nullptr),
+        _scene(scene),
         _shaderFiles(shaderFiles),
         _imageSpacings(ModelInfo::ImageSpacings(1.0f, 1.0f, 1.0f)),
         _stride(0),
@@ -43,6 +45,10 @@ namespace Model {
 
     AbstractModel::~AbstractModel() {
         deleteModel();
+    }
+
+    Scene::AbstractScene * AbstractModel::scene() {
+        return _scene;
     }
 
     void AbstractModel::deleteModel() {

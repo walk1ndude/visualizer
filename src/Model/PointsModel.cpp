@@ -4,10 +4,11 @@
 #include "Model/VertexVC.h"
 
 namespace Model {
-    PointsModel::PointsModel(AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
+    PointsModel::PointsModel(Scene::AbstractScene * scene, AbstractModel * parent,
+                             const ShaderInfo::ShaderFiles & shaderFiles,
                              const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                              const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModel(parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+        AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
 
     }
 

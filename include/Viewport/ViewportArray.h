@@ -5,8 +5,6 @@
 
 #include "Model/AbstractModel.h"
 
-#include <QtQuick/QQuickItem>
-
 namespace Viewport {
     using ViewportInfos = QVector< QPair<QRectF, Viewport::ProjectionType> >;
     using ViewportsIterator = QVectorIterator<Viewport *>;

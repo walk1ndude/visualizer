@@ -3,11 +3,11 @@
 #include <cmath>
 
 namespace Model {
-    EvaluatorModel::EvaluatorModel(AbstractModel * parent,
+    EvaluatorModel::EvaluatorModel(Scene::AbstractScene * scene, AbstractModel * parent,
                                    const ShaderInfo::ShaderFiles & shaderFiles,
                                    const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                    const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModel(parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+        AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
 
     }
 

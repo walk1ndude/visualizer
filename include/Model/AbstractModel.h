@@ -16,6 +16,10 @@
 
 #include "Viewport/Viewport.h"
 
+namespace Scene {
+    class AbstractScene;
+}
+
 namespace Model {
     class AbstractModel : public QObject {
         Q_OBJECT
@@ -43,13 +47,16 @@ namespace Model {
 
         virtual bool updateNeeded() final;
 
+        virtual Scene::AbstractScene * scene() final;
+
     protected:
         QMutex modelMutex;
 
         QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
         QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
 
-        explicit AbstractModel(AbstractModel * parent = nullptr,
+        explicit AbstractModel(Scene::AbstractScene * scene,
+                               AbstractModel * parent = nullptr,
                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
                                const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
                                const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
@@ -133,6 +140,8 @@ namespace Model {
         QOpenGLVertexArrayObject _vao;
 
         QOpenGLShaderProgram * _program;
+
+        Scene::AbstractScene * _scene;
 
         QMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> _materials;
         QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;

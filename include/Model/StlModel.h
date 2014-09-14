@@ -8,7 +8,8 @@ namespace Model {
     class StlModel : public AbstractModelWithPoints {
         Q_OBJECT
     public:
-        explicit StlModel(PointsModel * points = nullptr,
+        explicit StlModel(Scene::AbstractScene * scene,
+                          PointsModel * points = nullptr,
                           AbstractModel * parent = nullptr,
 
                           const ShaderInfo::ShaderFiles & shaderFiles =
