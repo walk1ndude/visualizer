@@ -37,6 +37,9 @@ namespace Model {
 
         virtual void deleteModel();
 
+        virtual void glStatesEnable();
+        virtual void glStatesDisable();
+
     private:
         PointsModel * _points;
 

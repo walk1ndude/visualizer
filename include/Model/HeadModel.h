@@ -36,11 +36,11 @@ namespace Model {
         virtual QMatrix4x4 view(const Viewport::Viewport * viewport);
 
     protected:
-        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
-        void bindAttributeArrays(QOpenGLShaderProgram * program);
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program);
 
-        void glStatesEnable();
-        void glStatesDisable();
+        virtual void glStatesEnable();
+        virtual void glStatesDisable();
         
         virtual void drawingRoutine();
 

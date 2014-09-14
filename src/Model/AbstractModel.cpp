@@ -348,10 +348,6 @@ namespace Model {
 
     }
 
-    bool AbstractModel::depthTest() {
-        return true;
-    }
-
     void AbstractModel::glStatesEnable() {
 
     }

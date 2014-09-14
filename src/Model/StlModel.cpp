@@ -14,19 +14,6 @@ namespace Model {
         fillBuffers<ModelInfo::BuffersVN>(buffers);
     }
 
-    void StlModel::glStatesEnable() {
-        //glEnable(GL_CULL_FACE);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-    }
-
-    void StlModel::glStatesDisable() {
-        //glDisable(GL_CULL_FACE);
-        glDisable(GL_BLEND);
-        glDisable(GL_DEPTH_TEST);
-    }
-
     void StlModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());

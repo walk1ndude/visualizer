@@ -2,7 +2,7 @@
 
 namespace Viewport {
     Viewport::Viewport() :
-        _fovZoom(60.0f),
+        _fovZoom(75.0f),
         _side(1.0f),
         _zoomFactor(2.0f) {
         QObject::connect(this, &QQuickItem::widthChanged, this, &Viewport::setProjection);
@@ -45,9 +45,9 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE :
-                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+                lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
 
-                _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+                _vMatrixBillboard.lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
                 _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
 
                 _text = "perspective";

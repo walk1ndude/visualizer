@@ -28,11 +28,8 @@ namespace Model {
         void init(ModelInfo::BuffersVN buffers);
 
     protected:
-        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
-        void bindAttributeArrays(QOpenGLShaderProgram * program);
-
-        void glStatesEnable();
-        void glStatesDisable();
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program);
     };
 }
 #endif // STLMODEL_H

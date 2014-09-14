@@ -37,8 +37,6 @@ namespace Model {
 
         virtual QMatrix3x3 normalMatrix(const Viewport::Viewport * viewport);
 
-        virtual bool depthTest();
-
         virtual bool updateNeeded() final;
 
         virtual Scene::AbstractScene * scene() final;

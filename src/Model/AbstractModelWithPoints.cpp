@@ -170,4 +170,13 @@ namespace Model {
 
         AbstractModel::deleteModel();
     }
+
+    void AbstractModelWithPoints::glStatesEnable() {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+    }
+
+    void AbstractModelWithPoints::glStatesDisable() {
+        glDisable(GL_DEPTH_TEST);
+    }
 }

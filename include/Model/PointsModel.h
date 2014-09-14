@@ -24,11 +24,11 @@ namespace Model {
         void init(PointsInfo::ModelPoints * modelPoints);
 
     protected:
-        void glStatesEnable();
-        void glStatesDisable();
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program);
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
 
-        void bindAttributeArrays(QOpenGLShaderProgram * program);
-        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
+        virtual void glStatesEnable();
+        virtual void glStatesDisable();
     };
 }
 

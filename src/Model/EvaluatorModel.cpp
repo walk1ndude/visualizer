@@ -19,8 +19,8 @@ namespace Model {
         int w = abs(width);
         int h = abs(height);
 
-        _width = w % 2 ? w + 1 : w;
-        _height = h % 2 ? h + 1 : h;
+        _width = w;
+        _height = h;
     }
 
     void EvaluatorModel::setColor(const QVector3D & color) {
@@ -37,8 +37,8 @@ namespace Model {
 
         GLfloat scalingFactor = (GLfloat) (1.0f / scene()->scalingFactor());
 
-        GLfloat xLeft = - _width / 2 * _stepX * scalingFactor;
-        GLfloat yTop = - _height / 2 * _stepY * scalingFactor;
+        GLfloat xLeft = - _width * _stepX * scalingFactor;
+        GLfloat yTop = - _height * _stepY * scalingFactor;
 
         GLfloat xCur = xLeft;
         GLfloat yCur = yTop;
@@ -46,25 +46,19 @@ namespace Model {
         GLfloat stepX = _stepX * scalingFactor;
         GLfloat stepY = _stepY * scalingFactor;
 
-        for (int i = 0; i <= _height; ++ i) {
+        for (int i = 0; i <= 2 * _height; ++ i) {
             vertices->push_back(ModelInfo::VertexV(xLeft, yCur, 0.0f));
             vertices->push_back(ModelInfo::VertexV(- xLeft, yCur, 0.0f));
 
             yCur += stepY;
         }
 
-        for (int i = 0; i <= _width; ++ i) {
+        for (int i = 0; i <= 2 * _width; ++ i) {
             vertices->push_back(ModelInfo::VertexV(xCur, yTop, 0.0f));
             vertices->push_back(ModelInfo::VertexV(xCur, - yTop, 0.0f));
 
             xCur += stepX;
         }
-
-        /*
-        for (auto vertex : *vertices) {
-            qDebug() << vertex.x << vertex.y << vertex.z;
-        }
-        */
 
         ModelInfo::BuffersV buffers;
 

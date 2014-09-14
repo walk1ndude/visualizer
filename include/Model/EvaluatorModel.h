@@ -30,13 +30,13 @@ namespace Model {
         void init();
 
     protected:
-        void bindAttributeArrays(QOpenGLShaderProgram * program);
-        void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program);
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
 
         virtual void drawingRoutine();
 
-        void glStatesEnable();
-        void glStatesDisable();
+        virtual void glStatesEnable();
+        virtual void glStatesDisable();
 
     private:
         int _width;

@@ -79,19 +79,16 @@ namespace Model {
     }
 
     void HeadModel::glStatesEnable() {
-        //glEnable(GL_CULL_FACE);
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+        AbstractModelWithPoints::glStatesEnable();
     }
 
     void HeadModel::glStatesDisable() {
-        glDisable(GL_CULL_FACE);
         glDisable(GL_BLEND);
-        glDisable(GL_DEPTH_TEST);
+
+        AbstractModelWithPoints::glStatesDisable();
     }
 
     void HeadModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
