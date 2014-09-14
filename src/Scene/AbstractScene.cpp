@@ -2,7 +2,7 @@
 
 namespace Scene {
     AbstractScene::AbstractScene() :
-        _scalingFactor(1.0f),
+        _scalingFactor(100.0f),
         _isInitialized(false),
         _mUnits(MM) {
 
@@ -20,10 +20,6 @@ namespace Scene {
         _scalingFactor = scalingFactor;
 
         emit scalingFactorChanged();
-    }
-
-    qreal AbstractScene::distance(const qreal & measure) const {
-        return measure * _scalingFactor;
     }
 
     void AbstractScene::initializeScene() {

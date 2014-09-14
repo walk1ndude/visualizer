@@ -2,6 +2,7 @@
 #define HEADMODEL_H
 
 #include "Info/PointsInfo.h"
+#include "Info/SliceInfo.h"
 
 #include "Model/AbstractModelWithPoints.h"
 #include "Model/VertexVT.h"
@@ -27,7 +28,7 @@ namespace Model {
                            const ShaderInfo::ShaderVariablesNames & uniformValues =
                            ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" << "normalMatrix" << "scale" << "stepSlices");
 
-        void init(const QVector3D & size);
+        void init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         

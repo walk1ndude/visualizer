@@ -14,7 +14,6 @@ namespace Model {
         _program(nullptr),
         _scene(scene),
         _shaderFiles(shaderFiles),
-        _imageSpacings(ModelInfo::ImageSpacings(1.0f, 1.0f, 1.0f)),
         _stride(0),
         _depthTest(true),
         _indexCount(0),
@@ -183,14 +182,6 @@ namespace Model {
                QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed);
 
         _orientation *= rot;
-    }
-
-    ModelInfo::ImageSpacings AbstractModel::imageSpacings() const {
-        return _imageSpacings;
-    }
-
-    void AbstractModel::setImageSpacings(const ModelInfo::ImageSpacings & imageSpacings) {
-        _imageSpacings = imageSpacings;
     }
 
     bool AbstractModel::bindShaderProgram() {

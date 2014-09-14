@@ -5,9 +5,9 @@ namespace SliceInfo {
 
     Slices::Slices(TextureInfo::Texture texture,
                    const HuRange & huRange,
-                   const ModelInfo::ImageSpacings & imageSpacings) :
+                   const PhysicalSize & physicalSize) :
         texture(texture),
         huRange(huRange),
-        imageSpacings(imageSpacings) {
+        physicalSize(physicalSize) {
     }
 }

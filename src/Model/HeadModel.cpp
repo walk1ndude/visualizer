@@ -11,21 +11,28 @@ namespace Model {
         points->setParent(this);
     }
 
-    void HeadModel::init(const QVector3D & size) {
+    void HeadModel::init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize,
+                         const TextureInfo::Scaling & scaling) {
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
+
+        GLfloat scalingFactor = (GLfloat) scene()->scalingFactor();
+
+        GLfloat zCurrent = - physicalSize.z() * scaling.z() / scalingFactor;
         
-        GLfloat step = 2.0f / size.z();
+        GLfloat step = fabs(zCurrent / 2.0f) / size.z();
         GLfloat stepTexture = 1.0f / size.z();
 
-        GLfloat zCurrent = -1.0f;
         GLfloat zCurrentTexture = 0.0f;
 
+        GLfloat w = physicalSize.x() / 2.0f * scaling.x() / scalingFactor;
+        GLfloat h = physicalSize.y() / 2.0f * scaling.y() / scalingFactor;
+
         for (int i = 0; i != (int) size.z(); ++ i) {
-            vertices->push_back(ModelInfo::VertexVT(-1.0f, -1.0f, zCurrent, 0.0f, 1.0f, zCurrentTexture));
-            vertices->push_back(ModelInfo::VertexVT(-1.0f, 1.0f, zCurrent, 0.0f, 0.0f, zCurrentTexture));
-            vertices->push_back(ModelInfo::VertexVT(1.0f, 1.0f, zCurrent, 1.0f, 0.0f, zCurrentTexture));
-            vertices->push_back(ModelInfo::VertexVT(1.0f, -1.0f, zCurrent, 1.0f, 1.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(- w, - h, zCurrent, 0.0f, 1.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(- w, h, zCurrent, 0.0f, 0.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(w, h, zCurrent, 1.0f, 0.0f, zCurrentTexture));
+            vertices->push_back(ModelInfo::VertexVT(w, - h, zCurrent, 1.0f, 1.0f, zCurrentTexture));
 
             indices->push_back(4 * i);
             indices->push_back(4 * i + 2);

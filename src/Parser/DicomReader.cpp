@@ -151,7 +151,6 @@ namespace Parser {
 
         float startTime = cv::getTickCount() / cv::getTickFrequency();
 
-        qDebug() << _dicomData.depth;
         cv::parallel_for_(cv::Range(0, (int) _dicomData.depth), SliceProcessing(&_dicomData));
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
@@ -172,10 +171,9 @@ namespace Parser {
                     1.0f / _dicomData.imageSpacings.z()
                     );
 
-        slices.imageSpacings = ModelInfo::ImageSpacings(_dicomData.width * _dicomData.imageSpacings.x() / (0.5f * slices.texture.scaling.x()),
-                                                        _dicomData.height * _dicomData.imageSpacings.y() / (0.5f * slices.texture.scaling.y()),
-                                                        depth * _dicomData.imageSpacings.z() / (0.5f * slices.texture.scaling.z())
-                                                        );
+        slices.physicalSize = SliceInfo::PhysicalSize(_dicomData.width * _dicomData.imageSpacings.x(),
+                                                      _dicomData.height * _dicomData.imageSpacings.y(),
+                                                      depth * _dicomData.imageSpacings.z());
 
         slices.texture.size.setX(_dicomData.width);
         slices.texture.size.setY(_dicomData.height);

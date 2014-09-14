@@ -248,10 +248,8 @@ namespace Scene {
 
         selectModel(model);
 
-        model->init(slices.texture.size);
-
+        model->init(slices.texture.size, slices.physicalSize, slices.texture.scaling);
         model->scale(slices.texture.scaling);
-        model->setImageSpacings(slices.imageSpacings);
 
         addTexture(slices.texture);
 
@@ -263,7 +261,7 @@ namespace Scene {
                            ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
                            "material.specular" << "material.shininess");
 
-        model->addTexture(_textures.at(0),
+        model->addTexture(_textures.back(),
                           ShaderInfo::ShaderVariablesNames() << "texHead");
 
         model->setViewRange(ViewRangeInfo::ViewAxisRange(-1.0, 1.0),

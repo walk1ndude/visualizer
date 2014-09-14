@@ -7,17 +7,18 @@
 
 namespace SliceInfo {
     using HuRange = QVector2D;
+    using PhysicalSize = QVector3D;
 
     class Slices {
     public:
         TextureInfo::Texture texture;
         HuRange huRange;
-        ModelInfo::ImageSpacings imageSpacings;
+        PhysicalSize physicalSize;
 
         Slices();
         Slices(TextureInfo::Texture texture,
                const HuRange & huRange,
-               const ModelInfo::ImageSpacings & imageSpacings);
+               const PhysicalSize & physicalSize);
     };
 }
 
