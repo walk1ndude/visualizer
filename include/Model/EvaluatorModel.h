@@ -6,13 +6,14 @@
 namespace Model {
     class EvaluatorModel : public AbstractModel {
         Q_OBJECT
-
     public:
         explicit EvaluatorModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr,
-                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(
 
-                                ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/evaluatorVertex.glsl"),
-                                ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/evaluatorFragment.glsl")),
+                                const ShaderInfo::ShaderFiles & shaderFiles =
+                                ShaderInfo::ShaderFiles(
+                                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/evaluatorVertex.glsl"),
+                                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/evaluatorFragment.glsl")
+                                ),
 
                                 const ShaderInfo::ShaderVariablesNames & attributeArrays =
                                 ShaderInfo::ShaderVariablesNames() << "vertex",
