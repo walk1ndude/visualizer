@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include "Model/HeadModel.h"
 
 namespace Model {
@@ -20,7 +18,7 @@ namespace Model {
 
         GLfloat zCurrent = - physicalSize.z() * scaling.z() / scalingFactor / 2.0f;
         
-        GLfloat step = fabs(zCurrent * 2.0f) / size.z();
+        GLfloat step = - (zCurrent * 2.0f) / size.z();
         GLfloat stepTexture = 1.0f / size.z();
 
         GLfloat zCurrentTexture = 0.0f;
