@@ -28,9 +28,7 @@ namespace Scene {
 
         virtual void cleanUp();
 
-        QVector3D rotation();
-
-        QRect screenSaveRect();
+        QVector3D rotation() const;
 
         Viewport::ViewportArray * viewportArray() const;
 
@@ -54,8 +52,6 @@ namespace Scene {
         QVector3D _rotation;
 
         Viewport::ViewportArray * _viewportArray;
-
-        Viewport::ViewportRect _screenSaveRect;
 
         void selectModel(Model::AbstractModel * model);
 

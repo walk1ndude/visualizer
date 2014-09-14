@@ -78,7 +78,7 @@ namespace Model {
         AbstractModel::fillBuffers<ModelInfo::BuffersVC>(buffers, QOpenGLBuffer::DynamicDraw);
     }
 
-    void PointsModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
+    void PointsModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
@@ -86,18 +86,18 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["color"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
+    void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * parent()->view(viewport) * parent()->model(viewport));
 
         program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
     }
 
-    void PointsModel::glStatesEnable() {
+    void PointsModel::glStatesEnable() const {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
     }
 
-    void PointsModel::glStatesDisable() {
+    void PointsModel::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
     }
 }

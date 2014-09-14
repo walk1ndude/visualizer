@@ -32,17 +32,17 @@ namespace Model {
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         
-        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr);
-        virtual QMatrix4x4 view(const Viewport::Viewport * viewport);
+        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr) const;
+        virtual QMatrix4x4 view(const Viewport::Viewport * viewport) const;
 
     protected:
-        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
-        virtual void bindAttributeArrays(QOpenGLShaderProgram * program);
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
 
-        virtual void glStatesEnable();
-        virtual void glStatesDisable();
+        virtual void glStatesEnable() const;
+        virtual void glStatesDisable() const;
         
-        virtual void drawingRoutine();
+        virtual void drawingRoutine() const;
 
     private:
         QVector3D _step;

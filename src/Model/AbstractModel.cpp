@@ -46,7 +46,7 @@ namespace Model {
         deleteModel();
     }
 
-    Scene::AbstractScene * AbstractModel::scene() {
+    Scene::AbstractScene * AbstractModel::scene() const {
         return _scene;
     }
 
@@ -81,19 +81,19 @@ namespace Model {
         addToMap<QOpenGLTexture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
     }
 
-    int AbstractModel::stride() {
+    int AbstractModel::stride() const {
         return _stride;
     }
 
-    GLsizei AbstractModel::vertexCount() {
+    GLsizei AbstractModel::vertexCount() const {
         return _vertexCount;
     }
 
-    GLsizei AbstractModel::indexCount() {
+    GLsizei AbstractModel::indexCount() const {
         return _indexCount;
     }
 
-    AbstractModel * AbstractModel::parent() {
+    AbstractModel * AbstractModel::parent() const {
         return _parent;
     }
     
@@ -105,7 +105,7 @@ namespace Model {
         _children.append(child);
     }
 
-    QMatrix4x4 AbstractModel::model(const Viewport::Viewport * ) {
+    QMatrix4x4 AbstractModel::model(const Viewport::Viewport * ) const {
         QMatrix4x4 mMatrix;
         mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
@@ -113,7 +113,7 @@ namespace Model {
         return mMatrix;
     }
 
-    QVector3D AbstractModel::orientationEuler() {
+    QVector3D AbstractModel::orientationEuler() const {
         qreal q1 = _orientation.scalar();
         qreal q2 = _orientation.x();
         qreal q3 = _orientation.y();
@@ -129,31 +129,31 @@ namespace Model {
                          atan2(q13 - q24, q23 + q14));
     }
 
-    QQuaternion AbstractModel::orientationQuat() {
+    QQuaternion AbstractModel::orientationQuat() const {
         return _orientation;
     }
 
-    QVector3D AbstractModel::scale() {
+    QVector3D AbstractModel::scale() const {
         return _scale;
     }
 
-    QVector3D AbstractModel::position() {
+    QVector3D AbstractModel::position() const {
         return _position;
     }
 
-    QMatrix4x4 AbstractModel::view(const Viewport::Viewport * viewport) {
+    QMatrix4x4 AbstractModel::view(const Viewport::Viewport * viewport) const {
         return viewport->view();
     }
 
-    QMatrix4x4 AbstractModel::projection(const Viewport::Viewport * viewport) {
+    QMatrix4x4 AbstractModel::projection(const Viewport::Viewport * viewport) const {
         return viewport->projection();
     }
 
-    QMatrix3x3 AbstractModel::normalMatrix(const Viewport::Viewport * viewport) {
+    QMatrix3x3 AbstractModel::normalMatrix(const Viewport::Viewport * viewport) const {
         return (model(viewport) * view(viewport)).normalMatrix();
     }
 
-    QMatrix4x4 AbstractModel::scaleMatrix() {
+    QMatrix4x4 AbstractModel::scaleMatrix() const {
         return _scaleM;
     }
 
@@ -192,7 +192,7 @@ namespace Model {
         _program->release();
     }
 
-    void AbstractModel::bindTextures() {
+    void AbstractModel::bindTextures() const {
         QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
 
         while (it.hasNext()) {
@@ -202,7 +202,7 @@ namespace Model {
         }
     }
 
-    void AbstractModel::releaseTextures() {
+    void AbstractModel::releaseTextures() const {
         QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
 
         while (it.hasNext()) {
@@ -211,15 +211,15 @@ namespace Model {
         }
     }
 
-    int AbstractModel::id() {
+    int AbstractModel::id() const {
         return _id;
     }
 
-    QOpenGLShaderProgram * AbstractModel::program() {
+    QOpenGLShaderProgram * AbstractModel::program() const {
         return _program;
     }
 
-    bool AbstractModel::updateNeeded() {
+    bool AbstractModel::updateNeeded() const {
         return _updateNeeded;
     }
 
@@ -256,7 +256,7 @@ namespace Model {
         }
     }
 
-    void AbstractModel::drawingRoutine() {
+    void AbstractModel::drawingRoutine() const {
         if (_indexCount) {
             glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
         }
@@ -265,7 +265,7 @@ namespace Model {
         }
     }
 
-    void AbstractModel::bindUniformValues() {
+    void AbstractModel::bindUniformValues() const {
         QMapIterator<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> itM (_materials);
 
         while (itM.hasNext()) {
@@ -348,11 +348,11 @@ namespace Model {
 
     }
 
-    void AbstractModel::glStatesEnable() {
+    void AbstractModel::glStatesEnable() const {
 
     }
 
-    void AbstractModel::glStatesDisable() {
+    void AbstractModel::glStatesDisable() const {
 
     }
 

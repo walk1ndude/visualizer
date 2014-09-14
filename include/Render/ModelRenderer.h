@@ -25,35 +25,32 @@ namespace Render {
         virtual void connectWithScene(Scene::AbstractScene * scene);
         virtual void disconnectWithScene(Scene::AbstractScene * scene);
 
-    private:
-        void reoderDrawingOrder();
-
     signals:
         void modelIDChanged(const uint & modelID);
         void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
     public slots:
-        void addStlModel(ModelInfo::BuffersVN buffers);
-        void addHeadModel(SliceInfo::Slices slices);
+        virtual void addStlModel(ModelInfo::BuffersVN buffers) final;
+        virtual void addHeadModel(SliceInfo::Slices slices) final;
 
-        void addEvaluatorModel(const int & width, const int & height = 10,
-                               const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                               const QVector3D & color = QVector3D(0.0f, 1.0f, 0.0f));
+        virtual void addEvaluatorModel(const int & width, const int & height = 10,
+                                       const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
+                                       const QVector3D & color = QVector3D(0.0f, 1.0f, 0.0f)) final;
 
-        void addEvaluatorModel(const QSize & size = QSize(10, 10),
-                               const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                               const QVector3D & color = QVector3D(0.0f, 0.0f, 1.0f));
+        virtual void addEvaluatorModel(const QSize & size = QSize(10, 10),
+                                       const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
+                                       const QVector3D & color = QVector3D(0.0f, 0.0f, 1.0f)) final;
 
         // rotate selected model
-        void setRotation(const QVector3D & rotation);
+        virtual void setRotation(const QVector3D & rotation);
 
         // to clip selected model
-        void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
-        void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
-        void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
+        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
+        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
+        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
-        void addPoint(const PointsInfo::Point & point);
-        void hidePoint(const QString & point);
+        virtual void addPoint(const PointsInfo::Point & point) final;
+        virtual void hidePoint(const QString & point) final;
     };
 }
 #endif // SLICERENDERER_H

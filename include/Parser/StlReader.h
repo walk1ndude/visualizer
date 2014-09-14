@@ -29,7 +29,7 @@ namespace Parser {
         void stlFileChanged();
 
     public slots:
-        void setStlFile(const QUrl & stlFile);
+        virtual void setStlFile(const QUrl & stlFile) final;
     };
 }
 #endif // STLREADER_H

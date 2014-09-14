@@ -22,24 +22,24 @@ namespace Model {
     public:
         virtual ~AbstractModel();
 
-        virtual int id() final;
+        virtual int id() const final;
 
-        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr);
-        virtual QMatrix4x4 view(const Viewport::Viewport * viewport);
-        virtual QMatrix4x4 projection(const Viewport::Viewport * viewport);
-        virtual QMatrix4x4 scaleMatrix();
+        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr) const;
+        virtual QMatrix4x4 view(const Viewport::Viewport * viewport) const;
+        virtual QMatrix4x4 projection(const Viewport::Viewport * viewport) const;
+        virtual QMatrix4x4 scaleMatrix() const;
 
-        virtual QVector3D orientationEuler();
-        virtual QQuaternion orientationQuat();
+        virtual QVector3D orientationEuler() const;
+        virtual QQuaternion orientationQuat() const;
 
-        virtual QVector3D scale();
-        virtual QVector3D position();
+        virtual QVector3D scale() const;
+        virtual QVector3D position() const;
 
-        virtual QMatrix3x3 normalMatrix(const Viewport::Viewport * viewport);
+        virtual QMatrix3x3 normalMatrix(const Viewport::Viewport * viewport) const;
 
-        virtual bool updateNeeded() final;
+        virtual bool updateNeeded() const final;
 
-        virtual Scene::AbstractScene * scene() final;
+        virtual Scene::AbstractScene * scene() const;
 
     protected:
         QMutex modelMutex;
@@ -53,26 +53,26 @@ namespace Model {
                                const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
                                const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
         
-        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewPort) = 0;
-        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewPort) const = 0;
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const = 0;
 
-        virtual void glStatesEnable();
-        virtual void glStatesDisable();
+        virtual void bindUniformValues() const;
 
-        virtual int stride() final;
+        virtual void glStatesEnable() const;
+        virtual void glStatesDisable() const;
 
-        virtual GLsizei indexCount() final;
-        virtual GLsizei vertexCount() final;
+        virtual int stride() const;
 
-        virtual AbstractModel * parent() final;
+        virtual GLsizei indexCount() const;
+        virtual GLsizei vertexCount() const;
+
+        virtual AbstractModel * parent() const;
         virtual void addChild(AbstractModel * child) final;
 
-        virtual void drawingRoutine();
+        virtual void drawingRoutine() const;
         virtual void updateRoutine();
 
-        virtual void bindUniformValues();
-
-        virtual QOpenGLShaderProgram * program() final;
+        virtual QOpenGLShaderProgram * program() const final;
 
         virtual void deleteModel();
 
@@ -163,11 +163,10 @@ namespace Model {
         bool _updateNeeded;
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
+        void initShaderVariables();
 
-        virtual void initShaderVariables() final;
-
-        void bindTextures();
-        void releaseTextures();
+        void bindTextures() const;
+        void releaseTextures() const;
 
         template <class Key, class Value>
         void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariablesNames & shaderVariables) {

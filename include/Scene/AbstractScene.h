@@ -31,9 +31,7 @@ namespace Scene {
         virtual void renderScene(const QSize & surfaceSize) = 0;
         virtual void cleanUp() = 0;
 
-        virtual QVector3D rotation() = 0;
-
-        virtual QRect screenSaveRect() = 0;
+        virtual QVector3D rotation() const = 0;
 
         bool isInitialized() const;
 

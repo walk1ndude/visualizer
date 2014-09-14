@@ -67,26 +67,26 @@ namespace Model {
         AbstractModel::fillBuffers<ModelInfo::BuffersV>(buffers);
     }
 
-    void EvaluatorModel::drawingRoutine() {
+    void EvaluatorModel::drawingRoutine() const {
         glDrawArrays(GL_LINES, 0, vertexCount());
     }
 
-    void EvaluatorModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
+    void EvaluatorModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
     }
 
-    void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
+    void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["vp"], projection(viewport) * viewport->viewBillboard());
         program->setUniformValue(uniformValues["color"], QVector4D(_color, 1.0f));
     }
 
-    void EvaluatorModel::glStatesEnable() {
+    void EvaluatorModel::glStatesEnable() const {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
     }
 
-    void EvaluatorModel::glStatesDisable() {
+    void EvaluatorModel::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
     }
 }

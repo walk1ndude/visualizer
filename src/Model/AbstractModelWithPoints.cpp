@@ -152,13 +152,13 @@ namespace Model {
         }
     }
 
-    void AbstractModelWithPoints::bindUniformValues() {
+    void AbstractModelWithPoints::bindUniformValues() const {
         _viewRange->setUniformValue(program());
 
         AbstractModel::bindUniformValues();
     }
 
-    void AbstractModelWithPoints::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * ) {
+    void AbstractModelWithPoints::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * ) const {
         if (_pointsTexture) {
             program->setUniformValue(uniformValues["points"], _pointsTexture->textureId());
         }
@@ -171,12 +171,12 @@ namespace Model {
         AbstractModel::deleteModel();
     }
 
-    void AbstractModelWithPoints::glStatesEnable() {
+    void AbstractModelWithPoints::glStatesEnable() const {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
     }
 
-    void AbstractModelWithPoints::glStatesDisable() {
+    void AbstractModelWithPoints::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
     }
 }

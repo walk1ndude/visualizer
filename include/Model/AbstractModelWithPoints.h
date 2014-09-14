@@ -25,10 +25,8 @@ namespace Model {
                                 const ShaderInfo::ShaderVariablesNames & uniformValues =
                                 ShaderInfo::ShaderVariablesNames());
 
-        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewPort);
-        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) = 0;
-
-        virtual void bindUniformValues();
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewPort) const;
+        virtual void bindUniformValues() const;
 
         virtual PointsModel * pointsModel() final;
         virtual PointsInfo::ModelPoints * modelPoints() final;
@@ -37,8 +35,8 @@ namespace Model {
 
         virtual void deleteModel();
 
-        virtual void glStatesEnable();
-        virtual void glStatesDisable();
+        virtual void glStatesEnable() const;
+        virtual void glStatesDisable() const;
 
     private:
         PointsModel * _points;
@@ -49,7 +47,7 @@ namespace Model {
 
         QOpenGLTexture * _pointsTexture;
 
-        void updatePointsTexture(QOpenGLShaderProgram * program);
+        virtual void updatePointsTexture(QOpenGLShaderProgram * program) final;
         
     signals:
         void pointUpdated(const PointsInfo::UpdatedPoint & point);

@@ -39,9 +39,9 @@ namespace Render {
         virtual bool updateContent() final;
         virtual bool activateContext() final;
 
-        Scene::AbstractScene * selectedScene();
+        Scene::AbstractScene * selectedScene() const;
 
-        QSize surfaceSize();
+        QSize surfaceSize() const;
 
     private:
         bool _canRenderContent;

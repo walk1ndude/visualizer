@@ -79,11 +79,11 @@ namespace Render {
         QObject::disconnect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
     }
 
-    Scene::AbstractScene * AbstractRenderer::selectedScene() {
+    Scene::AbstractScene * AbstractRenderer::selectedScene() const {
         return _selectedScene;
     }
 
-    QSize AbstractRenderer::surfaceSize() {
+    QSize AbstractRenderer::surfaceSize() const {
         return _surfaceSize;
     }
 

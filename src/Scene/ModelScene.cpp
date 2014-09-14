@@ -37,12 +37,8 @@ namespace Scene {
         emit viewportArrayChanged();
     }
 
-    QVector3D ModelScene::rotation() {
+    QVector3D ModelScene::rotation() const {
         return _rotation;
-    }
-
-    QRect ModelScene::screenSaveRect() {
-        return QRect(_screenSaveRect.x(), _screenSaveRect.y(), _screenSaveRect.width(), _screenSaveRect.height());
     }
 
     void ModelScene::setRotation(const QVector3D & rotation) {

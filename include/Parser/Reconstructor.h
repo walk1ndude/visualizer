@@ -22,8 +22,6 @@ namespace Parser {
         explicit Reconstructor();
         ~Reconstructor();
 
-        void reset();
-
         QVariant imgFiles() const;
 
     private:
@@ -55,13 +53,15 @@ namespace Parser {
 
         void visualize();
 
+        void reset();
+
     signals:
         void slicesProcessed(QVariant slices);
         void imgFilesChanged();
 
     public slots:
-        void setImgFiles(const QVariant & fileNames);
-        Q_INVOKABLE void nextSlice(const int & ds);
+        virtual void setImgFiles(const QVariant & fileNames) final;
+        Q_INVOKABLE virtual void nextSlice(const int & ds);
     };
 }
 

@@ -60,7 +60,7 @@ namespace Model {
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()), speed);
     }
     
-    QMatrix4x4 HeadModel::model(const Viewport::Viewport * viewport) {
+    QMatrix4x4 HeadModel::model(const Viewport::Viewport * viewport) const {
         QMatrix4x4 model = AbstractModel::model();
         
         if (viewport) {
@@ -70,28 +70,28 @@ namespace Model {
         return model;
     }
 
-    QMatrix4x4 HeadModel::view(const Viewport::Viewport * viewport) {
+    QMatrix4x4 HeadModel::view(const Viewport::Viewport * viewport) const {
         return viewport->viewBillboard();
     }
     
-    void HeadModel::drawingRoutine() {
+    void HeadModel::drawingRoutine() const {
         glDrawElements(GL_TRIANGLES, indexCount(), GL_UNSIGNED_INT, 0);
     }
 
-    void HeadModel::glStatesEnable() {
+    void HeadModel::glStatesEnable() const {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         AbstractModelWithPoints::glStatesEnable();
     }
 
-    void HeadModel::glStatesDisable() {
+    void HeadModel::glStatesDisable() const {
         glDisable(GL_BLEND);
 
         AbstractModelWithPoints::glStatesDisable();
     }
 
-    void HeadModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
+    void HeadModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
@@ -99,7 +99,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["tex"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
+    void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));

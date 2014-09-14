@@ -20,23 +20,23 @@ namespace Model {
                                 const ShaderInfo::ShaderVariablesNames & uniformValues =
                                 ShaderInfo::ShaderVariablesNames() << "vp" << "color");
 
-        void setSize(const QSize & size);
-        void setSize(const int & width, const int & height);
+        virtual void setSize(const QSize & size);
+        virtual void setSize(const int & width, const int & height);
 
-        void setColor(const QVector3D & color);
+        virtual void setColor(const QVector3D & color);
 
-        void setStep(const qreal & stepX, const qreal & stepY = 0.0f);
+        virtual void setStep(const qreal & stepX, const qreal & stepY = 0.0f);
 
-        void init();
+        virtual void init() final;
 
     protected:
-        virtual void bindAttributeArrays(QOpenGLShaderProgram * program);
-        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport);
+        virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
+        virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;
 
-        virtual void drawingRoutine();
+        virtual void drawingRoutine() const;
 
-        virtual void glStatesEnable();
-        virtual void glStatesDisable();
+        virtual void glStatesEnable() const;
+        virtual void glStatesDisable() const;
 
     private:
         int _width;

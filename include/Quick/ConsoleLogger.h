@@ -15,14 +15,10 @@ namespace Quick {
 
         static void customMessageHandler(QtMsgType type, const QMessageLogContext & context, const QString & msg);
 
-        QString output();
-        void setOutput(const QString & output);
+        QString output() const;
+        QString logFile() const;
 
-        QString logFile();
-        void setLogFile(const QString & logFile);
-
-        int lineCount();
-        void setLineCount(const int & lineCount);
+        int lineCount() const;
 
     private:
         static QString _output;
@@ -37,6 +33,11 @@ namespace Quick {
         void outputChanged();
         void lineCountChanged();
         void logFileChanged();
+
+    public slots:
+        void setOutput(const QString & output);
+        void setLogFile(const QString & logFile);
+        void setLineCount(const int & lineCount);
     };
 }
 

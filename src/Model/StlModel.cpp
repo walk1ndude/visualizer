@@ -14,7 +14,7 @@ namespace Model {
         fillBuffers<ModelInfo::BuffersVN>(buffers);
     }
 
-    void StlModel::bindAttributeArrays(QOpenGLShaderProgram * program) {
+    void StlModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
@@ -22,7 +22,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["normal"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void StlModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) {
+    void StlModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["colorU"], QVector4D(1.0, 1.0, 1.0, 1.0));
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
         program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));

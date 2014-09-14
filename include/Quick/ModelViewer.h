@@ -39,26 +39,26 @@ namespace Quick {
         explicit ModelViewer();
         virtual ~ModelViewer();
 
-        QSize fboSize();
+        QSize fboSize() const;
         
-        QVariantMap selectedPoint();
+        QVariantMap selectedPoint() const;
 
-        ViewRangeInfo::ViewAxisRange xRange();
-        ViewRangeInfo::ViewAxisRange yRange();
-        ViewRangeInfo::ViewAxisRange zRange();
+        ViewRangeInfo::ViewAxisRange xRange() const;
+        ViewRangeInfo::ViewAxisRange yRange() const;
+        ViewRangeInfo::ViewAxisRange zRange() const;
 
-        QVector3D rotation();
+        QVector3D rotation() const;
 
-        QVector2D huRange();
+        QVector2D huRange() const;
 
-        int minHU();
-        int maxHU();
+        int minHU() const;
+        int maxHU() const;
 
-        int modelID();
+        int modelID() const;
 
-        Viewport::ViewportArray * viewportArray();
+        Viewport::ViewportArray * viewportArray() const;
 
-        Scene::ModelScene * modelScene();
+        Scene::ModelScene * modelScene() const;
 
     protected:
         bool _needsInitialize;
@@ -120,33 +120,32 @@ namespace Quick {
         void fboSizeChanged(const QSize & fboSize);
 
     public slots:
-        Q_INVOKABLE void drawSlices(SliceInfo::Slices slices);
-        Q_INVOKABLE void addPoint(const QPointF & point, Viewport::Viewport * viewport);
+        Q_INVOKABLE virtual void drawSlices(SliceInfo::Slices slices);
+        Q_INVOKABLE virtual void addPoint(const QPointF & point, Viewport::Viewport * viewport);
 
-        Q_INVOKABLE void togglePoint(const QString & point);
+        Q_INVOKABLE virtual void togglePoint(const QString & point);
 
-        void setModelScene(Scene::ModelScene * modelScene);
+        virtual void setModelScene(Scene::ModelScene * modelScene);
 
-        void updatePoint(const PointsInfo::UpdatedPoint & point);
+        virtual void updatePoint(const PointsInfo::UpdatedPoint & point);
 
-        void setFboSize(const QSize & fboSize);
+        virtual void setFboSize(const QSize & fboSize);
 
-        void setSelectedPoint(const QVariantMap & selectedPoint);
+        virtual void setSelectedPoint(const QVariantMap & selectedPoint);
 
-        void setRotation(const QVector3D & rotation);
+        virtual void setRotation(const QVector3D & rotation);
 
-        void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
-        void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
-        void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
+        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
+        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
+        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
-        void sethuRange(const QVector2D & huRange);
+        virtual void sethuRange(const QVector2D & huRange);
 
-        void setMinHU(const int & minHU);
-        void setMaxHU(const int & maxHU);
+        virtual void setMinHU(const int & minHU);
+        virtual void setMaxHU(const int & maxHU);
 
-        void setModelID(const int & modelID);
-
-        void setViewportArray(Viewport::ViewportArray * viewportArray);
+        virtual void setModelID(const int & modelID);
+        virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
     };
 }
 

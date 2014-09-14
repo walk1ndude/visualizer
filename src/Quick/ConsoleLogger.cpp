@@ -75,7 +75,7 @@ namespace Quick {
         }
     }
 
-    QString ConsoleLogger::output() {
+    QString ConsoleLogger::output() const {
         return _output;
     }
 
@@ -85,7 +85,7 @@ namespace Quick {
         emit outputChanged();
     }
 
-    QString ConsoleLogger::logFile() {
+    QString ConsoleLogger::logFile() const {
         return _logFile;
     }
 
@@ -107,7 +107,7 @@ namespace Quick {
         }
     }
 
-    int ConsoleLogger::lineCount() {
+    int ConsoleLogger::lineCount() const {
         return _lineCount;
     }
 

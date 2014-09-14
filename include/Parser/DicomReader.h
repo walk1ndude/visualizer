@@ -17,9 +17,6 @@ namespace Parser {
         explicit DicomReader();
         ~DicomReader();
 
-        void reset(const int & newSize = 0);
-        void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
-
         QUrl dicomFile() const;
 
     private:
@@ -39,18 +36,21 @@ namespace Parser {
         void runSliceProcessing(const bool & tellAboutHURange = false);
         void updateDicomData();
 
+        void reset(const int & newSize = 0);
+        void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
+
     signals:
         void slicesProcessed(QVariant slices);
 
         void dicomFileChanged();
 
     public slots:
-        Q_INVOKABLE void nextSlice(const int & ds);
+        Q_INVOKABLE virtual void nextSlice(const int & ds);
 
-        void setDicomFile(const QUrl & dicomFile);
+        virtual void setDicomFile(const QUrl & dicomFile) final;
 
-        void updateMinHU(const int & minHU);
-        void updateMaxHU(const int & maxHU);
+        virtual void updateMinHU(const int & minHU);
+        virtual void updateMaxHU(const int & maxHU);
     };
 }
 

@@ -35,7 +35,7 @@ namespace Quick {
         }
     }
 
-    QSize ModelViewer::fboSize() {
+    QSize ModelViewer::fboSize() const {
         return _fboSize;
     }
 
@@ -45,7 +45,7 @@ namespace Quick {
         emit fboSizeChanged(fboSize);
     }
 
-    QVariantMap ModelViewer::selectedPoint() {
+    QVariantMap ModelViewer::selectedPoint() const {
         return _selectedPoint;
     }
     
@@ -57,7 +57,7 @@ namespace Quick {
         emit togglePointChanged(point);
     }
 
-    ViewRangeInfo::ViewAxisRange ModelViewer::xRange() {
+    ViewRangeInfo::ViewAxisRange ModelViewer::xRange() const {
         return _xRange;
     }
 
@@ -66,7 +66,7 @@ namespace Quick {
         emit xRangeChanged(_xRange);
     }
 
-    ViewRangeInfo::ViewAxisRange ModelViewer::yRange() {
+    ViewRangeInfo::ViewAxisRange ModelViewer::yRange() const {
         return _yRange;
     }
 
@@ -75,7 +75,7 @@ namespace Quick {
         emit yRangeChanged(_yRange);
     }
 
-    ViewRangeInfo::ViewAxisRange ModelViewer::zRange() {
+    ViewRangeInfo::ViewAxisRange ModelViewer::zRange() const {
         return _zRange;
     }
 
@@ -84,7 +84,7 @@ namespace Quick {
         emit zRangeChanged(_zRange);
     }
 
-    QVector2D ModelViewer::huRange() {
+    QVector2D ModelViewer::huRange() const {
         return _huRange;
     }
 
@@ -93,7 +93,7 @@ namespace Quick {
         emit huRangeChanged();
     }
 
-    int ModelViewer::minHU() {
+    int ModelViewer::minHU() const {
         return (int) _minHU;
     }
 
@@ -102,7 +102,7 @@ namespace Quick {
         emit minHUChanged(_minHU);
     }
 
-    int ModelViewer::maxHU() {
+    int ModelViewer::maxHU() const {
         return _maxHU;
     }
 
@@ -111,11 +111,11 @@ namespace Quick {
         emit maxHUChanged(_maxHU);
     }
 
-    int ModelViewer::modelID() {
+    int ModelViewer::modelID() const {
         return _modelID;
     }
 
-    QVector3D ModelViewer::rotation() {
+    QVector3D ModelViewer::rotation() const {
         return _rotation;
     }
 
@@ -129,7 +129,7 @@ namespace Quick {
         emit modelIDChanged(_modelID);
     }
 
-    Scene::ModelScene * ModelViewer::modelScene() {
+    Scene::ModelScene * ModelViewer::modelScene() const {
         return _modelScenes.last();
     }
 
@@ -149,7 +149,7 @@ namespace Quick {
         emit pointUpdated(map);
     }
 
-    Viewport::ViewportArray * ModelViewer::viewportArray() {
+    Viewport::ViewportArray * ModelViewer::viewportArray() const {
         return _viewportArray;
     }
 

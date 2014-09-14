@@ -99,19 +99,19 @@ namespace Viewport {
         void zoomChanged();
 
     public slots:
-        void setBoundingRectNormalized(const QRectF & boundingRectNormalized);
+        virtual void setBoundingRectNormalized(const QRectF & boundingRectNormalized) final;
 
-        void setBoundingRect(const QRect & boundingRect);
+        virtual void setBoundingRect(const QRect & boundingRect) final;
 
-        void setProjectionType(const ProjectionType & projectionType);
+        virtual void setProjectionType(const ProjectionType & projectionType) final;
 
-        void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up);
+        virtual void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) final;
 
-        void setZoom(const qreal & zoomFactor);
+        virtual void setZoom(const qreal & zoomFactor) final;
 
-        void resize(const QSize & windowSize);
+        virtual void resize(const QSize & windowSize) final;
 
-        void setProjection();
+        virtual void setProjection() final;
     };
 }
 #endif // VIEWPORT_H
