@@ -24,7 +24,13 @@ namespace Model {
 
     void StlModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["colorU"], QVector4D(1.0, 1.0, 1.0, 1.0));
-        program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
+
+        program->setUniformValue(uniformValues["projection"], projection(viewport));
+        program->setUniformValue(uniformValues["view"], view(viewport));
+        program->setUniformValue(uniformValues["model"], model(viewport));
+
+        program->setUniformValue(uniformValues["cameraPosition"], viewport->eye());
+
         program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));
 
         AbstractModelWithPoints::bindUniformValues(program, viewport);

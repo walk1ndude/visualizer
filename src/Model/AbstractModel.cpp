@@ -150,7 +150,7 @@ namespace Model {
     }
 
     QMatrix3x3 AbstractModel::normalMatrix(const Viewport::Viewport * viewport) const {
-        return (model(viewport) * view(viewport)).normalMatrix();
+        return model(viewport).normalMatrix();
     }
 
     QMatrix4x4 AbstractModel::scaleMatrix() const {

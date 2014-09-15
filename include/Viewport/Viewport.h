@@ -46,6 +46,8 @@ namespace Viewport {
         QMatrix4x4 view() const;
         QMatrix4x4 viewBillboard() const;
 
+        QVector3D eye() const;
+
         QMatrix4x4 projection() const;
 
         QString text() const;

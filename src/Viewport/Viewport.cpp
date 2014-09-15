@@ -129,6 +129,10 @@ namespace Viewport {
         return _zoomFactor;
     }
 
+    QVector3D Viewport::eye() const {
+        return _eye;
+    }
+
     void Viewport::setZoom(const qreal & zoomFactor) {
         qreal aspectRatio = width() / height();
 

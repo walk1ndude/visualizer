@@ -89,16 +89,17 @@ Item {
             viewportArray: viewportArray;
 
             LightSource {
-                position: Qt.vector4d(10.0, -10.0, 10.0, 1.0);
-                color: Qt.vector4d(0.8, 0.8, 0.8, 0.6);
-                ambientIntensity: 0.002;
+                position: Qt.vector4d(0.0, 0.0, 10.0, 1.0);
+                color: Qt.vector4d(0.8, 0.8, 0.8, 0.9);
+                ambientIntensity: 0.005;
+                attenuation: 0.2;
             }
 
             Material {
-                emissive: Qt.vector4d(0.6, 0.6, 0.6, 1.0);
+                emissive: Qt.vector4d(0.8, 0.8, 0.9, 1.0);
                 diffuse: Qt.vector4d(0.7, 0.8, 0.6, 1.0);
                 specular: Qt.vector4d(0.01, 0.02, 0.02, 0.02);
-                shininess: 0.001;
+                shininess: 0.01;
             }
 
             onScalingFactorChanged: modelViewerEx.scalingFactor = scalingFactor;

@@ -23,7 +23,7 @@ namespace Model {
                           ShaderInfo::ShaderVariablesNames() << "vertex" << "normal",
 
                           const ShaderInfo::ShaderVariablesNames & uniformValues =
-                          ShaderInfo::ShaderVariablesNames() << "colorU" << "mvp" << "normalMatrix");
+                          ShaderInfo::ShaderVariablesNames() << "colorU" << "model" << "view" << "projection" << "normalMatrix" << "cameraPosition");
 
         void init(ModelInfo::BuffersVN buffers);
 

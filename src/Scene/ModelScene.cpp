@@ -220,7 +220,7 @@ namespace Scene {
 
         model->addLightSource(_lightSources.at(0),
                               ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
-                              "lightSource.ambientIntensity");
+                              "lightSource.ambientIntensity" << "lightSource.attenuation");
 
         model->addMaterial(_materials.at(0),
                            ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<

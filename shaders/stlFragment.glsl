@@ -5,8 +5,6 @@ layout(location = 2) in highp vec4 N;
 
 uniform highp vec4 colorU;
 
-uniform highp mat4 mvp;
-
 layout(location = 0) out highp vec4 fragColor;
 
 
