@@ -47,6 +47,7 @@ namespace Viewport {
         QMatrix4x4 viewBillboard() const;
 
         QVector3D eye() const;
+        QVector3D eyeBillboard() const;
 
         QMatrix4x4 projection() const;
 
@@ -70,6 +71,7 @@ namespace Viewport {
 
         QVector3D _orientation;
         QVector3D _eye;
+        QVector3D _eyeBillboard;
         QVector3D _center;
         QVector3D _up;
 

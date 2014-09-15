@@ -43,8 +43,6 @@ namespace Model {
             zCurrentTexture += stepTexture;
         };
 
-        _step = QVector3D(1.0f / size.x(), 1.0f / size.y(), 1.0f / size.z());
-
         ModelInfo::BuffersVT buffers;
 
         buffers.vertices = ModelInfo::VerticesVTPointer(vertices);
@@ -60,7 +58,7 @@ namespace Model {
     
     QMatrix4x4 HeadModel::model(const Viewport::Viewport * viewport) const {
         QMatrix4x4 model = AbstractModel::model();
-        
+
         if (viewport) {
             model = viewport->modelBillboard(model);
         }
@@ -99,10 +97,11 @@ namespace Model {
 
     void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["view"], view(viewport));
+
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));
         program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));
         program->setUniformValue(uniformValues["scale"], scaleMatrix());
-        program->setUniformValue(uniformValues["step"], _step);
+        program->setUniformValue(uniformValues["eye"], viewport->eyeBillboard());
     }
 }

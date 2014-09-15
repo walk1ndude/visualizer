@@ -29,7 +29,7 @@ namespace Model {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
 
-        program->setUniformValue(uniformValues["cameraPosition"], viewport->eye());
+        program->setUniformValue(uniformValues["eye"], viewport->eye());
 
         program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));
 

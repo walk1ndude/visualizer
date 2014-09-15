@@ -16,17 +16,18 @@ namespace Model {
                            AbstractModel * parent = nullptr,
 
                            const ShaderInfo::ShaderFiles & shaderFiles =
-                           ShaderInfo::ShaderFiles(
-                              ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
-                              ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
-                              << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
-                           ),
+                ShaderInfo::ShaderFiles(
+                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/sliceVertex.glsl"),
+                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/sliceFragment.glsl")
+                    << ShaderInfo::FragmentShaderFile(":shaders/helpersFragment.glsl")
+                    ),
 
                            const ShaderInfo::ShaderVariablesNames & attributeArrays =
-                           ShaderInfo::ShaderVariablesNames() << "vertex" << "tex",
+                ShaderInfo::ShaderVariablesNames() << "vertex" << "tex",
 
                            const ShaderInfo::ShaderVariablesNames & uniformValues =
-                           ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" << "normalMatrix" << "scale" << "stepSlices");
+                ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" <<
+                "normalMatrix" << "scale" << "eye" << "viewModel");
 
         void init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
 
@@ -43,9 +44,6 @@ namespace Model {
         virtual void glStatesDisable() const;
         
         virtual void drawingRoutine() const;
-
-    private:
-        QVector3D _step;
     };
 }
 #endif // HEADMODEL_H

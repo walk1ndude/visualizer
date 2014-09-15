@@ -35,7 +35,7 @@ struct Ranges {
 
 uniform highp Ranges ranges;
 
-uniform highp vec4 cameraPosition;
+uniform highp vec4 eye;
 
 bool needToRender(const vec3 position,
                   const vec2 xab, const vec2 yab, const vec2 zab);
@@ -63,31 +63,25 @@ vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
     vec4 lightPos = view * lightSource.position;
 
     vec4 surfaceToLight = normalize(lightPos - position);
-    vec4 surfaceToCamera = normalize(cameraPosition - position);
+    vec4 surfaceToCamera = normalize(eye - position);
 
     vec4 ambient = lightSource.ambientIntensity * surfaceColor * lightSource.color;
 
-    //diffuse
     float diffuseCoefficient = max(0.0f, dot(normal, surfaceToLight));
     vec4 diffuse = diffuseCoefficient * surfaceColor * lightSource.color;
 
-    //specular
     float specularCoefficient = 0.0f;
     if (diffuseCoefficient > 0.0f) {
         specularCoefficient = pow(max(0.0f, dot(surfaceToCamera, reflect(- surfaceToLight, normal))), material.shininess);
     }
     vec4 specular = specularCoefficient * material.specular * lightSource.color;
 
-    //attenuation
     float distanceToLight = length(lightPos - position);
     float attenuation = 1.0f / (1.0f + lightSource.attenuation * pow(distanceToLight, 2));
 
-    //linear color (color before gamma correction)
     vec4 linearColor = ambient + attenuation * (diffuse + specular);
 
-    //final color (after gamma correction)
     vec4 gamma = vec4(1.0f / 2.2f);
-
     return pow(linearColor, gamma);
 }
 
