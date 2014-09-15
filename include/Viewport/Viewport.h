@@ -28,6 +28,8 @@ namespace Viewport {
             TOP = 3
         };
 
+        static bool unproject(const QVector3D & point, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint);
+
         explicit Viewport();
         explicit Viewport(const ViewportRect & boundingRectNormalized,
                           const QSize & surfaceSize,
@@ -49,8 +51,6 @@ namespace Viewport {
         QString text() const;
 
         qreal zoom() const;
-
-        bool unproject(const QVector3D & point, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint) const;
 
     private:
         QSize _surfaceSize;

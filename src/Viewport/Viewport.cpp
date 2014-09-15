@@ -1,6 +1,8 @@
 #include "Viewport/Viewport.h"
 
 namespace Viewport {
+    void test() { qDebug() << "erher"; }
+
     Viewport::Viewport() :
         _fovZoom(75.0f),
         _side(1.0f),
@@ -168,7 +170,7 @@ namespace Viewport {
         return modelMatrix;
     }
 
-    bool Viewport::unproject(const QVector3D & projection, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint) const {
+    bool Viewport::unproject(const QVector3D & projection, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint) {
         bool invertible;
 
         QMatrix4x4 inv = mvp.inverted(&invertible);
