@@ -35,11 +35,11 @@ namespace Render {
 
         virtual void addEvaluatorModel(const int & width, const int & height = 10,
                                        const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                                       const QVector3D & color = QVector3D(0.0f, 1.0f, 0.0f)) final;
+                                       const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f)) final;
 
         virtual void addEvaluatorModel(const QSize & size = QSize(10, 10),
                                        const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                                       const QVector3D & color = QVector3D(0.0f, 0.0f, 1.0f)) final;
+                                       const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f)) final;
 
         // rotate selected model
         virtual void setRotation(const QVector3D & rotation);
