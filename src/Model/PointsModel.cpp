@@ -45,7 +45,7 @@ namespace Model {
                      * this name - build a "point" triangle,
                      * otherwise try to fill it. If group has more
                      * than 3 vertices, build a new triangle with 2
-                     * know vertices and 1 new */
+                     * known vertices and 1 new */
                 if (!groups[group]) {
                     groups[group] = pos + 1;
                     pos += 3;

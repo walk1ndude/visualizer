@@ -102,6 +102,6 @@ namespace Model {
         program->setUniformValue(uniformValues["projection"], projection(viewport));
         program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));
         program->setUniformValue(uniformValues["scale"], scaleMatrix());
-        program->setUniformValue(uniformValues["eye"], viewport->eyeBillboard());
+        program->setUniformValue(uniformValues["eye"], viewport->eye());
     }
 }

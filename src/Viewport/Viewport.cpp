@@ -1,8 +1,6 @@
 #include "Viewport/Viewport.h"
 
 namespace Viewport {
-    void test() { qDebug() << "erher"; }
-
     Viewport::Viewport() :
         _fovZoom(75.0f),
         _side(1.0f),
