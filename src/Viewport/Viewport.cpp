@@ -29,7 +29,7 @@ namespace Viewport {
 
         switch (_projectionType) {
             case PERSPECTIVE:
-                perspective(_fovZoom, aspectRatio, 0.0001f, 15.0f);
+                perspective(_fovZoom, aspectRatio, 1.0f, 15.0f);
                 break;
             case LEFT:
             case FRONTAL:
