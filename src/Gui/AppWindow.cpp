@@ -26,6 +26,10 @@ namespace Gui {
         delete _engine;
     }
 
+    QQuickWindow * AppWindow::appWindow() const {
+        return _appWindow;
+    }
+
     void AppWindow::fetchConnections() {
         QObject * appWindow = _engine->rootObjects().at(0);
 

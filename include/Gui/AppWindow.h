@@ -21,6 +21,8 @@ namespace Gui {
 
         void show();
 
+        QQuickWindow * appWindow() const;
+
     private:
         QQmlApplicationEngine * _engine;
 
