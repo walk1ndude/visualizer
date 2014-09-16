@@ -104,6 +104,10 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton;
 
                 onClicked: {
+                    if (modelID < 0) {
+                        return;
+                    }
+
                     if (mouse.button === Qt.LeftButton) {
                         listView.currentIndex = (listView.currentIndex === index) ? -1 : index;
 
