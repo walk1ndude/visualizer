@@ -28,7 +28,7 @@ namespace Model {
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewPort) const;
         virtual void bindUniformValues() const;
 
-        virtual PointsModel * pointsModel() const final;
+        virtual PointsModel * pointsModel() final;
         virtual PointsInfo::ModelPoints * modelPoints() final;
         
         virtual bool checkDepthBuffer(const Viewport::Viewport * viewport) final;

@@ -20,7 +20,7 @@ namespace Model {
 
     }
 
-    PointsModel * AbstractModelWithPoints::pointsModel() const {
+    PointsModel * AbstractModelWithPoints::pointsModel() {
         return _points;
     }
     
