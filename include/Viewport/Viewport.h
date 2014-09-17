@@ -55,6 +55,9 @@ namespace Viewport {
 
         qreal zoom() const;
 
+
+        QQuaternion _orientationBillboard;
+
     private:
         QSize _surfaceSize;
 
@@ -67,7 +70,6 @@ namespace Viewport {
 
         QMatrix4x4 _pMatrix;
 
-        QQuaternion _orientationBillboard;
 
         QVector3D _orientation;
         QVector3D _eye;
