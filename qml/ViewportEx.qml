@@ -66,6 +66,9 @@ Viewport {
         property real prevMouseX: 0.0;
         property real prevMouseY: 0.0;
 
+        property real mouseXW: 0.0;
+        property real mouseYW: 0.0;
+
         enabled: true;
 
         property bool rotating: false;
@@ -108,6 +111,9 @@ Viewport {
                 prevMouseX = mouseX;
                 prevMouseY = mouseY;
             }
+
+            mouseXW = mouseX;
+            mouseYW = mouseY;
         }
 
         onReleased: {
@@ -131,7 +137,7 @@ Viewport {
 
             if (zoomFactor !== parent.zoom) {
                 if (parent.propagateToOthers) {
-                    parent.array.zoom(zoomFactor);
+                    parent.array.zoom(zoomFactor, mouseXW / parent.width, mouseYW / parent.height, parent);
                 }
                 else {
                     parent.zoom = zoomFactor;

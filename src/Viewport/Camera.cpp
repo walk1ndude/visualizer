@@ -87,7 +87,7 @@ namespace Viewport {
             return _zoomFactor / (2 * top);
         }
 
-        void Camera::zoom(const ZoomFactor & zoomFactor, const AspectRatio & ratio) {
+        void Camera::zoom(const ZoomFactor & zoomFactor, const AspectRatio & ratio, const Delta & delta) {
             QMutexLocker locker(&_mutex);
             
             _pMatrix.setToIdentity();

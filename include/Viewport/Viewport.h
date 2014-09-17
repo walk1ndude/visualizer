@@ -85,8 +85,12 @@ namespace Viewport {
         virtual void setBoundingRect(const QRect & boundingRect) final;
 
         virtual void setProjectionType(const ProjectionType & projectionType);
+        
+        virtual void initCamera(const QVector3D & delta = QVector3D()) final;
+        virtual void initProjection() final;
 
         virtual void setZoom(const qreal & zoomFactor) final;
+        Q_INVOKABLE virtual void setZoom(const qreal & zoomFactor, const qreal & x, const qreal & y, Viewport * viewport);
 
         virtual void resize(const QSize & windowSize) final;
     };

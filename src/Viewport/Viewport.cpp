@@ -26,66 +26,78 @@ namespace Viewport {
     Viewport::ProjectionType Viewport::projectionType() const {
         return _projectionType;
     }
-
-    void Viewport::setProjectionType(const ProjectionType & projectionType) {
-        _projectionType = projectionType;
-
+    
+    void Viewport::initCamera(const QVector3D & delta) {
+        switch (_projectionType) {
+            case PERSPECTIVE:
+                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 2.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
+                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 2.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f),
+                                         Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                break;
+                
+            case LEFT:
+                _camera->lookAt(Camera::Eye(1.0f, 0.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
+                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(-1.0f, 0.0f, 0.0f),
+                                         Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f) *
+                                         Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f));
+                break;
+                
+            case FRONTAL:
+                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
+                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f),
+                                         Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                break;
+            case TOP:
+                _camera->lookAt(Camera::Eye(0.0f, 1.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, 1.0f));
+                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
+                break;
+        }
+    }
+    
+    void Viewport::initProjection() {
         Camera::Specs::Perspective perspectiveSpecs;
-
+        
         perspectiveSpecs.fov = 75.0f;
         perspectiveSpecs.aspectRatio = 1.0f;
         perspectiveSpecs.nearPlane = 1.0f;
         perspectiveSpecs.farPlane = 15.0f;
-
+        
         Camera::Specs::Orthogonal orthogonalSpecs;
-
+        
         orthogonalSpecs.left = - 1.0f;
         orthogonalSpecs.right = 1.0f;
         orthogonalSpecs.top = - 1.0f;
         orthogonalSpecs.bottom = 1.0f;
         orthogonalSpecs.nearPlane = 0.01f;
         orthogonalSpecs.farPlane = 10.0f;
-
+        
         switch (_projectionType) {
-        case PERSPECTIVE:
-            _camera->lookAt(Camera::Eye(0.0f, 0.0f, 2.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
-            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 2.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f),
-                                     Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
-
-            _camera->perspective(perspectiveSpecs);
-
-            _text = "perspective";
-            break;
-
-        case LEFT:
-            _camera->lookAt(Camera::Eye(1.0f, 0.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
-            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(-1.0f, 0.0f, 0.0f),
-                                     Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f) *
-                                     Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f));
-
-            _camera->ortho(orthogonalSpecs);
-
-            _text = "left";
-            break;
-
-        case FRONTAL:
-            _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
-            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f),
-                                     Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
-
-            _camera->ortho(orthogonalSpecs);
-
-            _text = "frontal";
-            break;
-        case TOP:
-            _camera->lookAt(Camera::Eye(0.0f, 1.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, 1.0f));
-            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
-
-            _camera->ortho(orthogonalSpecs);
-
-            _text = "top";
-            break;
+            case PERSPECTIVE:
+                _camera->perspective(perspectiveSpecs);
+                _text = "perspective";
+                break;
+                
+            case LEFT:
+                _camera->ortho(orthogonalSpecs);
+                _text = "left";
+                break;
+                
+            case FRONTAL:
+                _camera->ortho(orthogonalSpecs);
+                _text = "frontal";
+                break;
+            case TOP:
+                _camera->ortho(orthogonalSpecs);
+                _text = "top";
+                break;
         }
+    }
+
+    void Viewport::setProjectionType(const ProjectionType & projectionType) {
+        _projectionType = projectionType;
+        
+        initCamera();
+        initProjection();
     }
 
     void Viewport::resize(const QSize & surfaceSize) {
@@ -146,6 +158,19 @@ namespace Viewport {
     }
 
     void Viewport::setZoom(const qreal & zoomFactor) {
+        _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
+        emit zoomChanged();
+    }
+    
+    void Viewport::setZoom(const qreal & zoomFactor, const qreal & x, const qreal & y, Viewport * viewport) {
+        if (this == viewport) {
+            QVector3D pos = QVector3D(x, y, 0.0f);
+            QVector4D posWorld;
+            Camera::Camera::unproject(pos, projection() * view(), posWorld);
+            
+            qDebug() << posWorld;
+            //initCamera(QVector3D(posWorld.x(), posWorld.y(), posWorld.z()));
+        }
         _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         emit zoomChanged();
     }

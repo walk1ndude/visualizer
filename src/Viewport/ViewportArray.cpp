@@ -35,9 +35,9 @@ namespace Viewport {
         }
     }
 
-    void ViewportArray::zoom(const qreal & zoomFactor) {
+    void ViewportArray::zoom(const qreal & zoomFactor, const qreal & x, const qreal & y, Viewport * vp) {
         for (Viewport * viewport : _viewportArray) {
-            viewport->setZoom(zoomFactor);
+            viewport->setZoom(zoomFactor, x, y, vp);
         }
     }
 

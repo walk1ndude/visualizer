@@ -19,6 +19,8 @@ namespace Viewport {
         using AspectRatio = qreal;
         using NearPlane = qreal;
         using FarPlane = qreal;
+        
+        using Delta = QVector3D;
 
         using Left = qreal;
         using Right = qreal;
@@ -95,7 +97,7 @@ namespace Viewport {
 
             static bool unproject(const QVector3D & projection, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint);
 
-            void zoom(const ZoomFactor & zoomFactor, const AspectRatio & ratio);
+            void zoom(const ZoomFactor & zoomFactor, const AspectRatio & ratio, const Delta & delta = Delta(0.0f, 0.0f, 0.0f));
 
         private:
             QMutex _mutex;

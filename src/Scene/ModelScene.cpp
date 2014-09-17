@@ -7,7 +7,9 @@
 
 namespace Scene {
     ModelScene::ModelScene() :
-        AbstractScene() {
+        AbstractScene(),
+        _selectedModel(nullptr),
+        _selectedTexture(nullptr) {
         QObject::connect(this, &ModelScene::childrenChanged, [=]() {
             _lightSources.clear();
             _materials.clear();
