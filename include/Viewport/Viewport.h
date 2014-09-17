@@ -5,6 +5,8 @@
 
 #include <QtQuick/QQuickItem>
 
+#include "Viewport/Camera.h"
+
 namespace Viewport {
     using ViewportRect = QRectF;
 
@@ -12,7 +14,7 @@ namespace Viewport {
         Q_PROPERTY(QRectF boundingRect READ boundingRectNormalized
                    WRITE setBoundingRectNormalized NOTIFY boundingRectNormalizedChanged)
 
-        Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType NOTIFY projectionTypeChanged)
+        Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType)
         Q_PROPERTY(QString text READ text CONSTANT)
 
         Q_PROPERTY(qreal zoom READ zoom WRITE setZoom NOTIFY zoomChanged)
@@ -33,7 +35,9 @@ namespace Viewport {
         explicit Viewport();
         explicit Viewport(const ViewportRect & boundingRectNormalized,
                           const QSize & surfaceSize,
-                          const ProjectionType & projectionType = LEFT);
+                          const ProjectionType & projectionType = PERSPECTIVE);
+
+        ~Viewport();
 
         ViewportRect boundingRect() const;
 
@@ -41,19 +45,21 @@ namespace Viewport {
 
         ProjectionType projectionType() const;
 
-        QMatrix4x4 modelBillboard(const QMatrix4x4 & model) const;
+        Camera::ProjectionMatrix projection() const;
 
-        QMatrix4x4 view() const;
-        QMatrix4x4 viewBillboard() const;
+        Camera::ModelMatrix modelBillboard(const Camera::ModelMatrix & model) const;
 
-        QVector3D eye() const;
-        QVector3D eyeBillboard() const;
+        Camera::ViewMatrix view() const;
+        Camera::ViewMatrix viewBillboard() const;
 
-        QMatrix4x4 projection() const;
+        Camera::Eye eye() const;
+        Camera::Eye eyeBillboard() const;
 
         QString text() const;
 
         qreal zoom() const;
+        
+        QQuaternion orientationBillboard() const;
 
     private:
         QSize _surfaceSize;
@@ -62,43 +68,14 @@ namespace Viewport {
 
         ProjectionType _projectionType;
 
-        QMatrix4x4 _vMatrix;
-        QMatrix4x4 _vMatrixBillboard;
-
-        QMatrix4x4 _pMatrix;
+        Camera::Camera * _camera;
 
         QQuaternion _orientationBillboard;
 
-        QVector3D _orientation;
-        QVector3D _eye;
-        QVector3D _eyeBillboard;
-        QVector3D _center;
-        QVector3D _up;
-
-        qreal _fov;
-        qreal _fovZoom;
-
-        qreal _side;
-
-        qreal _zoomFactor;
-
-        qreal _aspectRatio;
-
-        qreal _nearVal;
-        qreal _farVal;
-
         QString _text;
-
-        QVector4D calculateRayDir(const QVector4D & point) const;
-
-        void ortho(const float & left, const float & right, const float & bottom,
-                   const float & top, const float & nearVal, const float & farVal);
-
-        void perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal);
 
     signals:
         void boundingRectNormalizedChanged();
-        void projectionTypeChanged();
 
         void zoomChanged();
 
@@ -107,15 +84,11 @@ namespace Viewport {
 
         virtual void setBoundingRect(const QRect & boundingRect) final;
 
-        virtual void setProjectionType(const ProjectionType & projectionType) final;
-
-        virtual void lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) final;
+        virtual void setProjectionType(const ProjectionType & projectionType);
 
         virtual void setZoom(const qreal & zoomFactor) final;
 
         virtual void resize(const QSize & windowSize) final;
-
-        virtual void setProjection() final;
     };
 }
 #endif // VIEWPORT_H

@@ -109,7 +109,8 @@ SOURCES +=  src/main.cpp \
             src/Info/TextureInfo.cpp \
             src/Info/SliceInfo.cpp \
             src/Info/ShaderInfo.cpp \
-            src/Quick/TextureNode.cpp
+            src/Quick/TextureNode.cpp \
+    src/Viewport/Camera.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -144,6 +145,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/VertexVN.h \
             include/Model/VertexVT.h \
             include/Info/ViewRangeInfo.h \
-            include/Model/EvaluatorModel.h
+            include/Model/EvaluatorModel.h \
+    include/Viewport/Camera.h
 
 RESOURCES += resources.qrc

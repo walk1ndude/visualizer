@@ -1,12 +1,11 @@
 #include "Viewport/Viewport.h"
 
 namespace Viewport {
-    Viewport::Viewport() :
-        _fovZoom(75.0f),
-        _side(1.0f),
-        _zoomFactor(2.0f) {
-        QObject::connect(this, &QQuickItem::widthChanged, this, &Viewport::setProjection);
-        QObject::connect(this, &QQuickItem::heightChanged, this, &Viewport::setProjection);
+    Viewport::Viewport() {
+        _camera = new Camera::Camera(Camera::ZoomFactor(2.0f));
+        
+        QObject::connect(this, &QQuickItem::widthChanged, [=]() { _camera->reproject(width() / height()); });
+        QObject::connect(this, &QQuickItem::heightChanged, [=]() { _camera->reproject(width() / height()); });
     }
 
     Viewport::Viewport(const ViewportRect & boundingRectNormalized,
@@ -20,70 +19,73 @@ namespace Viewport {
         setProjectionType(projectionType);
     }
 
-    Viewport::ProjectionType Viewport::projectionType() const {
-        return _projectionType;
+    Viewport::~Viewport() {
+        delete _camera;
     }
 
-    void Viewport::setProjection() {
-        qreal aspectRatio = width() / height();
-
-        switch (_projectionType) {
-            case PERSPECTIVE:
-                perspective(_fovZoom, aspectRatio, 1.0f, 15.0f);
-                break;
-            case LEFT:
-            case FRONTAL:
-            case TOP:
-                qreal side = _zoomFactor / (2 * _side);
-                ortho(- side * aspectRatio, side * aspectRatio, - side, side, 0.0001f, 10.0f);
-                break;
-        }
+    Viewport::ProjectionType Viewport::projectionType() const {
+        return _projectionType;
     }
 
     void Viewport::setProjectionType(const ProjectionType & projectionType) {
         _projectionType = projectionType;
 
+        Camera::Specs::Perspective perspectiveSpecs;
+
+        perspectiveSpecs.fov = 75.0f;
+        perspectiveSpecs.aspectRatio = 1.0f;
+        perspectiveSpecs.nearPlane = 1.0f;
+        perspectiveSpecs.farPlane = 15.0f;
+
+        Camera::Specs::Orthogonal orthogonalSpecs;
+
+        orthogonalSpecs.left = - 1.0f;
+        orthogonalSpecs.right = 1.0f;
+        orthogonalSpecs.top = - 1.0f;
+        orthogonalSpecs.bottom = 1.0f;
+        orthogonalSpecs.nearPlane = 0.01f;
+        orthogonalSpecs.farPlane = 10.0f;
+
         switch (_projectionType) {
-            case PERSPECTIVE :
-                lookAt(QVector3D(0.0f, 0.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+        case PERSPECTIVE:
+            _camera->lookAt(Camera::Eye(0.0f, 0.0f, 2.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
+            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 2.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f),
+                                     Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
 
-                _eyeBillboard = QVector3D(0.0f, 0.0f, 2.0f);
-                _vMatrixBillboard.lookAt(_eyeBillboard, QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
-                _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
+            _camera->perspective(perspectiveSpecs);
 
-                _text = "perspective";
-                break;
-            case LEFT:
-                lookAt(QVector3D(1.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+            _text = "perspective";
+            break;
 
-                _eyeBillboard = QVector3D(0.0f, 0.0f, 1.0f);
-                _vMatrixBillboard.lookAt(_eyeBillboard, QVector3D(0.0f, 0.0f, 0.0f), QVector3D(-1.0f, 0.0f, 0.0f));
-                _orientationBillboard = QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -270.0f)
-                        * QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f);
+        case LEFT:
+            _camera->lookAt(Camera::Eye(1.0f, 0.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
+            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(-1.0f, 0.0f, 0.0f),
+                                     Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f) *
+                                     Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f));
 
-                _text = "left";
-                break;
-            case FRONTAL:
-                lookAt(QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
+            _camera->ortho(orthogonalSpecs);
 
-                _eyeBillboard = QVector3D(0.0f, 0.0f, 1.0f);
-                _vMatrixBillboard.lookAt(_eyeBillboard, QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
-                _orientationBillboard = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f);
+            _text = "left";
+            break;
 
-                _text = "frontal";
-                break;
-            case TOP:
-                lookAt(QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f));
+        case FRONTAL:
+            _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
+            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f),
+                                     Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
 
-                _eyeBillboard = QVector3D(0.0f, 0.0f, 1.0f);
-                _vMatrixBillboard.lookAt(_eyeBillboard, QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, -1.0f, 0.0f));
-                _orientationBillboard = QQuaternion();
+            _camera->ortho(orthogonalSpecs);
 
-                _text = "top";
-                break;
+            _text = "frontal";
+            break;
+        case TOP:
+            _camera->lookAt(Camera::Eye(0.0f, 1.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, 1.0f));
+            _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f));
+
+            _camera->ortho(orthogonalSpecs);
+
+            _text = "top";
+            break;
         }
-
-        emit projectionTypeChanged();
     }
 
     void Viewport::resize(const QSize & surfaceSize) {
@@ -128,116 +130,39 @@ namespace Viewport {
     }
 
     qreal Viewport::zoom() const {
-        return _zoomFactor;
+        return _camera->zoomFactor();
     }
 
-    QVector3D Viewport::eye() const {
-        return _eye;
+    Camera::Eye Viewport::eye() const {
+        return _camera->eye();
     }
 
-    QVector3D Viewport::eyeBillboard() const {
-        return _eyeBillboard;
+    Camera::Eye Viewport::eyeBillboard() const {
+        return _camera->eyeBillboard();
+    }
+    
+    QQuaternion Viewport::orientationBillboard() const {
+        return _camera->orientationBillboard();
     }
 
     void Viewport::setZoom(const qreal & zoomFactor) {
-        qreal aspectRatio = width() / height();
-
-        _pMatrix.setToIdentity();
-        if (_projectionType == PERSPECTIVE) {
-            // fov will be in 1/4 to 3/2 from initial fov
-            float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
-            float b = (_eye.z() + a) / 4.0f;
-
-            _fovZoom = _fov * (zoomFactor + b) / (_eye.z() + a);
-            _pMatrix.perspective(_fovZoom, aspectRatio, _nearVal, _farVal);
-        }
-        else if (zoomFactor != 0.0f) {
-            qreal side = zoomFactor / (2 * _side);
-            _pMatrix.ortho(- side * aspectRatio, side * aspectRatio, - side, side, _nearVal, _farVal);
-        }
-
-        _zoomFactor = zoomFactor;
-
+        _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         emit zoomChanged();
     }
 
-    QMatrix4x4 Viewport::projection() const {
-        return _pMatrix;
+    Camera::ProjectionMatrix Viewport::projection() const {
+        return _camera->projection();
     }
 
-    QMatrix4x4 Viewport::view() const {
-        return _vMatrix;
+    Camera::ViewMatrix Viewport::view() const {
+        return _camera->view();
     }
 
-    QMatrix4x4 Viewport::viewBillboard() const {
-        return _vMatrixBillboard;
+    Camera::ViewMatrix Viewport::viewBillboard() const {
+        return _camera->viewBillboard();
     }
 
-    QMatrix4x4 Viewport::modelBillboard(const QMatrix4x4 & model) const {
-        QMatrix4x4 modelMatrix(model);
-        modelMatrix.rotate(_orientationBillboard);
-
-        return modelMatrix;
-    }
-
-    bool Viewport::unproject(const QVector3D & projection, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint) {
-        bool invertible;
-
-        QMatrix4x4 inv = mvp.inverted(&invertible);
-
-        if (!invertible) {
-            return false;
-        }
-
-        QVector4D unprojectedPointVector = QVector4D(
-                    2.0f * projection.x() - 1.0f,
-                    2.0f * projection.y() - 1.0f,
-                    2.0f * projection.z() - 1.0f,
-                    1.0f);
-
-        unprojectedPointVector = inv.map(unprojectedPointVector);
-
-        if (unprojectedPointVector.w() == 0.0f) {
-            return false;
-        }
-        else {
-            unprojectedPoint = QVector4D(
-                        unprojectedPointVector.x() / unprojectedPointVector.w(),
-                        unprojectedPointVector.y() / unprojectedPointVector.w(),
-                        unprojectedPointVector.z() / unprojectedPointVector.w(),
-                        1.0f
-            );
-
-            return true;
-        }
-    }
-
-    void Viewport::lookAt(const QVector3D & eye, const QVector3D & center, const QVector3D & up) {
-        _vMatrix.setToIdentity();
-        _vMatrix.lookAt(eye, center, up);
-
-        _eye = eye;
-        _center = center;
-        _up = up;
-    }
-
-    void Viewport::ortho(const float & left, const float & right, const float & bottom,
-                            const float & top, const float & nearVal, const float & farVal) {
-        _pMatrix.setToIdentity();
-        _pMatrix.ortho(left, right, bottom, top, nearVal, farVal);
-
-        _nearVal = nearVal;
-        _farVal = farVal;
-    }
-
-    void Viewport::perspective(const float & fov, const float & aspectRatio, const float & nearVal, const float & farVal) {
-        _pMatrix.setToIdentity();
-        _pMatrix.perspective(fov, aspectRatio, nearVal, farVal);
-
-        _fov = fov;
-        _aspectRatio = aspectRatio;
-
-        _nearVal = nearVal;
-        _farVal = farVal;
+    Camera::ModelMatrix Viewport::modelBillboard(const Camera::ModelMatrix & model) const {
+        return _camera->modelBillboard(model);
     }
 }
