@@ -155,6 +155,8 @@ namespace Model {
         QList<AbstractModel *> _children;
 
         QQuaternion _orientation;
+        QQuaternion _yCorrection;
+        
         QVector3D _position;
         QVector3D _scale;
 

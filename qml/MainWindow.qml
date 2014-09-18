@@ -136,7 +136,10 @@ ApplicationWindow {
     StlReader {
         id: stlReader;
 
-        onModelRead: modelViewer.modelRead(buffers);
+        onModelRead: {
+            modelViewer.modelRead(buffers);
+            toggleDocks();
+        }
     }
 
     function nextSlice() {
@@ -149,18 +152,28 @@ ApplicationWindow {
         reconstructor.nextSlice(-1);
     }
 
+    function toggleDocks() {
+        sidebar.head.collapsed = false;
+    }
+
     DicomReader {
         id: dicomReader;
 
-        onSlicesProcessed: modelViewer.drawSlices(slices);
+        onSlicesProcessed: {
+            modelViewer.drawSlices(slices);
+            toggleDocks();
+        }
     }
-/*
+
     Reconstructor {
         id: reconstructor;
 
-        onSlicesProcessed: modelViewer.drawSlices(slices);
+        onSlicesProcessed: {
+            modelViewer.drawSlices(slices);
+            toggleDocks();
+        }
     }
-*/
+
     ConsoleDock {
         id: consoleDock;
 
