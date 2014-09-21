@@ -23,7 +23,7 @@ namespace Model {
     }
     
     void StlModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        AbstractModel::rotate(rotation);//QVector3D(rotation.x(), rotation.z(), rotation.x()), speed);
+        AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), rotation.y()), speed);
     }
 
     void StlModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
