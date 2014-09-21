@@ -31,21 +31,18 @@ namespace Viewport {
         switch (_projectionType) {
             case PERSPECTIVE:
                 _camera->lookAt(Camera::Eye(0.0f, -2.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, -1.0f));
-                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f),
-                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
                 break;
                 
             case LEFT:
                 _camera->lookAt(Camera::Eye(-1.0f, 0.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, -1.0f));
                 _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f),
-                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, 180.0f) *
-                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f));
+                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -180.0f));
                 break;
                 
             case FRONTAL:
                 _camera->lookAt(Camera::Eye(0.0f, -1.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, -1.0f));
-                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f),
-                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
                 break;
 
             case TOP:
@@ -180,5 +177,9 @@ namespace Viewport {
 
     Camera::ModelMatrix Viewport::textureBillboardOrientation() const {
         return _camera->textureBillboard();
+    }
+    
+    Camera::Orientation Viewport::orientationBillboard() const {
+        return _camera->orientationBillboard();
     }
 }

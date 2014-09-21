@@ -105,8 +105,8 @@ Viewport {
             if (parent.projectionType == Viewport.PERSPECTIVE && rotating) {
                 parent.array.parent.rotation = Qt.vector3d(
                             (parent.invertedYAxis ? 1 : -1) * (prevMouseY - mouseY),
-                            (prevMouseX - mouseX),
-                            0.0);
+                            0.0,
+                            prevMouseX - mouseX);
 
                 prevMouseX = mouseX;
                 prevMouseY = mouseY;

@@ -47,6 +47,8 @@ namespace Viewport {
 
         Camera::ProjectionMatrix projection() const;
 
+        Camera::Orientation orientationBillboard() const;
+        
         Camera::ModelMatrix modelBillboard() const;
         Camera::ModelMatrix textureBillboardOrientation() const;
 

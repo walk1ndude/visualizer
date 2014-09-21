@@ -33,6 +33,8 @@ namespace Model {
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         
+        virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport = nullptr) const;
+        
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport = nullptr) const;
 
     protected:

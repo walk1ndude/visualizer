@@ -29,6 +29,8 @@ namespace Model {
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport = nullptr) const;
         virtual Camera::ViewMatrix view(const Viewport::Viewport * viewport) const;
         virtual Camera::ProjectionMatrix projection(const Viewport::Viewport * viewport) const;
+        virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport = nullptr) const;
+        
         virtual QMatrix4x4 scaleMatrix() const;
 
         virtual QVector3D orientationEuler() const;

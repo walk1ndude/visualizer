@@ -21,10 +21,6 @@ namespace Model {
         program->enableAttributeArray(attributeArrays["normal"]);
         program->setAttributeBuffer(attributeArrays["normal"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
-    
-    void StlModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), rotation.y()), speed);
-    }
 
     void StlModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["colorU"], QVector4D(1.0, 1.0, 1.0, 1.0));
@@ -33,7 +29,7 @@ namespace Model {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         
-        program->setUniformValue(uniformValues["lightView"], view(viewport));
+        program->setUniformValue(uniformValues["lightView"], lightView(viewport));
 
         program->setUniformValue(uniformValues["eye"], viewport->eye());
 

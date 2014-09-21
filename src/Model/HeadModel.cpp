@@ -53,15 +53,24 @@ namespace Model {
 
     void HeadModel::rotate(const QVector3D & rotation, const qreal & speed) {
         //pointsModel()->rotate(QVector3D(rotation.z(), 2 * rotation.y(), - rotation.z()), speed);
-        AbstractModel::rotate(QVector3D(rotation.x(), - rotation.y(), rotation.z()), speed);
+        AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), - rotation.z()), speed);
     }
     
     Camera::ModelMatrix HeadModel::model(const Viewport::Viewport * viewport) const {
         Camera::Orientation orientation = orientationQuat();
-
+        
         Camera::ModelMatrix model = viewport->textureBillboardOrientation();
-        model.rotate(orientation);
+       
+        model.rotate(orientation * viewport->orientationBillboard());
+        
         return model;
+    }
+    
+    Camera::ViewMatrix HeadModel::lightView(const Viewport::Viewport * viewport) const {
+        Camera::ModelMatrix lightView = view(viewport);
+        lightView.rotate(viewport->orientationBillboard());
+        
+        return lightView;
     }
     
     void HeadModel::drawingRoutine() const {
@@ -94,11 +103,13 @@ namespace Model {
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));
         
-        program->setUniformValue(uniformValues["lightView"], view(viewport) * viewport->textureBillboardOrientation());
+        program->setUniformValue(uniformValues["lightView"], lightView(viewport));
 
         program->setUniformValue(uniformValues["scale"], scaleMatrix());
         program->setUniformValue(uniformValues["eye"], viewport->eye());
 
         program->setUniformValue(uniformValues["modelBillboard"], viewport->modelBillboard());
+        
+        qDebug() << viewport->modelBillboard();
     }
 }

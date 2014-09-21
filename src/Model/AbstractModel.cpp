@@ -148,6 +148,10 @@ namespace Model {
     Camera::ProjectionMatrix AbstractModel::projection(const Viewport::Viewport * viewport) const {
         return viewport->projection();
     }
+    
+    Camera::ViewMatrix AbstractModel::lightView(const Viewport::Viewport * viewport) const {
+        return viewport->view();
+    }
 
     QMatrix3x3 AbstractModel::normalMatrix(const Viewport::Viewport * viewport) const {
         return model(viewport).normalMatrix();
