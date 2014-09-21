@@ -52,22 +52,16 @@ namespace Model {
     }
 
     void HeadModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        pointsModel()->rotate(QVector3D(rotation.z(), 2 * rotation.y(), - rotation.z()), speed);
-        AbstractModel::rotate(QVector3D(rotation.x(), rotation.z(), - rotation.y()), speed);
+        //pointsModel()->rotate(QVector3D(rotation.z(), 2 * rotation.y(), - rotation.z()), speed);
+        AbstractModel::rotate(QVector3D(rotation.x(), - rotation.y(), rotation.z()), speed);
     }
     
-    QMatrix4x4 HeadModel::model(const Viewport::Viewport * viewport) const {
-        QMatrix4x4 model = AbstractModel::model();
+    Camera::ModelMatrix HeadModel::model(const Viewport::Viewport * viewport) const {
+        Camera::Orientation orientation = orientationQuat();
 
-        if (viewport) {
-            model = viewport->modelBillboard(model);
-        }
-        
+        Camera::ModelMatrix model = viewport->textureBillboardOrientation();
+        model.rotate(orientation);
         return model;
-    }
-
-    QMatrix4x4 HeadModel::view(const Viewport::Viewport * viewport) const {
-        return viewport->viewBillboard();
     }
     
     void HeadModel::drawingRoutine() const {
@@ -97,11 +91,14 @@ namespace Model {
 
     void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["view"], view(viewport));
-
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));
-        program->setUniformValue(uniformValues["normalMatrix"], normalMatrix(viewport));
+        
+        program->setUniformValue(uniformValues["lightView"], view(viewport) * viewport->textureBillboardOrientation());
+
         program->setUniformValue(uniformValues["scale"], scaleMatrix());
         program->setUniformValue(uniformValues["eye"], viewport->eye());
+
+        program->setUniformValue(uniformValues["modelBillboard"], viewport->modelBillboard());
     }
 }

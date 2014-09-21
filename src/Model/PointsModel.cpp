@@ -104,4 +104,8 @@ namespace Model {
     void PointsModel::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
     }
+
+    bool PointsModel::hasDepth() const {
+        return false;
+    }
 }

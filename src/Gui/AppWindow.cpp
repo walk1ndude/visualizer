@@ -23,7 +23,7 @@ namespace Gui {
     }
 
     AppWindow::~AppWindow() {
-        delete _engine;
+        _engine->deleteLater();
     }
 
     QQuickWindow * AppWindow::appWindow() const {

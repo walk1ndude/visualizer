@@ -47,32 +47,23 @@
 
 namespace Parser {
     Reconstructor::Reconstructor() :
-        _sliceNumber(0) {
-
-        //initOpenCL();
+        _sliceNumber(0),
+        _isOCLInitialized(false) {
     }
 
     Reconstructor::~Reconstructor() {
         reset();
 
-        clReleaseKernel(_calcTablesKernel);
-        clReleaseKernel(_butterflyDht2dKernel);
-        clReleaseKernel(_fourier2dKernel);
-        clReleaseKernel(_dht1dTransposeKernel);
-
-        clReleaseProgram(_programSlice);
-        clReleaseCommandQueue(_queue);
-    #ifdef CL_VERSION_1_2
-        clReleaseDevice(_device_id);
-    #endif
-        clReleaseContext(_context);
+        if (_isOCLInitialized) {
+            releaseOCLResources();
+        }
     }
 
     void Reconstructor::reset() {
         qDeleteAll(_slicesOCL.begin(), _slicesOCL.end());
     }
 
-    void Reconstructor::initOpenCL() {
+    void Reconstructor::initOCL() {
         QFile programFile(":cl/reconstructor.cl");
 
         programFile.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -134,9 +125,29 @@ namespace Parser {
         _fourier2dKernel = clCreateKernel(_programSlice, "fourier2d", nullptr);
         _dht1dTransposeKernel = clCreateKernel(_programSlice, "dht1dTranspose", nullptr);
         _butterflyDht2dKernel = clCreateKernel(_programSlice, "butterflyDht2d", nullptr);
+        
+        _isOCLInitialized = true;
+    }
+    
+    void Reconstructor::releaseOCLResources() {
+        clReleaseKernel(_calcTablesKernel);
+        clReleaseKernel(_butterflyDht2dKernel);
+        clReleaseKernel(_fourier2dKernel);
+        clReleaseKernel(_dht1dTransposeKernel);
+        
+        clReleaseProgram(_programSlice);
+        clReleaseCommandQueue(_queue);
+#ifdef CL_VERSION_1_2
+        clReleaseDevice(_device_id);
+#endif
+        clReleaseContext(_context);
     }
 
     void Reconstructor::reconstruct() {
+        if (!_isOCLInitialized) {
+            initOCL();
+        }
+        
         float startTime = cv::getTickCount() / cv::getTickFrequency();
 
         size_t height = _src.at(0).rows;

@@ -105,8 +105,8 @@ namespace Model {
         _children.append(child);
     }
 
-    QMatrix4x4 AbstractModel::model(const Viewport::Viewport * ) const {
-        QMatrix4x4 mMatrix;
+    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport * ) const {
+        Camera::ModelMatrix mMatrix;
         mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
 
@@ -129,7 +129,7 @@ namespace Model {
                          atan2(q13 - q24, q23 + q14));
     }
 
-    QQuaternion AbstractModel::orientationQuat() const {
+    Camera::Orientation AbstractModel::orientationQuat() const {
         return _orientation;
     }
 
@@ -141,11 +141,11 @@ namespace Model {
         return _position;
     }
 
-    QMatrix4x4 AbstractModel::view(const Viewport::Viewport * viewport) const {
+    Camera::ViewMatrix AbstractModel::view(const Viewport::Viewport * viewport) const {
         return viewport->view();
     }
 
-    QMatrix4x4 AbstractModel::projection(const Viewport::Viewport * viewport) const {
+    Camera::ProjectionMatrix AbstractModel::projection(const Viewport::Viewport * viewport) const {
         return viewport->projection();
     }
 
@@ -357,6 +357,10 @@ namespace Model {
 
     void AbstractModel::glStatesDisable() const {
 
+    }
+
+    bool AbstractModel::hasDepth() const {
+        return true;
     }
 
     void AbstractModel::addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) {

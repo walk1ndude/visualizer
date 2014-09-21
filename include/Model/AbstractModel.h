@@ -16,6 +16,8 @@
 
 #include "Scene/AbstractScene.h"
 
+#include "Camera/Camera.h"
+
 namespace Model {
     class AbstractModel : public QObject {
         Q_OBJECT
@@ -24,13 +26,13 @@ namespace Model {
 
         virtual int id() const final;
 
-        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr) const;
-        virtual QMatrix4x4 view(const Viewport::Viewport * viewport) const;
-        virtual QMatrix4x4 projection(const Viewport::Viewport * viewport) const;
+        virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport = nullptr) const;
+        virtual Camera::ViewMatrix view(const Viewport::Viewport * viewport) const;
+        virtual Camera::ProjectionMatrix projection(const Viewport::Viewport * viewport) const;
         virtual QMatrix4x4 scaleMatrix() const;
 
         virtual QVector3D orientationEuler() const;
-        virtual QQuaternion orientationQuat() const;
+        virtual Camera::Orientation orientationQuat() const;
 
         virtual QVector3D scale() const;
         virtual QVector3D position() const;
@@ -40,6 +42,8 @@ namespace Model {
         virtual bool updateNeeded() const final;
 
         virtual Scene::AbstractScene * scene() const;
+
+        virtual bool hasDepth() const;
 
     protected:
         QMutex modelMutex;
@@ -154,8 +158,8 @@ namespace Model {
         AbstractModel * _parent;
         QList<AbstractModel *> _children;
 
-        QQuaternion _orientation;
-        QQuaternion _yCorrection;
+        Camera::Orientation _orientation;
+        Camera::Orientation _yCorrection;
         
         QVector3D _position;
         QVector3D _scale;

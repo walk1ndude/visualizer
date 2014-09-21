@@ -19,7 +19,7 @@ namespace Model {
                                 ShaderInfo::ShaderVariablesNames() << "vertex",
 
                                 const ShaderInfo::ShaderVariablesNames & uniformValues =
-                                ShaderInfo::ShaderVariablesNames() << "vp" << "color");
+                                ShaderInfo::ShaderVariablesNames() << "mvp" << "color");
 
         virtual void setSize(const QSize & size);
         virtual void setSize(const int & width, const int & height);
@@ -38,6 +38,8 @@ namespace Model {
 
         virtual void glStatesEnable() const;
         virtual void glStatesDisable() const;
+
+        virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
 
     private:
         int _width;

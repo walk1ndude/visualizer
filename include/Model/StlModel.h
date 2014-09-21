@@ -23,9 +23,11 @@ namespace Model {
                           ShaderInfo::ShaderVariablesNames() << "vertex" << "normal",
 
                           const ShaderInfo::ShaderVariablesNames & uniformValues =
-                          ShaderInfo::ShaderVariablesNames() << "colorU" << "model" << "view" << "projection" << "normalMatrix" << "eye");
+                          ShaderInfo::ShaderVariablesNames() << "colorU" << "model" << "view" << "projection" << "normalMatrix" << "eye" << "lightView");
 
         void init(ModelInfo::BuffersVN buffers);
+        
+        virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
 
     protected:
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;

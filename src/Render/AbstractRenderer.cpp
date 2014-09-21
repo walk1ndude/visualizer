@@ -132,8 +132,8 @@ namespace Render {
 
         _surface->deleteLater();
 
-        moveToThread(QGuiApplication::instance()->thread());
-        exit();
+        //moveToThread(QGuiApplication::instance()->thread());
+        //exit();
     }
 
     void AbstractRenderer::cleanUp() {

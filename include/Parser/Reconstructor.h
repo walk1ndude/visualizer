@@ -43,10 +43,13 @@ namespace Parser {
         cl_kernel _butterflyDht2dKernel;
 
         cl_command_queue _queue;
+        
+        bool _isOCLInitialized;
 
         void showSliceWithNumber(const int & sliceNumber);
 
-        void initOpenCL();
+        void initOCL();
+        void releaseOCLResources();
 
         void reconstruct();
         void reconstructCPU();

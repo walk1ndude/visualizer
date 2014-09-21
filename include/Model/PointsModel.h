@@ -24,6 +24,8 @@ namespace Model {
 
         void init(PointsInfo::ModelPoints * modelPoints);
 
+        virtual bool hasDepth() const;
+
     protected:
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;

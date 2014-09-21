@@ -7,6 +7,8 @@ uniform highp mat4 model;
 uniform highp mat4 view;
 uniform highp mat4 scale;
 
+uniform highp mat4 lightView;
+
 uniform highp mat4 mvp;
 
 struct Material {
@@ -60,7 +62,7 @@ vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
                    const vec3 positionModel) {
 
     vec4 surfaceColor = highlightColor(positionModel, color);
-    vec4 lightPos = view * lightSource.position;
+    vec4 lightPos = lightView * lightSource.position;
 
     vec4 surfaceToLight = normalize(lightPos - position);
     vec4 surfaceToCamera = normalize(eye - position);

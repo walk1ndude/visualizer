@@ -27,14 +27,13 @@ namespace Model {
 
                            const ShaderInfo::ShaderVariablesNames & uniformValues =
                 ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" <<
-                "normalMatrix" << "scale" << "eye" << "viewModel");
+                "scale" << "eye" << "modelBillboard" << "lightView");
 
         void init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         
-        virtual QMatrix4x4 model(const Viewport::Viewport * viewport = nullptr) const;
-        virtual QMatrix4x4 view(const Viewport::Viewport * viewport) const;
+        virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport = nullptr) const;
 
     protected:
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;

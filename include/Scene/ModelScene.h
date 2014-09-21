@@ -11,6 +11,7 @@
 
 #include "Model/StlModel.h"
 #include "Model/VertexVN.h"
+#include "Model/ModelArray.h"
 
 #include "Viewport/ViewportArray.h"
 
@@ -37,7 +38,8 @@ namespace Scene {
 
     private:
         QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
-        QList<Model::AbstractModel *> _models;
+
+        Model::ModelArray _models;
 
         QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
         QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;

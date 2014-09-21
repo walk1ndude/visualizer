@@ -115,7 +115,7 @@ namespace Model {
 
                 modelPoint->position.setZ(posZ / 65535.0f);
 
-                if (Viewport::Camera::Camera::unproject(modelPoint->position, projection(viewport) * view(viewport) * model(viewport), unprojectedPoint)) {
+                if (Camera::Camera::unproject(modelPoint->position, projection(viewport) * view(viewport) * model(viewport), unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
 
                     updateNeeded = true;

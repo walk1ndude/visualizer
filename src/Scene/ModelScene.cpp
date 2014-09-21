@@ -69,7 +69,7 @@ namespace Scene {
     }
 
     void ModelScene::updateScene() {
-        for (Model::AbstractModel * model : _models) {
+        for (Model::AbstractModel * model : _models.array()) {
             if (model->updateNeeded()) {
                 model->update();
             }
@@ -81,7 +81,7 @@ namespace Scene {
 
         updateScene();
 
-        QListIterator<Model::AbstractModel *> modelIterator (_models);
+        QListIterator<Model::AbstractModel *> modelIterator (_models.array());
         QListIterator<Viewport::Viewport *> viewportIterator (_viewportArray->array());
 
         render(modelIterator, viewportIterator);
@@ -149,9 +149,6 @@ namespace Scene {
 
         _selectedModel = nullptr;
         _selectedTexture = nullptr;
-
-        qDeleteAll(_models.begin(), _models.end());
-        _models.clear();
 
         _materials.clear();
         _lightSources.clear();

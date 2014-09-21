@@ -5,7 +5,7 @@
 
 #include <QtQuick/QQuickItem>
 
-#include "Viewport/Camera.h"
+#include "Camera/Camera.h"
 
 namespace Viewport {
     using ViewportRect = QRectF;
@@ -47,19 +47,16 @@ namespace Viewport {
 
         Camera::ProjectionMatrix projection() const;
 
-        Camera::ModelMatrix modelBillboard(const Camera::ModelMatrix & model) const;
+        Camera::ModelMatrix modelBillboard() const;
+        Camera::ModelMatrix textureBillboardOrientation() const;
 
         Camera::ViewMatrix view() const;
-        Camera::ViewMatrix viewBillboard() const;
 
         Camera::Eye eye() const;
-        Camera::Eye eyeBillboard() const;
 
         QString text() const;
 
         qreal zoom() const;
-        
-        QQuaternion orientationBillboard() const;
 
     private:
         QSize _surfaceSize;
@@ -70,7 +67,7 @@ namespace Viewport {
 
         Camera::Camera * _camera;
 
-        QQuaternion _orientationBillboard;
+        Camera::Orientation _orientationBillboard;
 
         QString _text;
 

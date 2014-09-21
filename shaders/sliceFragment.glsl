@@ -1,9 +1,8 @@
 #version 410
 layout(location = 0) in highp vec4 fragPos;
+layout(location = 1) in highp vec4 vertPos;
 
 uniform highp sampler3D texHead;
-
-uniform highp mat4 normalMatrix;
 
 uniform highp vec4 eye;
 
@@ -21,20 +20,8 @@ void main(void) {
         vec4 headColor = texture(texHead, fragPos.stp).rrrr;
 
         if (headColor.r > 0.05f) {
-            fragColor = calcFragColor(fragPos, fragPos, headColor, fragPos.xyz);
-
-            // for greater good
-/*
-            if (headColor.r > 0.75 && headColor.r < 0.85 && fragPos.p > 0.45 && fragPos.p < 0.8) {
-            //if (headColor.r > 0.82) {//&& fragPos.p < 0.8 && fragPos.s > 0.33 && fragPos.s < 0.67) {
-                fragColor.a *= (0.01 * headColor.r);
-            }
-            else {
-                fragColor.a *= 0.05;
-            }
-*/
-            //fragColor.a = clamp(fragColor.a, 0.0, 1.0);
-
+            fragColor = calcFragColor(vertPos, fragPos, headColor, fragPos.xyz);
+            //fragColor += vec4(1.0);
         }
         else {
             discard;

@@ -30,26 +30,26 @@ namespace Viewport {
     void Viewport::initCamera(const QVector3D & delta) {
         switch (_projectionType) {
             case PERSPECTIVE:
-                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 2.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
-                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 2.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f),
-                                         Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                _camera->lookAt(Camera::Eye(0.0f, -2.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, -1.0f));
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f),
+                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
                 break;
                 
             case LEFT:
-                _camera->lookAt(Camera::Eye(1.0f, 0.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
-                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(-1.0f, 0.0f, 0.0f),
-                                         Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f) *
-                                         Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f));
+                _camera->lookAt(Camera::Eye(-1.0f, 0.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, -1.0f));
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f),
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, 180.0f) *
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f));
                 break;
                 
             case FRONTAL:
-                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
-                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f),
-                                         Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                _camera->lookAt(Camera::Eye(0.0f, -1.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, -1.0f));
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f),
+                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
                 break;
+
             case TOP:
-                _camera->lookAt(Camera::Eye(0.0f, 1.0f, 0.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, 0.0f, 1.0f));
-                _camera->lookAtBillboard(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
+                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f) + delta, Camera::Center(0.0f, 0.0f, 0.0f) + delta, Camera::Up(0.0f, -1.0f, 0.0f));
                 break;
         }
     }
@@ -148,15 +148,7 @@ namespace Viewport {
     Camera::Eye Viewport::eye() const {
         return _camera->eye();
     }
-
-    Camera::Eye Viewport::eyeBillboard() const {
-        return _camera->eyeBillboard();
-    }
     
-    QQuaternion Viewport::orientationBillboard() const {
-        return _camera->orientationBillboard();
-    }
-
     void Viewport::setZoom(const qreal & zoomFactor) {
         _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         emit zoomChanged();
@@ -167,8 +159,7 @@ namespace Viewport {
             QVector3D pos = QVector3D(x, y, 0.0f);
             QVector4D posWorld;
             Camera::Camera::unproject(pos, projection() * view(), posWorld);
-            
-            qDebug() << posWorld;
+
             //initCamera(QVector3D(posWorld.x(), posWorld.y(), posWorld.z()));
         }
         _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
@@ -183,11 +174,11 @@ namespace Viewport {
         return _camera->view();
     }
 
-    Camera::ViewMatrix Viewport::viewBillboard() const {
-        return _camera->viewBillboard();
+    Camera::ModelMatrix Viewport::modelBillboard() const {
+        return _camera->modelBillboard();
     }
 
-    Camera::ModelMatrix Viewport::modelBillboard(const Camera::ModelMatrix & model) const {
-        return _camera->modelBillboard(model);
+    Camera::ModelMatrix Viewport::textureBillboardOrientation() const {
+        return _camera->textureBillboard();
     }
 }
