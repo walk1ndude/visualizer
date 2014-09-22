@@ -87,11 +87,12 @@ namespace Model {
     }
 
     void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
-        QMatrix4x4 model = parent()->model(viewport);
-
-        model.rotate(orientationQuat());
+        Camera::Orientation orient = viewport->orientationBillboard();
+        Camera::ModelMatrix modelM = parent()->model(viewport);
         
-        program->setUniformValue(uniformValues["mvp"], projection(viewport) * parent()->view(viewport) * model);
+        modelM.rotate(orientationQuat());
+        
+        program->setUniformValue(uniformValues["mvp"], projection(viewport) * parent()->lightView(viewport) * modelM);
 
         program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
     }

@@ -85,7 +85,7 @@ namespace Viewport {
 
         virtual void setProjectionType(const ProjectionType & projectionType);
         
-        virtual void initCamera(const QVector3D & delta = QVector3D()) final;
+        virtual void initCamera(const Camera::Delta & delta = Camera::Delta()) final;
         virtual void initProjection() final;
 
         virtual void setZoom(const qreal & zoomFactor) final;

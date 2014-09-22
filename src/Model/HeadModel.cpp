@@ -52,7 +52,7 @@ namespace Model {
     }
 
     void HeadModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        //pointsModel()->rotate(QVector3D(rotation.z(), 2 * rotation.y(), - rotation.z()), speed);
+        pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), - rotation.z()), speed);
     }
     
