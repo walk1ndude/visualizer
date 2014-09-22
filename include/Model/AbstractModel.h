@@ -161,7 +161,6 @@ namespace Model {
         QList<AbstractModel *> _children;
 
         Camera::Orientation _orientation;
-        Camera::Orientation _yCorrection;
         
         QVector3D _position;
         QVector3D _scale;

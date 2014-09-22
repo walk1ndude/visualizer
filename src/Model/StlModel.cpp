@@ -29,7 +29,7 @@ namespace Model {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         
-        program->setUniformValue(uniformValues["lightView"], lightView(viewport));
+        program->setUniformValue(uniformValues["lightView"], viewport->modelBillboard());
 
         program->setUniformValue(uniformValues["eye"], viewport->eye());
 

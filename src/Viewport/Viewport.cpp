@@ -146,6 +146,10 @@ namespace Viewport {
         return _camera->eye();
     }
     
+    QVector4D Viewport::delta() const {
+        return _delta;
+    }
+    
     void Viewport::setZoom(const qreal & zoomFactor) {
         _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         emit zoomChanged();
@@ -162,11 +166,12 @@ namespace Viewport {
             QVector4D posWorldZoomed;
             Camera::Camera::unproject(pos, projection() * view(), posWorldZoomed);
             
-            QVector4D posDiff = (posWorldZoomed - posWorld) * 1.0f;
+            _delta = posWorldZoomed - posWorld;
 
-            initCamera(QVector3D(posDiff.x(), posDiff.y(), posDiff.z()));
+            initCamera(QVector3D(_delta));
         }
         else {
+            initCamera(Camera::Delta(view() * viewport->delta()));
             _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         }
         

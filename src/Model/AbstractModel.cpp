@@ -185,10 +185,7 @@ namespace Model {
                QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() * speed) *
                QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed);
 
-        _orientation *= (rot * _yCorrection.conjugate() / _yCorrection.length());
-        
-        _yCorrection = QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, - rotation.y() * speed);
-        qDebug() << _yCorrection;
+        _orientation = _orientation * (_orientation.conjugate() / _orientation.lengthSquared() * rot) * _orientation;
     }
 
     bool AbstractModel::bindShaderProgram() {

@@ -55,6 +55,8 @@ namespace Viewport {
         Camera::ViewMatrix view() const;
 
         Camera::Eye eye() const;
+        
+        QVector4D delta() const;
 
         QString text() const;
 
@@ -70,6 +72,8 @@ namespace Viewport {
         Camera::Camera * _camera;
 
         Camera::Orientation _orientationBillboard;
+        
+        QVector4D _delta;
 
         QString _text;
 

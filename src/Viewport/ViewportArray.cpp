@@ -37,7 +37,15 @@ namespace Viewport {
 
     void ViewportArray::zoom(const qreal & zoomFactor, const qreal & x, const qreal & y, Viewport * vp) {
         for (Viewport * viewport : _viewportArray) {
-            viewport->setZoom(zoomFactor, x, y, vp);
+            if (vp == viewport) {
+                viewport->setZoom(zoomFactor, x, y, vp);
+            }
+        }
+        
+        for (Viewport * viewport : _viewportArray) {
+            if (vp != viewport) {
+                viewport->setZoom(zoomFactor, x, y, vp);
+            }
         }
     }
 
