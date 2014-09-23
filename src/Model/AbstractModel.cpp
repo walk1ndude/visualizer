@@ -366,11 +366,14 @@ namespace Model {
     }
 
     void AbstractModel::glStatesEnable() const {
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
+        glStencilFunc(GL_ALWAYS, id() + 1, -1);
     }
 
     void AbstractModel::glStatesDisable() const {
-
+        glDisable(GL_STENCIL_TEST);
     }
 
     bool AbstractModel::hasDepth() const {

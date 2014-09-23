@@ -84,10 +84,14 @@ namespace Model {
     void EvaluatorModel::glStatesEnable() const {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+
+        AbstractModel::glStatesEnable();
     }
 
     void EvaluatorModel::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
+
+        AbstractModel::glStatesDisable();
     }
 
     Camera::ModelMatrix EvaluatorModel::model(const Viewport::Viewport * viewport) const {

@@ -104,16 +104,27 @@ namespace Model {
 
         for (PointsInfo::ModelPoint * modelPoint : _modelPoints.points()) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
-                GLushort posZ;
+                GLint posZ;
 
                 Viewport::ViewportRect boundingRect = viewport->boundingRect();
 
                 // usage of GL_UNSIGNED_SHORT explaned here http://www.opengl.org/wiki/Common_Mistakes#Depth_Buffer_Precision
-                glReadPixels(std::round(boundingRect.x() + modelPoint->position.x() * boundingRect.width()),
-                             std::round(boundingRect.y() + modelPoint->position.y() * boundingRect.height()),
-                             1, 1, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, &posZ);
+                PointsInfo::Position2D rounded = PointsInfo::Position2D(
+                            std::round(boundingRect.x() + modelPoint->position.x() * boundingRect.width()),
+                            std::round(boundingRect.y() + modelPoint->position.y() * boundingRect.height())
+                            );
 
-                modelPoint->position.setZ(posZ / 65535.0f);
+                glReadPixels(rounded.x(), rounded.y(), 1, 1, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, &posZ);
+
+                int stencil = posZ & 0x0000000F;
+
+                if (stencil != id() + 1) {
+                    return false;
+                }
+
+                int depth = posZ >> 8;
+
+                modelPoint->position.setZ(depth / (0xFFFFFF * 1.0f));
 
                 if (Camera::Camera::unproject(modelPoint->position, projection(viewport) * lightView(viewport) * model(viewport), unprojectedPoint)) {
                     modelPoint->positionCalculated(unprojectedPoint);
@@ -174,9 +185,13 @@ namespace Model {
     void AbstractModelWithPoints::glStatesEnable() const {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+
+        AbstractModel::glStatesEnable();
     }
 
     void AbstractModelWithPoints::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
+
+        AbstractModel::glStatesDisable();
     }
 }

@@ -100,10 +100,14 @@ namespace Model {
     void PointsModel::glStatesEnable() const {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+
+        AbstractModel::glStatesEnable();
     }
 
     void PointsModel::glStatesDisable() const {
         glDisable(GL_DEPTH_TEST);
+
+        AbstractModel::glStatesDisable();
     }
 
     bool PointsModel::hasDepth() const {
