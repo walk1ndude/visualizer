@@ -4,8 +4,8 @@ import QtQuick.Dialogs 1.2;
 
 import "qrc:/js/settings.js" as Settings;
 
-import "qrc:/qml/Dock" as Dock;
-import "qrc:/qml/Viewer" as Viewer;
+import "Dock" as Dock;
+import "Viewer" as Viewer;
 
 ApplicationWindow {
     id: appWindow;
