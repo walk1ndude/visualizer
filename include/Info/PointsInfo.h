@@ -8,6 +8,7 @@
 namespace PointsInfo {
     using Position2D = QPointF;
     using Position3D = QVector3D;
+    using Position4D = QVector4D;
     
     using Name = QString;
     using Groups = QStringList;
@@ -61,7 +62,7 @@ namespace PointsInfo {
 
         bool isPositionCalculated() const;
 
-        void positionCalculated(const QVector4D & position);
+        void positionCalculated(const Position3D & position);
 
         ModelPoint(const Position3D & position,
                    const Color & color,

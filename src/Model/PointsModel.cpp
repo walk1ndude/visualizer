@@ -87,7 +87,7 @@ namespace Model {
     }
 
     void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
-        Camera::Orientation orient = viewport->orientationBillboard();
+        //Camera::Orientation orient = viewport->orientationBillboard();
         Camera::ModelMatrix modelM = parent()->model(viewport);
         
         modelM.rotate(orientationQuat());

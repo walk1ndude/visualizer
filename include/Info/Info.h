@@ -9,5 +9,9 @@
 
 #include <QtQuick/QQuickItem>
 
+namespace PointsInfo {
+    using Position3D = QVector3D;
+    using Position4D = QVector4D;
+}
 
 #endif // INFO_H

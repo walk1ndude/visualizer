@@ -31,7 +31,7 @@ namespace Model {
         virtual Camera::ProjectionMatrix projection(const Viewport::Viewport * viewport) const;
         virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport = nullptr) const;
         
-        virtual QMatrix4x4 scaleMatrix() const;
+        virtual Camera::ScaleMatrix scaleMatrix() const;
 
         virtual QVector3D orientationEuler() const;
         virtual Camera::Orientation orientationQuat() const;
@@ -39,7 +39,7 @@ namespace Model {
         virtual QVector3D scale() const;
         virtual QVector3D position() const;
 
-        virtual QMatrix3x3 normalMatrix(const Viewport::Viewport * viewport) const;
+        virtual Camera::NormalMatrix normalMatrix(const Viewport::Viewport * viewport) const;
 
         virtual bool updateNeeded() const final;
 
@@ -170,7 +170,7 @@ namespace Model {
         QVector3D _position;
         QVector3D _scale;
 
-        QMatrix4x4 _scaleM;
+        Camera::ScaleMatrix _scaleM;
 
         bool _updateNeeded;
         bool _lockToWorldAxis;

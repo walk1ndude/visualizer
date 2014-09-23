@@ -35,13 +35,6 @@ namespace ModelInfo {
     class BuffersVC : public BuffersV {
     public:
         VerticesVCPointer vertices;
-
-        BuffersVC() { }
-        BuffersVC(const VerticesVCPointer & vertices,
-                  const IndicesPointer & indices) {
-            this->vertices = vertices;
-            this->indices = indices;
-        }
     };
 }
 

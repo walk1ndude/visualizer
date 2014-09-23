@@ -157,18 +157,18 @@ namespace Viewport {
     
     void Viewport::setZoom(const qreal & zoomFactor, const qreal & x, const qreal & y, Viewport * viewport) {
         if (this == viewport) {
-            QVector3D pos = QVector3D(1.0f - x, 1.0f - y, 0.0f);
-            QVector4D posWorld;
+            PointsInfo::Position3D pos = PointsInfo::Position3D(1.0f - x, 1.0f - y, 0.0f);
+            PointsInfo::Position3D posWorld;
             Camera::Camera::unproject(pos, projection() * view(), posWorld);
             
             _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
             
-            QVector4D posWorldZoomed;
+            PointsInfo::Position3D posWorldZoomed;
             Camera::Camera::unproject(pos, projection() * view(), posWorldZoomed);
             
             _delta = (posWorldZoomed - posWorld) * 2.0f;
 
-            initCamera(QVector3D(_delta));
+            initCamera(Camera::Delta(_delta));
         }
         else {
             //initCamera(Camera::Delta(modelBillboard() * viewport->delta()));

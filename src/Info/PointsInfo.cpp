@@ -31,8 +31,8 @@ namespace PointsInfo {
         return _positionCalculated;
     }
 
-    void ModelPoint::positionCalculated(const QVector4D & position) {
-        this->position = Position3D(position);
+    void ModelPoint::positionCalculated(const Position3D & position) {
+        this->position = position;
         _positionCalculated = true;
     }
 

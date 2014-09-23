@@ -145,16 +145,16 @@ namespace Camera {
         return _eye;
     }
 
-    bool Camera::unproject(const QVector3D & projection, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint) {
+    bool Camera::unproject(const PointsInfo::Position3D & projection, const Matrix & mvp, PointsInfo::Position3D & unprojectedPoint) {
         bool invertible;
 
-        QMatrix4x4 inv = mvp.inverted(&invertible);
+        Matrix inv = mvp.inverted(&invertible);
 
         if (!invertible) {
             return false;
         }
 
-        QVector4D unprojectedPointVector = QVector4D(
+        PointsInfo::Position4D unprojectedPointVector = PointsInfo::Position4D(
                     2.0f * projection.x() - 1.0f,
                     2.0f * projection.y() - 1.0f,
                     2.0f * projection.z() - 1.0f,
@@ -166,11 +166,10 @@ namespace Camera {
             return false;
         }
         else {
-            unprojectedPoint = QVector4D(
+            unprojectedPoint = PointsInfo::Position3D(
                         unprojectedPointVector.x() / unprojectedPointVector.w(),
                         unprojectedPointVector.y() / unprojectedPointVector.w(),
-                        unprojectedPointVector.z() / unprojectedPointVector.w(),
-                        1.0f
+                        unprojectedPointVector.z() / unprojectedPointVector.w()
                         );
 
             return true;

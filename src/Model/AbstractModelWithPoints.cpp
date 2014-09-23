@@ -98,7 +98,7 @@ namespace Model {
     }
 
     bool AbstractModelWithPoints::checkDepthBuffer(const Viewport::Viewport * viewport) {
-        QVector4D unprojectedPoint;
+        PointsInfo::Position3D unprojectedPoint;
 
         bool updateNeeded = false;
 

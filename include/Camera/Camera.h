@@ -7,6 +7,9 @@ namespace Camera {
     using ProjectionMatrix = QMatrix4x4;
     using ViewMatrix = QMatrix4x4;
     using ModelMatrix = QMatrix4x4;
+    using ScaleMatrix = QMatrix4x4;
+    using Matrix = QMatrix4x4;
+    using NormalMatrix = QMatrix3x3;
 
     using Eye = QVector3D;
     using Center = QVector3D;
@@ -94,7 +97,7 @@ namespace Camera {
 
         void reproject(const AspectRatio & ratio);
 
-        static bool unproject(const QVector3D & projection, const QMatrix4x4 & mvp, QVector4D & unprojectedPoint);
+        static bool unproject(const PointsInfo::Position3D & projection, const Matrix & mvp, PointsInfo::Position3D & unprojectedPoint);
 
         void zoom(const ZoomFactor & zoomFactor, const AspectRatio & ratio);
         
