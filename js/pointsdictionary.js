@@ -51,7 +51,7 @@ var pointsDict = {
 };
 
 var measuresOrder = {
-    "MeasuresGrid" : [
+    "Measures" : [
         "incisor",
         "leftjoint",
         "rightjoint",
@@ -62,7 +62,7 @@ var measuresOrder = {
 }
 
 var groupsOrder = {
-    "IndividualInfo" : [
+    "Individual" : [
         "bonvile",
         "ungrouped"
     ]

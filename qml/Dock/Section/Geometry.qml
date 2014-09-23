@@ -1,9 +1,11 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import "../js/helpers.js" as Helpers
+import "qrc:/js/helpers.js" as Helpers;
+
+import "qrc:/qml/Control" as Control;
 
 Rectangle {
-    id: geometryGrid;
+    id: geometry;
 
     property real angleShot: 0.0;
 
@@ -18,25 +20,21 @@ Rectangle {
 
     width: 200;
     height: 200;
-/*
-    CircleSlider {
-        id: circle;
-    }
-*/
+
     Grid {
         columns: 3;
         rows: 4;
         spacing: 5;
 
-        anchors.top: circle.bottom;//geometryGrid.top;
-        anchors.left: geometryGrid.left;
+        anchors.top: geometry.top;
+        anchors.left: geometry.left;
         anchors.margins: 10;
 
         Text {
             text: qsTr("x axis");
         }
 
-        Slider {
+        Control.Slider {
             id: xRotSlider;
             width: 200;
             minimumValue: -180.0;
@@ -53,7 +51,7 @@ Rectangle {
             text: qsTr("y axis");
         }
 
-        Slider {
+        Control.Slider {
             id: yRotSlider;
             width: 200;
             minimumValue: -180.0;
@@ -70,7 +68,7 @@ Rectangle {
             text: qsTr("z axis");
         }
 
-        Slider {
+        Control.Slider {
             id: zRotSlider;
             width: 200;
             minimumValue: -180.0;
@@ -87,7 +85,7 @@ Rectangle {
             text: qsTr("zoom");
         }
 
-        Slider {
+        Control.Slider {
             id: zoomSlider;
             width: 200;
             minimumValue: 0.1;
@@ -104,6 +102,6 @@ Rectangle {
     onAngleShotChanged: yRotSlider.value = geometryGrid.angleShot;
 
     function updateAngle() {
-        geometryGrid.angle = Qt.vector3d(xRotSlider.value, yRotSlider.value, zRotSlider.value);
+        geometry.angle = Qt.vector3d(xRotSlider.value, yRotSlider.value, zRotSlider.value);
     }
 }

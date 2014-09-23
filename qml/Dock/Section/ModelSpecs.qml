@@ -1,7 +1,9 @@
-import QtQuick 2.3
+import QtQuick 2.3;
+
+import "qrc:/qml/Control" as Control;
 
 Rectangle {
-    id: shaderGrid;
+    id: modelSpecs;
 
     property vector2d xRange: xRange.rangeVector;
     property vector2d yRange: yRange.rangeVector;
@@ -26,8 +28,8 @@ Rectangle {
         rows: 6;
 
         anchors {
-            top: shaderGrid.top;
-            left: shaderGrid.left;
+            top: modelSpecs.top;
+            left: modelSpecs.left;
             margins: 5;
         }
 
@@ -35,11 +37,11 @@ Rectangle {
             text: qsTr("minHU");
         }
 
-        Slider {
+        Control.Slider {
             id: minHUSlider;
             width: 200;
-            minimumValue: shaderGrid.huRange.x;
-            maximumValue: shaderGrid.huRange.y;
+            minimumValue: modelSpecs.huRange.x;
+            maximumValue: modelSpecs.huRange.y;
             value: 400;
             //stepSize: 1.0;
         }
@@ -52,11 +54,11 @@ Rectangle {
             text: qsTr("maxHU");
         }
 
-        Slider {
+        Control.Slider {
             id: maxHUSlider;
             width: 200;
-            minimumValue: shaderGrid.huRange.x;
-            maximumValue: shaderGrid.huRange.y;
+            minimumValue: modelSpecs.huRange.x;
+            maximumValue: modelSpecs.huRange.y;
             value: 63512;
             //stepSize: 1.0;
         }
@@ -72,7 +74,7 @@ Rectangle {
 
         anchors {
             top: grid.bottom;
-            left: shaderGrid.left;
+            left: modelSpecs.left;
             margins: 15;
         }
 
@@ -80,39 +82,39 @@ Rectangle {
             text: qsTr("xRange");
         }
 
-        RangeSlider {
+        Control.RangeSlider {
             id: xRange;
 
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: shaderGrid.xRange = value;
+            onValueChanged: modelSpecs.xRange = value;
         }
 
         Text {
             text: qsTr("yRange");
         }
 
-        RangeSlider {
+        Control.RangeSlider {
             id: yRange;
 
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: shaderGrid.yRange = value;
+            onValueChanged: modelSpecs.yRange = value;
         }
 
         Text {
             text: qsTr("zRange");
         }
 
-        RangeSlider {
+        Control.RangeSlider {
             id: zRange;
 
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: shaderGrid.zRange = value;
+            onValueChanged: modelSpecs.zRange = value;
         }
     }
 }

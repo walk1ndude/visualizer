@@ -1,6 +1,6 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import "../js/helpers.js" as Helpers
+import "qrc:/js/helpers.js" as Helpers;
 
 Item {
     id: sliderMain;

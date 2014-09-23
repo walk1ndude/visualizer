@@ -1,10 +1,10 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import "../js/pointsdictionary.js" as PointsDict
-import "../js/helpers.js" as Helpers
+import "qrc:/js/pointsdictionary.js" as PointsDict
+import "qrc:/js/helpers.js" as Helpers
 
 Rectangle {
-    id: measureGrid;
+    id: measures;
     width: 100;
     height: listModel.count * 45;
 
@@ -24,11 +24,11 @@ Rectangle {
             id: listModel;
 
             Component.onCompleted: {
-                var measures = PointsDict.pointsDict.measures;
-                var measureOrder = PointsDict.measuresOrder.MeasuresGrid;
+                var measuresDict = PointsDict.pointsDict.measures;
+                var measureOrder = PointsDict.measuresOrder["Measures"];
 
                 for (var i = 0; i !== measureOrder.length; ++ i) {
-                    var measure = measures[measureOrder[i]];
+                    var measure = measuresDict[measureOrder[i]];
                     append({
                                "itemId" : measureOrder[i],
                                "itemName" : measure.name,
@@ -49,7 +49,7 @@ Rectangle {
 
         onCurrentIndexChanged: {
             if (currentIndex === -1) {
-                measureGrid.selectedPoint = { };
+                measures.selectedPoint = { };
             }
         }
     }
@@ -78,7 +78,7 @@ Rectangle {
             color: shown ? itemColor : "white";
 
             height: 45;
-            width: measureGrid.width;
+            width: measures.width;
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter;
@@ -94,7 +94,7 @@ Rectangle {
                 wrapMode: Text.WordWrap;
             }
 
-            onIsShownChanged: measureGrid.togglePoint(itemId);
+            onIsShownChanged: measures.togglePoint(itemId);
 
             MouseArea {
                 anchors {
@@ -113,7 +113,7 @@ Rectangle {
 
                         if (listView.currentIndex !== -1) {
                             listModel.setProperty(listView.currentIndex, "shown", true);
-                            measureGrid.selectedPoint = {
+                            measures.selectedPoint = {
                                         "name" : itemId,
                                         "color" : parent.color,
                                         "groups" : Helpers.pointInGroups[itemId]

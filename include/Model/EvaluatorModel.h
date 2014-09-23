@@ -11,8 +11,8 @@ namespace Model {
 
                                 const ShaderInfo::ShaderFiles & shaderFiles =
                                 ShaderInfo::ShaderFiles(
-                                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/evaluatorVertex.glsl"),
-                                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/evaluatorFragment.glsl")
+                                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/Evaluator/vertex.glsl"),
+                                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/Evaluator/fragment.glsl")
                                 ),
 
                                 const ShaderInfo::ShaderVariablesNames & attributeArrays =

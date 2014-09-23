@@ -1,36 +1,39 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/sliceFragment.glsl</file>
-        <file>shaders/sliceVertex.glsl</file>
-        <file>qml/GeometryGrid.qml</file>
-        <file>qml/ShaderGrid.qml</file>
         <file>qml/MainWindow.qml</file>
-        <file>qml/ModelViewerEx.qml</file>
         <file>js/helpers.js</file>
         <file>cl/reconstructor.cl</file>
-        <file>shaders/stlVertex.glsl</file>
-        <file>shaders/stlFragment.glsl</file>
-        <file>qml/Sidebar.qml</file>
-        <file>qml/MeasureGrid.qml</file>
         <file>js/pointsdictionary.js</file>
         <file>js/sidebarcontent.js</file>
         <file>icons/expand.svg</file>
         <file>icons/collapse.svg</file>
-        <file>qml/Slider.qml</file>
-        <file>qml/RangeSlider.qml</file>
-        <file>qml/CircleSlider.qml</file>
-        <file>qml/IndividualInfo.qml</file>
-        <file>shaders/pointsVertex.glsl</file>
-        <file>shaders/pointsGeometry.glsl</file>
-        <file>shaders/pointsFragment.glsl</file>
         <file>js/settings.js</file>
-        <file>qml/IndividualInfoModel.qml</file>
-        <file>qml/ViewportEx.qml</file>
-        <file>shaders/helpersFragment.glsl</file>
-        <file>qml/Heading.qml</file>
-        <file>qml/ConsoleDock.qml</file>
-        <file>qml/Sidedock.qml</file>
-        <file>shaders/evaluatorFragment.glsl</file>
-        <file>shaders/evaluatorVertex.glsl</file>
+        <file>shaders/Evaluator/fragment.glsl</file>
+        <file>shaders/Evaluator/vertex.glsl</file>
+        <file>shaders/Helpers/fragment.glsl</file>
+        <file>shaders/Points/fragment.glsl</file>
+        <file>shaders/Points/geometry.glsl</file>
+        <file>shaders/Points/vertex.glsl</file>
+        <file>shaders/Slice/fragment.glsl</file>
+        <file>shaders/Slice/vertex.glsl</file>
+        <file>shaders/Stl/fragment.glsl</file>
+        <file>shaders/Stl/vertex.glsl</file>
+        <file>qml/Dock/ConsoleDock.qml</file>
+        <file>qml/Dock/Heading.qml</file>
+        <file>qml/Dock/Sidebar.qml</file>
+        <file>qml/Dock/Sidedock.qml</file>
+        <file>qml/Parser/StlReaderEx.qml</file>
+        <file>qml/Parser/ReconstructorEx.qml</file>
+        <file>qml/Parser/DicomReaderEx.qml</file>
+        <file>qml/Viewer/ModelViewerEx.qml</file>
+        <file>qml/Viewer/ViewportEx.qml</file>
+        <file>qml/Dock/Section/Geometry.qml</file>
+        <file>qml/Dock/Section/Individual.qml</file>
+        <file>qml/Dock/Section/IndividualModel.qml</file>
+        <file>qml/Dock/Section/Measures.qml</file>
+        <file>qml/Dock/Section/ModelSpecs.qml</file>
+        <file>qml/Control/CircleSlider.qml</file>
+        <file>qml/Control/RangeSlider.qml</file>
+        <file>qml/Control/Slider.qml</file>
     </qresource>
 </RCC>

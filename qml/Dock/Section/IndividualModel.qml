@@ -1,8 +1,8 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import "../js/pointsdictionary.js" as PointsDict
-import "../js/helpers.js" as Helpers
-import "../js/settings.js" as Settings
+import "qrc:/js/pointsdictionary.js" as PointsDict;
+import "qrc:/js/helpers.js" as Helpers;
+import "qrc:/js/settings.js" as Settings;
 
 ListModel {
     id: individualListModel;
@@ -63,7 +63,7 @@ ListModel {
 
         var measures = PointsDict.pointsDict.measures;
         var groups = PointsDict.pointsDict.groups;
-        var groupOrder = PointsDict.groupsOrder.IndividualInfo;
+        var groupOrder = PointsDict.groupsOrder["Individual"];
 
         distUpdatedCount = 0;
 

@@ -1,25 +1,25 @@
 .pragma library
 
-var sideBarDict = {
+var sidebarDict = {
     "sections" : [
         {
             "text" : "Индивидуальные параметры",
-            "type" : "IndividualInfo",
+            "type" : "Individual",
             "collapsed" : false
         },
         {
             "text" : "Измерения",
-            "type" : "MeasureGrid",
+            "type" : "Measures",
             "collapsed" : false
         },
         {
             "text" : "Секущие плоскости",
-            "type" : "ShaderGrid",
+            "type" : "ModelSpecs",
             "collapsed" : false
         },
         {
             "text" : "Вращение",
-            "type" : "GeometryGrid",
+            "type" : "Geometry",
             "collapsed" : false
         }
     ]

@@ -1,7 +1,9 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import "../js/sidebarcontent.js" as SideBar
-import "../js/helpers.js" as Helpers
+import "qrc:/js/sidebarcontent.js" as Sidebar;
+import "qrc:/js/helpers.js" as Helpers;
+
+import "Section" as Section;
 
 Sidedock {
     id: sidebar;
@@ -29,7 +31,7 @@ Sidedock {
 
     property int modelID: -1;
 
-    signal updateIndividualInfo();
+    signal updateIndividual();
     signal distsUpdated();
 
     function updatePoint(point) {
@@ -45,7 +47,7 @@ Sidedock {
         model: ListModel {
             id: sidebarListModel;
             Component.onCompleted: {
-                var sections = SideBar.sideBarDict.sections;
+                var sections = Sidebar.sidebarDict.sections;
                 for (var i = 0; i !== sections.length; ++ i) {
                     append({
                                "sectionName" : sections[i].text,
@@ -93,10 +95,10 @@ Sidedock {
                                  }
                                  else {
                                      switch(sectionType) {
-                                     case "ShaderGrid" : return subSectionShaderGrid;
-                                     case "GeometryGrid" : return subSectionGeometryGrid;
-                                     case "MeasureGrid" : return subSectionMeasureGrid;
-                                     case "IndividualInfo" : return subSectionIndividualInfo;
+                                     case "ModelSpecs" : return subSectionModelSpecs;
+                                     case "Geometry" : return subSectionGeometry;
+                                     case "Measures" : return subSectionMeasures;
+                                     case "Individual" : return subSectionIndividual;
                                      default: return null;
                                      }
                                  }
@@ -107,7 +109,7 @@ Sidedock {
     }
 
     Component {
-        id: subSectionShaderGrid;
+        id: subSectionModelSpecs;
 
         Column {
             property alias model : repeater.model;
@@ -115,22 +117,22 @@ Sidedock {
             Repeater {
                 id: repeater;
                 delegate:
-                    ShaderGrid {
-                    width: sidebarListView.width;
+                    Section.ModelSpecs {
+                        width: sidebarListView.width;
 
-                    onXRangeChanged: sidebar.xRange = xRange;
-                    onYRangeChanged: sidebar.yRange = yRange;
-                    onZRangeChanged: sidebar.zRange = zRange;
+                        onXRangeChanged: sidebar.xRange = xRange;
+                        onYRangeChanged: sidebar.yRange = yRange;
+                        onZRangeChanged: sidebar.zRange = zRange;
 
-                    //onMinHUChanged: sidebar.minHU = minHU;
-                    //onMaxHUChanged: sidebar.maxHU = maxHU;
+                        //onMinHUChanged: sidebar.minHU = minHU;
+                        //onMaxHUChanged: sidebar.maxHU = maxHU;
                 }
             }
         }
     }
 
     Component {
-        id: subSectionGeometryGrid;
+        id: subSectionGeometry;
 
         Column {
             property alias model : repeater.model;
@@ -138,18 +140,18 @@ Sidedock {
             Repeater {
                 id: repeater;
                 delegate:
-                    GeometryGrid {
-                    width: sidebarListView.width;
+                    Section.Geometry {
+                        width: sidebarListView.width;
 
-                    onAngleChanged: sidebar.angle = angle;
-                    onZoomFactorChanged: sidebar.zoomFactor = zoomFactor;
+                        onAngleChanged: sidebar.angle = angle;
+                        onZoomFactorChanged: sidebar.zoomFactor = zoomFactor;
                 }
             }
         }
     }
 
     Component {
-        id: subSectionMeasureGrid;
+        id: subSectionMeasures;
 
         Column {
             property alias model : repeater.model;
@@ -157,8 +159,7 @@ Sidedock {
             Repeater {
                 id: repeater;
                 delegate:
-                    MeasureGrid {
-                        id: measureGrid;
+                    Section.Measures {
                         width: sidebarListView.width;
 
                         onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
@@ -189,7 +190,7 @@ Sidedock {
     }
 
     Component {
-        id: subSectionIndividualInfo;
+        id: subSectionIndividual;
 
         Column {
             property alias model : repeater.model;
@@ -197,15 +198,15 @@ Sidedock {
             Repeater {
                 id: repeater;
                 delegate:
-                    IndividualInfo {
-                        id: individualInfo
+                    Section.Individual {
+                        id: individual
                         width: sidebarListView.width;
 
                         modelID: sidebar.modelID;
 
                         Connections {
                             target: sidebar
-                            onUpdateIndividualInfo: individualInfo.updateIndividualInfo();
+                            onUpdateIndividual: individual.updateIndividual();
                         }
 
                         onDistsUpdated: sidebar.distsUpdated();

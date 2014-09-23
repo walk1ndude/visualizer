@@ -1,8 +1,8 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import RenderTools 1.0
+import RenderTools 1.0;
 
-import "../js/helpers.js" as Helpers
+import "qrc:/js/helpers.js" as Helpers;
 
 Viewport {
     id: viewport;

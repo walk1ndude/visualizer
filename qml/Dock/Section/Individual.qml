@@ -1,9 +1,9 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import "../js/settings.js" as Settings
+import "qrc:/js/settings.js" as Settings;
 
 Rectangle {
-    id: individualInfo;
+    id: individual;
     width: 100;
     height: 400;
 
@@ -18,12 +18,12 @@ Rectangle {
 
     signal distsUpdated();
 
-    function updateIndividualInfo() {
+    function updateIndividual() {
         if (individualListView.model) {
             individualListView.model.destroy();
         }
 
-        individualListView.model = Qt.createComponent("IndividualInfoModel.qml")
+        individualListView.model = Qt.createComponent("IndividualModel.qml")
                                      .createObject(individualListView, {
                                                        "modelID" : modelID
                                                    });
@@ -39,7 +39,7 @@ Rectangle {
         delegate: delegateComponent;
         anchors.fill: parent;
 
-        Component.onCompleted: updateIndividualInfo();
+        Component.onCompleted: updateIndividual();
     }
 
     Component {
@@ -58,7 +58,7 @@ Rectangle {
 
             color: "white";
 
-            width: individualInfo.width;
+            width: individual.width;
             height: 60;
 
             Rectangle {
@@ -135,7 +135,7 @@ Rectangle {
                     newHeight += elements[i].height;
                 }
 
-                individualInfo.height = newHeight;
+                individual.height = newHeight;
             }
         }
 
@@ -175,7 +175,7 @@ Rectangle {
                 delegate: Row {
                     Text {
                         id: from2To;
-                        width: individualInfo.width - 40 - data.width;
+                        width: individual.width - 40 - data.width;
                         text: from + " --> " + to;
                         clip: true;
                     }

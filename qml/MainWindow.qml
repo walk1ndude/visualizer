@@ -1,10 +1,11 @@
-import QtQuick 2.3
-import QtQuick.Controls 1.2
-import QtQuick.Dialogs 1.2
+import QtQuick 2.3;
+import QtQuick.Controls 1.2;
+import QtQuick.Dialogs 1.2;
 
-import ParserTools 1.0
+import "qrc:/js/settings.js" as Settings;
 
-import "../js/settings.js" as Settings
+import "qrc:/qml/Dock" as Dock;
+import "qrc:/qml/Viewer" as Viewer;
 
 ApplicationWindow {
     id: appWindow;
@@ -56,20 +57,38 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogDicom;
         title: "Choose DICOM file";
-        onAccepted: dicomReader.dicomFile = fileUrl;
+        onAccepted: {
+            var component = Qt.createComponent("Parser/DicomReaderEx.qml");
+            var dicomReader = component.createObject(openFileDialogDicom, {
+                                                       "viewer" : modelViewer
+                                                   });
+            dicomReader.dicomFile = fileUrl;
+        }
     }
 
     FileDialog {
         id: openFileDialogReconstructor;
         title: "Choose image files";
         selectMultiple: true;
-        onAccepted: reconstructor.imgFiles = fileUrls;
+        onAccepted: {
+            var component = Qt.createComponent("Parser/ReconstructorEx.qml");
+            var reconstructor = component.createObject(openFileDialogReconstructor, {
+                                                           "viewer" : modelViewer
+                                                       });
+            reconstructor.imgFiles = fileUrls;
+        }
     }
 
     FileDialog {
         id: openFileDialogStl;
         title: "Choose stl files";
-        onAccepted: stlReader.stlFile = fileUrl;
+        onAccepted: {
+            var component = Qt.createComponent("Parser/StlReaderEx.qml");
+            var stlReader = component.createObject(openFileDialogStl, {
+                                                       "viewer" : modelViewer
+                                                   });
+            stlReader.stlFile = fileUrl;
+        }
     }
 
     FocusScope {
@@ -88,7 +107,7 @@ ApplicationWindow {
     Row {
         id: modelRow;
 
-        ModelViewerEx {
+        Viewer.ModelViewerEx {
             id: modelViewer;
             width: appWindow.width - sidebar.width;
             height: appWindow.height - consoleDock.height;
@@ -106,7 +125,7 @@ ApplicationWindow {
             selectedPoint: sidebar.selectedPoint;
 
             onPointUpdated: {
-                sidebar.updateIndividualInfo();
+                sidebar.updateIndividual();
                 appWindow.pointUpdated(point);
             }
         }
@@ -114,7 +133,7 @@ ApplicationWindow {
 
     onPointUpdated: sidebar.updatePoint(point);
 
-    Sidebar {
+    Dock.Sidebar {
         id: sidebar;
 
         anchors {
@@ -133,48 +152,28 @@ ApplicationWindow {
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
 
-    StlReader {
-        id: stlReader;
-
-        onModelRead: {
-            modelViewer.modelRead(buffers);
-            toggleDocks();
-        }
-    }
-
     function nextSlice() {
-        dicomReader.nextSlice(1);
-        reconstructor.nextSlice(1);
+        translateBy(1);
     }
 
     function previousSlice() {
-        dicomReader.nextSlice(-1);
-        reconstructor.nextSlice(-1);
+        translateBy(-1);
+    }
+
+    function translateBy(slicer, dS) {
+        if (!!dicomReader) {
+            dicomReader.nextSlice(dS);
+        }
+        if (!!reconstructor) {
+            reconstructor.nextSlice(dS);
+        }
     }
 
     function toggleDocks() {
         sidebar.head.collapsed = false;
     }
 
-    DicomReader {
-        id: dicomReader;
-
-        onSlicesProcessed: {
-            modelViewer.drawSlices(slices);
-            toggleDocks();
-        }
-    }
-
-    Reconstructor {
-        id: reconstructor;
-
-        onSlicesProcessed: {
-            modelViewer.drawSlices(slices);
-            toggleDocks();
-        }
-    }
-
-    ConsoleDock {
+    Dock.ConsoleDock {
         id: consoleDock;
 
         anchors {
