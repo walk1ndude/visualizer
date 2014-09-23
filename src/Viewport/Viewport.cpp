@@ -166,12 +166,12 @@ namespace Viewport {
             QVector4D posWorldZoomed;
             Camera::Camera::unproject(pos, projection() * view(), posWorldZoomed);
             
-            _delta = posWorldZoomed - posWorld;
+            _delta = (posWorldZoomed - posWorld) * 2.0f;
 
             initCamera(QVector3D(_delta));
         }
         else {
-            initCamera(Camera::Delta(view() * viewport->delta()));
+            //initCamera(Camera::Delta(modelBillboard() * viewport->delta()));
             _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         }
         
@@ -191,7 +191,7 @@ namespace Viewport {
     }
 
     Camera::ModelMatrix Viewport::textureBillboardOrientation() const {
-        return _camera->textureBillboard();
+        return _camera->modelTextureBillboard();
     }
     
     Camera::Orientation Viewport::orientationBillboard() const {

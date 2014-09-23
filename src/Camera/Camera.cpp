@@ -24,11 +24,11 @@ namespace Camera {
         
         _billboard.orientation = orientation;
 
-        _billboard.orientationMatrix.setToIdentity();
-        _billboard.orientationMatrix.rotate(orientation);
+        _billboard.modelBillboard.setToIdentity();
+        _billboard.modelBillboard.rotate(orientation);
 
-        _billboard.orientationTexture.setToIdentity();
-        _billboard.orientationTexture.rotate(textureOrientation);
+        _billboard.modelTextureBillboard.setToIdentity();
+        _billboard.modelTextureBillboard.rotate(textureOrientation);
     }
 
     void Camera::ortho(const Specs::Orthogonal & specs) {
@@ -178,11 +178,11 @@ namespace Camera {
     }
 
     ModelMatrix Camera::modelBillboard() const {
-        return _billboard.orientationMatrix;
+        return _billboard.modelBillboard;
     }
 
-    ModelMatrix Camera::textureBillboard() const {
-        return _billboard.orientationTexture;
+    ModelMatrix Camera::modelTextureBillboard() const {
+        return _billboard.modelTextureBillboard;
     }
     
     Orientation Camera::orientationBillboard() const {

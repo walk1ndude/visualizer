@@ -81,6 +81,11 @@ namespace Model {
         virtual QOpenGLShaderProgram * program() const final;
 
         virtual void deleteModel();
+        
+        virtual Camera::Orientation changedOrientation(const Camera::Rotation & rot) const;
+        
+        virtual Camera::Orientation lockToWorldAxis(const Camera::Rotation & rot) const;
+        virtual Camera::Orientation lockToModelAxis(const Camera::Rotation & rot) const;
 
         template <class BuffersT>
         void fillBuffers(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
@@ -168,6 +173,7 @@ namespace Model {
         QMatrix4x4 _scaleM;
 
         bool _updateNeeded;
+        bool _lockToWorldAxis;
 
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void initShaderVariables();

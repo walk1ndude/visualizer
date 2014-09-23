@@ -14,6 +14,7 @@ namespace Camera {
     using Delta = QVector3D;
 
     using Orientation = QQuaternion;
+    using Rotation = QQuaternion;
 
     using FOV = qreal;
     using AspectRatio = qreal;
@@ -82,7 +83,7 @@ namespace Camera {
         ModelMatrix model() const;
 
         ModelMatrix modelBillboard() const;
-        ModelMatrix textureBillboard() const;
+        ModelMatrix modelTextureBillboard() const;
         
         Orientation orientationBillboard() const;
 
@@ -118,8 +119,8 @@ namespace Camera {
         struct Billboard {
             Orientation orientation;
             
-            ModelMatrix orientationMatrix;
-            ModelMatrix orientationTexture;
+            ModelMatrix modelBillboard;
+            ModelMatrix modelTextureBillboard;
         } _billboard;
 
         ZoomFactor _zoomFactor;

@@ -18,7 +18,8 @@ namespace Model {
         _depthTest(true),
         _indexCount(0),
         _vertexCount(0),
-        _updateNeeded(false) {
+        _updateNeeded(false),
+        _lockToWorldAxis(true) {
 
         if (_parent) {
             QObject::disconnect(this, &AbstractModel::childUpdated, _parent, &AbstractModel::update);
@@ -181,11 +182,23 @@ namespace Model {
     }
 
     void AbstractModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        QQuaternion rot = QQuaternion::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rotation.x() * speed) *
-               QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() * speed) *
-               QQuaternion::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed);
-
-        _orientation = _orientation * (_orientation.conjugate() / _orientation.lengthSquared() * rot) * _orientation;
+        _orientation = changedOrientation(
+            Camera::Rotation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rotation.x() * speed) *
+            Camera::Rotation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() * speed) *
+            Camera::Rotation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed)
+                                          );
+    }
+    
+    Camera::Orientation AbstractModel::changedOrientation(const Camera::Rotation & rot) const{
+        return _lockToWorldAxis ? lockToWorldAxis(rot) : lockToModelAxis(rot);
+    }
+    
+    Camera::Orientation AbstractModel::lockToWorldAxis(const Camera::Rotation & rot) const {
+        return _orientation * (_orientation.conjugate() / _orientation.lengthSquared() * rot) * _orientation;
+    }
+    
+    Camera::Orientation AbstractModel::lockToModelAxis(const Camera::Rotation & rot) const {
+        return _orientation * rot;
     }
 
     bool AbstractModel::bindShaderProgram() {

@@ -52,16 +52,13 @@ namespace Model {
     }
 
     void HeadModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
+        //pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), - rotation.z()), speed);
     }
     
     Camera::ModelMatrix HeadModel::model(const Viewport::Viewport * viewport) const {
-        Camera::Orientation orientation = orientationQuat();
-        
         Camera::ModelMatrix model = viewport->textureBillboardOrientation();
-       
-        model.rotate(orientation * viewport->orientationBillboard());
+        model.rotate(orientationQuat() * viewport->orientationBillboard());
         
         return model;
     }
@@ -109,7 +106,5 @@ namespace Model {
         program->setUniformValue(uniformValues["eye"], viewport->eye());
 
         program->setUniformValue(uniformValues["modelBillboard"], viewport->modelBillboard());
-        
-        qDebug() << viewport->modelBillboard();
     }
 }
