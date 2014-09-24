@@ -59,7 +59,7 @@ ApplicationWindow {
         title: "Choose DICOM file";
         onAccepted: {
             var component = Qt.createComponent("Parser/DicomReaderEx.qml");
-            var dicomReader = component.createObject(openFileDialogDicom, {
+            var dicomReader = component.createObject(null, {
                                                        "viewer" : modelViewer
                                                    });
             dicomReader.dicomFile = fileUrl;
@@ -72,7 +72,7 @@ ApplicationWindow {
         selectMultiple: true;
         onAccepted: {
             var component = Qt.createComponent("Parser/ReconstructorEx.qml");
-            var reconstructor = component.createObject(openFileDialogReconstructor, {
+            var reconstructor = component.createObject(null, {
                                                            "viewer" : modelViewer
                                                        });
             reconstructor.imgFiles = fileUrls;
@@ -84,7 +84,7 @@ ApplicationWindow {
         title: "Choose stl files";
         onAccepted: {
             var component = Qt.createComponent("Parser/StlReaderEx.qml");
-            var stlReader = component.createObject(openFileDialogStl, {
+            var stlReader = component.createObject(null, {
                                                        "viewer" : modelViewer
                                                    });
             stlReader.stlFile = fileUrl;
