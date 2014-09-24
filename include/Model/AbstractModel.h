@@ -47,6 +47,9 @@ namespace Model {
 
         virtual bool hasDepth() const;
 
+        virtual void lockToWorldAxis() final;
+        virtual void lockToModelAxis() final;
+
     protected:
         QMutex modelMutex;
 

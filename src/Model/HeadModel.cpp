@@ -7,6 +7,7 @@ namespace Model {
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         AbstractModelWithPoints(scene, points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         points->setParent(this);
+        lockToModelAxis();
     }
 
     void HeadModel::init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize,

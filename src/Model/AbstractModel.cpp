@@ -181,6 +181,14 @@ namespace Model {
         _scaleM.scale(_scale);
     }
 
+    void AbstractModel::lockToModelAxis() {
+        _lockToWorldAxis = false;
+    }
+
+    void AbstractModel::lockToWorldAxis() {
+        _lockToWorldAxis = true;
+    }
+
     void AbstractModel::rotate(const QVector3D & rotation, const qreal & speed) {
         _orientation = changedOrientation(
             Camera::Rotation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rotation.x() * speed) *
