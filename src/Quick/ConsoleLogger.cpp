@@ -1,4 +1,7 @@
 #include <QtCore/QRegExp>
+#include <QtCore/QFile>
+#include <QtCore/QIODevice>
+#include <QtCore/QTextStream>
 
 #include "Quick/ConsoleLogger.h"
 

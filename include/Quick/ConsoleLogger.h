@@ -1,10 +1,10 @@
 #ifndef CONSOLEVIEWER_H
 #define CONSOLEVIEWER_H
 
-#include <QtQuick/QQuickItem>
+#include <QtCore/QObject>
 
 namespace Quick {
-    class ConsoleLogger : public QQuickItem {
+    class ConsoleLogger : public QObject {
         Q_PROPERTY(QString output READ output WRITE setOutput NOTIFY outputChanged)
         Q_PROPERTY(QString logFile READ logFile WRITE setLogFile NOTIFY logFileChanged)
         Q_PROPERTY(int lineCount READ lineCount WRITE setLineCount NOTIFY lineCountChanged)

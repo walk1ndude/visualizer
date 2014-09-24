@@ -14,7 +14,7 @@
 #include "Info/SliceInfo.h"
 
 namespace Parser {
-    class Reconstructor : public QQuickItem {
+    class Reconstructor : public QObject {
         Q_PROPERTY(QVariant imgFiles READ imgFiles WRITE setImgFiles NOTIFY imgFilesChanged)
 
         Q_OBJECT

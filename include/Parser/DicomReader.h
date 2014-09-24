@@ -9,7 +9,7 @@
 #include "Info/SliceInfo.h"
 
 namespace Parser {
-    class DicomReader : public QQuickItem {
+    class DicomReader : public QObject {
         Q_PROPERTY(QUrl dicomFile READ dicomFile WRITE setDicomFile NOTIFY dicomFileChanged)
 
         Q_OBJECT

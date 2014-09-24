@@ -6,7 +6,7 @@
 #include "Model/StlModel.h"
 
 namespace Parser {
-    class StlReader : public QQuickItem {
+    class StlReader : public QObject {
         Q_PROPERTY(QUrl stlFile READ stlFile WRITE setStlFile NOTIFY stlFileChanged)
 
         Q_OBJECT

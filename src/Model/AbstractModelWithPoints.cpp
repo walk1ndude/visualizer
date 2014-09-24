@@ -108,7 +108,6 @@ namespace Model {
 
                 Viewport::ViewportRect boundingRect = viewport->boundingRect();
 
-                // usage of GL_UNSIGNED_SHORT explaned here http://www.opengl.org/wiki/Common_Mistakes#Depth_Buffer_Precision
                 PointsInfo::Position2D rounded = PointsInfo::Position2D(
                             std::round(boundingRect.x() + modelPoint->position.x() * boundingRect.width()),
                             std::round(boundingRect.y() + modelPoint->position.y() * boundingRect.height())
