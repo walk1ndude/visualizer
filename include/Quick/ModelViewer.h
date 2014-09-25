@@ -86,8 +86,6 @@ namespace Quick {
 
         Q_INVOKABLE void drawModel(ModelInfo::BuffersVN model);
         Q_INVOKABLE void drawModel(VolumeInfo::Volume model);
-        Q_INVOKABLE void drawModel(QVariantMap model);
-
 
         void pointUpdated(const QVariantMap & point);
 

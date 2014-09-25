@@ -271,8 +271,8 @@ namespace Scene {
     }
 
     void ModelScene::addModel(const int & width, const int & height,
-                                       const qreal & stepX, const qreal & stepY,
-                                       const QVector3D & color) {
+                              const qreal & stepX, const qreal & stepY,
+                              const QVector3D & color) {
         Model::EvaluatorModel * model = new Model::EvaluatorModel(this);
 
         model->setSize(width, height);
