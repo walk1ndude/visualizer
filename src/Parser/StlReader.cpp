@@ -14,7 +14,7 @@
 
 #include <opencv2/core/core.hpp>
 
-inline QString removeWhitespaes(QString & str) {
+inline QString removeWhitespaces(QString & str) {
     while (str.length() > 0 && (str[0] == ' ' || str[0] == '\t')) {
         str.remove(0, 1);
     }
@@ -172,7 +172,20 @@ namespace Parser {
                 readASCII(stlFile);
             }
             else {
-                readBinary(stlFile);
+                char firstBits[5];
+                stlFile.peek(firstBits, sizeof(firstBits));
+
+                if (firstBits[0] == 's' &&
+                    firstBits[1] == 'o' &&
+                    firstBits[2] == 'l' &&
+                    firstBits[3] == 'i' &&
+                    firstBits[4] == 'd'
+                 ) {
+                    readASCII(stlFile);
+                }
+                else {
+                    readBinary(stlFile);
+                }
             }
 
             stlFile.close();
@@ -183,14 +196,19 @@ namespace Parser {
         emit fileChanged();
     }
 
-    void StlReader::readASCII(QFile & stlFile) {
+    void StlReader::readASCII(QFile & stlFile, const bool & solidChecked) {
         QTextStream fileStream(&stlFile);
 
-        ModelInfo::VertexVN vertex;
-        ModelInfo::VerticesVNPtr vertices = new ModelInfo::VerticesVN;
-
         QString readStr = fileStream.readLine();
-        readStr = removeWhitespaes(readStr);
+
+        if (!solidChecked) {
+            readStr = removeWhitespaces(readStr);
+
+            if (readStr.indexOf("solid ") != 0) {
+                emit readingErrorHappened();
+                return;
+            }
+        }
 
         QString floatStr;
 
@@ -198,10 +216,8 @@ namespace Parser {
         float y;
         float z;
 
-        if (readStr.indexOf("solid ") != 0) {
-            emit readingErrorHappened();
-            return;
-        }
+        ModelInfo::VertexVN vertex;
+        ModelInfo::VerticesVNPtr vertices = new ModelInfo::VerticesVN;
 
         uint vertexNumber = 0;
 
@@ -213,7 +229,7 @@ namespace Parser {
 
         while (readStr.length()) {
             readStr = fileStream.readLine();
-            readStr = removeWhitespaes(readStr);
+            readStr = removeWhitespaces(readStr);
 
             if (!readStr.length()) {
                 continue;
@@ -288,6 +304,7 @@ namespace Parser {
         }
 
         if (outerLoopNotClosed || facetNotClosed || readStr.indexOf("endsolid") != 0) {
+            delete [] vertices;
             emit readingErrorHappened();
             return;
         }
@@ -307,8 +324,6 @@ namespace Parser {
     }
 
     void StlReader::readBinary(QFile & stlFile) {
-        ModelInfo::VerticesVNPtr vertices = new ModelInfo::VerticesVN;
-
         QByteArray buffer = stlFile.readAll();
 
         if (!buffer.size()) {
@@ -328,6 +343,13 @@ namespace Parser {
             return;
         }
 
+        // no triangles -> no need to create buffers, etc
+        if (!triangleCount) {
+            return;
+        }
+
+        ModelInfo::VerticesVNPtr vertices = new ModelInfo::VerticesVN;
+
         BufferData bufferData;
 
         bufferData.src = bufferPos;
@@ -339,11 +361,6 @@ namespace Parser {
 
         bufferData.minV = &minV;
         bufferData.maxV = &maxV;
-
-        // no triangles -> no need to create buffers, etc
-        if (!triangleCount) {
-            return;
-        }
 
         float startTime = cv::getTickCount() / cv::getTickFrequency();
 

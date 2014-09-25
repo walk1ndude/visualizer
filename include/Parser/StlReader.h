@@ -18,7 +18,7 @@ namespace Parser {
     private:
         QUrl _stlFile;
 
-        void readASCII(QFile & stlFile);
+        void readASCII(QFile & stlFile, const bool & solidChecked = false);
         void readBinary(QFile & stlFile);
 
     signals:
