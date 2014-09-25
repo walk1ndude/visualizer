@@ -2,7 +2,7 @@
 layout(location = 0) in highp vec4 fragPos;
 layout(location = 1) in highp vec4 vertPos;
 
-uniform highp sampler3D texHead;
+uniform highp sampler3D volume;
 
 uniform highp vec4 eye;
 
@@ -17,10 +17,10 @@ bool needToRender(const vec3 point,
 
 void main(void) {
     if (needToRender(fragPos.xyz, vec2(0.5f, 0.5f), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f))) {
-        vec4 headColor = texture(texHead, fragPos.stp).rrrr;
+        vec4 volumeColor = texture(volume, fragPos.stp).rrrr;
 
-        if (headColor.r > 0.05f) {
-            fragColor = calcFragColor(vertPos, fragPos, headColor, fragPos.xyz);
+        if (volumeColor.r > 0.05f) {
+            fragColor = calcFragColor(vertPos, fragPos, volumeColor, fragPos.xyz);
             //fragColor += vec4(1.0);
         }
         else {

@@ -257,7 +257,7 @@ namespace Scene {
                            "material.specular" << "material.shininess");
 
         model->addTexture(_textures.back(),
-                          ShaderInfo::ShaderVariablesNames() << "texHead");
+                          ShaderInfo::ShaderVariablesNames() << "volume");
 
         model->setViewRange(ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
