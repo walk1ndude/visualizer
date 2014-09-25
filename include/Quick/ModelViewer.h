@@ -23,11 +23,6 @@ namespace Quick {
         Q_PROPERTY(QVector2D yRange READ yRange WRITE setYRange NOTIFY yRangeChanged)
         Q_PROPERTY(QVector2D zRange READ zRange WRITE setZRange NOTIFY zRangeChanged)
 
-        Q_PROPERTY(QVector2D huRange READ huRange WRITE sethuRange NOTIFY huRangeChanged)
-
-        Q_PROPERTY(int minHU READ minHU WRITE setMinHU NOTIFY minHUChanged)
-        Q_PROPERTY(int maxHU READ maxHU WRITE setMaxHU NOTIFY maxHUChanged)
-
         Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
 
         Q_PROPERTY(Scene::ModelScene * modelScene READ modelScene WRITE setModelScene NOTIFY modelSceneChanged)
@@ -48,11 +43,6 @@ namespace Quick {
         ViewRangeInfo::ViewAxisRange zRange() const;
 
         QVector3D rotation() const;
-
-        QVector2D huRange() const;
-
-        int minHU() const;
-        int maxHU() const;
 
         int modelID() const;
 
@@ -82,11 +72,6 @@ namespace Quick {
         ViewRangeInfo::ViewAxisRange _yRange;
         ViewRangeInfo::ViewAxisRange _zRange;
 
-        QVector2D _huRange;
-
-        int _minHU;
-        int _maxHU;
-
         uint _modelID;
 
     signals:
@@ -96,18 +81,13 @@ namespace Quick {
 
         void viewportArrayChanged();
 
-        void huRangeChanged();
-
         void rotationChanged(const QVector3D & rotation);
-
-        void minHUChanged(const int & minHU);
-        void maxHUChanged(const int & maxHU);
-
         void pointAdded(const PointsInfo::Point & point);
 
-        void slicesProcessed(SliceInfo::Slices slices);
+        Q_INVOKABLE void drawModel(ModelInfo::BuffersVN model);
+        Q_INVOKABLE void drawModel(VolumeInfo::Volume model);
+        Q_INVOKABLE void drawModel(QVariantMap model);
 
-        Q_INVOKABLE void modelRead(ModelInfo::BuffersVN buffers);
 
         void pointUpdated(const QVariantMap & point);
 
@@ -120,9 +100,7 @@ namespace Quick {
         void fboSizeChanged(const QSize & fboSize);
 
     public slots:
-        Q_INVOKABLE virtual void drawSlices(SliceInfo::Slices slices);
         Q_INVOKABLE virtual void addPoint(const QPointF & point, Viewport::Viewport * viewport);
-
         Q_INVOKABLE virtual void togglePoint(const QString & point);
 
         virtual void setModelScene(Scene::ModelScene * modelScene);
@@ -138,11 +116,6 @@ namespace Quick {
         virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
         virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
         virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
-
-        virtual void sethuRange(const QVector2D & huRange);
-
-        virtual void setMinHU(const int & minHU);
-        virtual void setMaxHU(const int & maxHU);
 
         virtual void setModelID(const int & modelID);
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);

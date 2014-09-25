@@ -1,7 +1,7 @@
-#include "Model/HeadModel.h"
+#include "Model/VolumeModel.h"
 
 namespace Model {
-    HeadModel::HeadModel(Scene::AbstractScene * scene, PointsModel * points, AbstractModel * parent,
+    VolumeModel::VolumeModel(Scene::AbstractScene * scene, PointsModel * points, AbstractModel * parent,
                          const ShaderInfo::ShaderFiles & shaderFiles,
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
@@ -10,7 +10,7 @@ namespace Model {
         lockToModelAxis();
     }
 
-    void HeadModel::init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize,
+    void VolumeModel::init(const TextureInfo::Size & size, const VolumeInfo::PhysicalSize & physicalSize,
                          const TextureInfo::Scaling & scaling) {
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
@@ -52,43 +52,43 @@ namespace Model {
         fillBuffers<ModelInfo::BuffersVT>(buffers);
     }
 
-    void HeadModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
+    void VolumeModel::rotate(const QVector3D & rotation, const qreal & speed) {
+        //pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), - rotation.z()), speed);
     }
     
-    Camera::ModelMatrix HeadModel::model(const Viewport::Viewport * viewport) const {
+    Camera::ModelMatrix VolumeModel::model(const Viewport::Viewport * viewport) const {
         Camera::ModelMatrix model = viewport->textureBillboardOrientation();
         model.rotate(orientationQuat() * viewport->orientationBillboard());
         
         return model;
     }
     
-    Camera::ViewMatrix HeadModel::lightView(const Viewport::Viewport * viewport) const {
+    Camera::ViewMatrix VolumeModel::lightView(const Viewport::Viewport * viewport) const {
         Camera::ModelMatrix lightView = view(viewport);
         lightView.rotate(viewport->orientationBillboard());
         
         return lightView;
     }
     
-    void HeadModel::drawingRoutine() const {
+    void VolumeModel::drawingRoutine() const {
         glDrawElements(GL_TRIANGLES, indexCount(), GL_UNSIGNED_INT, 0);
     }
 
-    void HeadModel::glStatesEnable() const {
+    void VolumeModel::glStatesEnable() const {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         AbstractModelWithPoints::glStatesEnable();
     }
 
-    void HeadModel::glStatesDisable() const {
+    void VolumeModel::glStatesDisable() const {
         glDisable(GL_BLEND);
 
         AbstractModelWithPoints::glStatesDisable();
     }
 
-    void HeadModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
+    void VolumeModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
@@ -96,7 +96,7 @@ namespace Model {
         program->setAttributeBuffer(attributeArrays["tex"], GL_FLOAT, sizeof(GLfloat) * 3, 3, stride());
     }
 
-    void HeadModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
+    void VolumeModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));

@@ -10,19 +10,18 @@
 #endif
 
 #include "Parser/Helpers.hpp"
+#include "Parser/AbstractParser.h"
 
-#include "Info/SliceInfo.h"
+#include "Info/VolumeInfo.h"
 
 namespace Parser {
-    class Reconstructor : public QObject {
-        Q_PROPERTY(QVariant imgFiles READ imgFiles WRITE setImgFiles NOTIFY imgFilesChanged)
-
+    class Reconstructor : public AbstractParser {
         Q_OBJECT
     public:
         explicit Reconstructor();
         ~Reconstructor();
 
-        QVariant imgFiles() const;
+        QVariant files() const;
 
     private:
         int _sliceNumber;
@@ -34,7 +33,7 @@ namespace Parser {
 
         cl_context _context;
         cl_device_id _device_id;
-        cl_program _programSlice;
+        cl_program _programReconstruction;
 
         cl_kernel _gauss1dKernel;
         cl_kernel _calcTablesKernel;
@@ -58,12 +57,8 @@ namespace Parser {
 
         void reset();
 
-    signals:
-        void slicesProcessed(QVariant slices);
-        void imgFilesChanged();
-
     public slots:
-        virtual void setImgFiles(const QVariant & fileNames) final;
+        virtual void setFiles(const QVariant & files) final;
         Q_INVOKABLE virtual void nextSlice(const int & ds);
     };
 }

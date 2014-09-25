@@ -1,24 +1,24 @@
-#ifndef HEADMODEL_H
-#define HEADMODEL_H
+#ifndef VOLUMEMODEL_H
+#define VOLUMEMODEL_H
 
 #include "Info/PointsInfo.h"
-#include "Info/SliceInfo.h"
+#include "Info/VolumeInfo.h"
 
 #include "Model/AbstractModelWithPoints.h"
 #include "Model/VertexVT.h"
 
 namespace Model {
-    class HeadModel : public AbstractModelWithPoints {
+    class VolumeModel : public AbstractModelWithPoints {
         Q_OBJECT
     public:
-        explicit HeadModel(Scene::AbstractScene * scene,
-                           PointsModel * points = nullptr,
-                           AbstractModel * parent = nullptr,
+        explicit VolumeModel(Scene::AbstractScene * scene,
+                             PointsModel * points = nullptr,
+                             AbstractModel * parent = nullptr,
 
                            const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
-                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/Slice/vertex.glsl"),
-                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/Slice/fragment.glsl")
+                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/Volume/vertex.glsl"),
+                    ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/Volume/fragment.glsl")
                     << ShaderInfo::FragmentShaderFile(":shaders/Helpers/fragment.glsl")
                     ),
 
@@ -29,7 +29,7 @@ namespace Model {
                 ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" <<
                 "scale" << "eye" << "modelBillboard" << "lightView");
 
-        void init(const TextureInfo::Size & size, const SliceInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
+        void init(const TextureInfo::Size & size, const VolumeInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
         
@@ -47,4 +47,4 @@ namespace Model {
         virtual void drawingRoutine() const;
     };
 }
-#endif // HEADMODEL_H
+#endif // VOLUMEMODEL_H

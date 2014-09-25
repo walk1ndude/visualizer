@@ -1,15 +1,15 @@
-import QtQuick 2.3
+import QtQuick 2.3;
 
-import ParserTools 1.0
+import ParserTools 1.0;
 
 StlReader {
     id: stlReader;
 
     property variant viewer: ({});
 
-    onModelRead: {
+    onFinished: {
         if (viewer) {
-            viewer.modelRead(buffers);
+            viewer.drawModel(model);
             toggleDocks();
             destroy();
         }

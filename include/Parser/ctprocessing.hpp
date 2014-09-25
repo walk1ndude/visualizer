@@ -3,7 +3,7 @@
 
 #include "Parser/Helpers.hpp"
 
-#include "Info/SliceInfo.h"
+#include "Info/VolumeInfo.h"
 #include "Info/TextureInfo.h"
 
 namespace Parser {

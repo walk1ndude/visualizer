@@ -1,5 +1,3 @@
-#include <QtQuick/QQuickWindow>
-
 #include "Gui/AppWindow.h"
 
 #include "Quick/ModelViewer.h"

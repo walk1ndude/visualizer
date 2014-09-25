@@ -7,11 +7,6 @@
 
 #include <QtCore/QJsonObject>
 
-#include "Info/SliceInfo.h"
-#include "Info/ModelInfo.h"
-
-#include "Model/StlModel.h"
-
 namespace Gui {
     class AppWindow : public QObject {
         Q_OBJECT

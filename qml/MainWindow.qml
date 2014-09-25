@@ -62,7 +62,7 @@ ApplicationWindow {
             var dicomReader = component.createObject(null, {
                                                        "viewer" : modelViewer
                                                    });
-            dicomReader.dicomFile = fileUrl;
+            dicomReader.file = fileUrl;
         }
     }
 
@@ -75,7 +75,7 @@ ApplicationWindow {
             var reconstructor = component.createObject(null, {
                                                            "viewer" : modelViewer
                                                        });
-            reconstructor.imgFiles = fileUrls;
+            reconstructor.files = fileUrls;
         }
     }
 
@@ -87,7 +87,7 @@ ApplicationWindow {
             var stlReader = component.createObject(null, {
                                                        "viewer" : modelViewer
                                                    });
-            stlReader.stlFile = fileUrl;
+            stlReader.file = fileUrl;
         }
     }
 
@@ -115,9 +115,6 @@ ApplicationWindow {
             xRange: sidebar.xRange;
             yRange: sidebar.yRange;
             zRange: sidebar.zRange;
-
-            minHU: sidebar.minHU;
-            maxHU: sidebar.maxHU;
 
             rotation: sidebar.angle;
             zoomFactor: sidebar.zoomFactor;

@@ -2,19 +2,18 @@
 #define STLREADER_H
 
 #include "Parser/Helpers.hpp"
+#include "Parser/AbstractParser.h"
 
-#include "Model/StlModel.h"
+#include "Model/VertexVN.h"
 
 namespace Parser {
-    class StlReader : public QObject {
-        Q_PROPERTY(QUrl stlFile READ stlFile WRITE setStlFile NOTIFY stlFileChanged)
-
+    class StlReader : public AbstractParser {
         Q_OBJECT
     public:
         explicit StlReader();
         ~StlReader();
 
-        QUrl stlFile() const;
+        QUrl file() const;
 
     private:
         QUrl _stlFile;
@@ -24,12 +23,9 @@ namespace Parser {
 
     signals:
         void readingErrorHappened();
-        void modelRead(QVariant buffers);
-
-        void stlFileChanged();
 
     public slots:
-        virtual void setStlFile(const QUrl & stlFile) final;
+        virtual void setFile(const QUrl & file);
     };
 }
 #endif // STLREADER_H

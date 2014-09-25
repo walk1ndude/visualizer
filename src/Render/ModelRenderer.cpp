@@ -1,6 +1,6 @@
 #include <QtQuick/QQuickWindow>
 
-#include "Model/HeadModel.h"
+#include "Model/VolumeModel.h"
 #include "Model/StlModel.h"
 
 #include "Render/ModelRenderer.h"
@@ -53,13 +53,13 @@ namespace Render {
         AbstractRenderer::disconnectWithScene(scene);
     }
 
-    void ModelRenderer::addStlModel(ModelInfo::BuffersVN buffers) {
+    void ModelRenderer::addModel(ModelInfo::BuffersVN buffers) {
         QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
-            selectedModelScene->addStlModel(buffers);
+            selectedModelScene->addModel(buffers);
 
             locker.unlock();
             emit redraw();
@@ -71,38 +71,38 @@ namespace Render {
         }
     }
 
-    void ModelRenderer::addHeadModel(SliceInfo::Slices slices) {
+    void ModelRenderer::addModel(VolumeInfo::Volume volume) {
         QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * selectModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
-            selectModelScene->addHeadModel(slices);
+            selectModelScene->addModel(volume);
 
             locker.unlock();
             emit redraw();
         }
         else {
             // sorry, different scene
-            slices.texture.mergedData.clear();
+            volume.texture.mergedData.clear();
         }
     }
 
-    void ModelRenderer::addEvaluatorModel(const QSize & size,
-                                          const qreal & stepX, const qreal & stepY,
-                                          const QVector3D & color) {
-        addEvaluatorModel(size.width(), size.height(), stepX, stepY, color);
+    void ModelRenderer::addModel(const QSize & size,
+                                 const qreal & stepX, const qreal & stepY,
+                                 const QVector3D & color) {
+        addModel(size.width(), size.height(), stepX, stepY, color);
     }
 
-    void ModelRenderer::addEvaluatorModel(const int & width, const int & height,
-                                          const qreal & stepX, const qreal & stepY,
-                                          const QVector3D & color) {
+    void ModelRenderer::addModel(const int & width, const int & height,
+                                 const qreal & stepX, const qreal & stepY,
+                                 const QVector3D & color) {
         QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
             activateContext();
 
-            selectedModelScene->addEvaluatorModel(width, height, stepX, stepY, color);
+            selectedModelScene->addModel(width, height, stepX, stepY, color);
 
             locker.unlock();
             emit redraw();

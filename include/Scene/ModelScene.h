@@ -5,7 +5,7 @@
 
 #include "Info/LightInfo.h"
 #include "Info/MaterialInfo.h"
-#include "Info/SliceInfo.h"
+#include "Info/VolumeInfo.h"
 #include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
 
@@ -71,16 +71,16 @@ namespace Scene {
         void viewportArrayChanged();
 
     public slots:
-        void setViewportArray(Viewport::ViewportArray * viewportArray);
+        virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
 
-        void addStlModel(ModelInfo::BuffersVN buffers);
-        void addHeadModel(SliceInfo::Slices slices);
+        virtual void addModel(ModelInfo::BuffersVN buffers);
+        virtual void addModel(VolumeInfo::Volume volume);
 
-        void addEvaluatorModel(const int & width = 10, const int & height = 10,
-                               const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                               const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f));
+        virtual void addModel(const int & width = 10, const int & height = 10,
+                              const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
+                              const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f));
 
-        void addTexture(TextureInfo::Texture & textureInfo);
+        virtual void addTexture(TextureInfo::Texture & textureInfo);
 
         virtual void setRotation(const QVector3D & rotation);
 

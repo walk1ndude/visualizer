@@ -15,9 +15,6 @@ Item {
     property vector3d rotation: Qt.vector3d(0.0, 0.0, 0.0);
     property real zoomFactor: 2.0;
 
-    property int minHU: 0;
-    property int maxHU: 65535;
-
     property variant selectedPoint: ({});
 
     property int modelID: modelViewer.modelID;
@@ -41,9 +38,6 @@ Item {
         xRange: modelViewerEx.xRange;
         yRange: modelViewerEx.yRange;
         zRange: modelViewerEx.zRange;
-
-        minHU: modelViewerEx.minHU;
-        maxHU: modelViewerEx.maxHU;
 
         selectedPoint: modelViewerEx.selectedPoint;
 
@@ -106,12 +100,7 @@ Item {
         }
     }
 
-    function modelRead(buffers) {
-        modelViewer.modelRead(buffers);
+    function drawModel(model) {
+        modelViewer.drawModel(model.data);
     }
-
-    function drawSlices(slices) {
-        modelViewer.drawSlices(slices);
-    }
-
 }

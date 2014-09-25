@@ -84,33 +84,6 @@ namespace Quick {
         emit zRangeChanged(_zRange);
     }
 
-    QVector2D ModelViewer::huRange() const {
-        return _huRange;
-    }
-
-    void ModelViewer::sethuRange(const QVector2D & huRange) {
-        _huRange = huRange;
-        emit huRangeChanged();
-    }
-
-    int ModelViewer::minHU() const {
-        return (int) _minHU;
-    }
-
-    void ModelViewer::setMinHU(const int & minHU) {
-        _minHU = minHU;
-        emit minHUChanged(_minHU);
-    }
-
-    int ModelViewer::maxHU() const {
-        return _maxHU;
-    }
-
-    void ModelViewer::setMaxHU(const int & maxHU) {
-        _maxHU = maxHU;
-        emit maxHUChanged(_maxHU);
-    }
-
     int ModelViewer::modelID() const {
         return _modelID;
     }
@@ -169,8 +142,10 @@ namespace Quick {
 
             current->makeCurrent(window());
 
-            QObject::connect(this, &ModelViewer::slicesProcessed, _modelRenderer, &Render::ModelRenderer::addHeadModel);
-            QObject::connect(this, &ModelViewer::modelRead, _modelRenderer, &Render::ModelRenderer::addStlModel);
+            QObject::connect(this, (void (ModelViewer::*)(VolumeInfo::Volume)) &ModelViewer::drawModel,
+                             _modelRenderer, (void (Render::ModelRenderer::*)(VolumeInfo::Volume)) &Render::ModelRenderer::addModel);
+            QObject::connect(this, (void (ModelViewer::*)(ModelInfo::BuffersVN)) &ModelViewer::drawModel,
+                             _modelRenderer, (void (Render::ModelRenderer::*)(ModelInfo::BuffersVN)) &Render::ModelRenderer::addModel);
 
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
 
@@ -223,13 +198,6 @@ namespace Quick {
         node->setRect(boundingRect());
 
         return node;
-    }
-
-    void ModelViewer::drawSlices(SliceInfo::Slices slices) {
-        _huRange = slices.huRange;
-        emit huRangeChanged();
-
-        emit slicesProcessed(slices);
     }
 
     void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {

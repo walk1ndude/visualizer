@@ -1,7 +1,7 @@
 #include "Scene/ModelScene.h"
 
 #include "Model/StlModel.h"
-#include "Model/HeadModel.h"
+#include "Model/VolumeModel.h"
 #include "Model/PointsModel.h"
 #include "Model/EvaluatorModel.h"
 
@@ -207,7 +207,7 @@ namespace Scene {
         }
     }
 
-    void ModelScene::addStlModel(ModelInfo::BuffersVN buffers) {
+    void ModelScene::addModel(ModelInfo::BuffersVN buffers) {
         Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
 
@@ -235,18 +235,18 @@ namespace Scene {
         _models.append(model);
     }
 
-    void ModelScene::addHeadModel(SliceInfo::Slices slices) {
+    void ModelScene::addModel(VolumeInfo::Volume volume) {
         Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
 
-        Model::HeadModel * model = new Model::HeadModel(this, pointsInModel);
+        Model::VolumeModel * model = new Model::VolumeModel(this, pointsInModel);
 
         selectModel(model);
 
-        model->init(slices.texture.size, slices.physicalSize, slices.texture.scaling);
-        model->scale(slices.texture.scaling);
+        model->init(volume.texture.size, volume.physicalSize, volume.texture.scaling);
+        model->scale(volume.texture.scaling);
 
-        addTexture(slices.texture);
+        addTexture(volume.texture);
 
         model->addLightSource(_lightSources.at(0),
                               ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
@@ -265,12 +265,12 @@ namespace Scene {
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
         
         
-        QObject::connect(model, &Model::HeadModel::pointUpdated, this, &Scene::ModelScene::pointUpdated, Qt::DirectConnection);
+        QObject::connect(model, &Model::VolumeModel::pointUpdated, this, &Scene::ModelScene::pointUpdated, Qt::DirectConnection);
 
         _models.append(model);
     }
 
-    void ModelScene::addEvaluatorModel(const int & width, const int & height,
+    void ModelScene::addModel(const int & width, const int & height,
                                        const qreal & stepX, const qreal & stepY,
                                        const QVector3D & color) {
         Model::EvaluatorModel * model = new Model::EvaluatorModel(this);
@@ -285,6 +285,6 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
-        addEvaluatorModel();
+        addModel();
     }
 }

@@ -139,7 +139,8 @@ public:
 };
 
 namespace Parser {
-    StlReader::StlReader() {
+    StlReader::StlReader() :
+        AbstractParser() {
 
     }
 
@@ -147,38 +148,39 @@ namespace Parser {
 
     }
 
-    QUrl StlReader::stlFile() const {
+    QUrl StlReader::file() const {
         return _stlFile;
     }
 
-    void StlReader::setStlFile(const QUrl & stlFile) {
-        if (stlFile.isEmpty()) {
+    void StlReader::setFile(const QUrl & file) {
+        if (file.isEmpty()) {
             return;
         }
 
-        QString fileName = stlFile.toLocalFile();
+        QString fileName = file.toLocalFile();
 
-        QFile file(fileName);
+        QFile stlFile(fileName);
 
         QString fileNameLower = fileName.toLower();
 
-        if (file.open(QIODevice::ReadOnly)) {
+        if (stlFile.open(QIODevice::ReadOnly)) {
             if (fileNameLower.at(fileName.length() - 4) == 's' &&
                 fileNameLower.at(fileName.length() - 3) == 't' &&
                 fileNameLower.at(fileName.length() - 2) == 'l' &&
                 fileNameLower.at(fileName.length() - 1) == 'a'
             ) {
-                readASCII(file);
+                readASCII(stlFile);
             }
             else {
-                readBinary(file);
+                readBinary(stlFile);
             }
 
-            file.close();
+            stlFile.close();
         }
 
-        _stlFile = stlFile;
-        emit stlFileChanged();
+        _stlFile = file;
+
+        emit fileChanged();
     }
 
     void StlReader::readASCII(QFile & stlFile) {
@@ -297,10 +299,11 @@ namespace Parser {
 
         cv::parallel_for_(cv::Range(0, vertexNumber), ParallelNormalizing(normData));
 
-        ModelInfo::BuffersVN buffers;
-        buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
+        ModelInfo::BuffersVN model;
+        model.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        emit modelRead(QVariant::fromValue(buffers));
+        QVariantMap map;
+        sendResults<ModelInfo::BuffersVN>(model, map);
     }
 
     void StlReader::readBinary(QFile & stlFile) {
@@ -355,9 +358,10 @@ namespace Parser {
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
 
-        ModelInfo::BuffersVN buffers;
-        buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
+        ModelInfo::BuffersVN model;
+        model.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        emit modelRead(QVariant::fromValue(buffers));
+        QVariantMap map;
+        sendResults<ModelInfo::BuffersVN>(model, map);
     }
 }

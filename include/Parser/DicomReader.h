@@ -5,19 +5,18 @@
 #include <gdcmFile.h>
 
 #include "Parser/ctprocessing.hpp"
+#include "Parser/AbstractParser.h"
 
-#include "Info/SliceInfo.h"
+#include "Info/VolumeInfo.h"
 
 namespace Parser {
-    class DicomReader : public QObject {
-        Q_PROPERTY(QUrl dicomFile READ dicomFile WRITE setDicomFile NOTIFY dicomFileChanged)
-
+    class DicomReader : public AbstractParser {
         Q_OBJECT
     public:
         explicit DicomReader();
         ~DicomReader();
 
-        QUrl dicomFile() const;
+        QUrl file() const;
 
     private:
         size_t _sliceNumber;
@@ -39,15 +38,10 @@ namespace Parser {
         void reset(const int & newSize = 0);
         void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
 
-    signals:
-        void slicesProcessed(QVariant slices);
-
-        void dicomFileChanged();
-
     public slots:
         Q_INVOKABLE virtual void nextSlice(const int & ds);
 
-        virtual void setDicomFile(const QUrl & dicomFile) final;
+        virtual void setFile(const QUrl & file);
 
         virtual void updateMinHU(const int & minHU);
         virtual void updateMaxHU(const int & maxHU);

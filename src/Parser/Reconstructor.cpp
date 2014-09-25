@@ -47,6 +47,7 @@
 
 namespace Parser {
     Reconstructor::Reconstructor() :
+        AbstractParser(),
         _sliceNumber(0),
         _isOCLInitialized(false) {
     }
@@ -112,19 +113,19 @@ namespace Parser {
         
         _queue = clCreateCommandQueue(_context, _device_id, 0, nullptr);
         
-        _programSlice = clCreateProgramWithSource(_context, 1, (const char **) &programText,
+        _programReconstruction = clCreateProgramWithSource(_context, 1, (const char **) &programText,
                                                   (const size_t *) &programLength, nullptr);
 
         free(programText);
         free(platforms);
 
-        qDebug() << "Building OpenCL Program, error: " << clBuildProgram(_programSlice, 1, &_device_id, nullptr, nullptr, nullptr);
+        qDebug() << "Building OpenCL Program, error: " << clBuildProgram(_programReconstruction, 1, &_device_id, nullptr, nullptr, nullptr);
 
-        _gauss1dKernel = clCreateKernel(_programSlice, "gauss1d", nullptr);
-        _calcTablesKernel = clCreateKernel(_programSlice, "calcTables", nullptr);
-        _fourier2dKernel = clCreateKernel(_programSlice, "fourier2d", nullptr);
-        _dht1dTransposeKernel = clCreateKernel(_programSlice, "dht1dTranspose", nullptr);
-        _butterflyDht2dKernel = clCreateKernel(_programSlice, "butterflyDht2d", nullptr);
+        _gauss1dKernel = clCreateKernel(_programReconstruction, "gauss1d", nullptr);
+        _calcTablesKernel = clCreateKernel(_programReconstruction, "calcTables", nullptr);
+        _fourier2dKernel = clCreateKernel(_programReconstruction, "fourier2d", nullptr);
+        _dht1dTransposeKernel = clCreateKernel(_programReconstruction, "dht1dTranspose", nullptr);
+        _butterflyDht2dKernel = clCreateKernel(_programReconstruction, "butterflyDht2d", nullptr);
         
         _isOCLInitialized = true;
     }
@@ -135,7 +136,7 @@ namespace Parser {
         clReleaseKernel(_fourier2dKernel);
         clReleaseKernel(_dht1dTransposeKernel);
         
-        clReleaseProgram(_programSlice);
+        clReleaseProgram(_programReconstruction);
         clReleaseCommandQueue(_queue);
 #ifdef CL_VERSION_1_2
         clReleaseDevice(_device_id);
@@ -495,7 +496,7 @@ namespace Parser {
     }
 
     void Reconstructor::visualize() {
-        SliceInfo::Slices slices;
+        VolumeInfo::Volume volume;
 
         cv::Mat slice(*_slicesOCL.at(0));
 
@@ -510,45 +511,46 @@ namespace Parser {
             posSlice += oneSliceSize;
         }
 
-        slices.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
+        volume.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
 
-        slices.texture.pixelTransferOptions.setAlignment((slice.step & 3) ? 1 : 4);
-        slices.texture.pixelTransferOptions.setRowLength((int) slice.step1());
+        volume.texture.pixelTransferOptions.setAlignment((slice.step & 3) ? 1 : 4);
+        volume.texture.pixelTransferOptions.setRowLength((int) slice.step1());
 
-        slices.texture.size.setX(slice.cols);
-        slices.texture.size.setY(slice.rows);
-        slices.texture.size.setZ(sliceCount);
+        volume.texture.size.setX(slice.cols);
+        volume.texture.size.setY(slice.rows);
+        volume.texture.size.setZ(sliceCount);
 
         // how to calculate / get these ?
         QVector3D worldSpacings(0.3, 0.3, 1.0);
 
-        slices.texture.scaling = scaleVector<float, QVector3D>(
-                    slices.texture.size.x() * worldSpacings.x(),
-                    slices.texture.size.y() * worldSpacings.y(),
-                    slices.texture.size.z() * worldSpacings.z()
+        volume.texture.scaling = scaleVector<float, QVector3D>(
+                    volume.texture.size.x() * worldSpacings.x(),
+                    volume.texture.size.y() * worldSpacings.y(),
+                    volume.texture.size.z() * worldSpacings.z()
                     ) * QVector3D(
                     1.0f / worldSpacings.x(),
                     1.0f / worldSpacings.y(),
                     1.0f / worldSpacings.z()
                     );
 
-        slices.texture.pixelType = QOpenGLTexture::UInt8;
-        slices.texture.textureFormat = QOpenGLTexture::R8_UNorm;
-        slices.texture.pixelFormat = QOpenGLTexture::Red;
-        slices.texture.target = QOpenGLTexture::Target3D;
+        volume.texture.pixelType = QOpenGLTexture::UInt8;
+        volume.texture.textureFormat = QOpenGLTexture::R8_UNorm;
+        volume.texture.pixelFormat = QOpenGLTexture::Red;
+        volume.texture.target = QOpenGLTexture::Target3D;
 
-        emit slicesProcessed(QVariant::fromValue(slices));
+        QVariantMap map;
+        sendResults<VolumeInfo::Volume>(volume, map);
     }
 
-    QVariant Reconstructor::imgFiles() const {
+    QVariant Reconstructor::files() const {
         return _imgFiles;
     }
 
-    void Reconstructor::setImgFiles(const QVariant & imgFiles) {
+    void Reconstructor::setFiles(const QVariant & files) {
         cv::Size imSize = cv::Size();
         cv::Mat readerMat;
 
-        for (const QVariant & imgFile : imgFiles.value<QList<QUrl> >()) {
+        for (const QVariant & imgFile : files.value<QList<QUrl> >()) {
             readerMat = cv::imread(imgFile.toUrl().toLocalFile().toStdString(), CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_GRAYSCALE);
             readerMat.convertTo(readerMat, CV_32FC1, 1 / 256.0f);
 
@@ -573,8 +575,8 @@ namespace Parser {
 
         showSliceWithNumber(0);
 
-        _imgFiles = imgFiles;
-        emit imgFilesChanged();
+        _imgFiles = files;
+        emit filesChanged();
     }
 
     void Reconstructor::reconstructCPU() {

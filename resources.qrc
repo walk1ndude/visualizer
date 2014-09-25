@@ -14,8 +14,6 @@
         <file>shaders/Points/fragment.glsl</file>
         <file>shaders/Points/geometry.glsl</file>
         <file>shaders/Points/vertex.glsl</file>
-        <file>shaders/Slice/fragment.glsl</file>
-        <file>shaders/Slice/vertex.glsl</file>
         <file>shaders/Stl/fragment.glsl</file>
         <file>shaders/Stl/vertex.glsl</file>
         <file>qml/Dock/ConsoleDock.qml</file>
@@ -35,5 +33,7 @@
         <file>qml/Control/CircleSlider.qml</file>
         <file>qml/Control/RangeSlider.qml</file>
         <file>qml/Control/Slider.qml</file>
+        <file>shaders/Volume/fragment.glsl</file>
+        <file>shaders/Volume/vertex.glsl</file>
     </qresource>
 </RCC>

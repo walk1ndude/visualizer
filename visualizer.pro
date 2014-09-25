@@ -92,7 +92,6 @@ SOURCES +=  src/main.cpp \
             src/Render/AbstractRenderer.cpp \
             src/Render/ModelRenderer.cpp \
             src/Model/AbstractModel.cpp \
-            src/Model/HeadModel.cpp \
             src/Model/StlModel.cpp \
             src/Scene/ModelScene.cpp \
             src/Model/PointsModel.cpp \
@@ -107,11 +106,13 @@ SOURCES +=  src/main.cpp \
             src/Info/MaterialInfo.cpp \
             src/Info/ViewRangeInfo.cpp \
             src/Info/TextureInfo.cpp \
-            src/Info/SliceInfo.cpp \
             src/Info/ShaderInfo.cpp \
             src/Quick/TextureNode.cpp \
             src/Camera/Camera.cpp \
-    src/Model/ModelArray.cpp
+    src/Model/ModelArray.cpp \
+    src/Model/VolumeModel.cpp \
+    src/Info/VolumeInfo.cpp \
+    src/Parser/AbstractParser.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -123,9 +124,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Render/AbstractRenderer.h \
             include/Render/ModelRenderer.h \
             include/Model/AbstractModel.h \
-            include/Model/HeadModel.h \
             include/Model/StlModel.h \
-            include/Info/SliceInfo.h \
             include/Info/ModelInfo.h \
             include/Info/MaterialInfo.h \
             include/Info/LightInfo.h \
@@ -148,6 +147,9 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Info/ViewRangeInfo.h \
             include/Model/EvaluatorModel.h \
             include/Camera/Camera.h \
-    include/Model/ModelArray.h
+    include/Model/ModelArray.h \
+    include/Model/VolumeModel.h \
+    include/Info/VolumeInfo.h \
+    include/Parser/AbstractParser.h
 
 RESOURCES += resources.qrc

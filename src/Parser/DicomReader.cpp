@@ -18,6 +18,7 @@
 
 namespace Parser {
     DicomReader::DicomReader() :
+        AbstractParser(),
         _sliceNumber(0) {
 
     }
@@ -157,10 +158,10 @@ namespace Parser {
 
         size_t depth = _dicomData.depth - _dicomData.neighbourRadius * 2;
 
-        SliceInfo::Slices slices;
+        VolumeInfo::Volume volume;
 
-        slices.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
-        slices.texture.scaling = scaleVector<float, QVector3D>(
+        volume.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
+        volume.texture.scaling = scaleVector<float, QVector3D>(
                 _dicomData.width * _dicomData.imageSpacings.x(),
                 _dicomData.height * _dicomData.imageSpacings.y(),
                 depth * _dicomData.imageSpacings.z()
@@ -171,49 +172,48 @@ namespace Parser {
                     1.0f / _dicomData.imageSpacings.z()
                     );
 
-        slices.physicalSize = SliceInfo::PhysicalSize(_dicomData.width * _dicomData.imageSpacings.x(),
-                                                      _dicomData.height * _dicomData.imageSpacings.y(),
-                                                      depth * _dicomData.imageSpacings.z());
+        volume.physicalSize = VolumeInfo::PhysicalSize(_dicomData.width * _dicomData.imageSpacings.x(),
+                                                       _dicomData.height * _dicomData.imageSpacings.y(),
+                                                       depth * _dicomData.imageSpacings.z());
 
-        slices.texture.size.setX(_dicomData.width);
-        slices.texture.size.setY(_dicomData.height);
-        slices.texture.size.setZ(depth);
+        volume.texture.size.setX(_dicomData.width);
+        volume.texture.size.setY(_dicomData.height);
+        volume.texture.size.setZ(depth);
 
-        slices.texture.pixelTransferOptions = pixelTransferOptions;
+        volume.texture.pixelTransferOptions = pixelTransferOptions;
 
-        slices.huRange.setX(_dicomData.minHUPossible);
-        slices.huRange.setY(_dicomData.maxHUPossible);
+        volume.texture.pixelType = QOpenGLTexture::UInt16;
+        volume.texture.textureFormat = QOpenGLTexture::R16_UNorm;
+        volume.texture.pixelFormat = QOpenGLTexture::Red;
+        volume.texture.target = QOpenGLTexture::Target3D;
 
-        slices.texture.pixelType = QOpenGLTexture::UInt16;
-        slices.texture.textureFormat = QOpenGLTexture::R16_UNorm;
-        slices.texture.pixelFormat = QOpenGLTexture::Red;
-        slices.texture.target = QOpenGLTexture::Target3D;
-
-        emit slicesProcessed(QVariant::fromValue(slices));
+        QVariantMap map;
+        map["huRange"] = QVector2D(_dicomData.minHUPossible, _dicomData.maxHUPossible);
+        sendResults<VolumeInfo::Volume>(volume, map);
     }
 
-    QUrl DicomReader::dicomFile() const {
+    QUrl DicomReader::file() const {
         return _dicomFile;
     }
 
-    void DicomReader::setDicomFile(const QUrl & dicomFile) {
-        if (dicomFile.isEmpty()) {
+    void DicomReader::setFile(const QUrl & file) {
+        if (file.isEmpty()) {
             return;
         }
 
         gdcm::ImageReader dIReader;
 
-        dIReader.SetFileName(dicomFile.toLocalFile().toStdString().c_str());
+        dIReader.SetFileName(file.toLocalFile().toStdString().c_str());
 
         if (dIReader.Read()) {
             readImage(dIReader.GetFile(), dIReader.GetImage());
-            _dicomFile = dicomFile;
+            _dicomFile = file;
         }
         else {
             qDebug() << "can't read file";
         }
 
-        emit dicomFileChanged();
+        emit fileChanged();
     }
 
     void DicomReader::nextSlice(const int & ds) {
