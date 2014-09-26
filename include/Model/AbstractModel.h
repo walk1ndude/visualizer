@@ -26,10 +26,12 @@ namespace Model {
 
         virtual int id() const final;
 
-        virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport = nullptr) const;
+        virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
         virtual Camera::ViewMatrix view(const Viewport::Viewport * viewport) const;
         virtual Camera::ProjectionMatrix projection(const Viewport::Viewport * viewport) const;
-        virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport = nullptr) const;
+        virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport) const;
+
+        virtual Camera::Matrix childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const;
         
         virtual Camera::ScaleMatrix scaleMatrix() const;
 

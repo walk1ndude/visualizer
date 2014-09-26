@@ -114,6 +114,10 @@ namespace Model {
         return mMatrix;
     }
 
+    Camera::Matrix AbstractModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * ) const {
+        return projection(viewport) * view(viewport) * model(viewport);
+    }
+
     QVector3D AbstractModel::orientationEuler() const {
         qreal q1 = _orientation.scalar();
         qreal q2 = _orientation.x();

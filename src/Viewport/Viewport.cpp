@@ -190,7 +190,7 @@ namespace Viewport {
         return _camera->modelBillboard();
     }
 
-    Camera::ModelMatrix Viewport::textureBillboardOrientation() const {
+    Camera::ModelMatrix Viewport::modelTextureBillboard() const {
         return _camera->modelTextureBillboard();
     }
     

@@ -58,7 +58,7 @@ namespace Model {
     }
     
     Camera::ModelMatrix VolumeModel::model(const Viewport::Viewport * viewport) const {
-        Camera::ModelMatrix model = viewport->textureBillboardOrientation();
+        Camera::ModelMatrix model = viewport->modelTextureBillboard();
         model.rotate(orientationQuat() * viewport->orientationBillboard());
         
         return model;
@@ -69,6 +69,14 @@ namespace Model {
         lightView.rotate(viewport->orientationBillboard());
         
         return lightView;
+    }
+
+    Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
+        Camera::ModelMatrix modelM = model(viewport);
+
+        modelM.rotate(child->orientationQuat());
+
+        return projection(viewport) * lightView(viewport) * modelM;
     }
     
     void VolumeModel::drawingRoutine() const {
