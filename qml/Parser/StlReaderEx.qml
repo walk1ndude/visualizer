@@ -9,7 +9,7 @@ StlReader {
 
     onFinished: {
         if (viewer) {
-            viewer.drawModel(model);
+            viewer.processModel(model);
             toggleDocks();
             destroy();
         }

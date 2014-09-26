@@ -8,7 +8,7 @@ DicomReader {
     property variant viewer: ({});
 
     onFinished: {
-        viewer.drawModel(model);
+        viewer.processModel(model);
         toggleDocks();
     }
 }

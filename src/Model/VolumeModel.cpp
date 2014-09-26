@@ -53,7 +53,7 @@ namespace Model {
     }
 
     void VolumeModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        //pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
+        pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
         AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), - rotation.z()), speed);
     }
     
@@ -74,7 +74,10 @@ namespace Model {
     Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
         Camera::ModelMatrix modelM = model(viewport);
 
-        modelM.rotate(child->orientationQuat());
+        modelM.rotate(child->orientationQuat());/*
+                      Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, -180.0f) *
+                      Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
+                      */
 
         return projection(viewport) * lightView(viewport) * modelM;
     }

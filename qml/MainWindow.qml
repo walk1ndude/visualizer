@@ -117,7 +117,6 @@ ApplicationWindow {
             zRange: sidebar.zRange;
 
             rotation: sidebar.angle;
-            zoomFactor: sidebar.zoomFactor;
 
             selectedPoint: sidebar.selectedPoint;
 
