@@ -7,7 +7,7 @@
 int main(int argc, char * argv[]) {
     QGuiApplication a(argc, argv);
 
-    qputenv("QML_FORCE_THREADED_RENDERER", "1");
+    //qputenv("QML_FORCE_THREADED_RENDERER", "1");
 
     Gui::AppWindow appWindow("qrc:/qml/MainWindow.qml");
 

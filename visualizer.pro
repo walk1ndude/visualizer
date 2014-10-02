@@ -51,18 +51,18 @@ unix:!macx {
 win32 {
     INCLUDEPATH += "C:\opencv\build\include" \
                    "C:\Program Files (x86)\GDCM 2.4\include\gdcm-2.4" \
-                   "C:\Program Files (x86)\AMD APP SDK\2.9-1\include"
+                   "C:\Program Files (x86)\AMD APP SDK\2.9\include"
 
     !contains(QMAKE_HOST.arch, x86_64) {
             QMAKE_LFLAGS *= /MACHINE:X86
-            LIBS += -L"C:\GDCM\build\bin\Debug" \
+            LIBS += -L"C:\GDCM\build86\bin\Debug" \
                     -L"C:\opencv\build\x86\vc12\lib" \
-                    -L"C:\Program Files (x86)\AMD APP SDK\2.9-1\lib\x86"
+                    -L"C:\Program Files (x86)\AMD APP SDK\2.9\lib\x86"
     }
     else {
         contains(QMAKE_HOST.arch, x86_64):{
             QMAKE_LFLAGS *= /MACHINE:X64
-            LIBS += -L"C:\GDCM\build64\bin\Release" \
+            LIBS += -L"C:\GDCM\build86_64\bin\Debug" \
                     -L"C:\opencv\build\x64\vc12\lib" \
                     -L"C:\Program Files (x86)\AMD APP SDK\2.9-1\lib\x86_64"
         }
