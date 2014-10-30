@@ -12,18 +12,20 @@ namespace ModelInfo {
         GLfloat r;
         GLfloat g;
         GLfloat b;
+        GLfloat a;
 
         VertexVC() { }
         VertexVC(
-                const GLfloat x,
-                const GLfloat y,
-                const GLfloat z,
-                const GLfloat r,
-                const GLfloat g,
-                const GLfloat b
+                const GLfloat & x,
+                const GLfloat & y,
+                const GLfloat & z,
+                const GLfloat & r,
+                const GLfloat & g,
+                const GLfloat & b,
+                const GLfloat & a = 1.0f
                 ) :
             x(x), y(y), z(z),
-            r(r), g(g), b(b) {
+            r(r), g(g), b(b), a(a) {
         }
     };
 

@@ -15,12 +15,12 @@ namespace ModelInfo {
 
         VertexVN() { }
         VertexVN(
-                const GLfloat x,
-                const GLfloat y,
-                const GLfloat z,
-                const GLfloat nx,
-                const GLfloat ny,
-                const GLfloat nz
+                const GLfloat & x,
+                const GLfloat & y,
+                const GLfloat & z,
+                const GLfloat & nx,
+                const GLfloat & ny,
+                const GLfloat & nz
                 )  :
             x(x), y(y), z(z),
             nx(nx), ny(ny), nz(nz) {

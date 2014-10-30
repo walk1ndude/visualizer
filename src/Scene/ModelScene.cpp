@@ -4,6 +4,7 @@
 #include "Model/VolumeModel.h"
 #include "Model/PointsModel.h"
 #include "Model/EvaluatorModel.h"
+#include "Model/AxesModel.h"
 
 namespace Scene {
     ModelScene::ModelScene() :
@@ -45,9 +46,20 @@ namespace Scene {
 
     void ModelScene::setRotation(const QVector3D & rotation) {
         _rotation = rotation;
+
+        QListIterator<Model::AbstractModel *> modelIterator (_models.array());
+        Model::AbstractModel * model;
+        while (modelIterator.hasNext()) {
+            model = modelIterator.next();
+            if (Model::EvaluatorModel * evModel = qobject_cast<Model::EvaluatorModel *>(model)) {
+                continue;
+            }
+            model->rotate(rotation);
+        }
+        /*
         if (_selectedModel) {
             _selectedModel->rotate(rotation);
-        }
+        }*/
     }
 
     void ModelScene::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
@@ -284,7 +296,22 @@ namespace Scene {
         _models.append(model);
     }
 
+    void ModelScene::addModel(const QVector<QColor> & axesColors) {
+        Model::AxesModel * model = new Model::AxesModel(this);
+
+        model->setColors(axesColors);
+
+        model->init();
+
+        _models.append(model);
+    }
+
     void ModelScene::initScene() {
         addModel();
+        addModel(QVector<QColor>() = {
+            QColor::QColor("red"),
+            QColor::QColor("green"),
+            QColor::QColor("blue")
+        });
     }
 }

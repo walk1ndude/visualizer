@@ -23,6 +23,8 @@ namespace Parser {
         cv::dilate(src, filtered, dilateMat);
         cv::GaussianBlur(filtered, dst, gaussSize, 2.4);
 
+
+
         /*
         cv::Mat maskContours(cv::Mat::zeros(src.rows, src.cols, CV_16UC1));
 
@@ -62,6 +64,16 @@ namespace Parser {
         cv::Mat smoothed;
 
         smoothSlices(startSlice, endSlice, slices, smoothed);
+
+        if (startSlice > slices.size() / 2) {
+            cv::circle(smoothed, cv::Point(smoothed.cols / 2, smoothed.rows / 2), 5, 65535, CV_FILLED);
+        }
+
+        if (startSlice > slices.size() / 2 - 2 && startSlice < slices.size() / 2 + 2) {
+            cv::line(smoothed, cv::Point(40, smoothed.rows / 2), cv::Point(smoothed.cols / 2, smoothed.rows / 2), 64300, 3);
+            cv::line(smoothed, cv::Point(smoothed.cols / 2, 40), cv::Point(smoothed.cols / 2, smoothed.rows / 2), 64000, 3);
+        }
+
         memcpy(mergeStartPoint, smoothed.data, sliceSize);
     }
 

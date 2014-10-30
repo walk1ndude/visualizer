@@ -15,12 +15,12 @@ namespace ModelInfo {
 
         VertexVT() { }
         VertexVT(
-                const GLfloat x,
-                const GLfloat y,
-                const GLfloat z,
-                const GLfloat tx,
-                const GLfloat ty,
-                const GLfloat tz
+                const GLfloat & x,
+                const GLfloat & y,
+                const GLfloat & z,
+                const GLfloat & tx,
+                const GLfloat & ty,
+                const GLfloat & tz
                 ) :
             x(x), y(y), z(z),
             tx(tx), ty(ty), tz(tz) {

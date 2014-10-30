@@ -35,5 +35,7 @@
         <file>qml/Control/Slider.qml</file>
         <file>shaders/Volume/fragment.glsl</file>
         <file>shaders/Volume/vertex.glsl</file>
+        <file>shaders/Axes/fragment.glsl</file>
+        <file>shaders/Axes/vertex.glsl</file>
     </qresource>
 </RCC>

@@ -106,10 +106,14 @@ namespace Model {
         _children.append(child);
     }
 
-    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport * ) const {
+    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport * viewport) const {
         Camera::ModelMatrix mMatrix;
         mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
+
+        if (viewport->projectionType() != Viewport::Viewport::PERSPECTIVE) {
+            //mMatrix.setToIdentity();
+        }
 
         return mMatrix;
     }

@@ -18,7 +18,7 @@ Viewport {
     marked by array property */
     property bool propagateToOthers: true;
 
-    property bool invertedYAxis: false;
+    property bool invertedYAxis: true;
 
     property real minimumZoom: 0.2;
     property real maximumZoom: 4.0;

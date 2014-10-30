@@ -53,8 +53,8 @@ namespace Model {
     }
 
     void VolumeModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        pointsModel()->rotate(QVector3D(rotation.z(), rotation.z(), - rotation.y()), speed);
-        AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), - rotation.z()), speed);
+        pointsModel()->rotate(rotation, speed);
+        AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), rotation.z()), speed);
     }
     
     Camera::ModelMatrix VolumeModel::model(const Viewport::Viewport * viewport) const {
@@ -71,13 +71,19 @@ namespace Model {
         return lightView;
     }
 
-    Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
-        Camera::ModelMatrix modelM = model(viewport);
+    Camera::ViewMatrix VolumeModel::viewTexture(const Viewport::Viewport * viewport) const {
+        Camera::ViewMatrix viewTex;
 
-        modelM.rotate(child->orientationQuat());/*
-                      Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, -180.0f) *
-                      Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 90.0f));
-                      */
+        viewTex.rotate(viewport->orientationBillboard());
+        return viewTex;
+    }
+
+    Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
+        Camera::ModelMatrix modelM = AbstractModel::model(viewport);
+
+        //Camera::Orientation changeBasis = Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -90.0f);
+
+        //modelM.rotate(changeBasis * orientationQuat() * changeBasis.conjugate() / changeBasis.lengthSquared());
 
         return projection(viewport) * lightView(viewport) * modelM;
     }
@@ -111,6 +117,7 @@ namespace Model {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));
+        program->setUniformValue(uniformValues["viewTexture"], viewTexture(viewport));
         
         program->setUniformValue(uniformValues["lightView"], lightView(viewport));
 
