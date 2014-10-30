@@ -74,10 +74,7 @@ namespace Camera {
                                      const Orientation & orientationTexture = Orientation());
 
         void ortho(const Specs::Orthogonal & specs);
-        void ortho(const AspectRatio & ratio);
-
         void perspective(const Specs::Perspective & specs);
-        void perspective(const AspectRatio & ratio);
 
         ProjectionMatrix projection() const;
 
@@ -130,6 +127,9 @@ namespace Camera {
 
         FOV zoomedFov(const FOV & fov) const;
         Top zoomedTop(const Top & top) const;
+
+        void ortho(const AspectRatio & ratio);
+        void perspective(const AspectRatio & ratio);
     };
 }
 

@@ -31,6 +31,7 @@ namespace Camera {
         _billboard.modelTextureBillboard.rotate(textureOrientation);
     }
 
+
     void Camera::ortho(const Specs::Orthogonal & specs) {
         QMutexLocker locker(&_mutex);
 
@@ -65,16 +66,12 @@ namespace Camera {
     }
 
     void Camera::perspective(const AspectRatio & ratio) {
-        QMutexLocker locker(&_mutex);
-
         if (_specs.type == PERSPECTIVE) {
             Specs::Perspective * specs = &_specs.specs.perspective;
 
             specs->aspectRatio = ratio;
 
-            _pMatrix.setToIdentity();
-            _pMatrix.perspective(zoomedFov(specs->fov), specs->aspectRatio, specs->nearPlane, specs->farPlane);
-            _pMatrix.scale(QVector3D(-1.0f, 1.0f, 1.0f));
+            perspective(*specs);
         }
     }
 
@@ -90,26 +87,16 @@ namespace Camera {
     }
 
     void Camera::zoom(const ZoomFactor & zoomFactor, const AspectRatio & ratio) {
-        QMutexLocker locker(&_mutex);
-
         _pMatrix.setToIdentity();
         if (_specs.type == PERSPECTIVE) {
-            // fov will be in 1/4 to 3/2 from initial fov
-            Specs::Perspective * specs = &_specs.specs.perspective;
-
             _zoomFactor = zoomFactor;
 
-            _pMatrix.perspective(zoomedFov(specs->fov), ratio, specs->nearPlane, specs->farPlane);
-            _pMatrix.scale(QVector3D(-1.0f, 1.0f, 1.0f));
+            perspective(ratio);
         }
         else if (zoomFactor != 0.0f) {
-            Specs::Orthogonal * specs = &_specs.specs.orthogonal;
-
             _zoomFactor = zoomFactor;
 
-            Top top = zoomedTop(specs->top);
-
-            _pMatrix.ortho(- top * ratio, top * ratio, top, - top, specs->nearPlane, specs->farPlane);
+            ortho(ratio);
         }
     }
     

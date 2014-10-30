@@ -112,8 +112,6 @@ namespace Render {
         _fboRender->bindDefault();
         std::swap(_fboDisplay, _fboRender);
 
-        _fboDisplay->toImage().save("test.png");
-
         emit textureReady(_fboDisplay->texture(), _surfaceSize);
     }
 
