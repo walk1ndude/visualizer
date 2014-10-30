@@ -50,7 +50,7 @@ namespace Camera {
             Top top = zoomedTop(specs->top);
 
             _pMatrix.setToIdentity();
-            _pMatrix.ortho(top * ratio, - top * ratio, top, - top, specs->nearPlane, specs->farPlane);
+            _pMatrix.ortho(- top * ratio, top * ratio, top, - top, specs->nearPlane, specs->farPlane);
         }
     }
 
@@ -74,6 +74,7 @@ namespace Camera {
 
             _pMatrix.setToIdentity();
             _pMatrix.perspective(zoomedFov(specs->fov), specs->aspectRatio, specs->nearPlane, specs->farPlane);
+            _pMatrix.scale(QVector3D(-1.0f, 1.0f, 1.0f));
         }
     }
 
@@ -81,7 +82,7 @@ namespace Camera {
         float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
         float b = (_eye.z() + a) / 4.0f;
 
-        return fov * (_zoomFactor + b) / (_eye.z() + a);
+        return - fov * (_zoomFactor + b) / (_eye.z() + a);
     }
 
     Top Camera::zoomedTop(const Top & top) const {
@@ -99,6 +100,7 @@ namespace Camera {
             _zoomFactor = zoomFactor;
 
             _pMatrix.perspective(zoomedFov(specs->fov), ratio, specs->nearPlane, specs->farPlane);
+            _pMatrix.scale(QVector3D(-1.0f, 1.0f, 1.0f));
         }
         else if (zoomFactor != 0.0f) {
             Specs::Orthogonal * specs = &_specs.specs.orthogonal;
@@ -107,7 +109,7 @@ namespace Camera {
 
             Top top = zoomedTop(specs->top);
 
-            _pMatrix.ortho(top * ratio, - top * ratio, top, - top, specs->nearPlane, specs->farPlane);
+            _pMatrix.ortho(- top * ratio, top * ratio, top, - top, specs->nearPlane, specs->farPlane);
         }
     }
     

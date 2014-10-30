@@ -30,24 +30,27 @@ namespace Viewport {
     void Viewport::initCamera(const Camera::Delta & delta) {
         switch (_projectionType) {
             case PERSPECTIVE:
-                _camera->lookAt(Camera::Eye(0.0f, 2.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, -1.0f), delta);
+                _camera->lookAt(Camera::Eye(0.0f, 2.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, 1.0f), delta);
                 _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -90.0f),
-                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -180.0f));
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, 180.0f));
                 break;
                 
             case LEFT:
-                _camera->lookAt(Camera::Eye(-1.0f, 0.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, -1.0f), delta);
-                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f));
+                _camera->lookAt(Camera::Eye(1.0f, 0.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, 1.0f), delta);
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f),
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 180.0f));
                 break;
                 
             case FRONTAL:
-                _camera->lookAt(Camera::Eye(0.0f, 1.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, -1.0f), delta);
+                _camera->lookAt(Camera::Eye(0.0f, 1.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, 1.0f), delta);
                 _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -90.0f),
-                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -180.0f));
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, 180.0f));
                 break;
 
             case TOP:
-                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 1.0f, 0.0f), delta);
+                _camera->lookAt(Camera::Eye(0.0f, 0.0f, 1.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, -1.0f, 0.0f), delta);
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 0.0f, 0.0f, 00.0f),
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 180.0f));
                 break;
         }
     }
@@ -64,8 +67,8 @@ namespace Viewport {
         
         orthogonalSpecs.left = - 1.0f;
         orthogonalSpecs.right = 1.0f;
-        orthogonalSpecs.top = - 1.0f;
-        orthogonalSpecs.bottom = 1.0f;
+        orthogonalSpecs.top = 1.0f;
+        orthogonalSpecs.bottom = - 1.0f;
         orthogonalSpecs.nearPlane = 0.01f;
         orthogonalSpecs.farPlane = 100.0f;
         

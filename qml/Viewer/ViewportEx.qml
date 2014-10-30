@@ -18,7 +18,7 @@ Viewport {
     marked by array property */
     property bool propagateToOthers: true;
 
-    property bool invertedYAxis: true;
+    property bool invertedYAxis: false;
 
     property real minimumZoom: 0.2;
     property real maximumZoom: 4.0;
@@ -104,9 +104,9 @@ Viewport {
         onPositionChanged: {
             if (parent.projectionType == Viewport.PERSPECTIVE && rotating) {
                 parent.array.parent.rotation = Qt.vector3d(
-                            (parent.invertedYAxis ? 1 : -1) * (prevMouseY - mouseY),
+                            (parent.invertedYAxis ? -1 : 1) * (prevMouseY - mouseY),
                             0.0,
-                            prevMouseX - mouseX);
+                            mouseX - prevMouseX);
 
                 prevMouseX = mouseX;
                 prevMouseY = mouseY;

@@ -13,8 +13,6 @@ namespace Model {
     void AxesModel::init() {
         ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
 
-        GLfloat scalingFactor = (GLfloat) (1.0f / scene()->scalingFactor());
-
         GLfloat length = 1.5;
 
         vertices->push_back(ModelInfo::VertexVC(0.0f, 0.0f, 0.0f,

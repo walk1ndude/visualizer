@@ -25,14 +25,14 @@ void main(void) {
             }
             else {
                 if (volumeColor.r == 1.0f) {
-                    fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+                    fragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
                 }
                 else {
                     if (volumeColor.r < 0.98f) {
                         fragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
                     }
                     else {
-                        fragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+                        fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
                     }
                 }
             }

@@ -130,7 +130,7 @@ namespace Quick {
         _viewportArray = viewPortArray;
     }
 
-    QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * ) {
+    QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * data) {
         TextureNode * node = static_cast<TextureNode *>(oldNode);
 
         if (!_modelRenderer) {

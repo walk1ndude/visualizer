@@ -65,7 +65,7 @@ namespace Parser {
 
         smoothSlices(startSlice, endSlice, slices, smoothed);
 
-        if (startSlice > slices.size() / 2) {
+        if (startSlice < slices.size() / 2) {
             cv::circle(smoothed, cv::Point(smoothed.cols / 2, smoothed.rows / 2), 5, 65535, CV_FILLED);
         }
 
