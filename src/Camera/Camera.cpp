@@ -60,6 +60,7 @@ namespace Camera {
 
         _pMatrix.setToIdentity();
         _pMatrix.perspective(zoomedFov(specs.fov), specs.aspectRatio, specs.nearPlane, specs.farPlane);
+        _pMatrix.scale(QVector3D(1.0f, -1.0f, 1.0f));
 
         _specs.type = PERSPECTIVE;
         _specs.specs.perspective = specs;
@@ -79,7 +80,7 @@ namespace Camera {
         float a = (16.0f - 5.0f * _eye.z()) / 5.0f;
         float b = (_eye.z() + a) / 4.0f;
 
-        return - fov * (_zoomFactor + b) / (_eye.z() + a);
+        return fov * (_zoomFactor + b) / (_eye.z() + a);
     }
 
     Top Camera::zoomedTop(const Top & top) const {
