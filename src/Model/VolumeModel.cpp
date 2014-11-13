@@ -52,14 +52,8 @@ namespace Model {
         fillBuffers<ModelInfo::BuffersVT>(buffers);
     }
 
-    void VolumeModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        //pointsModel()->rotate(rotation, speed);
-        AbstractModel::rotate(rotation, speed);
-    }
-    
     Camera::ModelMatrix VolumeModel::model(const Viewport::Viewport * viewport) const {
         Camera::ModelMatrix model = viewport->modelTextureBillboard();
-
         Camera::Rotation axisSwap = viewport->orientationBillboard();
 
         model.rotate(axisSwap * orientationQuat() * axisSwap.conjugate() / axisSwap.lengthSquared());
@@ -74,17 +68,14 @@ namespace Model {
         return lightView;
     }
 
-    Camera::ViewMatrix VolumeModel::viewTexture(const Viewport::Viewport * viewport) const {
-        Camera::ViewMatrix viewTex;
-
-        viewTex.rotate(viewport->orientationBillboard());
-        return viewTex;
-    }
-
     Camera::Matrix VolumeModel::mvp(const Viewport::Viewport * viewport) const {
         return projection(viewport) * view(viewport) * AbstractModel::model(viewport);
     }
-    
+
+    Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
+        return projection(viewport) * child->view(viewport) * child->model(viewport);
+    }
+
     void VolumeModel::drawingRoutine() const {
         glDrawElements(GL_TRIANGLES, indexCount(), GL_UNSIGNED_INT, 0);
     }
@@ -114,7 +105,6 @@ namespace Model {
         program->setUniformValue(uniformValues["view"], view(viewport));
         program->setUniformValue(uniformValues["model"], model(viewport));
         program->setUniformValue(uniformValues["projection"], projection(viewport));
-        program->setUniformValue(uniformValues["viewTexture"], viewTexture(viewport));
         
         program->setUniformValue(uniformValues["lightView"], lightView(viewport));
 

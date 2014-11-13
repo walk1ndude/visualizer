@@ -27,18 +27,15 @@ namespace Model {
 
                            const ShaderInfo::ShaderVariablesNames & uniformValues =
                 ShaderInfo::ShaderVariablesNames() << "view" << "model" << "projection" <<
-                "scale" << "eye" << "modelBillboard" << "lightView" << "viewTexture");
+                "scale" << "eye" << "modelBillboard" << "lightView");
 
         void init(const TextureInfo::Size & size, const VolumeInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
 
-        virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
-
         virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
+        virtual Camera::Matrix childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const;
 
         virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport) const;
 
-        virtual Camera::ViewMatrix viewTexture(const Viewport::Viewport * viewport) const;
-        
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
 
     protected:

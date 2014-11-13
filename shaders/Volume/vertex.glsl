@@ -5,7 +5,6 @@ layout(location = 1) in highp vec4 tex;
 uniform highp mat4 projection;
 uniform highp mat4 model;
 uniform highp mat4 view;
-uniform highp mat4 viewTexture;
 uniform highp mat4 scale;
 uniform highp mat4 modelBillboard;
 
