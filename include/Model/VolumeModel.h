@@ -33,7 +33,7 @@ namespace Model {
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5);
 
-        virtual Camera::Matrix childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const;
+        virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
 
         virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport) const;
 

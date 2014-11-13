@@ -106,19 +106,19 @@ namespace Model {
         _children.append(child);
     }
 
-    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport * viewport) const {
+    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport * ) const {
         Camera::ModelMatrix mMatrix;
         mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
-
-        if (viewport->projectionType() != Viewport::Viewport::PERSPECTIVE) {
-            //mMatrix.setToIdentity();
-        }
 
         return mMatrix;
     }
 
     Camera::Matrix AbstractModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * ) const {
+        return mvp(viewport);
+    }
+
+    Camera::Matrix AbstractModel::mvp(const Viewport::Viewport * viewport) const {
         return projection(viewport) * view(viewport) * model(viewport);
     }
 

@@ -32,6 +32,7 @@ namespace Model {
         virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport) const;
 
         virtual Camera::Matrix childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const;
+        virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
         
         virtual Camera::ScaleMatrix scaleMatrix() const;
 

@@ -53,31 +53,17 @@ namespace Model {
     }
 
     void VolumeModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        pointsModel()->rotate(rotation, speed);
-        AbstractModel::rotate(QVector3D(rotation.x(), rotation.y(), rotation.z()), speed);
+        //pointsModel()->rotate(rotation, speed);
+        AbstractModel::rotate(rotation, speed);
     }
     
     Camera::ModelMatrix VolumeModel::model(const Viewport::Viewport * viewport) const {
         Camera::ModelMatrix model = viewport->modelTextureBillboard();
 
-        //qDebug() << viewport->text() <<  model;
-
-        /*
-        QMatrix4x4 matrix;
-        matrix.setToIdentity();
-        matrix.rotate(QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 45.0f));
-
-        qDebug() << matrix;
-
-         */
         Camera::Rotation axisSwap = viewport->orientationBillboard();
 
         model.rotate(axisSwap * orientationQuat() * axisSwap.conjugate() / axisSwap.lengthSquared());
 
-        if (viewport->projectionType() == Viewport::Viewport::PERSPECTIVE) {
-            qDebug() << model;
-        }
-        
         return model;
     }
     
@@ -95,14 +81,8 @@ namespace Model {
         return viewTex;
     }
 
-    Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
-        Camera::ModelMatrix modelM = AbstractModel::model(viewport);
-
-        //Camera::Orientation changeBasis = Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, -90.0f);
-
-        //modelM.rotate(changeBasis * orientationQuat() * changeBasis.conjugate() / changeBasis.lengthSquared());
-
-        return projection(viewport) * lightView(viewport) * modelM;
+    Camera::Matrix VolumeModel::mvp(const Viewport::Viewport * viewport) const {
+        return projection(viewport) * view(viewport) * AbstractModel::model(viewport);
     }
     
     void VolumeModel::drawingRoutine() const {
