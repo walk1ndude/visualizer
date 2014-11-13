@@ -38,9 +38,11 @@ namespace Viewport {
                 
             case LEFT:
                 _camera->lookAt(Camera::Eye(1.0f, 0.0f, 0.0f), Camera::Center(0.0f, 0.0f, 0.0f), Camera::Up(0.0f, 0.0f, 1.0f), delta);
-                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 90.0f),
-                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 0.0f) *
-                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f));
+                _camera->setOrientationBillboard(Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f) *
+                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f),
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, -90.0f) *
+                                                 Camera::Orientation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, 180.0f) *
+                                                 Camera::Orientation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 180.0f));
                 break;
                 
             case FRONTAL:
