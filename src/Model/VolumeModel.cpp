@@ -56,7 +56,7 @@ namespace Model {
         Camera::ModelMatrix model = viewport->modelTextureBillboard();
         Camera::Rotation axisSwap = viewport->orientationBillboard();
 
-        model.rotate(axisSwap * orientationQuat() * axisSwap.conjugate() / axisSwap.lengthSquared());
+        model.rotate(axisSwap * orientationQuat() * INVERSE_QUAT(axisSwap));
 
         return model;
     }

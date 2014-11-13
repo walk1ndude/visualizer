@@ -3,6 +3,8 @@
 
 #include "Info/Info.h"
 
+#define INVERSE_QUAT(x) (x.conjugate() / x.lengthSquared())
+
 namespace Camera {
     using ProjectionMatrix = QMatrix4x4;
     using ViewMatrix = QMatrix4x4;
