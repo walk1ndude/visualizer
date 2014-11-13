@@ -203,6 +203,7 @@ namespace Parser {
 
         gdcm::ImageReader dIReader;
 
+        qDebug() << file.toLocalFile().toStdString().c_str();
         dIReader.SetFileName(file.toLocalFile().toStdString().c_str());
 
         if (dIReader.Read()) {

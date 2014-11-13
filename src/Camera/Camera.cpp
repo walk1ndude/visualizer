@@ -31,7 +31,6 @@ namespace Camera {
         _billboard.modelTextureBillboard.rotate(textureOrientation);
     }
 
-
     void Camera::ortho(const Specs::Orthogonal & specs) {
         QMutexLocker locker(&_mutex);
 

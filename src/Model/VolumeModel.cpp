@@ -59,7 +59,24 @@ namespace Model {
     
     Camera::ModelMatrix VolumeModel::model(const Viewport::Viewport * viewport) const {
         Camera::ModelMatrix model = viewport->modelTextureBillboard();
-        model.rotate(orientationQuat() * viewport->orientationBillboard());
+
+        //qDebug() << viewport->text() <<  model;
+
+        /*
+        QMatrix4x4 matrix;
+        matrix.setToIdentity();
+        matrix.rotate(QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, 45.0f));
+
+        qDebug() << matrix;
+
+         */
+        Camera::Rotation axisSwap = viewport->orientationBillboard();
+
+        model.rotate(axisSwap * orientationQuat() * axisSwap.conjugate() / axisSwap.lengthSquared());
+
+        if (viewport->projectionType() == Viewport::Viewport::PERSPECTIVE) {
+            qDebug() << model;
+        }
         
         return model;
     }
