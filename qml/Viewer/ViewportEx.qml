@@ -90,7 +90,7 @@ Viewport {
                         );
                 }
 
-                if (parent.projectionType == Viewport.PERSPECTIVE) {
+                if (parent.projectionType == Viewport.FRONTAL) {
                     prevMouseX = mouseX;
                     prevMouseY = mouseY;
 
@@ -102,7 +102,7 @@ Viewport {
         }
 
         onPositionChanged: {
-            if (parent.projectionType == Viewport.PERSPECTIVE && rotating) {
+            if (parent.projectionType == Viewport.FRONTAL && rotating) {
                 parent.array.parent.rotation = Qt.vector3d(
                             (parent.invertedYAxis ? -1 : 1) * (prevMouseY - mouseY),
                             0.0,

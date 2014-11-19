@@ -7,7 +7,7 @@ namespace Model {
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
     AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
-
+        //lockToModelAxis();
     }
 
     void AxesModel::init() {

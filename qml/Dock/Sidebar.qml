@@ -124,8 +124,8 @@ Sidedock {
                         onYRangeChanged: sidebar.yRange = yRange;
                         onZRangeChanged: sidebar.zRange = zRange;
 
-                        //onMinHUChanged: sidebar.minHU = minHU;
-                        //onMaxHUChanged: sidebar.maxHU = maxHU;
+                        onMinHUChanged: sidebar.minHU = minHU;
+                        onMaxHUChanged: sidebar.maxHU = maxHU;
                 }
             }
         }

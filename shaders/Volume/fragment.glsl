@@ -6,6 +6,15 @@ uniform highp sampler3D volume;
 
 uniform highp vec4 eye;
 
+uniform highp vec2 huRange;
+uniform highp vec2 valueRange;
+
+uniform highp float slope;
+uniform highp float intercept;
+
+uniform highp int windowCenter;
+uniform highp int windowWidth;
+
 layout(location = 0) out highp vec4 fragColor;
 
 vec4 calcFragColor(const vec4 position, const vec4 normal, const vec4 color,
@@ -16,35 +25,36 @@ bool needToRender(const vec3 point,
 
 
 void main(void) {
-    if (needToRender(fragPos.xyz, vec2(0.5f, 0.5f), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f))) {
-        vec4 volumeColor = texture(volume, fragPos.stp).rrrr;
-
-        if (volumeColor.r > 0.05f) {
-            if (volumeColor.r < 0.97f) {
-                fragColor = calcFragColor(vertPos, fragPos, volumeColor, fragPos.xyz);
-            }
-            else {
-                if (volumeColor.r == 1.0f) {
-                    fragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);
-                }
-                else {
-                    if (volumeColor.r < 0.98f) {
-                        fragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-                    }
-                    else {
-                        fragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-                    }
-                }
-            }
-            fragColor += vec4(0.3);
-        }
-        else {
-            discard;
-            //fragColor = vec4(1.0f, 0.0f, 0.0f, 0.01f);
-        }
-    }
-    else {
+    if (!needToRender(fragPos.xyz, vec2(0.5f, 0.5f), vec2(0.5f, 0.5f), vec2(0.5f, 0.5f))) {
         discard;
-        //fragColor = vec4(1.0f, 0.0f, 0.0f, 0.01f);
     }
+
+    float valueRangeSpan = valueRange.y - valueRange.x;
+
+    float volumeColor = texture(volume, fragPos.stp).r * valueRangeSpan;
+
+    float volColorH = volumeColor * slope + intercept;
+
+    volColorH *= (step(huRange.x, volColorH) * (1 - step(huRange.y, volColorH)));
+
+    if (volColorH == 0.0f) {
+        discard;
+    }
+
+    float minEdge = windowCenter - 0.5f - (windowWidth - 1) / 2.0f;
+    float maxEdge = windowCenter - 0.5f + (windowWidth - 1) / 2.0f;
+
+    float minStep = (1 - step(minEdge, volColorH));
+    float maxStep = step(maxEdge, volColorH);
+
+    uint volColorHNorm = uint(
+        minStep * valueRange.x +
+        maxStep * valueRange.y +
+        (1 - minStep) * (1 - maxStep) * ((volColorH - windowCenter + 0.5f) / (windowWidth - 1) + 0.5f) *
+                         valueRangeSpan
+                         );
+
+    vec4 volumeColorf = vec4(volColorH  / valueRangeSpan);
+
+    fragColor = calcFragColor(vertPos, fragPos, volumeColorf, fragPos.xyz);
 }

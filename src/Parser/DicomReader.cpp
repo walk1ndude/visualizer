@@ -13,8 +13,8 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU 700
-#define MAX_HU 3600
+#define MIN_HU 3000
+#define MAX_HU 10000
 
 namespace Parser {
     DicomReader::DicomReader() :
@@ -64,7 +64,7 @@ namespace Parser {
         }
         else {
             //pure assumtion for now
-            dicomData.imageSpacings[2] += 0.1;
+            //dicomData.imageSpacings[2] += 0.1;
         }
 
         tagFind.SetElementTag(0x0028, 0x1050);
@@ -172,6 +172,8 @@ namespace Parser {
                     1.0f / _dicomData.imageSpacings.z()
                     );
 
+        volume.texture.scaling.setZ(volume.texture.scaling.x());
+
         volume.physicalSize = VolumeInfo::PhysicalSize(_dicomData.width * _dicomData.imageSpacings.x(),
                                                        _dicomData.height * _dicomData.imageSpacings.y(),
                                                        depth * _dicomData.imageSpacings.z());
@@ -187,8 +189,19 @@ namespace Parser {
         volume.texture.pixelFormat = QOpenGLTexture::Red;
         volume.texture.target = QOpenGLTexture::Target3D;
 
+        volume.slope = _dicomData.slope;
+        volume.intercept = _dicomData.intercept;
+
+        volume.windowWidth = _dicomData.windowWidth;
+        volume.windowCenter = _dicomData.windowCenter;
+
+        volume.huRange = VolumeInfo::HuRange(_dicomData.minHU, _dicomData.maxHU);
+        volume.valueRange = VolumeInfo::ValueRange(_dicomData.minValue, _dicomData.maxValue);
+
         QVariantMap map;
         map["huRange"] = QVector2D(_dicomData.minHUPossible, _dicomData.maxHUPossible);
+
+        qDebug() << map["huRange"];
         sendResults<VolumeInfo::Volume>(volume, map);
     }
 

@@ -63,7 +63,7 @@ namespace Viewport {
     void Viewport::initProjection() {
         Camera::Specs::Perspective perspectiveSpecs;
         
-        perspectiveSpecs.fov = 75.0f;
+        perspectiveSpecs.fov = 45.0f;
         perspectiveSpecs.aspectRatio = 1.0f;
         perspectiveSpecs.nearPlane = 1.0f;
         perspectiveSpecs.farPlane = 15.0f;

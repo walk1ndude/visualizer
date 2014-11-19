@@ -106,7 +106,7 @@ namespace Model {
         _children.append(child);
     }
 
-    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport * ) const {
+    Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport *) const {
         Camera::ModelMatrix mMatrix;
         mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
@@ -203,6 +203,7 @@ namespace Model {
             Camera::Rotation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() * speed) *
             Camera::Rotation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed)
                                           );
+
     }
     
     Camera::Orientation AbstractModel::changedOrientation(const Camera::Rotation & rot) const{

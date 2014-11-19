@@ -9,7 +9,14 @@ Rectangle {
     property vector2d yRange: yRange.rangeVector;
     property vector2d zRange: zRange.rangeVector;
 
-    property vector2d huRange: Qt.vector2d(0, 65535);
+    property vector2d huRangeMax: Qt.vector2d(0, 65535);
+    property vector2d huRangeModel: Qt.vector2d(0, 65535);
+
+    property int windowCenterModel: 400;
+    property int windowWidthModel: 1000;
+
+    property int windowCenter: windowCenterSlider.value;
+    property int windowWidth: windowWidthSlider.value;
 
     property int minHU: minHUSlider.value;
     property int maxHU: maxHUSlider.value;
@@ -25,7 +32,7 @@ Rectangle {
         id: grid;
 
         columns: 3;
-        rows: 6;
+        rows: 12;
 
         anchors {
             top: modelSpecs.top;
@@ -40,10 +47,10 @@ Rectangle {
         Control.Slider {
             id: minHUSlider;
             width: 200;
-            minimumValue: modelSpecs.huRange.x;
-            maximumValue: modelSpecs.huRange.y;
-            value: 400;
-            //stepSize: 1.0;
+            minimumValue: modelSpecs.huRangeMax.x;
+            maximumValue: modelSpecs.huRangeMax.y;
+            value: modelSpecs.huRangeModel.x;
+            stepSize: 100.0;
         }
 
         Text {
@@ -57,14 +64,48 @@ Rectangle {
         Control.Slider {
             id: maxHUSlider;
             width: 200;
-            minimumValue: modelSpecs.huRange.x;
-            maximumValue: modelSpecs.huRange.y;
-            value: 63512;
-            //stepSize: 1.0;
+            minimumValue: modelSpecs.huRangeMax.x;
+            maximumValue: modelSpecs.huRangeMax.y;
+            value: modelSpecs.huRangeModel.y;
+            stepSize: 1.0;
         }
 
         Text {
             text: maxHUSlider.value;
+        }
+
+        Text {
+            text: qsTr("windowCenter");
+        }
+
+        Control.Slider {
+            id: windowCenterSlider;
+            width: 200;
+            minimumValue: 0;
+            maximumValue: 10000;
+            value: modelSpecs.windowCenterModel;
+            stepSize: 100.0;
+        }
+
+        Text {
+            text: windowCenterSlider.value;
+        }
+
+        Text {
+            text: qsTr("windowWidth");
+        }
+
+        Control.Slider {
+            id: windowWidthSlider;
+            width: 200;
+            minimumValue: 0;
+            maximumValue: 10000;
+            value: modelSpecs.windowWidthModel;
+            stepSize: 100.0;
+        }
+
+        Text {
+            text: windowWidthSlider.value;
         }
     }
 

@@ -54,6 +54,9 @@ namespace Scene {
             if (Model::EvaluatorModel * evModel = qobject_cast<Model::EvaluatorModel *>(model)) {
                 continue;
             }
+            if (Model::PointsModel * ptModel = qobject_cast<Model::PointsModel *>(model)) {
+                continue;
+            }
             model->rotate(rotation);
         }
         /*
@@ -275,7 +278,15 @@ namespace Scene {
                             ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
-        
+
+        model->setSlope(volume.slope);
+        model->setIntercept(volume.intercept);
+
+        model->setWindowCenter(volume.windowCenter);
+        model->setWindowWidth(volume.windowWidth);
+
+        model->setHuRange(volume.huRange);
+        model->setValueRange(volume.valueRange);
         
         QObject::connect(model, &Model::VolumeModel::pointUpdated, this, &Scene::ModelScene::pointUpdated, Qt::DirectConnection);
 

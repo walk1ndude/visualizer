@@ -17,10 +17,10 @@ var sidebarDict = {
             "type" : "ModelSpecs",
             "collapsed" : false
         },
-        {
+        /*{
             "text" : "Вращение",
             "type" : "Geometry",
             "collapsed" : false
-        }
+        }*/
     ]
 };

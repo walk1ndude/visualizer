@@ -9,6 +9,8 @@ Item {
     property real maximumValue: 180.0;
     property real value: 0.0;
 
+    property real stepSize: 1.0;
+
     width: 200;
     height: 20;
 
@@ -69,7 +71,8 @@ Item {
             }
 
             onPositionChanged:  {
-                value = (sliderMain.maximumValue - sliderMain.minimumValue) * handle.x / (sliderMain.width - handle.width) + sliderMain.minimumValue;
+                var newValue = Math.round((sliderMain.maximumValue - sliderMain.minimumValue) * handle.x / (sliderMain.width - handle.width) + sliderMain.minimumValue);
+                value += (Math.ceil((newValue - value) / stepSize) * stepSize);
             }
         }
     }

@@ -64,7 +64,7 @@ namespace Parser {
         cv::Mat smoothed;
 
         smoothSlices(startSlice, endSlice, slices, smoothed);
-
+/*
         if (startSlice < slices.size() / 2) {
             cv::circle(smoothed, cv::Point(smoothed.cols / 2, smoothed.rows / 2), 5, 65535, CV_FILLED);
         }
@@ -73,7 +73,7 @@ namespace Parser {
             cv::line(smoothed, cv::Point(40, smoothed.rows / 2), cv::Point(smoothed.cols / 2, smoothed.rows / 2), 64300, 3);
             cv::line(smoothed, cv::Point(smoothed.cols / 2, 40), cv::Point(smoothed.cols / 2, smoothed.rows / 2), 64000, 3);
         }
-
+*/
         memcpy(mergeStartPoint, smoothed.data, sliceSize);
     }
 
@@ -125,9 +125,9 @@ namespace Parser {
                              const size_t & sliceSize,
                              const cv::Mat & dilateMat, const cv::Size & gaussSize,
                              const int & neighbourDiameter, uchar * mergeLocation) {
-        filterSlice(noisy[i], filtered[i], dilateMat, gaussSize);
+        //filterSlice(noisy[i], filtered[i], dilateMat, gaussSize);
 
-        checkNeighbours(i, neighbourDiameter, 0, (int) filtered.size(), filtered, hasMerged, sliceSize, mergeLocation);
+        checkNeighbours(i, neighbourDiameter, 0, (int) filtered.size(), noisy, hasMerged, sliceSize, mergeLocation);
     }
 
     class DicomData {
@@ -202,18 +202,13 @@ namespace Parser {
 
                 posInBuffer += dicomData->bytesAllocated;
 
-                /* see http://www.dabsoft.ch/dicom/3/C.11.2.1.2/*/
+                /* see http://www.dabsoft.ch/dicom/3/C.11.2.1.2/*/ /*
                 pixel = dicomData->slope * pixelU + dicomData->intercept;
 
                 if (pixel < dicomData->minHU || pixel > dicomData->maxHU) {
                     dcmToMat.at<quint16>(y, x) = 0;
                     continue;
                 }
-    /*
-                if (pixel >= 1300 && pixel <= 32000) {
-                    dcmToMat.at<u_int16_t>(y, x) = (u_int16_t)dicomData->maxValue;
-                    continue;
-                }*/
 
                 if (pixel <= (dicomData->windowCenter - 0.5 - (dicomData->windowWidth - 1) / 2.0)) {
                     pixelU = (quint16)dicomData->minValue;
@@ -225,6 +220,7 @@ namespace Parser {
                     pixelU = ((pixel - dicomData->windowCenter + 0.5) / (dicomData->windowWidth - 1) + 0.5) *
                             (dicomData->maxValue - dicomData->minValue);
                 }
+*/
 
                 dcmToMat.at<quint16>(y, x) = pixelU;
             }
