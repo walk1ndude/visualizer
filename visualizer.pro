@@ -113,7 +113,9 @@ SOURCES +=  src/main.cpp \
             src/Model/VolumeModel.cpp \
             src/Info/VolumeInfo.cpp \
             src/Parser/AbstractParser.cpp \
-            src/Model/AxesModel.cpp
+            src/Model/AxesModel.cpp \
+    src/Package/AbstractPackage.cpp \
+    src/Package/SettingsPackage.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -152,6 +154,8 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/VolumeModel.h \
             include/Info/VolumeInfo.h \
             include/Parser/AbstractParser.h \
-            include/Model/AxesModel.h
+            include/Model/AxesModel.h \
+    include/Package/AbstractPackage.h \
+    include/Package/SettingsPackage.h
 
 RESOURCES += resources.qrc

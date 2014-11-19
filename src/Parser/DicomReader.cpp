@@ -13,8 +13,8 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU 3000
-#define MAX_HU 10000
+#define MIN_HU -100
+#define MAX_HU 1000
 
 namespace Parser {
     DicomReader::DicomReader() :

@@ -7,6 +7,9 @@
 
 #include "Info/ViewRangeInfo.h"
 #include "Info/PointsInfo.h"
+#include "Info/VolumeInfo.h"
+
+#include "Package/SettingsPackage.h"
 
 namespace Scene {
     class AbstractScene : public QQuickItem {
@@ -62,6 +65,8 @@ namespace Scene {
         virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange) = 0;
         virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange) = 0;
         virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange) = 0;
+
+        virtual void setHuRange(const VolumeInfo::HuRange & huRange) = 0;
 
         virtual void setRotation(const QVector3D & rotation) = 0;
 

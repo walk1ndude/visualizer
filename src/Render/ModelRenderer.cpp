@@ -35,6 +35,11 @@ namespace Render {
         emit redraw();
     }
 
+    void ModelRenderer::setHuRange(const VolumeInfo::HuRange & huRange) {
+        selectedScene()->setHuRange(huRange);
+        emit redraw();
+    }
+
     void ModelRenderer::connectWithScene(Scene::AbstractScene * scene) {
         Scene::ModelScene * modelScene = qobject_cast<Scene::ModelScene *>(scene);
 

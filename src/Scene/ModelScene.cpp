@@ -34,6 +34,10 @@ namespace Scene {
         return _viewportArray;
     }
 
+    Model::AbstractModel * ModelScene::selectedModel() const {
+        return _selectedModel;
+    }
+
     void ModelScene::setViewportArray(Viewport::ViewportArray * viewportArray) {
         _viewportArray = viewportArray;
 
@@ -80,6 +84,13 @@ namespace Scene {
     void ModelScene::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
         if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
             model->setViewAxisRange(zRange, ViewRangeInfo::ZAXIS);
+        }
+    }
+
+    void ModelScene::setHuRange(const VolumeInfo::HuRange & huRange) {
+        qDebug() << "here";
+        if (Model::VolumeModel * model = qobject_cast<Model::VolumeModel *>(_selectedModel)) {
+            model->setHuRange(huRange);
         }
     }
 
@@ -185,6 +196,8 @@ namespace Scene {
 
         texture->setData(textureInfo.pixelFormat, textureInfo.pixelType,
                          (void *) textureInfo.mergedData.data(), &(textureInfo.pixelTransferOptions));
+
+        qDebug() << glGetError();
 
         texture->generateMipMaps();
 

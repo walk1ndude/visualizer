@@ -25,6 +25,8 @@ namespace Quick {
 
         Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
 
+        Q_PROPERTY(QVector2D huRange READ huRange WRITE setHuRange NOTIFY huRangeChanged)
+
         Q_PROPERTY(Scene::ModelScene * modelScene READ modelScene WRITE setModelScene NOTIFY modelSceneChanged)
 
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
@@ -49,6 +51,8 @@ namespace Quick {
         Viewport::ViewportArray * viewportArray() const;
 
         Scene::ModelScene * modelScene() const;
+
+        VolumeInfo::HuRange huRange() const;
 
     protected:
         bool _needsInitialize;
@@ -93,6 +97,8 @@ namespace Quick {
 
         void modelSceneChanged();
 
+        void huRangeChanged(const VolumeInfo::HuRange & huRange);
+
         void togglePointChanged(const QString & point);
 
         void fboSizeChanged(const QSize & fboSize);
@@ -114,6 +120,8 @@ namespace Quick {
         virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
         virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
         virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
+
+        virtual void setHuRange(const VolumeInfo::HuRange & huRange);
 
         virtual void setModelID(const int & modelID);
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);

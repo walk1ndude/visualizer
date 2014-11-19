@@ -92,6 +92,10 @@ namespace Quick {
         return _rotation;
     }
 
+    VolumeInfo::HuRange ModelViewer::huRange() const {
+
+    }
+
     void ModelViewer::setRotation(const QVector3D & rotation) {
         _rotation = rotation;
         emit rotationChanged(_rotation);
@@ -126,6 +130,10 @@ namespace Quick {
         return _viewportArray;
     }
 
+    void ModelViewer::setHuRange(const VolumeInfo::HuRange & huRange) {
+        emit huRangeChanged(huRange);
+    }
+
     void ModelViewer::setViewportArray(Viewport::ViewportArray * viewPortArray) {
         _viewportArray = viewPortArray;
     }
@@ -152,6 +160,8 @@ namespace Quick {
             QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::zRangeChanged, _modelRenderer, &Render::ModelRenderer::setZRange, Qt::DirectConnection);
+
+            QObject::connect(this, &ModelViewer::huRangeChanged, _modelRenderer, &Render::ModelRenderer::setHuRange, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::pointAdded, _modelRenderer, &Render::ModelRenderer::addPoint, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::togglePointChanged, _modelRenderer, &Render::ModelRenderer::hidePoint, Qt::DirectConnection);

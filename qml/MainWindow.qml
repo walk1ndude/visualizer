@@ -145,6 +145,9 @@ ApplicationWindow {
 
         modelID: modelViewer.modelID;
 
+        onMinHUChanged: modelViewer.huRange = Qt.vector2d(minHU, maxHU);
+        onMaxHUChanged: modelViewer.huRange = Qt.vector2d(minHU, maxHU);
+
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
 

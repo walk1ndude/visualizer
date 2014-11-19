@@ -54,7 +54,7 @@ void main(void) {
                          valueRangeSpan
                          );
 
-    vec4 volumeColorf = vec4(volColorH  / valueRangeSpan);
+    vec4 volumeColorf = vec4(volColorHNorm / valueRangeSpan);
 
     fragColor = calcFragColor(vertPos, fragPos, volumeColorf, fragPos.xyz);
 }

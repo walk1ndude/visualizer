@@ -31,7 +31,9 @@ namespace Scene {
 
         QVector3D rotation() const;
 
-        Viewport::ViewportArray * viewportArray() const;
+        Viewport::ViewportArray * viewportArray() const;        
+
+        Model::AbstractModel * selectedModel() const;
 
     protected:
         virtual void initScene();
@@ -89,6 +91,8 @@ namespace Scene {
         virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
         virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
         virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
+
+        virtual void setHuRange(const VolumeInfo::HuRange & huRange);
 
         virtual void addPoint(const PointsInfo::Point & point);
         void togglePoint(const QString & point);

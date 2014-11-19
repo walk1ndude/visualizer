@@ -49,6 +49,8 @@ namespace Render {
         virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
         virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
+        virtual void setHuRange(const VolumeInfo::HuRange & huRange);
+
         virtual void addPoint(const PointsInfo::Point & point) final;
         virtual void hidePoint(const QString & point) final;
     };
