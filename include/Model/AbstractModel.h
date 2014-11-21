@@ -60,6 +60,8 @@ namespace Model {
 
         virtual AbstractModel * invokeMethod(const QString & name, const ModelParams & params = ModelParams());
 
+        virtual void init(const ModelParams & params = ModelParams());
+
     protected:
         QMutex modelMutex;
 

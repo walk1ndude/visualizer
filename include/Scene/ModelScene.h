@@ -83,6 +83,8 @@ namespace Scene {
                               const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
                               const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f));
 
+        virtual void addModel(const Model::ModelName & name, const Model::ModelParams & initParams);
+
         virtual void addTexture(TextureInfo::Texture & textureInfo);
 
         virtual void setRotation(const QVector3D & rotation);

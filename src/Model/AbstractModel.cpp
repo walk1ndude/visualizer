@@ -49,6 +49,10 @@ namespace Model {
         deleteModel();
     }
 
+    void AbstractModel::init(const ModelParams & params) {
+
+    }
+
     void AbstractModel::registerType(const ModelName & name, ModelFactory * factory) {
         _factories[name] = factory;
     }

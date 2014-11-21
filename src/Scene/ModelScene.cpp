@@ -314,7 +314,7 @@ namespace Scene {
     void ModelScene::addModel(const int & width, const int & height,
                               const qreal & stepX, const qreal & stepY,
                               const QVector3D & color) {
-        Model::AbstractModel * model = Model::AbstractModel::createModel("EvaluatorModel",
+/*        Model::AbstractModel * model = Model::AbstractModel::createModel("EvaluatorModel",
                     Model::ModelParams() = {
                         { "scene", QVariant::fromValue(this) }
                     }
@@ -328,7 +328,20 @@ namespace Scene {
 
         evModel->init();
 
+        _models.append(model);*/
+    }
+
+    void ModelScene::addModel(const Model::ModelName & name, const Model::ModelParams & initParams) {
+        Model::AbstractModel * model = Model::AbstractModel::createModel(name,
+                    Model::ModelParams() = {
+                        { "scene", QVariant::fromValue(this) }
+                    }
+                );
+
+        model->init(initParams);
+
         _models.append(model);
+
     }
 
     void ModelScene::addModel(const QVector<QColor> & axesColors) {
@@ -342,7 +355,13 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
-        addModel();
+        addModel("EvaluatorModel", Model::ModelParams() = {
+            { "width", QVariant::fromValue(10) },
+            { "height", QVariant::fromValue(10) },
+            { "stepX", QVariant::fromValue(10.0f) },
+            { "stepY", QVariant::fromValue(0.0f) },
+            { "color", QVariant::fromValue(QVector3D(0.0f, 0.0f, 0.5f)) }
+        });
         addModel(QVector<QColor>() = {
             QColor::QColor("red"),
             QColor::QColor("green"),
