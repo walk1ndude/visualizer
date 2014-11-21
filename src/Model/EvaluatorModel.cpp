@@ -98,3 +98,5 @@ namespace Model {
         return viewport->modelBillboard();
     }
 }
+
+REGISTER_TYPE(EvaluatorModel)

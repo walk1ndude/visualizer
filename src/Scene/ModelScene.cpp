@@ -314,13 +314,19 @@ namespace Scene {
     void ModelScene::addModel(const int & width, const int & height,
                               const qreal & stepX, const qreal & stepY,
                               const QVector3D & color) {
-        Model::EvaluatorModel * model = new Model::EvaluatorModel(this);
+        Model::AbstractModel * model = Model::AbstractModel::createModel("EvaluatorModel",
+                    Model::ModelParams() = {
+                        { "scene", QVariant::fromValue(this) }
+                    }
+                );
 
-        model->setSize(width, height);
-        model->setStep(stepX, stepY);
-        model->setColor(color);
+        Model::EvaluatorModel * evModel = qobject_cast<Model::EvaluatorModel *>(model);
 
-        model->init();
+        evModel->setSize(width, height);
+        evModel->setStep(stepX, stepY);
+        evModel->setColor(color);
+
+        evModel->init();
 
         _models.append(model);
     }
