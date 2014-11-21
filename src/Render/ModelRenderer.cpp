@@ -107,7 +107,7 @@ namespace Render {
         if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
             activateContext();
 
-            selectedModelScene->addModel(width, height, stepX, stepY, color);
+            //selectedModelScene->addModel(width, height, stepX, stepY, color);
 
             locker.unlock();
             emit redraw();

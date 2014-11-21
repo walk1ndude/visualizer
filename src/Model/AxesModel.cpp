@@ -10,7 +10,10 @@ namespace Model {
         //lockToModelAxis();
     }
 
-    void AxesModel::init() {
+    void AxesModel::init(const ModelParams & params) {
+        setColors(params["axesColor"].value<QVector<QColor> >());
+        setLenght(params["length"].toReal());
+
         ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
 
         GLfloat length = 1.5;
@@ -53,6 +56,10 @@ namespace Model {
         _axesColors = axesColors;
     }
 
+    void AxesModel::setLenght(const GLfloat & lenght) {
+        _lenght = lenght;
+    }
+
     void AxesModel::drawingRoutine() const {
         glDrawArrays(GL_LINES, 0, vertexCount());
     }
@@ -81,5 +88,6 @@ namespace Model {
 
         AbstractModel::glStatesDisable();
     }
-    
 }
+
+REGISTER_TYPE(AxesModel)

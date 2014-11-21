@@ -75,13 +75,8 @@ namespace Scene {
     public slots:
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
 
-        virtual void addModel(const QVector<QColor> & axesColors);
         virtual void addModel(ModelInfo::BuffersVN buffers);
         virtual void addModel(VolumeInfo::Volume volume);
-
-        virtual void addModel(const int & width = 10, const int & height = 10,
-                              const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                              const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f));
 
         virtual void addModel(const Model::ModelName & name, const Model::ModelParams & initParams);
 

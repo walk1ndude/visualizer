@@ -311,26 +311,6 @@ namespace Scene {
         _models.append(model);
     }
 
-    void ModelScene::addModel(const int & width, const int & height,
-                              const qreal & stepX, const qreal & stepY,
-                              const QVector3D & color) {
-/*        Model::AbstractModel * model = Model::AbstractModel::createModel("EvaluatorModel",
-                    Model::ModelParams() = {
-                        { "scene", QVariant::fromValue(this) }
-                    }
-                );
-
-        Model::EvaluatorModel * evModel = qobject_cast<Model::EvaluatorModel *>(model);
-
-        evModel->setSize(width, height);
-        evModel->setStep(stepX, stepY);
-        evModel->setColor(color);
-
-        evModel->init();
-
-        _models.append(model);*/
-    }
-
     void ModelScene::addModel(const Model::ModelName & name, const Model::ModelParams & initParams) {
         Model::AbstractModel * model = Model::AbstractModel::createModel(name,
                     Model::ModelParams() = {
@@ -339,17 +319,6 @@ namespace Scene {
                 );
 
         model->init(initParams);
-
-        _models.append(model);
-
-    }
-
-    void ModelScene::addModel(const QVector<QColor> & axesColors) {
-        Model::AxesModel * model = new Model::AxesModel(this);
-
-        model->setColors(axesColors);
-
-        model->init();
 
         _models.append(model);
     }
@@ -362,10 +331,14 @@ namespace Scene {
             { "stepY", QVariant::fromValue(0.0f) },
             { "color", QVariant::fromValue(QVector3D(0.0f, 0.0f, 0.5f)) }
         });
-        addModel(QVector<QColor>() = {
-            QColor::QColor("red"),
-            QColor::QColor("green"),
-            QColor::QColor("blue")
+
+        addModel("AxesModel", Model::ModelParams() = {
+            { "axesColor", QVariant::fromValue(QVector<QColor>() = {
+                QColor::QColor("red"),
+                QColor::QColor("green"),
+                QColor::QColor("blue")
+            }) },
+            { "length", QVariant::fromValue(1.5f) }
         });
     }
 

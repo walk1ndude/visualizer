@@ -22,9 +22,11 @@ namespace Model {
                              const ShaderInfo::ShaderVariablesNames & uniformValues =
                              ShaderInfo::ShaderVariablesNames() << "mvp");
 
-        virtual void init() final;
+        virtual void init(const ModelParams & params = ModelParams());
 
         virtual void setColors(const QVector<QColor> & axesColors);
+
+        virtual void setLenght(const GLfloat & lenght = 1.5f);
 
     protected:
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
@@ -37,6 +39,8 @@ namespace Model {
 
     private:
         QVector<QColor> _axesColors;
+
+        GLfloat _lenght;
     };
 }
 
