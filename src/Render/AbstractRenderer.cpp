@@ -11,7 +11,7 @@ namespace Render {
         _textureUpdateNeeded(false),
         _contentInitializeNeeded(false),
         _surfaceSize(surfaceSize),
-        _selectedScene(nullptr),
+        _currectScene(nullptr),
         _fboRender(nullptr),
         _fboDisplay(nullptr) {
 
@@ -60,12 +60,12 @@ namespace Render {
         QMutexLocker locker(&renderMutex);
 
         // no more connection with previous scene
-        if (_selectedScene) {
-            disconnectWithScene(_selectedScene);
+        if (_currectScene) {
+            disconnectWithScene(_currectScene);
         }
 
-        _selectedScene = scene;
-        connectWithScene(_selectedScene);
+        _currectScene = scene;
+        connectWithScene(_currectScene);
 
         // for cleanup reasons mostly
         _sceneHistory.insert(scene);
@@ -79,8 +79,8 @@ namespace Render {
         QObject::disconnect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
     }
 
-    Scene::AbstractScene * AbstractRenderer::selectedScene() const {
-        return _selectedScene;
+    Scene::AbstractScene * AbstractRenderer::currentScene() const {
+        return _currectScene;
     }
 
     QSize AbstractRenderer::surfaceSize() const {

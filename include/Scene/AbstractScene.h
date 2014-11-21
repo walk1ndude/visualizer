@@ -78,7 +78,11 @@ namespace Scene {
         virtual void setMeasureUnits(const MeasureUnits & mUnits) final;
 
         virtual void updateScene() = 0;
+
+        virtual void recievePackage(const Package::SettingsPackage & package) = 0;
     };
 }
+
+Q_DECLARE_METATYPE(Scene::AbstractScene *)
 
 #endif // ABSTRACTSCENE_H

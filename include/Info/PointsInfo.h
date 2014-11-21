@@ -64,6 +64,8 @@ namespace PointsInfo {
 
         void positionCalculated(const Position3D & position);
 
+        ModelPoint();
+
         ModelPoint(const Position3D & position,
                    const Color & color,
                    Viewport::Viewport * viewport,
@@ -77,6 +79,7 @@ namespace PointsInfo {
 
     class ModelPoints {
     public:
+        ModelPoints();
         ~ModelPoints();
 
         Name key(ModelPoint * point) const;
@@ -95,5 +98,7 @@ namespace PointsInfo {
 
 Q_DECLARE_METATYPE(PointsInfo::Point)
 Q_DECLARE_METATYPE(PointsInfo::UpdatedPoint)
+Q_DECLARE_METATYPE(PointsInfo::ModelPoint)
+Q_DECLARE_METATYPE(PointsInfo::ModelPoints *)
 
 #endif // POINTSINFO_H

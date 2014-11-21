@@ -18,6 +18,8 @@
 
 #include "Camera/Camera.h"
 
+#include "Model/ModelFactory.h"
+
 namespace Model {
     class AbstractModel : public QObject {
         Q_OBJECT
@@ -52,6 +54,11 @@ namespace Model {
 
         virtual void lockToWorldAxis() final;
         virtual void lockToModelAxis() final;
+
+        static void registerType(const ModelName & name, ModelFactory * factory);
+        static AbstractModel * createModel(const ModelName & name, const ModelParams & params = ModelParams());
+
+        virtual AbstractModel * invokeMethod(const QString & name, const ModelParams & params = ModelParams());
 
     protected:
         QMutex modelMutex;
@@ -178,6 +185,8 @@ namespace Model {
 
         Camera::ScaleMatrix _scaleM;
 
+        static QHash<ModelName, ModelFactory *> _factories;
+
         bool _updateNeeded;
         bool _lockToWorldAxis;
 
@@ -233,5 +242,7 @@ namespace Model {
         virtual void hidePoint(const PointsInfo::Name & point);
     };
 }
+
+Q_DECLARE_METATYPE(Model::AbstractModel *)
 
 #endif // ABSTRACTMODEL_H

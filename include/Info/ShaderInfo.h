@@ -38,4 +38,7 @@ namespace ShaderInfo {
     };
 }
 
+Q_DECLARE_METATYPE(ShaderInfo::ShaderFiles)
+Q_DECLARE_METATYPE(ShaderInfo::ShaderVariablesNames)
+
 #endif // SHADERINFO_H

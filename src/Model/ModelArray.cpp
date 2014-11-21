@@ -43,4 +43,25 @@ namespace Model {
 
         _models = QList<AbstractModel *>(withoutDepth + withDepth);
     }
+
+    AbstractModel * ModelArray::find(const int & id) {
+        AbstractModel * found = nullptr;
+        AbstractModel * current = nullptr;
+
+        QListIterator<AbstractModel *> it(_models);
+
+        while (!found && it.hasNext()) {
+            current = it.next();
+            found = (id == current->id()) ? current : found;
+        }
+
+        return found;
+    }
+
+    void ModelArray::invokeMethod(const int & id, const QString & name,
+                                  const QVariantMap & params) {
+        if (AbstractModel * model = find(id)) {
+            model->invokeMethod(name, params);
+        }
+    }
 }

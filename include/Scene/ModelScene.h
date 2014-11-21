@@ -98,6 +98,8 @@ namespace Scene {
         void togglePoint(const QString & point);
 
         virtual void updateScene();
+
+        virtual void recievePackage(const Package::SettingsPackage & package);
     };
 
 }

@@ -236,10 +236,15 @@ namespace Scene {
     }
 
     void ModelScene::addModel(ModelInfo::BuffersVN buffers) {
-        Model::PointsModel * pointsInModel = new Model::PointsModel(this);
+        Model::AbstractModel * pointsInModel = Model::AbstractModel::createModel("PointsModel",
+                    Model::ModelParams() = {
+                        { "scene", QVariant::fromValue(this) }
+                    }
+                );
+
         _models.append(pointsInModel);
 
-        Model::StlModel * model = new Model::StlModel(this, pointsInModel);
+        Model::StlModel * model = new Model::StlModel(this, dynamic_cast<Model::PointsModel *>(pointsInModel));
 
         selectModel(model);
 
@@ -337,5 +342,9 @@ namespace Scene {
             QColor::QColor("green"),
             QColor::QColor("blue")
         });
+    }
+
+    void ModelScene::recievePackage(const Package::SettingsPackage & package) {
+        
     }
 }

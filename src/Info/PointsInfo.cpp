@@ -36,6 +36,8 @@ namespace PointsInfo {
         _positionCalculated = true;
     }
 
+    ModelPoint::ModelPoint() { }
+
     ModelPoint::ModelPoint(const Position3D & position,
                            const Color & color,
                            Viewport::Viewport * viewport,
@@ -51,6 +53,8 @@ namespace PointsInfo {
         _positionCalculated(false) {
 
     }
+
+    ModelPoints::ModelPoints() { }
 
     ModelPoints::~ModelPoints() {
         qDeleteAll(_points.begin(), _points.end());

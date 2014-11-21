@@ -16,27 +16,27 @@ namespace Render {
     }
 
     void ModelRenderer::setRotation(const QVector3D & rotation) {
-        selectedScene()->setRotation(rotation);
+        currentScene()->setRotation(rotation);
         emit redraw();
     }
 
     void ModelRenderer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
-        selectedScene()->setXRange(xRange);
+        currentScene()->setXRange(xRange);
         emit redraw();
     }
 
     void ModelRenderer::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
-        selectedScene()->setYRange(yRange);
+        currentScene()->setYRange(yRange);
         emit redraw();
     }
 
     void ModelRenderer::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
-        selectedScene()->setZRange(zRange);
+        currentScene()->setZRange(zRange);
         emit redraw();
     }
 
     void ModelRenderer::setHuRange(const VolumeInfo::HuRange & huRange) {
-        selectedScene()->setHuRange(huRange);
+        currentScene()->setHuRange(huRange);
         emit redraw();
     }
 
@@ -61,7 +61,7 @@ namespace Render {
     void ModelRenderer::addModel(ModelInfo::BuffersVN buffers) {
         QMutexLocker locker(&renderMutex);
 
-        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
+        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
             activateContext();
 
             selectedModelScene->addModel(buffers);
@@ -79,7 +79,7 @@ namespace Render {
     void ModelRenderer::addModel(VolumeInfo::Volume volume) {
         QMutexLocker locker(&renderMutex);
 
-        if (Scene::ModelScene * selectModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
+        if (Scene::ModelScene * selectModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
             activateContext();
 
             selectModelScene->addModel(volume);
@@ -104,7 +104,7 @@ namespace Render {
                                  const QVector3D & color) {
         QMutexLocker locker(&renderMutex);
 
-        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(selectedScene())) {
+        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
             activateContext();
 
             selectedModelScene->addModel(width, height, stepX, stepY, color);
@@ -119,26 +119,32 @@ namespace Render {
         glClearStencil(0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        if (selectedScene()) {
-            if (!selectedScene()->isInitialized()) {
-                selectedScene()->initializeScene();
+        if (currentScene()) {
+            if (!currentScene()->isInitialized()) {
+                currentScene()->initializeScene();
             }
 
-            selectedScene()->renderScene(surfaceSize());
+            currentScene()->renderScene(surfaceSize());
         }
     }
 
     void ModelRenderer::addPoint(const PointsInfo::Point & point) {
-        if (selectedScene()) {
-            selectedScene()->addPoint(point);
+        if (currentScene()) {
+            currentScene()->addPoint(point);
         }
     }
 
     void ModelRenderer::hidePoint(const QString & point) {
-        if (selectedScene()) {
-            selectedScene()->togglePoint(point);
+        if (currentScene()) {
+            currentScene()->togglePoint(point);
         }
 
         emit redraw();
+    }
+
+    void ModelRenderer::recievePackage(const Package::SettingsPackage & package) {
+        if (package.isMessageReliable() && currentScene()) {
+            
+        }
     }
 }

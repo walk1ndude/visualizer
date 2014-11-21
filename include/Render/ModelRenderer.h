@@ -53,6 +53,8 @@ namespace Render {
 
         virtual void addPoint(const PointsInfo::Point & point) final;
         virtual void hidePoint(const QString & point) final;
+
+        virtual void recievePackage(const Package::SettingsPackage & package);
     };
 }
 #endif // SLICERENDERER_H

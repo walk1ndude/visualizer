@@ -156,6 +156,7 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Parser/AbstractParser.h \
             include/Model/AxesModel.h \
     include/Package/AbstractPackage.h \
-    include/Package/SettingsPackage.h
+    include/Package/SettingsPackage.h \
+    include/Model/ModelFactory.h
 
 RESOURCES += resources.qrc

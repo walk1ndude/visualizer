@@ -106,4 +106,14 @@ namespace Model {
     bool PointsModel::hasDepth() const {
         return false;
     }
+
+    AbstractModel * PointsModel::invokeMethod(const QString & name, const QVariantMap & params) {
+        if (name == "init") {
+            init(qvariant_cast<PointsInfo::ModelPoints *>(params["modelPoints"]));
+        }
+
+        return this;
+    }
 }
+
+REGISTER_TYPE(PointsModel)

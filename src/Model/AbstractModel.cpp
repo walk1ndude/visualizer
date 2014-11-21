@@ -5,6 +5,8 @@
 static int modelNumber = 0;
 
 namespace Model {
+    QHash<ModelName, ModelFactory *> AbstractModel::_factories;
+
     AbstractModel::AbstractModel(Scene::AbstractScene * scene,
                                  AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
                                  const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
@@ -45,6 +47,14 @@ namespace Model {
 
     AbstractModel::~AbstractModel() {
         deleteModel();
+    }
+
+    void AbstractModel::registerType(const ModelName & name, ModelFactory * factory) {
+        _factories[name] = factory;
+    }
+
+    AbstractModel * AbstractModel::createModel(const ModelName & name, const ModelParams & params) {
+        return _factories[name]->createModel(params);
     }
 
     Scene::AbstractScene * AbstractModel::scene() const {
@@ -404,5 +414,12 @@ namespace Model {
 
     void AbstractModel::hidePoint(const PointsInfo::Name & point) {
         Q_UNUSED(point)
+    }
+
+    AbstractModel * AbstractModel::invokeMethod(const QString & name, const ModelParams & params) {
+        Q_UNUSED(name)
+        Q_UNUSED(params)
+
+        return this;
     }
 }

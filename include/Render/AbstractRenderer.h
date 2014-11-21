@@ -14,6 +14,8 @@
 
 #include "Info/TextureInfo.h"
 
+#include "Package/SettingsPackage.h"
+
 namespace Render {
     class AbstractRenderer : public QThread {
         Q_OBJECT
@@ -39,7 +41,7 @@ namespace Render {
         virtual bool updateContent() final;
         virtual bool activateContext() final;
 
-        Scene::AbstractScene * selectedScene() const;
+        Scene::AbstractScene * currentScene() const;
 
         QSize surfaceSize() const;
 
@@ -50,7 +52,7 @@ namespace Render {
 
         QSize _surfaceSize;
 
-        Scene::AbstractScene * _selectedScene;
+        Scene::AbstractScene * _currectScene;
 
         QOpenGLFramebufferObject * _fboRender;
         QOpenGLFramebufferObject * _fboDisplay;
@@ -70,6 +72,8 @@ namespace Render {
     public slots:
         virtual void renderNext() final;
         virtual void shutDown() final;
+
+        virtual void recievePackage(const Package::SettingsPackage & package) = 0;
     };
 }
 #endif // RENDERTHREAD_H
