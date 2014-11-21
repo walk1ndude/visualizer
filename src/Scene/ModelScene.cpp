@@ -311,12 +311,28 @@ namespace Scene {
         _models.append(model);
     }
 
-    void ModelScene::addModel(const Model::ModelName & name, const Model::ModelParams & initParams) {
+    void ModelScene::addModel(const Model::ModelName & name,
+                              const Model::ModelParams & initParams,
+                              const Model::RequestedChildren & children) {
         Model::AbstractModel * model = Model::AbstractModel::createModel(name,
                     Model::ModelParams() = {
                         { "scene", QVariant::fromValue(this) }
                     }
                 );
+
+        QHashIterator<Model::ModelName, Model::Count> it(children);
+
+        while (it.hasNext()) {
+            it.next();
+
+            for (int i = 0; i != it.value(); ++ i) {
+                model->addChild(Model::AbstractModel::createModel(it.key(),
+                    Model::ModelParams() = {
+                        { "scene", QVariant::fromValue(this) }
+                    }
+                ));
+            }
+        }
 
         model->init(initParams);
 

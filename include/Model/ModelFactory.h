@@ -7,6 +7,10 @@ namespace Model {
     using ModelName = QString;
     using ModelParams = QVariantMap;
 
+    using Count = int;
+
+    using RequestedChildren = QHash<ModelName, Count>;
+
     class AbstractModel;
 
     class ModelFactory {

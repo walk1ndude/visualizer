@@ -50,6 +50,8 @@ namespace Model {
 
         virtual Scene::AbstractScene * scene() const;
 
+        virtual void addChild(AbstractModel * child) final;
+
         virtual bool hasDepth() const;
 
         virtual void lockToWorldAxis() final;
@@ -88,7 +90,6 @@ namespace Model {
         virtual GLsizei vertexCount() const;
 
         virtual AbstractModel * parent() const;
-        virtual void addChild(AbstractModel * child) final;
 
         virtual void drawingRoutine() const;
         virtual void updateRoutine();
