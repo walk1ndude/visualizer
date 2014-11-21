@@ -1,12 +1,11 @@
 #include "Model/VolumeModel.h"
 
 namespace Model {
-    VolumeModel::VolumeModel(Scene::AbstractScene * scene, PointsModel * points, AbstractModel * parent,
+    VolumeModel::VolumeModel(Scene::AbstractScene * scene, AbstractModel * parent,
                          const ShaderInfo::ShaderFiles & shaderFiles,
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModelWithPoints(scene, points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
-        points->setParent(this);
+        AbstractModelWithPoints(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         lockToModelAxis();
     }
 
@@ -177,3 +176,5 @@ namespace Model {
         _valueRange = valueRange;
     }
 }
+
+REGISTER_TYPE(VolumeModel)

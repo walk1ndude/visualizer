@@ -9,7 +9,6 @@ namespace Model {
         Q_OBJECT
     public:
         explicit StlModel(Scene::AbstractScene * scene,
-                          PointsModel * points = nullptr,
                           AbstractModel * parent = nullptr,
 
                           const ShaderInfo::ShaderFiles & shaderFiles =

@@ -2,12 +2,12 @@
 
 namespace Model {
     StlModel::StlModel(Scene::AbstractScene * scene,
-                       PointsModel * points, AbstractModel * parent,
+                       AbstractModel * parent,
                        const ShaderInfo::ShaderFiles & shaderFiles,
                        const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                        const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-            AbstractModelWithPoints(scene, points, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
-            points->setParent(this);
+            AbstractModelWithPoints(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+
     }
 
     void StlModel::init(ModelInfo::BuffersVN buffers) {
@@ -38,3 +38,5 @@ namespace Model {
         AbstractModelWithPoints::bindUniformValues(program, viewport);
     }
 }
+
+REGISTER_TYPE(StlModel)

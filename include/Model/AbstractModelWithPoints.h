@@ -15,7 +15,6 @@ namespace Model {
 
     protected:
         explicit AbstractModelWithPoints(Scene::AbstractScene * scene,
-                                PointsModel * points = nullptr,
                                 AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
 
@@ -55,6 +54,8 @@ namespace Model {
     public slots:
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) final;
         virtual void hidePoint(const PointsInfo::Name & point) final;
+
+        virtual void setPointsModel(PointsModel * points);
 
         virtual void setViewRange(const ViewRangeInfo::ViewAxisRange & xRange,
                                   const ViewRangeInfo::ViewAxisRange & yRange,

@@ -181,8 +181,6 @@ namespace Scene {
     }
 
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
-        textureInfo.pixelFormat = QOpenGLTexture::Red;
-
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
 
         texture->create();
@@ -196,8 +194,6 @@ namespace Scene {
 
         texture->setData(textureInfo.pixelFormat, textureInfo.pixelType,
                          (void *) textureInfo.mergedData.data(), &(textureInfo.pixelTransferOptions));
-
-        qDebug() << glGetError();
 
         texture->generateMipMaps();
 
@@ -244,7 +240,9 @@ namespace Scene {
 
         _models.append(pointsInModel);
 
-        Model::StlModel * model = new Model::StlModel(this, dynamic_cast<Model::PointsModel *>(pointsInModel));
+        Model::StlModel * model = new Model::StlModel(this);
+
+        model->setPointsModel(qobject_cast<Model::PointsModel *>(pointsInModel));
 
         selectModel(model);
 
@@ -273,6 +271,8 @@ namespace Scene {
         _models.append(pointsInModel);
 
         Model::VolumeModel * model = new Model::VolumeModel(this, pointsInModel);
+
+        model->setPointsModel(pointsInModel);
 
         selectModel(model);
 

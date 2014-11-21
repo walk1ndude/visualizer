@@ -12,7 +12,6 @@ namespace Model {
         Q_OBJECT
     public:
         explicit VolumeModel(Scene::AbstractScene * scene,
-                             PointsModel * points = nullptr,
                              AbstractModel * parent = nullptr,
 
                            const ShaderInfo::ShaderFiles & shaderFiles =
