@@ -107,7 +107,7 @@ namespace Model {
         return false;
     }
 
-    AbstractModel * PointsModel::invokeMethod(const QString & name, const QVariantMap & params) {
+    AbstractModel * PointsModel::invoke(const QString & name, const QVariantMap & params) {
         if (name == "init") {
             init(qvariant_cast<PointsInfo::ModelPoints *>(params["modelPoints"]));
         }

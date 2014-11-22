@@ -14,7 +14,7 @@
 
 #include "Info/TextureInfo.h"
 
-#include "Package/SettingsPackage.h"
+#include "Message/SettingsMessage.h"
 
 namespace Render {
     class AbstractRenderer : public QThread {
@@ -69,11 +69,13 @@ namespace Render {
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void redraw();
 
+        void send(const Message::SettingsMessage & message);
+
     public slots:
         virtual void renderNext() final;
         virtual void shutDown() final;
 
-        virtual void recievePackage(const Package::SettingsPackage & package) = 0;
+        virtual void recieve(const Message::SettingsMessage & message) = 0;
     };
 }
 #endif // RENDERTHREAD_H

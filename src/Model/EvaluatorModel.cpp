@@ -32,7 +32,7 @@ namespace Model {
         _stepY = stepY ? fabs(stepY) : stepX;
     }
 
-    void EvaluatorModel::init(const ModelParams & params) {
+    void EvaluatorModel::init(const Params & params) {
         setSize(params["width"].toInt(), params["height"].toInt());
         setStep(params["stepX"].toReal(), params["stepY"].toReal());
         setColor(params["color"].value<QVector3D>());

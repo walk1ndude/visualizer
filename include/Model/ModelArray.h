@@ -15,7 +15,8 @@ namespace Model {
 
         virtual QList<AbstractModel *> array() final;
 
-        AbstractModel * find(const int & id);
+        AbstractModel * find(const uint & id);
+        AbstractModel * operator[] (const uint & id);
 
         virtual void invokeMethod(const int & id, const QString & name, const QVariantMap & params = QVariantMap());
 

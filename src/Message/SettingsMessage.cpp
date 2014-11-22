@@ -12,6 +12,10 @@ namespace Message {
     }
 
     SettingData SettingsMessage::value(const SettingName & key) const {
-        return _data[key];
+        return (_data.find(key) != _data.end()) ? _data[key] : QVariant();
+    }
+
+    SettingData SettingsMessage::operator[] (const SettingName & key) const {
+        return value(key);
     }
 }

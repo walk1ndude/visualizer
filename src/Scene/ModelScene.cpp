@@ -233,7 +233,7 @@ namespace Scene {
 
     void ModelScene::addModel(ModelInfo::BuffersVN buffers) {
         Model::AbstractModel * pointsInModel = Model::AbstractModel::createModel("PointsModel",
-                    Model::ModelParams() = {
+                    Model::Params() = {
                         { "scene", QVariant::fromValue(this) }
                     }
                 );
@@ -311,23 +311,23 @@ namespace Scene {
         _models.append(model);
     }
 
-    void ModelScene::addModel(const Model::ModelName & name,
-                              const Model::ModelParams & initParams,
+    void ModelScene::addModel(const Model::Type & name,
+                              const Model::Params & initParams,
                               const Model::RequestedChildren & children) {
         Model::AbstractModel * model = Model::AbstractModel::createModel(name,
-                    Model::ModelParams() = {
+                    Model::Params() = {
                         { "scene", QVariant::fromValue(this) }
                     }
                 );
 
-        QHashIterator<Model::ModelName, Model::Count> it(children);
+        QHashIterator<Model::Type, Model::Count> it(children);
 
         while (it.hasNext()) {
             it.next();
 
             for (int i = 0; i != it.value(); ++ i) {
                 model->addChild(Model::AbstractModel::createModel(it.key(),
-                    Model::ModelParams() = {
+                    Model::Params() = {
                         { "scene", QVariant::fromValue(this) }
                     }
                 ));
@@ -340,7 +340,7 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
-        addModel("EvaluatorModel", Model::ModelParams() = {
+        addModel("EvaluatorModel", Model::Params() = {
             { "width", QVariant::fromValue(10) },
             { "height", QVariant::fromValue(10) },
             { "stepX", QVariant::fromValue(10.0f) },
@@ -348,7 +348,7 @@ namespace Scene {
             { "color", QVariant::fromValue(QVector3D(0.0f, 0.0f, 0.5f)) }
         });
 
-        addModel("AxesModel", Model::ModelParams() = {
+        addModel("AxesModel", Model::Params() = {
             { "axesColor", QVariant::fromValue(QVector<QColor>() = {
                 QColor::QColor("red"),
                 QColor::QColor("green"),
@@ -358,7 +358,14 @@ namespace Scene {
         });
     }
 
-    void ModelScene::recievePackage(const Package::SettingsPackage & package) {
-        
+    void ModelScene::recieve(const Message::SettingsMessage & message) {
+        QVariant id = message["modelID"];
+        QVariant method = message["method"];
+
+        if (id != QVariant() && method != QVariant()) {
+            QVariant params = message["params"];
+
+            _models[id.toUInt()]->invoke(method.toString(), (params != QVariant()) ?  params.value<Model::Params>() : Model::Params());
+        }
     }
 }

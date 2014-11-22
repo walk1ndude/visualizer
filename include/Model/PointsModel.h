@@ -24,7 +24,7 @@ namespace Model {
 
         virtual bool hasDepth() const;
 
-        virtual AbstractModel * invokeMethod(const QString & name, const QVariantMap & params);
+        virtual AbstractModel * invoke(const QString & name, const QVariantMap & params);
 
     protected:
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;

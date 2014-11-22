@@ -93,21 +93,14 @@ namespace Render {
         }
     }
 
-    void ModelRenderer::addModel(const QSize & size,
-                                 const qreal & stepX, const qreal & stepY,
-                                 const QVector3D & color) {
-        addModel(size.width(), size.height(), stepX, stepY, color);
-    }
-
-    void ModelRenderer::addModel(const int & width, const int & height,
-                                 const qreal & stepX, const qreal & stepY,
-                                 const QVector3D & color) {
+    void ModelRenderer::addModel(const Model::Type & type, const Model::Params & initParams,
+                                 const Model::RequestedChildren & children) {
         QMutexLocker locker(&renderMutex);
 
-        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
+        if (Scene::ModelScene * currentModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
             activateContext();
 
-            //selectedModelScene->addModel(width, height, stepX, stepY, color);
+            currentModelScene->addModel(type, initParams, children);
 
             locker.unlock();
             emit redraw();
@@ -142,9 +135,13 @@ namespace Render {
         emit redraw();
     }
 
-    void ModelRenderer::recievePackage(const Package::SettingsPackage & package) {
-        if (package.isMessageReliable() && currentScene()) {
-            
+    void ModelRenderer::recieve(const Message::SettingsMessage & message) {
+        if (message.isMessageReliable()) {
+            if (Scene::ModelScene * currentModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
+                currentModelScene->recieve(message);
+            }
         }
+
+        emit redraw();
     }
 }

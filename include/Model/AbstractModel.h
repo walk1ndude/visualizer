@@ -26,7 +26,7 @@ namespace Model {
     public:
         virtual ~AbstractModel();
 
-        virtual int id() const final;
+        virtual uint id() const final;
 
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
         virtual Camera::ViewMatrix view(const Viewport::Viewport * viewport) const;
@@ -57,12 +57,12 @@ namespace Model {
         virtual void lockToWorldAxis() final;
         virtual void lockToModelAxis() final;
 
-        static void registerType(const ModelName & name, ModelFactory * factory);
-        static AbstractModel * createModel(const ModelName & name, const ModelParams & params = ModelParams());
+        static void registerType(const Type & name, ModelFactory * factory);
+        static AbstractModel * createModel(const Type & name, const Params & params = Params());
 
-        virtual AbstractModel * invokeMethod(const QString & name, const ModelParams & params = ModelParams());
+        virtual AbstractModel * invoke(const QString & name, const Params & params = Params());
 
-        virtual void init(const ModelParams & params = ModelParams());
+        virtual void init(const Params & params = Params());
 
     protected:
         QMutex modelMutex;
@@ -188,7 +188,7 @@ namespace Model {
 
         Camera::ScaleMatrix _scaleM;
 
-        static QHash<ModelName, ModelFactory *> _factories;
+        static QHash<Type, ModelFactory *> _factories;
 
         bool _updateNeeded;
         bool _lockToWorldAxis;

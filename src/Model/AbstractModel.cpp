@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-static int modelNumber = 0;
+static uint modelNumber = 0;
 
 namespace Model {
-    QHash<ModelName, ModelFactory *> AbstractModel::_factories;
+    QHash<Type, ModelFactory *> AbstractModel::_factories;
 
     AbstractModel::AbstractModel(Scene::AbstractScene * scene,
                                  AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
@@ -49,15 +49,15 @@ namespace Model {
         deleteModel();
     }
 
-    void AbstractModel::init(const ModelParams & params) {
+    void AbstractModel::init(const Params & params) {
 
     }
 
-    void AbstractModel::registerType(const ModelName & name, ModelFactory * factory) {
+    void AbstractModel::registerType(const Type & name, ModelFactory * factory) {
         _factories[name] = factory;
     }
 
-    AbstractModel * AbstractModel::createModel(const ModelName & name, const ModelParams & params) {
+    AbstractModel * AbstractModel::createModel(const Type & name, const Params & params) {
         return _factories[name]->createModel(params);
     }
 
@@ -259,7 +259,7 @@ namespace Model {
         }
     }
 
-    int AbstractModel::id() const {
+    uint AbstractModel::id() const {
         return _id;
     }
 
@@ -420,7 +420,7 @@ namespace Model {
         Q_UNUSED(point)
     }
 
-    AbstractModel * AbstractModel::invokeMethod(const QString & name, const ModelParams & params) {
+    AbstractModel * AbstractModel::invoke(const QString & name, const Params & params) {
         Q_UNUSED(name)
         Q_UNUSED(params)
 

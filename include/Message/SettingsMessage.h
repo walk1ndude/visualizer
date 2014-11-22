@@ -16,7 +16,9 @@ namespace Message {
                         QObject * parent = nullptr);
 
         void insert(const SettingName & name, const SettingData & data);
+
         SettingData value(const SettingName & key) const;
+        SettingData operator[] (const SettingName & key) const;
 
     private:
         SettingsData _data;

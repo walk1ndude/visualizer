@@ -33,13 +33,12 @@ namespace Render {
         virtual void addModel(ModelInfo::BuffersVN buffers) final;
         virtual void addModel(VolumeInfo::Volume volume) final;
 
-        virtual void addModel(const int & width, const int & height = 10,
-                              const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                              const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f)) final;
+        virtual void addModel(const Model::Type & type,
+                              const Model::Params & initParams = Model::Params(),
+                              const Model::RequestedChildren & children = Model::RequestedChildren()
+                );
 
-        virtual void addModel(const QSize & size = QSize(10, 10),
-                              const qreal & stepX = 10.0f, const qreal & stepY = 0.0f,
-                              const QVector3D & color = QVector3D(0.0f, 0.0f, 0.5f)) final;
+        virtual void recieve(const Message::SettingsMessage & message);
 
         // rotate selected model
         virtual void setRotation(const QVector3D & rotation);
@@ -53,8 +52,6 @@ namespace Render {
 
         virtual void addPoint(const PointsInfo::Point & point) final;
         virtual void hidePoint(const QString & point) final;
-
-        virtual void recievePackage(const Package::SettingsPackage & package);
     };
 }
 #endif // SLICERENDERER_H

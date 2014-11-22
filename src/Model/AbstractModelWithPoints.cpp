@@ -42,7 +42,7 @@ namespace Model {
     }
     
     void AbstractModelWithPoints::updateRoutine() {
-        _points->invokeMethod("init", QVariantMap() = {
+        _points->invoke("init", QVariantMap() = {
             {"modelPoints", QVariant::fromValue(&_modelPoints)}
         });
 

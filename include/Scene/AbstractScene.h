@@ -9,7 +9,7 @@
 #include "Info/PointsInfo.h"
 #include "Info/VolumeInfo.h"
 
-#include "Package/SettingsPackage.h"
+#include "Message/SettingsMessage.h"
 
 namespace Scene {
     class AbstractScene : public QQuickItem {
@@ -79,7 +79,7 @@ namespace Scene {
 
         virtual void updateScene() = 0;
 
-        virtual void recievePackage(const Package::SettingsPackage & package) = 0;
+        virtual void recieve(const Message::SettingsMessage & message) = 0;
     };
 }
 

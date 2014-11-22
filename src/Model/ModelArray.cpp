@@ -44,7 +44,7 @@ namespace Model {
         _models = QList<AbstractModel *>(withoutDepth + withDepth);
     }
 
-    AbstractModel * ModelArray::find(const int & id) {
+    AbstractModel * ModelArray::find(const uint & id) {
         AbstractModel * found = nullptr;
         AbstractModel * current = nullptr;
 
@@ -58,10 +58,14 @@ namespace Model {
         return found;
     }
 
+    AbstractModel * ModelArray::operator [] (const uint & id) {
+        return find(id);
+    }
+
     void ModelArray::invokeMethod(const int & id, const QString & name,
                                   const QVariantMap & params) {
         if (AbstractModel * model = find(id)) {
-            model->invokeMethod(name, params);
+            model->invoke(name, params);
         }
     }
 }

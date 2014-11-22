@@ -78,8 +78,8 @@ namespace Scene {
         virtual void addModel(ModelInfo::BuffersVN buffers);
         virtual void addModel(VolumeInfo::Volume volume);
 
-        virtual void addModel(const Model::ModelName & name,
-                              const Model::ModelParams & initParams = Model::ModelParams(),
+        virtual void addModel(const Model::Type & name,
+                              const Model::Params & initParams = Model::Params(),
                               const Model::RequestedChildren & children = Model::RequestedChildren()
                 );
 
@@ -99,7 +99,7 @@ namespace Scene {
 
         virtual void updateScene();
 
-        virtual void recievePackage(const Package::SettingsPackage & package);
+        virtual void recieve(const Message::SettingsMessage & message);
     };
 
 }
