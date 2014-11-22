@@ -3,7 +3,7 @@
 
 #include "Info/Info.h"
 
-namespace Package {
+namespace Message {
     using TimeStamp = quint64;
     using ReliableTime = quint64;
 
@@ -11,7 +11,7 @@ namespace Package {
     using Reciever = QString;
 
     class Header : protected QObject {
-        friend class AbstractPackage;
+        friend class AbstractMessage;
     public:
         explicit Header(const Sender & sender, const Reciever & reciever,
                         const ReliableTime & reliableTime = 100000,
@@ -25,7 +25,7 @@ namespace Package {
         ReliableTime _reliableTime;
     };
 
-    class AbstractPackage : protected QObject {
+    class AbstractMessage : protected QObject {
     public:
         virtual const Header * header() const final;
 
@@ -35,7 +35,7 @@ namespace Package {
         Reciever reciever() const;
 
     protected:
-        explicit AbstractPackage(const Sender & sender, const Reciever & reciever,
+        explicit AbstractMessage(const Sender & sender, const Reciever & reciever,
                                  const ReliableTime & reliableTime = 100000,
                                  QObject * parent = nullptr);
 

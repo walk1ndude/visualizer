@@ -1,8 +1,8 @@
 #include <QtCore/QDateTime>
 
-#include "Package/AbstractPackage.h"
+#include "Message/AbstractMessage.h"
 
-namespace Package {
+namespace Message {
     Header::Header(const Sender & sender, const Reciever & reciever,
                    const ReliableTime & reliableTime,
                    QObject * ) :
@@ -12,25 +12,25 @@ namespace Package {
         _timeStamp = QDateTime::currentMSecsSinceEpoch();
     }
 
-    AbstractPackage::AbstractPackage(const Sender & sender, const Reciever & reciever,
+    AbstractMessage::AbstractMessage(const Sender & sender, const Reciever & reciever,
                                      const ReliableTime & reliableTime,
                                      QObject * ) {
         _header = new Header(sender, reciever, reliableTime, this);
     }
 
-    const Header * AbstractPackage::header() const {
+    const Header * AbstractMessage::header() const {
         return _header;
     }
 
-    bool AbstractPackage::isMessageReliable() const {
+    bool AbstractMessage::isMessageReliable() const {
         return _header->_reliableTime <= QDateTime::currentMSecsSinceEpoch() - _header->_timeStamp;
     }
 
-    Sender AbstractPackage::sender() const {
+    Sender AbstractMessage::sender() const {
         return _header->_sender;
     }
 
-    Reciever AbstractPackage::reciever() const {
+    Reciever AbstractMessage::reciever() const {
         return _header->_reciever;
     }
 }
