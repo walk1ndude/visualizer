@@ -71,6 +71,4 @@ namespace Scene {
     };
 }
 
-Q_DECLARE_METATYPE(Scene::AbstractScene *)
-
 #endif // ABSTRACTSCENE_H
