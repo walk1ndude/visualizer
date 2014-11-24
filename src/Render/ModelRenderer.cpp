@@ -19,7 +19,6 @@ namespace Render {
         Scene::ModelScene * modelScene = qobject_cast<Scene::ModelScene *>(scene);
 
         QObject::connect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
-        QObject::connect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
 
         AbstractRenderer::connectWithScene(scene);
     }
@@ -28,7 +27,6 @@ namespace Render {
         Scene::ModelScene * modelScene = qobject_cast<Scene::ModelScene *>(scene);
 
         QObject::disconnect(modelScene, &Scene::ModelScene::modelIDChanged, this, &Render::ModelRenderer::modelIDChanged);
-        QObject::disconnect(modelScene, &Scene::ModelScene::pointUpdated, this, &Render::ModelRenderer::pointUpdated);
 
         AbstractRenderer::disconnectWithScene(scene);
     }
@@ -96,16 +94,8 @@ namespace Render {
         }
     }
 
-    void ModelRenderer::hidePoint(const QString & point) {
-        if (currentScene()) {
-            currentScene()->togglePoint(point);
-        }
-
-        emit redraw();
-    }
-
     void ModelRenderer::recieve(const Message::SettingsMessage & message) {
-        if (message.isMessageReliable()) {
+        if (message.isReliable()) {
             if (Scene::ModelScene * currentModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
                 currentModelScene->recieve(message);
             }

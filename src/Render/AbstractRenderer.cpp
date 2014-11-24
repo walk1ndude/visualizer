@@ -73,10 +73,12 @@ namespace Render {
 
     void AbstractRenderer::connectWithScene(Scene::AbstractScene * scene) {
         QObject::connect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
+        QObject::connect(scene, &Scene::AbstractScene::post, this, &Render::AbstractRenderer::post);
     }
 
     void AbstractRenderer::disconnectWithScene(Scene::AbstractScene * scene) {
         QObject::disconnect(scene, &Scene::AbstractScene::redraw, this, &Render::AbstractRenderer::render);
+        QObject::disconnect(scene, &Scene::AbstractScene::post, this, &Render::AbstractRenderer::post);
     }
 
     Scene::AbstractScene * AbstractRenderer::currentScene() const {

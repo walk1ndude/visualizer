@@ -35,7 +35,7 @@ namespace Model {
         _modelPoints.insert(name, point);
     }
 
-    void AbstractModelWithPoints::hidePoint(const PointsInfo::Name & point) {
+    void AbstractModelWithPoints::togglePoint(const PointsInfo::Name & point) {
         _modelPoints.togglePoint(point);
 
         queueForUpdate();
@@ -120,13 +120,13 @@ namespace Model {
 
                 glReadPixels(rounded.x(), rounded.y(), 1, 1, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, &posZ);
 
-                int stencil = posZ & 0x0000000F;
+                uint stencil = posZ & 0x0000000F;
 
                 if (stencil != id() + 1) {
                     return false;
                 }
 
-                int depth = posZ >> 8;
+                uint depth = posZ >> 8;
 
                 modelPoint->position.setZ(depth / (0xFFFFFF * 1.0f));
 
@@ -135,7 +135,16 @@ namespace Model {
 
                     updateNeeded = true;
 
-                    emit pointUpdated(PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), modelPoints()->key(modelPoint), id()));
+                    Message::SettingsMessage message(
+                                Message::Sender("model ") + Message::Sender::number(id()),
+                                Message::Reciever("sidebar")
+                    );
+
+                    message.data["point"] = QVariant::fromValue(
+                                PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), modelPoints()->key(modelPoint), id())
+                    );
+
+                    emit post(message);
                 }
             }
         }
@@ -213,6 +222,12 @@ namespace Model {
                          point.color, point.viewport, point.groups
                          )
                      );
+            return;
+        }
+
+        if (name == "togglePoint") {
+            togglePoint(params["name"].value<PointsInfo::Name>());
+
             return;
         }
 

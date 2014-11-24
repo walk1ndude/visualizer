@@ -215,6 +215,8 @@ namespace Model {
 
         void childUpdated();
 
+        void post(const Message::SettingsMessage & message);
+
     public slots:
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
@@ -240,7 +242,7 @@ namespace Model {
         virtual void update();
 
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
-        virtual void hidePoint(const PointsInfo::Name & point);
+        virtual void togglePoint(const PointsInfo::Name & point);
 
         virtual void invoke(const QString & name, const Params & params = Params());
     };

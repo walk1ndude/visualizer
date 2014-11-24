@@ -416,7 +416,7 @@ namespace Model {
         Q_UNUSED(point)
     }
 
-    void AbstractModel::hidePoint(const PointsInfo::Name & point) {
+    void AbstractModel::togglePoint(const PointsInfo::Name & point) {
         Q_UNUSED(point)
     }
 

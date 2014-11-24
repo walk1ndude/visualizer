@@ -163,15 +163,6 @@ namespace Scene {
         emit modelIDChanged(_selectedModel->id());
     }
 
-    void ModelScene::togglePoint(const QString & point) {
-        if (!_selectedModel) {
-            return;
-        }
-        else {
-            _selectedModel->hidePoint(point);
-        }
-    }
-
     void ModelScene::addModel(ModelInfo::BuffersVN buffers) {
         Model::AbstractModel * pointsInModel = Model::AbstractModel::createModel("PointsModel",
                     Model::Params() = {
@@ -201,8 +192,8 @@ namespace Scene {
                             ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
                             ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
-        
-        QObject::connect(model, &Model::StlModel::pointUpdated, this, &Scene::ModelScene::pointUpdated, Qt::DirectConnection);
+
+        QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
 
         _models.append(model);
     }
@@ -246,8 +237,8 @@ namespace Scene {
 
         model->setHuRange(volume.huRange);
         model->setValueRange(volume.valueRange);
-        
-        QObject::connect(model, &Model::VolumeModel::pointUpdated, this, &Scene::ModelScene::pointUpdated, Qt::DirectConnection);
+
+        QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
 
         _models.append(model);
     }

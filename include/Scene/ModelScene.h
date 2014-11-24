@@ -68,8 +68,6 @@ namespace Scene {
     signals:
         void modelIDChanged(const uint & modelID);
 
-        void pointUpdated(const PointsInfo::UpdatedPoint & point);
-
         void viewportArrayChanged();
 
     public slots:
@@ -84,8 +82,6 @@ namespace Scene {
                 );
 
         virtual void addTexture(TextureInfo::Texture & textureInfo);
-
-        void togglePoint(const QString & point);
 
         virtual void updateScene();
 

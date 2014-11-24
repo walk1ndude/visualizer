@@ -47,13 +47,10 @@ namespace Model {
         QOpenGLTexture * _pointsTexture;
 
         virtual void updatePointsTexture(QOpenGLShaderProgram * program) final;
-        
-    signals:
-        void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
     public slots:
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) final;
-        virtual void hidePoint(const PointsInfo::Name & point) final;
+        virtual void togglePoint(const PointsInfo::Name & point) final;
 
         virtual void setPointsModel(PointsModel * points);
 

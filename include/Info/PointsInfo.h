@@ -98,7 +98,7 @@ namespace PointsInfo {
 
 Q_DECLARE_METATYPE(PointsInfo::Point)
 Q_DECLARE_METATYPE(PointsInfo::UpdatedPoint)
-Q_DECLARE_METATYPE(PointsInfo::ModelPoint)
+Q_DECLARE_METATYPE(PointsInfo::ModelPoints)
 Q_DECLARE_METATYPE(PointsInfo::ModelPoints *)
 
 #endif // POINTSINFO_H

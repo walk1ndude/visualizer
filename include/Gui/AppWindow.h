@@ -24,6 +24,7 @@ namespace Gui {
         QQuickWindow * _appWindow;
 
         void registerQmlTypes();
+        void registerMetaTypes();
 
         void fetchConnections();
 

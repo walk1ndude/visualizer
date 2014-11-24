@@ -54,7 +54,10 @@ namespace Quick {
     }
 
     void ModelViewer::togglePoint(const QString & point) {
-        emit togglePointChanged(point);
+        recieve("modelViewer", "model 3", "togglePoint",
+            Model::Params() = {
+                { "point", QVariant(point) }
+        });
     }
 
     ViewRangeInfo::ViewAxisRange ModelViewer::xRange() const {
@@ -64,8 +67,8 @@ namespace Quick {
     void ModelViewer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
         recieve("modelViewer", "model 3", "setRange",
             Model::Params() = {
-                { "range", QVariant::fromValue(xRange) },
-                { "axis", QVariant::fromValue(ViewRangeInfo::XAXIS) }
+                { "range", QVariant(xRange) },
+                { "axis", QVariant(ViewRangeInfo::XAXIS) }
         });
 
         _xRange = xRange;
@@ -104,7 +107,7 @@ namespace Quick {
     void ModelViewer::setRotation(const QVector3D & rotation) {
         recieve("modelViewer", "model 3", "rotate",
             Model::Params() = {
-                { "rotation", QVariant::fromValue(rotation) }
+                { "rotation", QVariant(rotation) }
         });
 
         _rotation = rotation;
@@ -142,7 +145,7 @@ namespace Quick {
     void ModelViewer::setHuRange(const VolumeInfo::HuRange & huRange) {
         recieve("modelViewer", "model 3", "setHuRange",
             Model::Params() = {
-                { "huRange", QVariant::fromValue(huRange) }
+                { "huRange", QVariant(huRange) }
         });
     }
 
@@ -151,6 +154,8 @@ namespace Quick {
     }
 
     QSGNode * ModelViewer::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData * data) {
+        Q_UNUSED(data)
+
         TextureNode * node = static_cast<TextureNode *>(oldNode);
 
         if (!_modelRenderer) {
@@ -167,16 +172,15 @@ namespace Quick {
             QObject::connect(this, (void (ModelViewer::*)(ModelInfo::BuffersVN)) &ModelViewer::drawModel,
                              _modelRenderer, (void (Render::ModelRenderer::*)(ModelInfo::BuffersVN)) &Render::ModelRenderer::addModel);
 
-            QObject::connect(this, &ModelViewer::togglePointChanged, _modelRenderer, &Render::ModelRenderer::hidePoint, Qt::DirectConnection);
-
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::pointUpdated, this, &ModelViewer::updatePoint, Qt::DirectConnection);
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize, Qt::DirectConnection);
 
-            QObject::connect(this, &ModelViewer::sendToRenderer, _modelRenderer, &Render::ModelRenderer::recieve, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::post, _modelRenderer, &Render::ModelRenderer::recieve, Qt::DirectConnection);
+            QObject::connect(_modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::post,
+                             this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::recieve, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -254,7 +258,30 @@ namespace Quick {
             message.data["action"] = QVariant(action);
             message.data["params"] = QVariant(params);
 
-            emit sendToRenderer(message);
+            emit post(message);
+        }
+    }
+
+    void ModelViewer::recieve(const Message::SettingsMessage & message) {
+        // TODO: if reciever empty - this class is final destination
+        if (message.reciever().isEmpty()) {
+            return;
+        }
+
+        if (message.isReliable()) {
+            if (message.reciever().startsWith("sidebar")) {
+                if (message.data.contains("point")) {
+                    PointsInfo::UpdatedPoint point = message.data["point"].value<PointsInfo::UpdatedPoint>();
+
+                    QVariantMap map;
+
+                    map["name"] = point.name;
+                    map["position"] = point.position;
+                    map["modelID"] = point.modelId();
+
+                    emit pointUpdated(map);
+                }
+            }
         }
     }
 }

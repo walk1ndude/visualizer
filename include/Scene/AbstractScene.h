@@ -55,16 +55,14 @@ namespace Scene {
         void redraw();
 
         void scalingFactorChanged();
-
         void measureUnitsChanged();
 
+        void post(const Message::SettingsMessage & message);
+
     public slots:
-        void setScalingFactor(const qreal & scalingFactor);
-
-        virtual void togglePoint(const PointsInfo::Name & point) = 0;
-
         virtual void initializeScene() final;
 
+        virtual void setScalingFactor(const qreal & scalingFactor) final;
         virtual void setMeasureUnits(const MeasureUnits & mUnits) final;
 
         virtual void updateScene() = 0;

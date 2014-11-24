@@ -103,7 +103,7 @@ namespace Quick {
 
         void fboSizeChanged(const QSize & fboSize);
 
-        void sendToRenderer(const Message::SettingsMessage & message);
+        void post(const Message::SettingsMessage & message);
 
     public slots:
         Q_INVOKABLE virtual void addPoint(const QPointF & point, Viewport::Viewport * viewport);
@@ -111,6 +111,8 @@ namespace Quick {
 
         Q_INVOKABLE virtual void recieve(const QString & sender, const QString & reciever,
                                          const QString &action, const QVariantMap & params);
+
+        virtual void recieve(const Message::SettingsMessage & message);
 
         virtual void setModelScene(Scene::ModelScene * modelScene);
 

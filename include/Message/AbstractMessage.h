@@ -25,16 +25,19 @@ namespace Message {
         ReliableTime _reliableTime;
     };
 
-    class AbstractMessage : protected QObject {
+    class AbstractMessage : public QObject {
+        Q_OBJECT
     public:
         virtual const Header * header() const final;
 
-        virtual bool isMessageReliable() const;
+        virtual bool isReliable() const;
 
         Sender sender() const;
         Reciever reciever() const;
 
     protected:
+        explicit AbstractMessage(QObject * parent = nullptr);
+        explicit AbstractMessage(const AbstractMessage & message);
         explicit AbstractMessage(const Sender & sender, const Reciever & reciever,
                                  const ReliableTime & reliableTime = -1,
                                  QObject * parent = nullptr);

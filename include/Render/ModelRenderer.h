@@ -27,7 +27,6 @@ namespace Render {
 
     signals:
         void modelIDChanged(const uint & modelID);
-        void pointUpdated(const PointsInfo::UpdatedPoint & point);
 
     public slots:
         virtual void addModel(ModelInfo::BuffersVN buffers) final;
@@ -39,8 +38,6 @@ namespace Render {
                 );
 
         virtual void recieve(const Message::SettingsMessage & message);
-
-        virtual void hidePoint(const QString & point) final;
     };
 }
 #endif // SLICERENDERER_H

@@ -13,6 +13,7 @@ namespace Gui {
 
         //qInstallMessageHandler(Quick::ConsoleLogger::customMessageHandler);
 
+        registerMetaTypes();
         registerQmlTypes();
 
         _engine = new QQmlApplicationEngine(QUrl(qmlSource));
@@ -80,6 +81,10 @@ namespace Gui {
         qmlRegisterType<Scene::ModelScene>("RenderTools", 1, 0, "ModelScene");
         qmlRegisterType<LightInfo::LightSource>("RenderTools", 1, 0, "LightSource");
         qmlRegisterType<MaterialInfo::Material>("RenderTools", 1, 0, "Material");
+    }
+
+    void AppWindow::registerMetaTypes() {
+        qRegisterMetaType<Message::SettingsMessage>("Message::SettingsMessage");
     }
 
     void AppWindow::show() {
