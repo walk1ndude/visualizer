@@ -140,7 +140,10 @@ namespace Quick {
     }
 
     void ModelViewer::setHuRange(const VolumeInfo::HuRange & huRange) {
-        emit huRangeChanged(huRange);
+        recieve("modelViewer", "model 3", "setHuRange",
+            Model::Params() = {
+                { "huRange", QVariant::fromValue(huRange) }
+        });
     }
 
     void ModelViewer::setViewportArray(Viewport::ViewportArray * viewPortArray) {
@@ -163,8 +166,6 @@ namespace Quick {
                              _modelRenderer, (void (Render::ModelRenderer::*)(VolumeInfo::Volume)) &Render::ModelRenderer::addModel);
             QObject::connect(this, (void (ModelViewer::*)(ModelInfo::BuffersVN)) &ModelViewer::drawModel,
                              _modelRenderer, (void (Render::ModelRenderer::*)(ModelInfo::BuffersVN)) &Render::ModelRenderer::addModel);
-
-            QObject::connect(this, &ModelViewer::huRangeChanged, _modelRenderer, &Render::ModelRenderer::setHuRange, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::pointAdded, _modelRenderer, &Render::ModelRenderer::addPoint, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::togglePointChanged, _modelRenderer, &Render::ModelRenderer::hidePoint, Qt::DirectConnection);

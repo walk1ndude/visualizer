@@ -179,6 +179,7 @@ namespace Model {
     void VolumeModel::invoke(const QString & name, const Params & params) {
         if (name == "setHuRange") {
             setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
+            return;
         }
 
         AbstractModelWithPoints::invoke(name, params);

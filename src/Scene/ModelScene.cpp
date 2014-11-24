@@ -48,13 +48,6 @@ namespace Scene {
         return _rotation;
     }
 
-    void ModelScene::setHuRange(const VolumeInfo::HuRange & huRange) {
-        qDebug() << "here";
-        if (Model::VolumeModel * model = qobject_cast<Model::VolumeModel *>(_selectedModel)) {
-            model->setHuRange(huRange);
-        }
-    }
-
     void ModelScene::updateScene() {
         for (Model::AbstractModel * model : _models.array()) {
             if (model->updateNeeded()) {
