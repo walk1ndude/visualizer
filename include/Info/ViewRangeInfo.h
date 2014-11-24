@@ -36,4 +36,6 @@ namespace ViewRangeInfo {
     };
 }
 
+Q_DECLARE_METATYPE(ViewRangeInfo::ViewAxis)
+
 #endif // VIEWRANGEINFO_H

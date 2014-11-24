@@ -62,8 +62,17 @@ namespace Quick {
     }
 
     void ModelViewer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
-        _xRange = xRange;
+        /* _xRange = xRange;
         emit xRangeChanged(_xRange);
+        */
+
+        recieve("modelViewer", "model 3",
+            Model::Params() = {
+                { "range", QVariant::fromValue(xRange) },
+                { "axis", QVariant::fromValue(ViewRangeInfo::XAXIS) }
+        });
+
+        _xRange = xRange;
     }
 
     ViewRangeInfo::ViewAxisRange ModelViewer::yRange() const {
@@ -157,10 +166,6 @@ namespace Quick {
 
             QObject::connect(this, &ModelViewer::rotationChanged, _modelRenderer, &Render::ModelRenderer::setRotation, Qt::DirectConnection);
 
-            QObject::connect(this, &ModelViewer::xRangeChanged, _modelRenderer, &Render::ModelRenderer::setXRange, Qt::DirectConnection);
-            QObject::connect(this, &ModelViewer::yRangeChanged, _modelRenderer, &Render::ModelRenderer::setYRange, Qt::DirectConnection);
-            QObject::connect(this, &ModelViewer::zRangeChanged, _modelRenderer, &Render::ModelRenderer::setZRange, Qt::DirectConnection);
-
             QObject::connect(this, &ModelViewer::huRangeChanged, _modelRenderer, &Render::ModelRenderer::setHuRange, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::pointAdded, _modelRenderer, &Render::ModelRenderer::addPoint, Qt::DirectConnection);
@@ -172,6 +177,8 @@ namespace Quick {
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
 
             QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize, Qt::DirectConnection);
+
+            QObject::connect(this, &ModelViewer::sendToRenderer, _modelRenderer, &Render::ModelRenderer::recieve, Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -228,4 +235,26 @@ namespace Quick {
         update();
     }
 
+    void ModelViewer::recieve(const QString & sender, const QString & reciever,
+                              const QVariantMap & params) {
+        // TODO: if reciever empty - this class is final destination
+        if (reciever.isEmpty()) {
+            return;
+        }
+
+        Message::SettingsMessage message(sender, reciever);
+
+        if (reciever.startsWith("model ")) {
+            QRegExp findID("\\d+$");
+            findID.indexIn(reciever);
+
+            uint modelID = findID.capturedTexts().at(0).toUInt();
+
+            message.data["modelID"] = QVariant(modelID);
+            message.data["action"] = QVariant(QString("setRange"));
+            message.data["params"] = QVariant(params);
+
+            emit sendToRenderer(message);
+        }
+    }
 }

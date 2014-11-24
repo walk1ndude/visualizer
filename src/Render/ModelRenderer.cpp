@@ -20,21 +20,6 @@ namespace Render {
         emit redraw();
     }
 
-    void ModelRenderer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
-        currentScene()->setXRange(xRange);
-        emit redraw();
-    }
-
-    void ModelRenderer::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
-        currentScene()->setYRange(yRange);
-        emit redraw();
-    }
-
-    void ModelRenderer::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
-        currentScene()->setZRange(zRange);
-        emit redraw();
-    }
-
     void ModelRenderer::setHuRange(const VolumeInfo::HuRange & huRange) {
         currentScene()->setHuRange(huRange);
         emit redraw();

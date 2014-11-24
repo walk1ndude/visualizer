@@ -60,7 +60,7 @@ namespace Model {
         static void registerType(const Type & name, ModelFactory * factory);
         static AbstractModel * createModel(const Type & name, const Params & params = Params());
 
-        virtual AbstractModel * invoke(const QString & name, const Params & params = Params());
+        virtual void invoke(const QString & name, const Params & params = Params());
 
         virtual void init(const Params & params = Params());
 

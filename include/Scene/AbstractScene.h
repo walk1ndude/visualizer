@@ -61,11 +61,6 @@ namespace Scene {
     public slots:
         void setScalingFactor(const qreal & scalingFactor);
 
-        // to clip selected model
-        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange) = 0;
-        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange) = 0;
-        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange) = 0;
-
         virtual void setHuRange(const VolumeInfo::HuRange & huRange) = 0;
 
         virtual void setRotation(const QVector3D & rotation) = 0;

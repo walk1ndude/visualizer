@@ -198,4 +198,10 @@ namespace Model {
 
         AbstractModel::glStatesDisable();
     }
+
+    void AbstractModelWithPoints::invoke(const QString & name, const Params & params) {
+        if (name == "setRange") {
+            setViewAxisRange(params["range"].value<ViewRangeInfo::ViewAxisRange>(), params["axis"].value<ViewRangeInfo::ViewAxis>());
+        }
+    }
 }

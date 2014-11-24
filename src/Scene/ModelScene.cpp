@@ -69,24 +69,6 @@ namespace Scene {
         }*/
     }
 
-    void ModelScene::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
-        if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->setViewAxisRange(xRange, ViewRangeInfo::XAXIS);
-        }
-    }
-
-    void ModelScene::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
-        if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->setViewAxisRange(yRange, ViewRangeInfo::YAXIS);
-        }
-    }
-
-    void ModelScene::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
-        if (Model::AbstractModelWithPoints * model = qobject_cast<Model::AbstractModelWithPoints *>(_selectedModel)) {
-            model->setViewAxisRange(zRange, ViewRangeInfo::ZAXIS);
-        }
-    }
-
     void ModelScene::setHuRange(const VolumeInfo::HuRange & huRange) {
         qDebug() << "here";
         if (Model::VolumeModel * model = qobject_cast<Model::VolumeModel *>(_selectedModel)) {
@@ -359,13 +341,14 @@ namespace Scene {
     }
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {
-        QVariant id = message["modelID"];
-        QVariant method = message["method"];
+        if (message.data.contains("modelID") && message.data.contains("action")) {
+            QVariant id = message.data["modelID"];
+            QVariant action = message.data["action"];
 
-        if (id != QVariant() && method != QVariant()) {
-            QVariant params = message["params"];
-
-            _models[id.toUInt()]->invoke(method.toString(), (params != QVariant()) ?  params.value<Model::Params>() : Model::Params());
+            _models[id.toUInt()]->invoke(action.toString(),
+                                         (message.data.contains("params")) ?
+                                             message.data["params"].value<Model::Params>() : Model::Params()
+                                         );
         }
     }
 }

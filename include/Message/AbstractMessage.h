@@ -5,7 +5,7 @@
 
 namespace Message {
     using TimeStamp = quint64;
-    using ReliableTime = quint64;
+    using ReliableTime = qint64;
 
     using Sender = QString;
     using Reciever = QString;
@@ -14,7 +14,7 @@ namespace Message {
         friend class AbstractMessage;
     public:
         explicit Header(const Sender & sender, const Reciever & reciever,
-                        const ReliableTime & reliableTime = 100000,
+                        const ReliableTime & reliableTime = -1,
                         QObject * parent = nullptr);
 
     private:
@@ -36,7 +36,7 @@ namespace Message {
 
     protected:
         explicit AbstractMessage(const Sender & sender, const Reciever & reciever,
-                                 const ReliableTime & reliableTime = 100000,
+                                 const ReliableTime & reliableTime = -1,
                                  QObject * parent = nullptr);
 
     private:

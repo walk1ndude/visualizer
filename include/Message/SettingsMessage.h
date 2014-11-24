@@ -12,16 +12,10 @@ namespace Message {
     class SettingsMessage : public AbstractMessage {
     public:
         SettingsMessage(const Sender & sender, const Reciever & reciever,
-                        const ReliableTime & reliableTime = 100000,
+                        const ReliableTime & reliableTime = -1,
                         QObject * parent = nullptr);
 
-        void insert(const SettingName & name, const SettingData & data);
-
-        SettingData value(const SettingName & key) const;
-        SettingData operator[] (const SettingName & key) const;
-
-    private:
-        SettingsData _data;
+        SettingsData data;
     };
 }
 

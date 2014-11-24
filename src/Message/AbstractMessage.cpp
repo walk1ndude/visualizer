@@ -23,7 +23,7 @@ namespace Message {
     }
 
     bool AbstractMessage::isMessageReliable() const {
-        return _header->_reliableTime <= QDateTime::currentMSecsSinceEpoch() - _header->_timeStamp;
+        return _header->_reliableTime < 0 ? true : (quint64(_header->_reliableTime) <= QDateTime::currentMSecsSinceEpoch() - _header->_timeStamp);
     }
 
     Sender AbstractMessage::sender() const {

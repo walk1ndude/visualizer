@@ -37,6 +37,8 @@ namespace Model {
         virtual void glStatesEnable() const;
         virtual void glStatesDisable() const;
 
+        virtual void invoke(const QString & name, const Params & params = Params());
+
     private:
         PointsModel * _points;
 

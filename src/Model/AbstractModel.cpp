@@ -420,10 +420,8 @@ namespace Model {
         Q_UNUSED(point)
     }
 
-    AbstractModel * AbstractModel::invoke(const QString & name, const Params & params) {
+    void AbstractModel::invoke(const QString & name, const Params & params) {
         Q_UNUSED(name)
         Q_UNUSED(params)
-
-        return this;
     }
 }
