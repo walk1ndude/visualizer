@@ -163,19 +163,6 @@ namespace Scene {
         emit modelIDChanged(_selectedModel->id());
     }
 
-    void ModelScene::addPoint(const PointsInfo::Point & point) {
-        if (!_selectedModel) {
-            return;
-        } else {
-            _selectedModel->addPoint(point.name,
-                                     new PointsInfo::ModelPoint(
-                                         PointsInfo::Position3D(point.position),
-                                         point.color, point.viewport, point.groups
-                                         )
-                                     );
-        }
-    }
-
     void ModelScene::togglePoint(const QString & point) {
         if (!_selectedModel) {
             return;

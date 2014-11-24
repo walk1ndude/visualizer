@@ -205,6 +205,17 @@ namespace Model {
             return;
         }
 
+        if (name == "addPoint") {
+            PointsInfo::Point point = params["point"].value<PointsInfo::Point>();
+
+            addPoint(point.name, new PointsInfo::ModelPoint(
+                         PointsInfo::Position3D(point.position),
+                         point.color, point.viewport, point.groups
+                         )
+                     );
+            return;
+        }
+
         AbstractModel::invoke(name, params);
     }
 }

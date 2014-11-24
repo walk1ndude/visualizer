@@ -85,7 +85,6 @@ namespace Scene {
 
         virtual void addTexture(TextureInfo::Texture & textureInfo);
 
-        virtual void addPoint(const PointsInfo::Point & point);
         void togglePoint(const QString & point);
 
         virtual void updateScene();

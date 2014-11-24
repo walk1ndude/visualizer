@@ -40,7 +40,6 @@ namespace Render {
 
         virtual void recieve(const Message::SettingsMessage & message);
 
-        virtual void addPoint(const PointsInfo::Point & point) final;
         virtual void hidePoint(const QString & point) final;
     };
 }

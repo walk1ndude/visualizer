@@ -167,7 +167,6 @@ namespace Quick {
             QObject::connect(this, (void (ModelViewer::*)(ModelInfo::BuffersVN)) &ModelViewer::drawModel,
                              _modelRenderer, (void (Render::ModelRenderer::*)(ModelInfo::BuffersVN)) &Render::ModelRenderer::addModel);
 
-            QObject::connect(this, &ModelViewer::pointAdded, _modelRenderer, &Render::ModelRenderer::addPoint, Qt::DirectConnection);
             QObject::connect(this, &ModelViewer::togglePointChanged, _modelRenderer, &Render::ModelRenderer::hidePoint, Qt::DirectConnection);
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
@@ -230,8 +229,10 @@ namespace Quick {
         selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
         selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
 
-        emit pointAdded(selectedPoint);
-        update();
+        recieve("modelViewer", "model 3", "addPoint",
+            Model::Params() = {
+                { "point", QVariant::fromValue(selectedPoint) }
+        });
     }
 
     void ModelViewer::recieve(const QString & sender, const QString & reciever,

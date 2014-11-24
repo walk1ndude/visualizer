@@ -61,7 +61,6 @@ namespace Scene {
     public slots:
         void setScalingFactor(const qreal & scalingFactor);
 
-        virtual void addPoint(const PointsInfo::Point & point) = 0;
         virtual void togglePoint(const PointsInfo::Name & point) = 0;
 
         virtual void initializeScene() final;

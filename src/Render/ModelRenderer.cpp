@@ -96,12 +96,6 @@ namespace Render {
         }
     }
 
-    void ModelRenderer::addPoint(const PointsInfo::Point & point) {
-        if (currentScene()) {
-            currentScene()->addPoint(point);
-        }
-    }
-
     void ModelRenderer::hidePoint(const QString & point) {
         if (currentScene()) {
             currentScene()->togglePoint(point);
