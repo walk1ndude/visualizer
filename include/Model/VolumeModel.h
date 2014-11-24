@@ -77,6 +77,8 @@ namespace Model {
 
         void setHuRange(const VolumeInfo::HuRange & huRange);
         void setValueRange(const VolumeInfo::ValueRange & valueRange);
+
+        virtual void invoke(const QString & name, const Params & params = Params());
     };
 }
 #endif // VOLUMEMODEL_H

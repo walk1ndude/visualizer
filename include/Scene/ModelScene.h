@@ -85,8 +85,6 @@ namespace Scene {
 
         virtual void addTexture(TextureInfo::Texture & textureInfo);
 
-        virtual void setRotation(const QVector3D & rotation);
-
         virtual void setHuRange(const VolumeInfo::HuRange & huRange);
 
         virtual void addPoint(const PointsInfo::Point & point);

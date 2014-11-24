@@ -40,9 +40,6 @@ namespace Render {
 
         virtual void recieve(const Message::SettingsMessage & message);
 
-        // rotate selected model
-        virtual void setRotation(const QVector3D & rotation);
-
         virtual void setHuRange(const VolumeInfo::HuRange & huRange);
 
         virtual void addPoint(const PointsInfo::Point & point) final;

@@ -421,7 +421,23 @@ namespace Model {
     }
 
     void AbstractModel::invoke(const QString & name, const Params & params) {
-        Q_UNUSED(name)
-        Q_UNUSED(params)
+        if (name == "rotate") {
+            if (params.contains("speed")) {
+                rotate(params["rotation"].value<QVector3D>(), params["speed"].toReal());
+            }
+            else {
+                rotate(params["rotation"].value<QVector3D>());
+            }
+            return;
+        }
+
+        if (name == "translate") {
+            translate(params["translation"].value<QVector3D>());
+            return;
+        }
+
+        if (name == "scale") {
+            scale(params["scale"].value<QVector3D>());
+        }
     }
 }

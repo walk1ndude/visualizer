@@ -60,8 +60,6 @@ namespace Model {
         static void registerType(const Type & name, ModelFactory * factory);
         static AbstractModel * createModel(const Type & name, const Params & params = Params());
 
-        virtual void invoke(const QString & name, const Params & params = Params());
-
         virtual void init(const Params & params = Params());
 
     protected:
@@ -243,6 +241,8 @@ namespace Model {
 
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
         virtual void hidePoint(const PointsInfo::Name & point);
+
+        virtual void invoke(const QString & name, const Params & params = Params());
     };
 }
 

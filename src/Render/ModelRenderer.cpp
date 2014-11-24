@@ -15,11 +15,6 @@ namespace Render {
         cleanUp();
     }
 
-    void ModelRenderer::setRotation(const QVector3D & rotation) {
-        currentScene()->setRotation(rotation);
-        emit redraw();
-    }
-
     void ModelRenderer::setHuRange(const VolumeInfo::HuRange & huRange) {
         currentScene()->setHuRange(huRange);
         emit redraw();

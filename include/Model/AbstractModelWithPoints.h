@@ -37,8 +37,6 @@ namespace Model {
         virtual void glStatesEnable() const;
         virtual void glStatesDisable() const;
 
-        virtual void invoke(const QString & name, const Params & params = Params());
-
     private:
         PointsModel * _points;
 
@@ -68,6 +66,8 @@ namespace Model {
                                       const ViewRangeInfo::ViewAxis viewAxis = ViewRangeInfo::XAXIS);
 
         virtual void updateRoutine() final;
+
+        virtual void invoke(const QString & name, const Params & params = Params());
     };
 }
 

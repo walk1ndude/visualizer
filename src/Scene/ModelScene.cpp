@@ -48,27 +48,6 @@ namespace Scene {
         return _rotation;
     }
 
-    void ModelScene::setRotation(const QVector3D & rotation) {
-        _rotation = rotation;
-
-        QListIterator<Model::AbstractModel *> modelIterator (_models.array());
-        Model::AbstractModel * model;
-        while (modelIterator.hasNext()) {
-            model = modelIterator.next();
-            if (Model::EvaluatorModel * evModel = qobject_cast<Model::EvaluatorModel *>(model)) {
-                continue;
-            }
-            if (Model::PointsModel * ptModel = qobject_cast<Model::PointsModel *>(model)) {
-                continue;
-            }
-            model->rotate(rotation);
-        }
-        /*
-        if (_selectedModel) {
-            _selectedModel->rotate(rotation);
-        }*/
-    }
-
     void ModelScene::setHuRange(const VolumeInfo::HuRange & huRange) {
         qDebug() << "here";
         if (Model::VolumeModel * model = qobject_cast<Model::VolumeModel *>(_selectedModel)) {

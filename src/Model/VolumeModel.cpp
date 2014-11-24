@@ -175,6 +175,14 @@ namespace Model {
     void VolumeModel::setValueRange(const VolumeInfo::ValueRange & valueRange) {
         _valueRange = valueRange;
     }
+
+    void VolumeModel::invoke(const QString & name, const Params & params) {
+        if (name == "setHuRange") {
+            setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
+        }
+
+        AbstractModelWithPoints::invoke(name, params);
+    }
 }
 
 REGISTER_TYPE(VolumeModel)
