@@ -105,7 +105,7 @@ namespace Quick {
     }
 
     void ModelViewer::setRotation(const QVector3D & rotation) {
-        recieve("modelViewer", "model 2", "rotate",
+        recieve("modelViewer", "model 1", "rotate",
             ModelInfo::Params() = {
                 { "rotation", QVariant(rotation) }
         });
@@ -216,22 +216,6 @@ namespace Quick {
         return node;
     }
 
-    void ModelViewer::drawModel(ModelInfo::BuffersVN model) {
-        emit addModel(ModelInfo::Model("StlModel", ModelInfo::Params() = {
-            { "buffers", QVariant::fromValue(model) },
-            { "children", QVariant::fromValue(ModelInfo::Models() << ModelInfo::Model("PointsModel", ModelInfo::Params())) },
-            { "lights", QVariant::fromValue(LightInfo::LightSources() = {
-            { -1, ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
-                             "lightSource.ambientIntensity" << "lightSource.attenuation"}
-            })},
-            { "materials", QVariant::fromValue(MaterialInfo::Materials() = {
-            { -1, ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
-                              "material.specular" << "material.shininess" }
-            })},
-            { "viewRangeShader", QVariant::fromValue(ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange") }
-        }));
-    }
-
     void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {
         if (_selectedPoint.isEmpty()) {
             return;
@@ -246,7 +230,7 @@ namespace Quick {
         selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
         selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
 
-        recieve("modelViewer", "model 2", "addPoint",
+        recieve("modelViewer", "model 1", "addPoint",
             ModelInfo::Params() = {
                 { "point", QVariant::fromValue(selectedPoint) }
         });

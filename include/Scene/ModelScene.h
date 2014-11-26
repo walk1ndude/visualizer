@@ -70,7 +70,6 @@ namespace Scene {
     public slots:
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
 
-        virtual void addModel(ModelInfo::BuffersVN buffers);
         virtual void addModel(VolumeInfo::Volume volume);
 
         virtual Model::AbstractModel * addModel(const ModelInfo::Model & model);

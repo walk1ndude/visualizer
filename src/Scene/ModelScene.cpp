@@ -165,38 +165,6 @@ namespace Scene {
         emit modelIDChanged(_selectedModel->id());
     }
 
-    void ModelScene::addModel(ModelInfo::BuffersVN buffers) {
-        /*
-        Model::AbstractModel * pointsInModel = Model::AbstractModel::createModel("PointsModel", this);
-
-        _models.append(pointsInModel);
-
-        Model::StlModel * model = new Model::StlModel(this);
-
-        model->setPointsModel(qobject_cast<Model::PointsModel *>(pointsInModel));
-
-        selectModel(model);
-
-        model->init(buffers);
-
-        model->addLightSource(_lightSources.at(0),
-                              ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
-                              "lightSource.ambientIntensity" << "lightSource.attenuation");
-
-        model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
-                           "material.specular" << "material.shininess");
-
-        model->setViewRange(ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
-                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
-                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
-                            ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
-
-        QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
-
-        _models.append(model); */
-    }
-
     void ModelScene::addModel(VolumeInfo::Volume volume) {/*
         Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
@@ -273,7 +241,7 @@ namespace Scene {
             { "stepY", QVariant(0.0f) },
             { "color", QVariant(QVector3D(0.0f, 0.0f, 0.5f)) },
         }));
-
+/*
         addModel(ModelInfo::Model("AxesModel", ModelInfo::Params() = {
             { "axesColor", QVariant::fromValue(QVector<QColor>() = {
                 QColor::QColor("red"),
@@ -282,6 +250,7 @@ namespace Scene {
             }) },
             { "length", QVariant::fromValue(1.5f) }
         }));
+        */
     }
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {

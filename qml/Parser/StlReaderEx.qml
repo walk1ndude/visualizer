@@ -10,7 +10,15 @@ StlReader {
     blueprint: {
         "StlModel" : {
             "children" : {
-                "PointsModel" : {}
+                "PointsModel" : {},
+                "AxesModel" : {
+                    "axesColor" : [
+                        "red",
+                        "green",
+                        Qt.rgba(0, 0, 1, 1)
+                    ],
+                    "length" : 1.5
+                }
             },
             "lights" : {
                 "-1" : [
@@ -31,7 +39,7 @@ StlReader {
             "viewRangeShader" : [
                 "ranges.xRange",
                 "ranges.yRange",
-                "range.zRange"
+                "ranges.zRange"
             ]
         }
     };

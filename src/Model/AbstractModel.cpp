@@ -162,6 +162,7 @@ namespace Model {
     }
 
     void AbstractModel::addChild(AbstractModel * child) {
+        child->setParent(this);
         _children.append(child);
     }
 

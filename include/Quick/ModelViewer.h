@@ -113,8 +113,6 @@ namespace Quick {
         Q_INVOKABLE virtual void recieve(const QString & sender, const QString & reciever,
                                          const QString &action, const QVariantMap & params);
 
-        Q_INVOKABLE void drawModel(ModelInfo::BuffersVN model);
-
         Q_INVOKABLE virtual void recieve(const Message::SettingsMessage & message);
 
         virtual void setModelScene(Scene::ModelScene * modelScene);

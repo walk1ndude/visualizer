@@ -13,7 +13,23 @@ namespace Model {
     void AxesModel::init(const ModelInfo::Params & params) {
         AbstractModel::init(params);
 
-        setColors(params["axesColor"].value<QVector<QColor> >());
+        QVariantList colorList = params["axesColor"].toList();
+        QVector<QColor> colors;
+
+        QString helper;
+
+        for (const QVariant & color : colorList) {
+            helper = color.toString();
+
+            if (helper.isEmpty()) {
+                colors << color.value<QColor>();
+            }
+            else {
+                colors << QColor(helper);
+            }
+        }
+
+        setColors(colors);
         setLenght(params["length"].toReal());
 
         ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
@@ -75,7 +91,15 @@ namespace Model {
     }
 
     void AxesModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
-        program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
+        Camera::Matrix mvp;
+        if (parent()) {
+            mvp = parent()->childsMVP(viewport, this);
+        }
+        else {
+            mvp = projection(viewport) * view(viewport) * model(viewport);
+        }
+
+        program->setUniformValue(uniformValues["mvp"], mvp);
     }
 
     void AxesModel::glStatesEnable() const {
