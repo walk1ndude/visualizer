@@ -57,12 +57,12 @@ namespace Model {
         virtual void lockToWorldAxis() final;
         virtual void lockToModelAxis() final;
 
-        static void registerType(const Type & name, ModelFactory * factory);
-        static AbstractModel * createModel(const Type & name,
+        static void registerType(const ModelInfo::Type & name, ModelFactory * factory);
+        static AbstractModel * createModel(const ModelInfo::Type & name,
                                            Scene::AbstractScene * scene,
                                            AbstractModel * parent = nullptr);
 
-        virtual void init(const Params & params = Params());
+        virtual void init(const ModelInfo::Params & params = ModelInfo::Params());
 
     protected:
         QMutex modelMutex;
@@ -179,7 +179,7 @@ namespace Model {
 
         Camera::ScaleMatrix _scaleM;
 
-        static QHash<Type, ModelFactory *> _factories;
+        static QHash<ModelInfo::Type, ModelFactory *> _factories;
 
         bool _updateNeeded;
         bool _lockToWorldAxis;
@@ -237,7 +237,7 @@ namespace Model {
         virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
         virtual void togglePoint(const PointsInfo::Name & point);
 
-        virtual void invoke(const QString & name, const Params & params = Params());
+        virtual void invoke(const QString & name, const ModelInfo::Params & params = ModelInfo::Params());
     };
 }
 

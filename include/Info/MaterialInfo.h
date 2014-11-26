@@ -10,7 +10,7 @@ namespace MaterialInfo {
     using Specular = QVector4D;
     using Shininess = GLfloat;
 
-    using MaterialID = uint;
+    using MaterialID = int;
 
     using Materials = QHash<MaterialID, ShaderInfo::ShaderVariablesNames>;
 

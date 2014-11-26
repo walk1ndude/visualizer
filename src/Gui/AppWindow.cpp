@@ -86,7 +86,7 @@ namespace Gui {
     void AppWindow::registerMetaTypes() {
         qRegisterMetaType<Message::SettingsMessage>("Message::SettingsMessage");
 
-        qRegisterMetaType<Model::Model>("Model::Model");
+        qRegisterMetaType<ModelInfo::Model>("ModelInfo::Model");
     }
 
     void AppWindow::show() {

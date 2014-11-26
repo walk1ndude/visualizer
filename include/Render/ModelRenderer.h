@@ -29,7 +29,7 @@ namespace Render {
         void modelIDChanged(const uint & modelID);
 
     public slots:
-        virtual void addModel(const Model::Model & model);
+        virtual void addModel(const ModelInfo::Model & model);
 
         virtual void recieve(const Message::SettingsMessage & message);
     };

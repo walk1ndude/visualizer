@@ -11,7 +11,7 @@ namespace Model {
         lockToModelAxis();
     }
 
-    void PointsModel::init(const Params & params) {
+    void PointsModel::init(const ModelInfo::Params & params) {
         PointsInfo::ModelPoints * modelPoints = params["modelPoints"].value<PointsInfo::ModelPoints *>();
 
         ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
@@ -113,7 +113,7 @@ namespace Model {
         return false;
     }
 
-    void PointsModel::invoke(const QString & name, const Params & params) {
+    void PointsModel::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "init") {
             init(params);
         }

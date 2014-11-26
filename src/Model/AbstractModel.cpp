@@ -5,7 +5,7 @@
 static uint modelNumber = 0;
 
 namespace Model {
-    QHash<Type, ModelFactory *> AbstractModel::_factories;
+    QHash<ModelInfo::Type, ModelFactory *> AbstractModel::_factories;
 
     AbstractModel::AbstractModel(Scene::AbstractScene * scene,
                                  AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
@@ -58,25 +58,50 @@ namespace Model {
         deleteModel();
     }
 
-    void AbstractModel::init(const Params & params) {
-        LightInfo::LightSources lights = params["lights"].value<LightInfo::LightSources>();
+    void AbstractModel::init(const ModelInfo::Params & params) {
+        QVariantMap lightMap = params["lights"].toMap();
 
-        for (const LightInfo::LightID & lightInShader : lights.keys()) {
-            addLightSource(scene()->lightSource(lightInShader), lights[lightInShader]);
+        ShaderInfo::ShaderVariablesNames variables;
+
+        int pos;
+        bool ok;
+
+        for (const QString & lightInShader : lightMap.keys()) {
+            pos = lightInShader.toInt(&ok);
+
+            if (ok) {
+                variables.clear();
+
+                for (const QVariant & variable : lightMap[lightInShader].toList()) {
+                    variables << variable.value<ShaderInfo::ShaderVariableName>();
+                }
+
+                addLightSource(scene()->lightSource(pos), variables);
+            }
         }
 
-        MaterialInfo::Materials materials = params["materials"].value<MaterialInfo::Materials>();
+        QVariantMap materialMap = params["materials"].toMap();
 
-        for (const MaterialInfo::MaterialID & materialInShader : materials.keys()) {
-            addMaterial(scene()->material(materialInShader), materials[materialInShader]);
-        }
+        for (const QString & materialInShader : materialMap.keys()) {
+            pos = materialInShader.toInt(&ok);
+
+            if (ok) {
+                variables.clear();
+
+                for (const QVariant & variable : materialMap[materialInShader].toList()) {
+                    variables << variable.value<ShaderInfo::ShaderVariableName>();
+                }
+
+                addMaterial(scene()->material(pos), variables);
+            }
+       }
     }
 
-    void AbstractModel::registerType(const Type & name, ModelFactory * factory) {
+    void AbstractModel::registerType(const ModelInfo::Type & name, ModelFactory * factory) {
         _factories[name] = factory;
     }
 
-    AbstractModel * AbstractModel::createModel(const Type & name, Scene::AbstractScene * scene,
+    AbstractModel * AbstractModel::createModel(const ModelInfo::Type & name, Scene::AbstractScene * scene,
                                                AbstractModel * parent) {
         return _factories[name]->createModel(scene, parent);
     }
@@ -303,7 +328,7 @@ namespace Model {
         */
         if (_program && _vertexCount) {
             bindShaderProgram();
-            
+
             bindUniformValues(_program, viewport);
             bindUniformValues();
             
@@ -440,7 +465,7 @@ namespace Model {
         Q_UNUSED(point)
     }
 
-    void AbstractModel::invoke(const QString & name, const Params & params) {
+    void AbstractModel::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "rotate") {
             if (params.contains("speed")) {
                 rotate(params["rotation"].value<QVector3D>(), params["speed"].toReal());

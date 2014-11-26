@@ -26,7 +26,7 @@ namespace Model {
 
         //void init(ModelInfo::BuffersVN buffers);
 
-        void init(const Params & params);
+        void init(const ModelInfo::Params & params);
     
     protected:
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;

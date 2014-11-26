@@ -18,18 +18,31 @@ namespace Model {
 
     }
 
-    void AbstractModelWithPoints::init(const Params & params) {
+    void AbstractModelWithPoints::init(const ModelInfo::Params & params) {
         AbstractModel::init(params);
 
-        ViewRangeInfo::ViewAxisRanges ranges = params["viewRanges"].value<ViewRangeInfo::ViewAxisRanges>();
+        QVariantList rangesList = params["viewRanges"].toList();
+
+        ViewRangeInfo::ViewAxisRanges ranges;
+
+        for (const QVariant & range : rangesList) {
+            ranges << range.value<ViewRangeInfo::ViewAxisRange>();
+        }
 
         int rangeInitedSize = ranges.size();
+
+        QVariantList viewList = params["viewRangeShader"].toList();
+        ShaderInfo::ShaderVariablesNames shaderVariablesNames;
+
+        for (const QVariant & name : viewList) {
+            shaderVariablesNames << name.value<ShaderInfo::ShaderVariableName>();
+        }
 
         setViewRange(
                     (rangeInitedSize < 1 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[0]),
                     (rangeInitedSize < 2 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[1]),
                     (rangeInitedSize < 3 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[2]),
-                    params["viewRangeShader"].value<ShaderInfo::ShaderVariablesNames>()
+                    shaderVariablesNames
                 );
     }
 
@@ -222,7 +235,7 @@ namespace Model {
         AbstractModel::glStatesDisable();
     }
 
-    void AbstractModelWithPoints::invoke(const QString & name, const Params & params) {
+    void AbstractModelWithPoints::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "setRange") {
             setViewAxisRange(params["range"].value<ViewRangeInfo::ViewAxisRange>(), params["axis"].value<ViewRangeInfo::ViewAxis>());
             return;

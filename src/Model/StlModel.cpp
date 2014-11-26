@@ -10,7 +10,7 @@ namespace Model {
 
     }
 
-    void StlModel::init(const Params & params) { //(ModelInfo::BuffersVN buffers) {
+    void StlModel::init(const ModelInfo::Params & params) {
         AbstractModelWithPoints::init(params);
 
         fillBuffers<ModelInfo::BuffersVN>(params["buffers"].value<ModelInfo::BuffersVN>());

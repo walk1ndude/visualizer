@@ -54,8 +54,8 @@ namespace Quick {
     }
 
     void ModelViewer::togglePoint(const QString & point) {
-        recieve("modelViewer", "model 3", "togglePoint",
-            Model::Params() = {
+        recieve("modelViewer", "model 2", "togglePoint",
+            ModelInfo::Params() = {
                 { "point", QVariant(point) }
         });
     }
@@ -65,8 +65,8 @@ namespace Quick {
     }
 
     void ModelViewer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
-        recieve("modelViewer", "model 3", "setRange",
-            Model::Params() = {
+        recieve("modelViewer", "model 2", "setRange",
+            ModelInfo::Params() = {
                 { "range", QVariant(xRange) },
                 { "axis", QVariant(ViewRangeInfo::XAXIS) }
         });
@@ -105,8 +105,8 @@ namespace Quick {
     }
 
     void ModelViewer::setRotation(const QVector3D & rotation) {
-        recieve("modelViewer", "model 3", "rotate",
-            Model::Params() = {
+        recieve("modelViewer", "model 2", "rotate",
+            ModelInfo::Params() = {
                 { "rotation", QVariant(rotation) }
         });
 
@@ -144,7 +144,7 @@ namespace Quick {
 
     void ModelViewer::setHuRange(const VolumeInfo::HuRange & huRange) {
         recieve("modelViewer", "model 3", "setHuRange",
-            Model::Params() = {
+            ModelInfo::Params() = {
                 { "huRange", QVariant(huRange) }
         });
     }
@@ -217,15 +217,15 @@ namespace Quick {
     }
 
     void ModelViewer::drawModel(ModelInfo::BuffersVN model) {
-        emit addModel(Model::Model("StlModel", Model::Params() = {
+        emit addModel(ModelInfo::Model("StlModel", ModelInfo::Params() = {
             { "buffers", QVariant::fromValue(model) },
-            { "children", QVariant::fromValue(Model::Models() << Model::Model("PointsModel", Model::Params())) },
+            { "children", QVariant::fromValue(ModelInfo::Models() << ModelInfo::Model("PointsModel", ModelInfo::Params())) },
             { "lights", QVariant::fromValue(LightInfo::LightSources() = {
-            { 0, ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
+            { -1, ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
                              "lightSource.ambientIntensity" << "lightSource.attenuation"}
             })},
             { "materials", QVariant::fromValue(MaterialInfo::Materials() = {
-            { 0, ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
+            { -1, ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
                               "material.specular" << "material.shininess" }
             })},
             { "viewRangeShader", QVariant::fromValue(ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange") }
@@ -246,8 +246,8 @@ namespace Quick {
         selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
         selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
 
-        recieve("modelViewer", "model 3", "addPoint",
-            Model::Params() = {
+        recieve("modelViewer", "model 2", "addPoint",
+            ModelInfo::Params() = {
                 { "point", QVariant::fromValue(selectedPoint) }
         });
     }
@@ -294,6 +294,11 @@ namespace Quick {
 
                     emit pointUpdated(map);
                 }
+            }
+            else {
+                QVariantMap map = message.data["blueprint"].toMap();
+
+                emit addModel(ModelInfo::Model(map.keys().first(), map.values().first().toMap()));
             }
         }
     }

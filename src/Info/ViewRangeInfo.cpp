@@ -10,6 +10,7 @@ namespace ViewRangeInfo {
         shaderXRange(program->uniformLocation(shaderVariables.at(0))),
         shaderYRange(program->uniformLocation(shaderVariables.at(1))),
         shaderZRange(program->uniformLocation(shaderVariables.at(2))) {
+
     }
 
     void ViewRange::setUniformValue(QOpenGLShaderProgram * program) {

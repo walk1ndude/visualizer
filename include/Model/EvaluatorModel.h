@@ -28,7 +28,7 @@ namespace Model {
 
         virtual void setStep(const qreal & stepX, const qreal & stepY = 0.0f);
 
-        virtual void init(const Params & params = Params());
+        virtual void init(const ModelInfo::Params & params);
 
     protected:
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;

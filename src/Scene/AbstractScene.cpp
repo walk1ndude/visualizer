@@ -48,22 +48,35 @@ namespace Scene {
     }
 
     MaterialInfo::Material * AbstractScene::material(const MaterialInfo::MaterialID & id) const {
+        MaterialInfo::Material * mat = nullptr;
+
+        if (id < 0 && !materials.isEmpty()) {
+            mat = materials.first();
+        }
+
         for (MaterialInfo::Material * material : materials) {
             if (material->id() == id) {
-                return material;
+                mat = material;
+                break;
             }
         }
 
-        return nullptr;
+        return mat;
     }
 
     LightInfo::LightSource * AbstractScene::lightSource(const LightInfo::LightID & id) const {
+        LightInfo::LightSource * light = nullptr;
+
+        if (id < 0 && !lightSources.isEmpty()) {
+            light = lightSources.first();
+        }
+
         for (LightInfo::LightSource * lightSource : lightSources) {
             if (lightSource->id() == id) {
-                return lightSource;
+                light = lightSource;
             }
         }
 
-        return nullptr;
+        return light;
     }
 }

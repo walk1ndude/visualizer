@@ -13,6 +13,10 @@ namespace Parser {
         return QVariant();
     }
 
+    QVariant AbstractParser::blueprint() const {
+        return _blueprint;
+    }
+
     void AbstractParser::setFile(const QUrl & file) {
         Q_UNUSED(file)
 
@@ -23,5 +27,11 @@ namespace Parser {
         Q_UNUSED(files)
 
         emit filesChanged();
+    }
+
+    void AbstractParser::setBlueprint(const QVariant & blueprint) {
+        _blueprint = blueprint;
+
+        emit blueprintChanged(blueprint);
     }
 }

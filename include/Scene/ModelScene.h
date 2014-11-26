@@ -73,7 +73,7 @@ namespace Scene {
         virtual void addModel(ModelInfo::BuffersVN buffers);
         virtual void addModel(VolumeInfo::Volume volume);
 
-        virtual Model::AbstractModel * addModel(const Model::Model & model);
+        virtual Model::AbstractModel * addModel(const ModelInfo::Model & model);
 
         virtual void addTexture(TextureInfo::Texture & textureInfo);
 

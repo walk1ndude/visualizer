@@ -10,6 +10,10 @@
 #include "Parser/StlReader.h"
 #include "Parser/Helpers.hpp"
 
+#include "Info/ModelInfo.h"
+#include "Info/MaterialInfo.h"
+#include "Info/LightInfo.h"
+
 #include "Model/VertexVN.h"
 
 #include <opencv2/core/core.hpp>
@@ -141,7 +145,6 @@ public:
 namespace Parser {
     StlReader::StlReader() :
         AbstractParser() {
-
     }
 
     StlReader::~StlReader() {
@@ -375,10 +378,18 @@ namespace Parser {
 
         qDebug() << "Elapsed Time: " << cv::getTickCount() / cv::getTickFrequency() - startTime;
 
-        ModelInfo::BuffersVN model;
-        model.vertices = ModelInfo::VerticesVNPointer(vertices);
+        ModelInfo::BuffersVN buffers;
+        buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        QVariantMap map;
-        sendResults<ModelInfo::BuffersVN>(model, map);
+        QVariantMap blueprintMap = _blueprint.toMap();
+        QVariantMap blueprintProps = blueprintMap["StlModel"].toMap();
+
+        blueprintProps["buffers"] = QVariant::fromValue(buffers);
+        blueprintMap["StlModel"] = QVariant(blueprintProps);
+
+        Message::SettingsMessage message("StlParser", "ModelViewer");
+        message.data["blueprint"] = QVariant(blueprintMap);
+
+        send(message);
     }
 }

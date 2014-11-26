@@ -37,7 +37,7 @@ namespace Model {
         virtual void glStatesEnable() const;
         virtual void glStatesDisable() const;
 
-        virtual void init(const Params & params = Params());
+        virtual void init(const ModelInfo::Params & params);
 
     private:
         PointsModel * _points;
@@ -66,7 +66,7 @@ namespace Model {
 
         virtual void updateRoutine() final;
 
-        virtual void invoke(const QString & name, const Params & params = Params());
+        virtual void invoke(const QString & name, const ModelInfo::Params & params = ModelInfo::Params());
     };
 }
 

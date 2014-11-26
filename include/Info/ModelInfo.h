@@ -5,6 +5,12 @@
 #include "Info/ShaderInfo.h"
 
 namespace ModelInfo {
+    using Type = QString;
+    using Params = QVariantMap;
+
+    using Model = QPair<Type, Params>;
+    using Models = QList<Model>;
+
     class VertexV {
     public:
         GLfloat x;

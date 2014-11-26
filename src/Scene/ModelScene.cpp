@@ -242,8 +242,8 @@ namespace Scene {
         _models.append(model); */
     }
 
-    Model::AbstractModel *  ModelScene::addModel(const Model::Model & model) {
-        Model::Params params;
+    Model::AbstractModel *  ModelScene::addModel(const ModelInfo::Model & model) {
+        ModelInfo::Params params;
 
         Model::AbstractModel * modelI = Model::AbstractModel::createModel(model.first, this);
 
@@ -252,17 +252,21 @@ namespace Scene {
 
         _models.append(modelI);
 
-        QListIterator<Model::Model> it(params["children"].value<Model::Models>());
+        QVariantMap children = params["children"].toMap();
 
-        while(it.hasNext()) {
-            modelI->addChild(addModel(it.next()));
+        for (const QString & child : children.keys()) {
+            modelI->addChild(
+                        addModel(
+                            ModelInfo::Model(child, children[child].toMap())
+                        )
+            );
         }
 
         return modelI;
     }
 
     void ModelScene::initScene() {
-        addModel(Model::Model("EvaluatorModel", Model::Params() = {
+        addModel(ModelInfo::Model("EvaluatorModel", ModelInfo::Params() = {
             { "width", QVariant(10) },
             { "height", QVariant(10) },
             { "stepX", QVariant(10.0f) },
@@ -270,7 +274,7 @@ namespace Scene {
             { "color", QVariant(QVector3D(0.0f, 0.0f, 0.5f)) },
         }));
 
-        addModel(Model::Model("AxesModel", Model::Params() = {
+        addModel(ModelInfo::Model("AxesModel", ModelInfo::Params() = {
             { "axesColor", QVariant::fromValue(QVector<QColor>() = {
                 QColor::QColor("red"),
                 QColor::QColor("green"),
@@ -287,7 +291,7 @@ namespace Scene {
 
             _models[id.toUInt()]->invoke(action.toString(),
                                          (message.data.contains("params")) ?
-                                             message.data["params"].value<Model::Params>() : Model::Params()
+                                             message.data["params"].value<ModelInfo::Params>() : ModelInfo::Params()
                                          );
         }
     }

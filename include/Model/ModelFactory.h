@@ -4,12 +4,6 @@
 #include "Model/AbstractModel.h"
 
 namespace Model {
-    using Type = QString;
-    using Params = QVariantMap;
-
-    using Model = QPair<Type, Params>;
-    using Models = QList<Model>;
-
     class AbstractModel;
 
     class ModelFactory {

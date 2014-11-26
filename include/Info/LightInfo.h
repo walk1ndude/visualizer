@@ -11,7 +11,7 @@ namespace LightInfo {
     using AmbientIntensity = GLfloat;
     using Attenuation = GLfloat;
 
-    using LightID = uint;
+    using LightID = int;
 
     using LightSources = QHash<LightID, ShaderInfo::ShaderVariablesNames>;
 

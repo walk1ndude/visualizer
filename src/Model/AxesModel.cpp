@@ -10,7 +10,7 @@ namespace Model {
         //lockToModelAxis();
     }
 
-    void AxesModel::init(const Params & params) {
+    void AxesModel::init(const ModelInfo::Params & params) {
         AbstractModel::init(params);
 
         setColors(params["axesColor"].value<QVector<QColor> >());

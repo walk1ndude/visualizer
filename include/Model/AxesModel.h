@@ -22,7 +22,7 @@ namespace Model {
                              const ShaderInfo::ShaderVariablesNames & uniformValues =
                              ShaderInfo::ShaderVariablesNames() << "mvp");
 
-        virtual void init(const Params & params = Params());
+        virtual void init(const ModelInfo::Params & params);
 
         virtual void setColors(const QVector<QColor> & axesColors);
 

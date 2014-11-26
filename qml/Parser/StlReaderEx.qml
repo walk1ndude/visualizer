@@ -7,9 +7,38 @@ StlReader {
 
     property variant viewer: ({});
 
-    onFinished: {
+    blueprint: {
+        "StlModel" : {
+            "children" : {
+                "PointsModel" : {}
+            },
+            "lights" : {
+                "-1" : [
+                        "lightSource.position",
+                        "lightSource.color",
+                        "lightSource.ambientIntensity",
+                        "lightSource.attenuation"
+                    ]
+            },
+            "materials" : {
+                "-1" : [
+                    "material.emissive",
+                    "material.diffuse",
+                    "material.specular",
+                    "material.shininess"
+                ]
+            },
+            "viewRangeShader" : [
+                "ranges.xRange",
+                "ranges.yRange",
+                "range.zRange"
+            ]
+        }
+    };
+
+    onSend: {
         if (viewer) {
-            viewer.processModel(model);
+            viewer.recieve(model);
             toggleDocks();
             destroy();
         }

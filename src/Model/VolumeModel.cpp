@@ -176,7 +176,7 @@ namespace Model {
         _valueRange = valueRange;
     }
 
-    void VolumeModel::invoke(const QString & name, const Params & params) {
+    void VolumeModel::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "setHuRange") {
             setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
             return;

@@ -32,7 +32,7 @@ namespace Model {
         _stepY = stepY ? fabs(stepY) : stepX;
     }
 
-    void EvaluatorModel::init(const Params & params) {
+    void EvaluatorModel::init(const ModelInfo::Params & params) {
         AbstractModel::init(params);
 
         setSize(params["width"].toInt(), params["height"].toInt());
