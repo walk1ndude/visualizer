@@ -31,49 +31,13 @@ namespace Render {
         AbstractRenderer::disconnectWithScene(scene);
     }
 
-    void ModelRenderer::addModel(ModelInfo::BuffersVN buffers) {
-        QMutexLocker locker(&renderMutex);
-
-        if (Scene::ModelScene * selectedModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
-            activateContext();
-
-            selectedModelScene->addModel(buffers);
-
-            locker.unlock();
-            emit redraw();
-        }
-        else {
-            // selected scene doesn't seem like modelScene -> don't risk to add to id, free buffers
-            buffers.vertices.clear();
-            buffers.indices.clear();
-        }
-    }
-
-    void ModelRenderer::addModel(VolumeInfo::Volume volume) {
-        QMutexLocker locker(&renderMutex);
-
-        if (Scene::ModelScene * selectModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
-            activateContext();
-
-            selectModelScene->addModel(volume);
-
-            locker.unlock();
-            emit redraw();
-        }
-        else {
-            // sorry, different scene
-            volume.texture.mergedData.clear();
-        }
-    }
-
-    void ModelRenderer::addModel(const Model::Type & type, const Model::Params & initParams,
-                                 const Model::RequestedChildren & children) {
+    void ModelRenderer::addModel(const Model::Model &model) {
         QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * currentModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {
             activateContext();
 
-            currentModelScene->addModel(type, initParams, children);
+            currentModelScene->addModel(model);
 
             locker.unlock();
             emit redraw();

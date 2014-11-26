@@ -11,6 +11,8 @@ namespace Model {
     }
 
     void AxesModel::init(const Params & params) {
+        AbstractModel::init(params);
+
         setColors(params["axesColor"].value<QVector<QColor> >());
         setLenght(params["length"].toReal());
 

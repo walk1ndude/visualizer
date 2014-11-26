@@ -10,6 +10,10 @@ namespace MaterialInfo {
     using Specular = QVector4D;
     using Shininess = GLfloat;
 
+    using MaterialID = uint;
+
+    using Materials = QHash<MaterialID, ShaderInfo::ShaderVariablesNames>;
+
     class Material : public QQuickItem {
         Q_PROPERTY(QVector4D emissive READ emissive WRITE setEmissive NOTIFY emissiveChanged)
         Q_PROPERTY(QVector4D diffuse READ diffuse WRITE setDiffuse NOTIFY diffuseChanged)

@@ -24,7 +24,9 @@ namespace Model {
                           const ShaderInfo::ShaderVariablesNames & uniformValues =
                           ShaderInfo::ShaderVariablesNames() << "colorU" << "model" << "view" << "projection" << "normalMatrix" << "eye" << "lightView");
 
-        void init(ModelInfo::BuffersVN buffers);
+        //void init(ModelInfo::BuffersVN buffers);
+
+        void init(const Params & params);
     
     protected:
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;

@@ -12,6 +12,8 @@ namespace ViewRangeInfo {
         ZAXIS
     };
 
+    using ViewAxisRanges = QVector<ViewAxisRange>;
+
     class ViewRange {
     public:
         ViewAxisRange xRange;

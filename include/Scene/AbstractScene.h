@@ -8,6 +8,8 @@
 #include "Info/ViewRangeInfo.h"
 #include "Info/PointsInfo.h"
 #include "Info/VolumeInfo.h"
+#include "Info/LightInfo.h"
+#include "Info/MaterialInfo.h"
 
 #include "Message/SettingsMessage.h"
 
@@ -40,7 +42,13 @@ namespace Scene {
 
         qreal scalingFactor() const;
 
+        MaterialInfo::Material * material(const MaterialInfo::MaterialID &id = 0) const;
+        LightInfo::LightSource * lightSource(const LightInfo::LightID & id = 0) const;
+
     protected:
+        QList<MaterialInfo::Material *> materials;
+        QList<LightInfo::LightSource *> lightSources;
+
         virtual void initScene() = 0;
 
     private:
@@ -48,6 +56,7 @@ namespace Scene {
         qreal _scalingFactor;
 
         bool _isInitialized;
+        bool _isLoaded;
 
         MeasureUnits _mUnits;
 
@@ -61,6 +70,7 @@ namespace Scene {
 
     public slots:
         virtual void initializeScene() final;
+        virtual void loaded() final;
 
         virtual void setScalingFactor(const qreal & scalingFactor) final;
         virtual void setMeasureUnits(const MeasureUnits & mUnits) final;

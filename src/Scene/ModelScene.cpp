@@ -12,17 +12,19 @@ namespace Scene {
         _selectedModel(nullptr),
         _selectedTexture(nullptr) {
         QObject::connect(this, &ModelScene::childrenChanged, [=]() {
-            _lightSources.clear();
-            _materials.clear();
+            lightSources.clear();
+            materials.clear();
 
             for (QQuickItem * child : childItems()) {
                 if (LightInfo::LightSource * lightSource = qobject_cast<LightInfo::LightSource *>(child)) {
-                    _lightSources.append(lightSource);
+                    lightSources.append(lightSource);
                 }
                 else if (MaterialInfo::Material * material = qobject_cast<MaterialInfo::Material *>(child)) {
-                    _materials.append(material);
+                    materials.append(material);
                 }
             }
+
+            loaded();
         });
     }
 
@@ -130,8 +132,8 @@ namespace Scene {
         _selectedModel = nullptr;
         _selectedTexture = nullptr;
 
-        _materials.clear();
-        _lightSources.clear();
+        materials.clear();
+        lightSources.clear();
     }
 
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
@@ -164,11 +166,8 @@ namespace Scene {
     }
 
     void ModelScene::addModel(ModelInfo::BuffersVN buffers) {
-        Model::AbstractModel * pointsInModel = Model::AbstractModel::createModel("PointsModel",
-                    Model::Params() = {
-                        { "scene", QVariant::fromValue(this) }
-                    }
-                );
+        /*
+        Model::AbstractModel * pointsInModel = Model::AbstractModel::createModel("PointsModel", this);
 
         _models.append(pointsInModel);
 
@@ -195,10 +194,10 @@ namespace Scene {
 
         QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
 
-        _models.append(model);
+        _models.append(model); */
     }
 
-    void ModelScene::addModel(VolumeInfo::Volume volume) {
+    void ModelScene::addModel(VolumeInfo::Volume volume) {/*
         Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
 
@@ -240,54 +239,45 @@ namespace Scene {
 
         QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
 
-        _models.append(model);
+        _models.append(model); */
     }
 
-    void ModelScene::addModel(const Model::Type & name,
-                              const Model::Params & initParams,
-                              const Model::RequestedChildren & children) {
-        Model::AbstractModel * model = Model::AbstractModel::createModel(name,
-                    Model::Params() = {
-                        { "scene", QVariant::fromValue(this) }
-                    }
-                );
+    Model::AbstractModel *  ModelScene::addModel(const Model::Model & model) {
+        Model::Params params;
 
-        QHashIterator<Model::Type, Model::Count> it(children);
+        Model::AbstractModel * modelI = Model::AbstractModel::createModel(model.first, this);
 
-        while (it.hasNext()) {
-            it.next();
+        params = model.second;
+        modelI->init(params);
 
-            for (int i = 0; i != it.value(); ++ i) {
-                model->addChild(Model::AbstractModel::createModel(it.key(),
-                    Model::Params() = {
-                        { "scene", QVariant::fromValue(this) }
-                    }
-                ));
-            }
+        _models.append(modelI);
+
+        QListIterator<Model::Model> it(params["children"].value<Model::Models>());
+
+        while(it.hasNext()) {
+            modelI->addChild(addModel(it.next()));
         }
 
-        model->init(initParams);
-
-        _models.append(model);
+        return modelI;
     }
 
     void ModelScene::initScene() {
-        addModel("EvaluatorModel", Model::Params() = {
-            { "width", QVariant::fromValue(10) },
-            { "height", QVariant::fromValue(10) },
-            { "stepX", QVariant::fromValue(10.0f) },
-            { "stepY", QVariant::fromValue(0.0f) },
-            { "color", QVariant::fromValue(QVector3D(0.0f, 0.0f, 0.5f)) }
-        });
+        addModel(Model::Model("EvaluatorModel", Model::Params() = {
+            { "width", QVariant(10) },
+            { "height", QVariant(10) },
+            { "stepX", QVariant(10.0f) },
+            { "stepY", QVariant(0.0f) },
+            { "color", QVariant(QVector3D(0.0f, 0.0f, 0.5f)) },
+        }));
 
-        addModel("AxesModel", Model::Params() = {
+        addModel(Model::Model("AxesModel", Model::Params() = {
             { "axesColor", QVariant::fromValue(QVector<QColor>() = {
                 QColor::QColor("red"),
                 QColor::QColor("green"),
                 QColor::QColor("blue")
             }) },
             { "length", QVariant::fromValue(1.5f) }
-        });
+        }));
     }
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {

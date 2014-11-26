@@ -18,6 +18,21 @@ namespace Model {
 
     }
 
+    void AbstractModelWithPoints::init(const Params & params) {
+        AbstractModel::init(params);
+
+        ViewRangeInfo::ViewAxisRanges ranges = params["viewRanges"].value<ViewRangeInfo::ViewAxisRanges>();
+
+        int rangeInitedSize = ranges.size();
+
+        setViewRange(
+                    (rangeInitedSize < 1 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[0]),
+                    (rangeInitedSize < 2 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[1]),
+                    (rangeInitedSize < 3 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[2]),
+                    params["viewRangeShader"].value<ShaderInfo::ShaderVariablesNames>()
+                );
+    }
+
     PointsModel * AbstractModelWithPoints::pointsModel() const {
         return _points;
     }
@@ -168,8 +183,7 @@ namespace Model {
         QMutexLocker locker(&modelMutex);
 
         if (program()) {
-            _viewRange = new ViewRangeInfo::ViewRange(xRange, yRange, zRange,
-                                                  program(), shaderVariables);
+            _viewRange = new ViewRangeInfo::ViewRange(xRange, yRange, zRange, program(), shaderVariables);
         }
         else {
             emit shaderProgramSetVariableErrorHappened();

@@ -11,6 +11,10 @@ namespace LightInfo {
     using AmbientIntensity = GLfloat;
     using Attenuation = GLfloat;
 
+    using LightID = uint;
+
+    using LightSources = QHash<LightID, ShaderInfo::ShaderVariablesNames>;
+
     class LightSource : public QQuickItem {
         Q_PROPERTY(QVector4D position READ position WRITE setPosition NOTIFY positionChanged)
         Q_PROPERTY(QVector4D color READ color WRITE setColor NOTIFY colorChanged)

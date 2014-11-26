@@ -10,8 +10,10 @@ namespace Model {
 
     }
 
-    void StlModel::init(ModelInfo::BuffersVN buffers) {
-        fillBuffers<ModelInfo::BuffersVN>(buffers);
+    void StlModel::init(const Params & params) { //(ModelInfo::BuffersVN buffers) {
+        AbstractModelWithPoints::init(params);
+
+        fillBuffers<ModelInfo::BuffersVN>(params["buffers"].value<ModelInfo::BuffersVN>());
     }
 
     void StlModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {

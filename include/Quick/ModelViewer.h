@@ -88,7 +88,8 @@ namespace Quick {
         void rotationChanged(const QVector3D & rotation);
         void pointAdded(const PointsInfo::Point & point);
 
-        Q_INVOKABLE void drawModel(ModelInfo::BuffersVN model);
+        void addModel(const Model::Model & model);
+
         Q_INVOKABLE void drawModel(VolumeInfo::Volume model);
 
         void pointUpdated(const QVariantMap & point);
@@ -111,6 +112,8 @@ namespace Quick {
 
         Q_INVOKABLE virtual void recieve(const QString & sender, const QString & reciever,
                                          const QString &action, const QVariantMap & params);
+
+        Q_INVOKABLE void drawModel(ModelInfo::BuffersVN model);
 
         virtual void recieve(const Message::SettingsMessage & message);
 

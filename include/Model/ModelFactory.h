@@ -7,15 +7,14 @@ namespace Model {
     using Type = QString;
     using Params = QVariantMap;
 
-    using Count = int;
-
-    using RequestedChildren = QHash<Type, Count>;
+    using Model = QPair<Type, Params>;
+    using Models = QList<Model>;
 
     class AbstractModel;
 
     class ModelFactory {
     public:
-        virtual AbstractModel * createModel(const Params & params = Params()) = 0;
+        virtual AbstractModel * createModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr) = 0;
     };
 }
 
@@ -26,10 +25,8 @@ namespace Model {
             modelName##Factory() { \
                 AbstractModel::registerType(#modelName, this); \
             } \
-            virtual AbstractModel * createModel(const Params & params = Params()) { \
-                return new modelName(qvariant_cast<Scene::AbstractScene *>(params["scene"]), \
-                                     qvariant_cast<AbstractModel *>(params["parent"]) \
-                            ); \
+            virtual AbstractModel * createModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr) { \
+                return new modelName(scene, parent); \
             } \
         }; \
         static modelName##Factory global##modelName##Factory; \

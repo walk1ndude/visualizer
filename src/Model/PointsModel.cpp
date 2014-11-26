@@ -2,7 +2,8 @@
 #include "Model/VertexVC.h"
 
 namespace Model {
-    PointsModel::PointsModel(Scene::AbstractScene * scene, AbstractModel * parent,
+    PointsModel::PointsModel(Scene::AbstractScene * scene,
+                             AbstractModel * parent,
                              const ShaderInfo::ShaderFiles & shaderFiles,
                              const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                              const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
@@ -10,61 +11,66 @@ namespace Model {
         lockToModelAxis();
     }
 
-    void PointsModel::init(PointsInfo::ModelPoints * modelPoints) {
-        ModelInfo::VertexVC vertex;
+    void PointsModel::init(const Params & params) {
+        PointsInfo::ModelPoints * modelPoints = params["modelPoints"].value<PointsInfo::ModelPoints *>();
+
         ModelInfo::VerticesVCPtr vertices = new ModelInfo::VerticesVC;
 
-        QHash<QString, int>groups;
-        int pos = 0;
+        if (modelPoints) {
+            ModelInfo::VertexVC vertex;
 
-        for (const PointsInfo::ModelPoint * modelPoint : modelPoints->points()) {
-            vertex = ModelInfo::VertexVC(modelPoint->position.x(),
-                                         modelPoint->position.y(),
-                                         modelPoint->position.z(),
-                                         modelPoint->color.redF(),
-                                         modelPoint->color.greenF(),
-                                         modelPoint->color.blueF());
+            QHash<QString, int>groups;
+            int pos = 0;
 
-            if (modelPoint->groups.isEmpty()) {
-                /* if point belongs to "ungrouped" build a "point" triangle:
+            for (const PointsInfo::ModelPoint * modelPoint : modelPoints->points()) {
+                vertex = ModelInfo::VertexVC(modelPoint->position.x(),
+                                             modelPoint->position.y(),
+                                             modelPoint->position.z(),
+                                             modelPoint->color.redF(),
+                                             modelPoint->color.greenF(),
+                                             modelPoint->color.blueF());
+
+                if (modelPoint->groups.isEmpty()) {
+                    /* if point belongs to "ungrouped" build a "point" triangle:
                      * p_a = p_b = p_c */
-                pos += 3;
-
-                for (int i = 0; i != 3; ++ i) {
-                    vertices->push_back(vertex);
-                }
-
-                continue;
-            }
-
-            for (const QString & group : modelPoint->groups) {
-                /* loop through groups to which the point belongs:
-                     * if it's the first time for group with
-                     * this name - build a "point" triangle,
-                     * otherwise try to fill it. If group has more
-                     * than 3 vertices, build a new triangle with 2
-                     * known vertices and 1 new */
-                if (!groups[group]) {
-                    groups[group] = pos + 1;
                     pos += 3;
 
                     for (int i = 0; i != 3; ++ i) {
                         vertices->push_back(vertex);
                     }
-                }
-                else {
-                    int pos3 = groups[group];
 
-                    if (groups[group] % 3 != 0) {
-                        (*vertices)[groups[group]] = vertex;
-                        groups[group] ++;
+                    continue;
+                }
+
+                for (const QString & group : modelPoint->groups) {
+                    /* loop through groups to which the point belongs:
+                     * if it's the first time for group with
+                     * this name - build a "point" triangle,
+                     * otherwise try to fill it. If group has more
+                     * than 3 vertices, build a new triangle with 2
+                     * known vertices and 1 new */
+                    if (!groups[group]) {
+                        groups[group] = pos + 1;
+                        pos += 3;
+
+                        for (int i = 0; i != 3; ++ i) {
+                            vertices->push_back(vertex);
+                        }
                     }
                     else {
-                        vertices->push_back(vertices->at(pos3 - 2));
-                        vertices->push_back(vertices->at(pos3 - 1));
-                        vertices->push_back(vertex);
+                        int pos3 = groups[group];
 
-                        pos += 3;
+                        if (groups[group] % 3 != 0) {
+                            (*vertices)[groups[group]] = vertex;
+                            groups[group] ++;
+                        }
+                        else {
+                            vertices->push_back(vertices->at(pos3 - 2));
+                            vertices->push_back(vertices->at(pos3 - 1));
+                            vertices->push_back(vertex);
+
+                            pos += 3;
+                        }
                     }
                 }
             }
@@ -109,7 +115,7 @@ namespace Model {
 
     void PointsModel::invoke(const QString & name, const Params & params) {
         if (name == "init") {
-            init(qvariant_cast<PointsInfo::ModelPoints *>(params["modelPoints"]));
+            init(params);
         }
     }
 }

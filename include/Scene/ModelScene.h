@@ -3,8 +3,6 @@
 
 #include "Scene/AbstractScene.h"
 
-#include "Info/LightInfo.h"
-#include "Info/MaterialInfo.h"
 #include "Info/VolumeInfo.h"
 #include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
@@ -46,8 +44,7 @@ namespace Scene {
         QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
         QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
 
-        QList<MaterialInfo::Material *> _materials;
-        QList<LightInfo::LightSource *> _lightSources;
+
         QList<QOpenGLTexture *> _textures;
 
         Model::AbstractModel * _selectedModel;
@@ -76,10 +73,7 @@ namespace Scene {
         virtual void addModel(ModelInfo::BuffersVN buffers);
         virtual void addModel(VolumeInfo::Volume volume);
 
-        virtual void addModel(const Model::Type & name,
-                              const Model::Params & initParams = Model::Params(),
-                              const Model::RequestedChildren & children = Model::RequestedChildren()
-                );
+        virtual Model::AbstractModel * addModel(const Model::Model & model);
 
         virtual void addTexture(TextureInfo::Texture & textureInfo);
 

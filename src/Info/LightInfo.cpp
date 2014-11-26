@@ -1,18 +1,22 @@
 #include "Info/LightInfo.h"
 
-static uint lightSourceNumber = 0;
+static LightInfo::LightID lightSourceNumber = 0;
 
 namespace LightInfo {
-    LightSource::LightSource() { }
+    LightSource::LightSource() :
+        _id(lightSourceNumber ++) {
+
+    }
+
     LightSource::LightSource(const Position & position,
                              const Color & color,
                              const AmbientIntensity & ambientIntensity,
                              const Attenuation & attenuation) :
-        _position(position),
-        _color(color),
-        _ambientIntensity(ambientIntensity),
-        _attenuation(attenuation),
-        _id(lightSourceNumber ++) {
+        LightSource() {
+        _position = position;
+        _color = color;
+        _ambientIntensity = ambientIntensity;
+        _attenuation = attenuation;
     }
 
     Position LightSource::position() const {

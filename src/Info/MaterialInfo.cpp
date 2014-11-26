@@ -1,18 +1,21 @@
 #include "Info/MaterialInfo.h"
 
-static uint materialNumber = 0;
+static MaterialInfo::MaterialID materialNumber = 0;
 
 namespace MaterialInfo {
-    Material::Material() { }
+    Material::Material() :
+        _id(materialNumber ++) {
+    }
+
     Material::Material(const Emissive & emissive,
                        const Diffuse & diffuse,
                        const Specular & specular,
                        const Shininess & shininess) :
-        _emissive(emissive),
-        _diffuse(diffuse),
-        _specular(specular),
-        _shininess(shininess),
-        _id(materialNumber ++) {
+        Material() {
+        _emissive = emissive;
+        _diffuse = diffuse;
+        _specular = specular;
+        _shininess = shininess;
     }
 
     Emissive Material::emissive() const {

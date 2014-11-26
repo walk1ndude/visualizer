@@ -167,10 +167,7 @@ namespace Quick {
 
             current->makeCurrent(window());
 
-            QObject::connect(this, (void (ModelViewer::*)(VolumeInfo::Volume)) &ModelViewer::drawModel,
-                             _modelRenderer, (void (Render::ModelRenderer::*)(VolumeInfo::Volume)) &Render::ModelRenderer::addModel);
-            QObject::connect(this, (void (ModelViewer::*)(ModelInfo::BuffersVN)) &ModelViewer::drawModel,
-                             _modelRenderer, (void (Render::ModelRenderer::*)(ModelInfo::BuffersVN)) &Render::ModelRenderer::addModel);
+            QObject::connect(this, &ModelViewer::addModel, _modelRenderer, &Render::ModelRenderer::addModel);
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
@@ -217,6 +214,22 @@ namespace Quick {
         node->setRect(boundingRect());
 
         return node;
+    }
+
+    void ModelViewer::drawModel(ModelInfo::BuffersVN model) {
+        emit addModel(Model::Model("StlModel", Model::Params() = {
+            { "buffers", QVariant::fromValue(model) },
+            { "children", QVariant::fromValue(Model::Models() << Model::Model("PointsModel", Model::Params())) },
+            { "lights", QVariant::fromValue(LightInfo::LightSources() = {
+            { 0, ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
+                             "lightSource.ambientIntensity" << "lightSource.attenuation"}
+            })},
+            { "materials", QVariant::fromValue(MaterialInfo::Materials() = {
+            { 0, ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
+                              "material.specular" << "material.shininess" }
+            })},
+            { "viewRangeShader", QVariant::fromValue(ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange") }
+        }));
     }
 
     void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {

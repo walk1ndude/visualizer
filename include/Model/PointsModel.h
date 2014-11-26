@@ -7,8 +7,8 @@ namespace Model {
     class PointsModel : public AbstractModel {
         Q_OBJECT
     public:
-        explicit PointsModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr,
-
+        explicit PointsModel(Scene::AbstractScene * scene,
+                             AbstractModel * parent = nullptr,
                              const ShaderInfo::ShaderFiles & shaderFiles =
                              ShaderInfo::ShaderFiles(
                                                      ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/Points/vertex.glsl"),
@@ -26,15 +26,14 @@ namespace Model {
 
         virtual void invoke(const QString & name, const Params & params = Params());
 
+        virtual void init(const Params & params);
+
     protected:
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;
 
         virtual void glStatesEnable() const;
         virtual void glStatesDisable() const;
-
-    private:
-        void init(PointsInfo::ModelPoints * modelPoints);
     };
 }
 

@@ -15,7 +15,6 @@ namespace Model {
         _vboInd(QOpenGLBuffer::IndexBuffer),
         _program(nullptr),
         _scene(scene),
-        _shaderFiles(shaderFiles),
         _stride(0),
         _depthTest(true),
         _indexCount(0),
@@ -43,6 +42,16 @@ namespace Model {
         for (const ShaderInfo::ShaderVariableName & value : shaderUniformValues) {
             uniformValues.insert(value, -1);
         }
+
+        if (!_program) {
+            if (!initShaderProgram(shaderFiles)) {
+                emit shaderProgramInitErrorHappened();
+                return;
+            }
+
+            _vao.create();
+            _vboVert.create();
+        }
     }
 
     AbstractModel::~AbstractModel() {
@@ -50,15 +59,26 @@ namespace Model {
     }
 
     void AbstractModel::init(const Params & params) {
+        LightInfo::LightSources lights = params["lights"].value<LightInfo::LightSources>();
 
+        for (const LightInfo::LightID & lightInShader : lights.keys()) {
+            addLightSource(scene()->lightSource(lightInShader), lights[lightInShader]);
+        }
+
+        MaterialInfo::Materials materials = params["materials"].value<MaterialInfo::Materials>();
+
+        for (const MaterialInfo::MaterialID & materialInShader : materials.keys()) {
+            addMaterial(scene()->material(materialInShader), materials[materialInShader]);
+        }
     }
 
     void AbstractModel::registerType(const Type & name, ModelFactory * factory) {
         _factories[name] = factory;
     }
 
-    AbstractModel * AbstractModel::createModel(const Type & name, const Params & params) {
-        return _factories[name]->createModel(params);
+    AbstractModel * AbstractModel::createModel(const Type & name, Scene::AbstractScene * scene,
+                                               AbstractModel * parent) {
+        return _factories[name]->createModel(scene, parent);
     }
 
     Scene::AbstractScene * AbstractModel::scene() const {
@@ -275,7 +295,7 @@ namespace Model {
         _updateNeeded = true;
     }
 
-    void AbstractModel::drawModel(const Viewport::Viewport * viewPort) {
+    void AbstractModel::drawModel(const Viewport::Viewport * viewport) {
         /* model can contain no vertices or | and no program
         so it can serve as a "root" model, containing some
         number of children: models with vertices and program.
@@ -284,7 +304,7 @@ namespace Model {
         if (_program && _vertexCount) {
             bindShaderProgram();
             
-            bindUniformValues(_program, viewPort);
+            bindUniformValues(_program, viewport);
             bindUniformValues();
             
             bindTextures();

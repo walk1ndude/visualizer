@@ -4,12 +4,17 @@ namespace Scene {
     AbstractScene::AbstractScene() :
         _scalingFactor(100.0f),
         _isInitialized(false),
+        _isLoaded(false),
         _mUnits(MM) {
 
     }
 
     bool AbstractScene::isInitialized() const {
         return _isInitialized;
+    }
+
+    void AbstractScene::loaded() {
+        _isLoaded = true;
     }
 
     qreal AbstractScene::scalingFactor() const {
@@ -23,6 +28,10 @@ namespace Scene {
     }
 
     void AbstractScene::initializeScene() {
+        if (!_isLoaded) {
+            return;
+        }
+
         initScene();
 
         _isInitialized = true;
@@ -36,5 +45,25 @@ namespace Scene {
         _mUnits = mUnits;
 
         emit measureUnitsChanged();
+    }
+
+    MaterialInfo::Material * AbstractScene::material(const MaterialInfo::MaterialID & id) const {
+        for (MaterialInfo::Material * material : materials) {
+            if (material->id() == id) {
+                return material;
+            }
+        }
+
+        return nullptr;
+    }
+
+    LightInfo::LightSource * AbstractScene::lightSource(const LightInfo::LightID & id) const {
+        for (LightInfo::LightSource * lightSource : lightSources) {
+            if (lightSource->id() == id) {
+                return lightSource;
+            }
+        }
+
+        return nullptr;
     }
 }

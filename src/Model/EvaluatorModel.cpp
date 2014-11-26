@@ -33,6 +33,8 @@ namespace Model {
     }
 
     void EvaluatorModel::init(const Params & params) {
+        AbstractModel::init(params);
+
         setSize(params["width"].toInt(), params["height"].toInt());
         setStep(params["stepX"].toReal(), params["stepY"].toReal());
         setColor(params["color"].value<QVector3D>());

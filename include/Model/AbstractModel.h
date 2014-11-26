@@ -58,7 +58,9 @@ namespace Model {
         virtual void lockToModelAxis() final;
 
         static void registerType(const Type & name, ModelFactory * factory);
-        static AbstractModel * createModel(const Type & name, const Params & params = Params());
+        static AbstractModel * createModel(const Type & name,
+                                           Scene::AbstractScene * scene,
+                                           AbstractModel * parent = nullptr);
 
         virtual void init(const Params & params = Params());
 
@@ -103,17 +105,6 @@ namespace Model {
 
         template <class BuffersT>
         void fillBuffers(BuffersT buffers, const QOpenGLBuffer::UsagePattern usagePattern = QOpenGLBuffer::UsagePattern::StaticDraw) {
-            if (!_program) {
-                if (!initShaderProgram(_shaderFiles)) {
-                    emit shaderProgramInitErrorHappened();
-                    return;
-                }
-
-                _vao.create();
-                _vboVert.create();
-                _vboInd.create();
-            }
-
             bindShaderProgram();
 
             _vao.bind();
@@ -129,6 +120,10 @@ namespace Model {
                 _vboVert.allocate(buffers.vertices.data()->data(), _vertexCount * _stride);
 
                 if (buffers.indices.data()) {
+                    if (!_vboInd.isCreated()) {
+                        _vboInd.create();
+                    }
+
                     _vboInd.setUsagePattern(usagePattern);
 
                     _indexCount = buffers.indices.data()->size();
@@ -164,8 +159,6 @@ namespace Model {
         QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;
 
         QMap<QOpenGLTexture *, TextureInfo::TextureProgram *> _textures;
-
-        ShaderInfo::ShaderFiles _shaderFiles;
 
         int _id;
 
