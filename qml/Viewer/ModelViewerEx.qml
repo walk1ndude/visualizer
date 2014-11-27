@@ -10,9 +10,9 @@ ModelViewer {
 
     fboSize: Qt.size(768, 768);
 
-    xRange: Qt.vector2d(0.0, 1.0);
-    yRange: Qt.vector2d(0.0, 1.0);
-    zRange: Qt.vector2d(0.0, 1.0);
+    //xRange: Qt.vector2d(0.0, 1.0);
+    //yRange: Qt.vector2d(0.0, 1.0);
+    //zRange: Qt.vector2d(0.0, 1.0);
 
     rotation: Qt.vector3d(0.0, 0.0, 0.0);
 

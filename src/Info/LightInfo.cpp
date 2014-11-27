@@ -8,6 +8,8 @@ namespace LightInfo {
 
     }
 
+    QStringList LightSource::initializationOrder = {"position", "color", "ambientIntensity", "attenuation"};
+
     LightSource::LightSource(const Position & position,
                              const Color & color,
                              const AmbientIntensity & ambientIntensity,
@@ -81,7 +83,7 @@ namespace LightInfo {
         }
 
         if (l > 1) {
-            _shaderColor= program->uniformLocation(shaderVariables.at(1));
+            _shaderColor = program->uniformLocation(shaderVariables.at(1));
         }
 
         if (l > 2) {

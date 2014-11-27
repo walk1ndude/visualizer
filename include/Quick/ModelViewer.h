@@ -19,9 +19,6 @@ namespace Quick {
 
         Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
 
-        Q_PROPERTY(QVector2D xRange READ xRange WRITE setXRange NOTIFY xRangeChanged)
-        Q_PROPERTY(QVector2D yRange READ yRange WRITE setYRange NOTIFY yRangeChanged)
-        Q_PROPERTY(QVector2D zRange READ zRange WRITE setZRange NOTIFY zRangeChanged)
 
         Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
 
@@ -39,10 +36,6 @@ namespace Quick {
         QSize fboSize() const;
         
         QVariantMap selectedPoint() const;
-
-        ViewRangeInfo::ViewAxisRange xRange() const;
-        ViewRangeInfo::ViewAxisRange yRange() const;
-        ViewRangeInfo::ViewAxisRange zRange() const;
 
         QVector3D rotation() const;
 
@@ -124,10 +117,6 @@ namespace Quick {
         virtual void setSelectedPoint(const QVariantMap & selectedPoint);
 
         virtual void setRotation(const QVector3D & rotation);
-
-        virtual void setXRange(const ViewRangeInfo::ViewAxisRange & xRange);
-        virtual void setYRange(const ViewRangeInfo::ViewAxisRange & yRange);
-        virtual void setZRange(const ViewRangeInfo::ViewAxisRange & zRange);
 
         virtual void setHuRange(const VolumeInfo::HuRange & huRange);
 

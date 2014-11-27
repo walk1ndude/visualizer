@@ -7,6 +7,8 @@ namespace MaterialInfo {
         _id(materialNumber ++) {
     }
 
+    QStringList Material::initializationOrder = { "emissive", "diffuse", "specular", "shineness"};
+
     Material::Material(const Emissive & emissive,
                        const Diffuse & diffuse,
                        const Specular & specular,

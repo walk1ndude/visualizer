@@ -4,7 +4,12 @@
 #include "Info/ShaderInfo.h"
 
 namespace ViewRangeInfo {
-    using ViewAxisRange = QVector2D;
+    class ViewAxisRange : public QVector2D {
+    public:
+        ViewAxisRange(const qreal & minV = -1.0f, const qreal & maxV = 1.0f) :
+            QVector2D(minV, maxV) {
+        }
+    };
 
     enum ViewAxis {
         XAXIS,
@@ -38,6 +43,7 @@ namespace ViewRangeInfo {
     };
 }
 
+Q_DECLARE_METATYPE(ViewRangeInfo::ViewAxisRange)
 Q_DECLARE_METATYPE(ViewRangeInfo::ViewAxis)
 
 #endif // VIEWRANGEINFO_H

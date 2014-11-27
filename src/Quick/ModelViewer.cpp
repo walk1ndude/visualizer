@@ -60,38 +60,6 @@ namespace Quick {
         });
     }
 
-    ViewRangeInfo::ViewAxisRange ModelViewer::xRange() const {
-        return _xRange;
-    }
-
-    void ModelViewer::setXRange(const ViewRangeInfo::ViewAxisRange & xRange) {
-        recieve("modelViewer", "model 2", "setRange",
-            ModelInfo::Params() = {
-                { "range", QVariant(xRange) },
-                { "axis", QVariant(ViewRangeInfo::XAXIS) }
-        });
-
-        _xRange = xRange;
-    }
-
-    ViewRangeInfo::ViewAxisRange ModelViewer::yRange() const {
-        return _yRange;
-    }
-
-    void ModelViewer::setYRange(const ViewRangeInfo::ViewAxisRange & yRange) {
-        _yRange = yRange;
-        emit yRangeChanged(_yRange);
-    }
-
-    ViewRangeInfo::ViewAxisRange ModelViewer::zRange() const {
-        return _zRange;
-    }
-
-    void ModelViewer::setZRange(const ViewRangeInfo::ViewAxisRange & zRange) {
-        _zRange = zRange;
-        emit zRangeChanged(_zRange);
-    }
-
     int ModelViewer::modelID() const {
         return _modelID;
     }

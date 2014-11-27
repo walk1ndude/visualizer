@@ -34,6 +34,9 @@ namespace MaterialInfo {
         Shininess shininess() const;
 
         uint id() const;
+
+        static QStringList initializationOrder;
+
     private:
         Emissive _emissive;
         Diffuse _diffuse;

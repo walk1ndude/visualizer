@@ -112,9 +112,9 @@ ApplicationWindow {
             width: appWindow.width - sidebar.width;
             height: appWindow.height - consoleDock.height;
 
-            xRange: sidebar.xRange;
-            yRange: sidebar.yRange;
-            zRange: sidebar.zRange;
+            //xRange: sidebar.xRange;
+            //yRange: sidebar.yRange;
+            //zRange: sidebar.zRange;
 
             rotation: sidebar.angle;
 

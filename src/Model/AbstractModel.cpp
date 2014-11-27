@@ -66,14 +66,18 @@ namespace Model {
         int pos;
         bool ok;
 
+        QVariantMap paramList;
+
         for (const QString & lightInShader : lightMap.keys()) {
             pos = lightInShader.toInt(&ok);
 
             if (ok) {
                 variables.clear();
 
-                for (const QVariant & variable : lightMap[lightInShader].toList()) {
-                    variables << variable.value<ShaderInfo::ShaderVariableName>();
+                paramList = lightMap[lightInShader].toMap();
+
+                for (const QString & lightSourceParam : LightInfo::LightSource::initializationOrder) {
+                    variables << paramList[lightSourceParam].value<ShaderInfo::ShaderVariableName>();
                 }
 
                 addLightSource(scene()->lightSource(pos), variables);
@@ -88,8 +92,10 @@ namespace Model {
             if (ok) {
                 variables.clear();
 
-                for (const QVariant & variable : materialMap[materialInShader].toList()) {
-                    variables << variable.value<ShaderInfo::ShaderVariableName>();
+                paramList = materialMap[materialInShader].toMap();
+
+                for (const QString & materialParam : MaterialInfo::Material::initializationOrder) {
+                    variables << paramList[materialParam].value<ShaderInfo::ShaderVariableName>();
                 }
 
                 addMaterial(scene()->material(pos), variables);

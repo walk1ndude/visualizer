@@ -21,29 +21,18 @@ namespace Model {
     void AbstractModelWithPoints::init(const ModelInfo::Params & params) {
         AbstractModel::init(params);
 
-        QVariantList rangesList = params["viewRanges"].toList();
+        QVariantMap rangesMap = params["viewRanges"].toMap();
 
-        ViewRangeInfo::ViewAxisRanges ranges;
-
-        for (const QVariant & range : rangesList) {
-            ranges << range.value<ViewRangeInfo::ViewAxisRange>();
-        }
-
-        int rangeInitedSize = ranges.size();
-
-        QVariantList viewList = params["viewRangeShader"].toList();
-        ShaderInfo::ShaderVariablesNames shaderVariablesNames;
-
-        for (const QVariant & name : viewList) {
-            shaderVariablesNames << name.value<ShaderInfo::ShaderVariableName>();
-        }
+        QVariantMap viewMap = params["viewRangeShader"].toMap();
 
         setViewRange(
-                    (rangeInitedSize < 1 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[0]),
-                    (rangeInitedSize < 2 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[1]),
-                    (rangeInitedSize < 3 ? ViewRangeInfo::ViewAxisRange(-1.0, 1.0) : ranges[2]),
-                    shaderVariablesNames
-                );
+                    (rangesMap.contains("x") ? ViewRangeInfo::ViewAxisRange() : rangesMap["x"].value<ViewRangeInfo::ViewAxisRange>()),
+                    (rangesMap.contains("y") ? ViewRangeInfo::ViewAxisRange() : rangesMap["y"].value<ViewRangeInfo::ViewAxisRange>()),
+                    (rangesMap.contains("z") ? ViewRangeInfo::ViewAxisRange() : rangesMap["z"].value<ViewRangeInfo::ViewAxisRange>()),
+                    ShaderInfo::ShaderVariablesNames()
+                        << viewMap["x"].value<ShaderInfo::ShaderVariableName>()
+                        << viewMap["y"].value<ShaderInfo::ShaderVariableName>()
+                        << viewMap["z"].value<ShaderInfo::ShaderVariableName>());
     }
 
     PointsModel * AbstractModelWithPoints::pointsModel() const {

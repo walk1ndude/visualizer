@@ -13,16 +13,18 @@ namespace Model {
     void AxesModel::init(const ModelInfo::Params & params) {
         AbstractModel::init(params);
 
-        QVariantList colorList = params["axesColor"].toList();
+        QVariantMap colorMap = params["axesColor"].toMap();
         QVector<QColor> colors;
 
         QString helper;
 
-        for (const QVariant & color : colorList) {
-            helper = color.toString();
+        QStringList colorHashMap = {"x", "y", "z"};
+
+        for (const QString & color : colorHashMap) {
+            helper = colorMap[color].toString();
 
             if (helper.isEmpty()) {
-                colors << color.value<QColor>();
+                colors << colorMap[color].value<QColor>();
             }
             else {
                 colors << QColor(helper);

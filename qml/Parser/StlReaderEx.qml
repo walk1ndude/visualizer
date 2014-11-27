@@ -12,35 +12,35 @@ StlReader {
             "children" : {
                 "PointsModel" : {},
                 "AxesModel" : {
-                    "axesColor" : [
-                        "red",
-                        "green",
-                        Qt.rgba(0, 0, 1, 1)
-                    ],
+                    "axesColor" : {
+                        "x" : "red",
+                        "y" : "green",
+                        "z" : Qt.rgba(0, 0, 1, 1)
+                    },
                     "length" : 1.5
                 }
             },
             "lights" : {
-                "-1" : [
-                        "lightSource.position",
-                        "lightSource.color",
-                        "lightSource.ambientIntensity",
-                        "lightSource.attenuation"
-                    ]
+                "-1" : {
+                        "position" : "lightSource.position",
+                        "color" : "lightSource.color",
+                        "ambientIntensity" : "lightSource.ambientIntensity",
+                        "attenuation" : "lightSource.attenuation"
+                }
             },
             "materials" : {
-                "-1" : [
-                    "material.emissive",
-                    "material.diffuse",
-                    "material.specular",
-                    "material.shininess"
-                ]
+                "-1" : {
+                    "emissive" : "material.emissive",
+                    "diffuse" : "material.diffuse",
+                    "specular" : "material.specular",
+                    "shineness" : "material.shininess"
+                }
             },
-            "viewRangeShader" : [
-                "ranges.xRange",
-                "ranges.yRange",
-                "ranges.zRange"
-            ]
+            "viewRangeShader" : {
+                "x" : "ranges.xRange",
+                "y" : "ranges.yRange",
+                "z" : "ranges.zRange"
+            }
         }
     };
 

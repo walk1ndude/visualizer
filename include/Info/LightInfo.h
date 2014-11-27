@@ -35,6 +35,9 @@ namespace LightInfo {
         Attenuation attenuation() const;
 
         uint id() const;
+
+        static QStringList initializationOrder;
+
     private:
         Position _position;
         Color _color;
