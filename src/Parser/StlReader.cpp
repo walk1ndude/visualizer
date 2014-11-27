@@ -319,11 +319,10 @@ namespace Parser {
 
         cv::parallel_for_(cv::Range(0, vertexNumber), ParallelNormalizing(normData));
 
-        ModelInfo::BuffersVN model;
-        model.vertices = ModelInfo::VerticesVNPointer(vertices);
+        ModelInfo::BuffersVN buffers;
+        buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        QVariantMap map;
-        sendResults<ModelInfo::BuffersVN>(model, map);
+        sendBuffers(buffers);
     }
 
     void StlReader::readBinary(QFile & stlFile) {
@@ -381,6 +380,10 @@ namespace Parser {
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 
+        sendBuffers(buffers);
+    }
+
+    void StlReader::sendBuffers(ModelInfo::BuffersVN buffers) {
         QVariantList blueprintList = _blueprint.toList();
 
         QVariantMap blueprintMap = blueprintList[0].toMap();

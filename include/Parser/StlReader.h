@@ -21,6 +21,8 @@ namespace Parser {
         void readASCII(QFile & stlFile, const bool & solidChecked = false);
         void readBinary(QFile & stlFile);
 
+        void sendBuffers(ModelInfo::BuffersVN buffers);
+
     signals:
         void readingErrorHappened();
 
