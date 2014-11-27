@@ -31,7 +31,7 @@ namespace Render {
         AbstractRenderer::disconnectWithScene(scene);
     }
 
-    void ModelRenderer::addModel(const ModelInfo::Model &model) {
+    void ModelRenderer::addModel(const ModelInfo::Model & model) {
         QMutexLocker locker(&renderMutex);
 
         if (Scene::ModelScene * currentModelScene = qobject_cast<Scene::ModelScene *>(currentScene())) {

@@ -202,6 +202,35 @@ namespace Model {
             }
         }
 
+        template <class T, class U>
+        void initFromParams(const ModelInfo::Params & params, const QStringList & initializationOrder,
+                            void (AbstractModel::*addToElems)(T, const ShaderInfo::ShaderVariablesNames &),
+                            Scene::AbstractScene * scene,
+                            T (Scene::AbstractScene::*findObject)(const U &) const) {
+            ShaderInfo::ShaderVariablesNames variables;
+
+            int pos;
+            bool ok;
+
+            QVariantMap paramList;
+
+            for (const QString & paramsInShader : params.keys()) {
+                pos = paramsInShader.toInt(&ok);
+
+                if (ok) {
+                    variables.clear();
+
+                    paramList = params[paramsInShader].toMap();
+
+                    for (const QString & paramInOrder : initializationOrder) {
+                        variables << paramList[paramInOrder].value<ShaderInfo::ShaderVariableName>();
+                    }
+
+                    (this->*addToElems)((scene->*findObject)(pos), variables);
+                }
+            }
+        }
+
     signals:
         void shaderProgramInitErrorHappened();
         void shaderProgramSetVariableErrorHappened();

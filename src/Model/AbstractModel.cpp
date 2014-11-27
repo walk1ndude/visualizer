@@ -59,48 +59,19 @@ namespace Model {
     }
 
     void AbstractModel::init(const ModelInfo::Params & params) {
-        QVariantMap lightMap = params["lights"].toMap();
+        initFromParams<LightInfo::LightSource *, LightInfo::LightID>(
+                    params["lights"].toMap(),
+                    LightInfo::LightSource::initializationOrder,
+                    &AbstractModel::addLightSource,
+                    _scene, &Scene::AbstractScene::lightSource
+                );
 
-        ShaderInfo::ShaderVariablesNames variables;
-
-        int pos;
-        bool ok;
-
-        QVariantMap paramList;
-
-        for (const QString & lightInShader : lightMap.keys()) {
-            pos = lightInShader.toInt(&ok);
-
-            if (ok) {
-                variables.clear();
-
-                paramList = lightMap[lightInShader].toMap();
-
-                for (const QString & lightSourceParam : LightInfo::LightSource::initializationOrder) {
-                    variables << paramList[lightSourceParam].value<ShaderInfo::ShaderVariableName>();
-                }
-
-                addLightSource(scene()->lightSource(pos), variables);
-            }
-        }
-
-        QVariantMap materialMap = params["materials"].toMap();
-
-        for (const QString & materialInShader : materialMap.keys()) {
-            pos = materialInShader.toInt(&ok);
-
-            if (ok) {
-                variables.clear();
-
-                paramList = materialMap[materialInShader].toMap();
-
-                for (const QString & materialParam : MaterialInfo::Material::initializationOrder) {
-                    variables << paramList[materialParam].value<ShaderInfo::ShaderVariableName>();
-                }
-
-                addMaterial(scene()->material(pos), variables);
-            }
-       }
+        initFromParams<MaterialInfo::Material *, MaterialInfo::MaterialID>(
+                    params["materials"].toMap(),
+                    MaterialInfo::Material::initializationOrder,
+                    &AbstractModel::addMaterial,
+                    _scene, &Scene::AbstractScene::material
+                    );
     }
 
     void AbstractModel::registerType(const ModelInfo::Type & name, ModelFactory * factory) {
