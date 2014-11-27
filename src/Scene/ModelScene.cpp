@@ -136,6 +136,16 @@ namespace Scene {
         lightSources.clear();
     }
 
+    QVariant ModelScene::blueprint() const {
+        return _blueprint;
+    }
+
+    void ModelScene::setBlueprint(const QVariant & blueprint) {
+        _blueprint = blueprint;
+
+        emit blueprintChanged(blueprint);
+    }
+
     void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
         QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
 
@@ -234,23 +244,17 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
-        addModel(ModelInfo::Model("EvaluatorModel", ModelInfo::Params() = {
-            { "width", QVariant(10) },
-            { "height", QVariant(10) },
-            { "stepX", QVariant(10.0f) },
-            { "stepY", QVariant(0.0f) },
-            { "color", QVariant(QVector3D(0.0f, 0.0f, 0.5f)) },
-        }));
-/*
-        addModel(ModelInfo::Model("AxesModel", ModelInfo::Params() = {
-            { "axesColor", QVariant::fromValue(QVector<QColor>() = {
-                QColor::QColor("red"),
-                QColor::QColor("green"),
-                QColor::QColor("blue")
-            }) },
-            { "length", QVariant::fromValue(1.5f) }
-        }));
-        */
+        QVariantMap modelMap;
+
+        for (const QVariant & model : _blueprint.toList()) {
+            modelMap = model.toMap();
+
+            addModel(ModelInfo::Model(
+                modelMap["type"].value<ModelInfo::Type>(),
+                modelMap["params"].value<ModelInfo::Params>()
+                )
+            );
+        }
     }
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {

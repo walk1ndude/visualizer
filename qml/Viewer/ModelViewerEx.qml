@@ -70,6 +70,17 @@ ModelViewer {
             shininess: 100.0;
         }
 
+        blueprint: [ {
+                "type" : "EvaluatorModel",
+                "params" : {
+                    "width" : 10,
+                    "height" : 10,
+                    "stepX" : 10.0,
+                    "color" : "blue"
+                }
+            }
+        ]
+
         onScalingFactorChanged: modelViewerEx.scalingFactor = scalingFactor;
     }
 

@@ -24,7 +24,7 @@ namespace Model {
         virtual void setSize(const QSize & size);
         virtual void setSize(const int & width, const int & height);
 
-        virtual void setColor(const QVector3D & color);
+        virtual void setColor(const QColor & color);
 
         virtual void setStep(const qreal & stepX, const qreal & stepY = 0.0f);
 
@@ -45,7 +45,7 @@ namespace Model {
         int _width;
         int _height;
 
-        QVector3D _color;
+        QColor _color;
 
         qreal _stepX;
         qreal _stepY;

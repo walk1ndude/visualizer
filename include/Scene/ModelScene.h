@@ -17,6 +17,8 @@ namespace Scene {
     class ModelScene : public AbstractScene {
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
 
+        Q_PROPERTY(QVariant blueprint READ blueprint WRITE setBlueprint NOTIFY blueprintChanged)
+
         Q_OBJECT
     public:
         explicit ModelScene();
@@ -33,6 +35,8 @@ namespace Scene {
 
         Model::AbstractModel * selectedModel() const;
 
+        QVariant blueprint() const;
+
     protected:
         virtual void initScene();
 
@@ -44,6 +48,7 @@ namespace Scene {
         QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
         QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
 
+        QVariant _blueprint;
 
         QList<QOpenGLTexture *> _textures;
 
@@ -67,6 +72,8 @@ namespace Scene {
 
         void viewportArrayChanged();
 
+        void blueprintChanged(const QVariant & blueprint);
+
     public slots:
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
 
@@ -79,6 +86,8 @@ namespace Scene {
         virtual void updateScene();
 
         virtual void recieve(const Message::SettingsMessage & message);
+
+        virtual void setBlueprint(const QVariant & blueprint);
     };
 
 }

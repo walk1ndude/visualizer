@@ -23,7 +23,7 @@ namespace Model {
         _height = h;
     }
 
-    void EvaluatorModel::setColor(const QVector3D & color) {
+    void EvaluatorModel::setColor(const QColor & color) {
         _color = color;
     }
 
@@ -37,7 +37,7 @@ namespace Model {
 
         setSize(params["width"].toInt(), params["height"].toInt());
         setStep(params["stepX"].toReal(), params["stepY"].toReal());
-        setColor(params["color"].value<QVector3D>());
+        setColor(params["color"].value<QColor>());
 
         ModelInfo::VerticesVPtr vertices = new ModelInfo::VerticesV;
 
@@ -84,7 +84,7 @@ namespace Model {
 
     void EvaluatorModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
-        program->setUniformValue(uniformValues["color"], QVector4D(_color, 1.0f));
+        program->setUniformValue(uniformValues["color"], _color);
     }
 
     void EvaluatorModel::glStatesEnable() const {
