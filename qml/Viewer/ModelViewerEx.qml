@@ -76,7 +76,7 @@ ModelViewer {
                     "width" : 10,
                     "height" : 10,
                     "stepX" : 10.0,
-                    "color" : "blue"
+                    "color" : Qt.rgba(0, 0, 0.6)
                 }
             }
         ]

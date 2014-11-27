@@ -248,9 +248,17 @@ namespace Quick {
                 }
             }
             else {
-                QVariantMap map = message.data["blueprint"].toMap();
+                QVariantList list = message.data["blueprint"].toList();
 
-                emit addModel(ModelInfo::Model(map.keys().first(), map.values().first().toMap()));
+                QVariantMap model;
+
+                for (const QVariant & map : list) {
+                    model = map.toMap();
+
+                    emit addModel(ModelInfo::Model(model["type"].value<ModelInfo::Type>(), model["params"].value<ModelInfo::Params>()));
+                }
+
+                //emit addModel(ModelInfo::Model(map.keys().first(), map.values().first().toMap()));
             }
         }
     }

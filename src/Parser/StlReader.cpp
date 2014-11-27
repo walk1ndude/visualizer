@@ -381,14 +381,18 @@ namespace Parser {
         ModelInfo::BuffersVN buffers;
         buffers.vertices = ModelInfo::VerticesVNPointer(vertices);
 
-        QVariantMap blueprintMap = _blueprint.toMap();
-        QVariantMap blueprintProps = blueprintMap["StlModel"].toMap();
+        QVariantList blueprintList = _blueprint.toList();
 
-        blueprintProps["buffers"] = QVariant::fromValue(buffers);
-        blueprintMap["StlModel"] = QVariant(blueprintProps);
+        QVariantMap blueprintMap = blueprintList[0].toMap();
+        QVariantMap blueprintParams = blueprintMap["params"].toMap();
+
+        blueprintParams["buffers"] = QVariant::fromValue(buffers);
+        blueprintMap["params"] = QVariant(blueprintParams);
+
+        blueprintList[0] = QVariant(blueprintMap);
 
         Message::SettingsMessage message("StlParser", "ModelViewer");
-        message.data["blueprint"] = QVariant(blueprintMap);
+        message.data["blueprint"] = QVariant(blueprintList);
 
         send(message);
     }

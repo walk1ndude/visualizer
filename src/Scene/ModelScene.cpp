@@ -230,13 +230,18 @@ namespace Scene {
 
         _models.append(modelI);
 
-        QVariantMap children = params["children"].toMap();
+        QVariantList children = params["children"].toList();
 
-        for (const QString & child : children.keys()) {
-            modelI->addChild(
-                        addModel(
-                            ModelInfo::Model(child, children[child].toMap())
-                        )
+        QVariantMap childsMap;
+
+        for (const QVariant & child : children) {
+            childsMap = child.toMap();
+
+            modelI->addChild(addModel(ModelInfo::Model(
+                                     childsMap["type"].value<ModelInfo::Type>(),
+                                     childsMap["params"].value<ModelInfo::Params>()
+                                    )
+                                )
             );
         }
 
