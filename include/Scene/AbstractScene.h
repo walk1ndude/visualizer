@@ -42,8 +42,8 @@ namespace Scene {
 
         qreal scalingFactor() const;
 
-        MaterialInfo::Material * material(const MaterialInfo::MaterialID & id = -1) const;
-        LightInfo::LightSource * lightSource(const LightInfo::LightID & id = -1) const;
+        MaterialInfo::Material * material(const MaterialInfo::MaterialID & id = "") const;
+        LightInfo::LightSource * lightSource(const LightInfo::LightID & id = "") const;
 
     protected:
         QList<MaterialInfo::Material *> materials;

@@ -50,7 +50,7 @@ namespace Scene {
     MaterialInfo::Material * AbstractScene::material(const MaterialInfo::MaterialID & id) const {
         MaterialInfo::Material * mat = nullptr;
 
-        if (id < 0 && !materials.isEmpty()) {
+        if (id.isEmpty() && !materials.isEmpty()) {
             mat = materials.first();
         }
 

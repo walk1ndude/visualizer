@@ -1,19 +1,21 @@
 #include "Info/MaterialInfo.h"
 
-static MaterialInfo::MaterialID materialNumber = 0;
+static int materialNumber = 0;
 
 namespace MaterialInfo {
     Material::Material() :
-        _id(materialNumber ++) {
+        _id(MaterialID::number(materialNumber ++)) {
     }
 
     QStringList Material::initializationOrder = { "emissive", "diffuse", "specular", "shineness"};
 
-    Material::Material(const Emissive & emissive,
+    Material::Material(const MaterialID & id,
+                       const Emissive & emissive,
                        const Diffuse & diffuse,
                        const Specular & specular,
                        const Shininess & shininess) :
         Material() {
+        _id = id;
         _emissive = emissive;
         _diffuse = diffuse;
         _specular = specular;
@@ -36,32 +38,38 @@ namespace MaterialInfo {
         return _shininess;
     }
 
-    uint Material::id() const {
+    MaterialID Material::id() const {
         return _id;
+    }
+
+    void Material::setID(const MaterialID & id) {
+        _id = id;
+
+        emit idChanged(id);
     }
 
     void Material::setEmissive(const Emissive & emissive) {
         _emissive = emissive;
 
-        emit emissiveChanged();
+        emit emissiveChanged(emissive);
     }
 
     void Material::setDiffuse(const Diffuse & diffuse) {
         _diffuse = diffuse;
 
-        emit diffuseChanged();
+        emit diffuseChanged(diffuse);
     }
 
     void Material::setSpecular(const Specular & specular) {
         _specular = specular;
 
-        emit specularChanged();
+        emit specularChanged(specular);
     }
 
     void Material::setShininess(const Shininess & shininess) {
         _shininess = shininess;
 
-        emit shininessChanged();
+        emit shininessChanged(shininess);
     }
 
     MaterialProgram::MaterialProgram(QOpenGLShaderProgram * program,

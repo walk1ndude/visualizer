@@ -209,24 +209,23 @@ namespace Model {
                             T (Scene::AbstractScene::*findObject)(const U &) const) {
             ShaderInfo::ShaderVariablesNames variables;
 
-            int pos;
-            bool ok;
-
             QVariantMap paramList;
 
-            for (const QString & paramsInShader : params.keys()) {
-                pos = paramsInShader.toInt(&ok);
+            T object;
 
-                if (ok) {
-                    variables.clear();
+            for (const QString & objectID : params.keys()) {
+                variables.clear();
 
-                    paramList = params[paramsInShader].toMap();
+                paramList = params[objectID].toMap();
 
-                    for (const QString & paramInOrder : initializationOrder) {
-                        variables << paramList[paramInOrder].value<ShaderInfo::ShaderVariableName>();
-                    }
+                for (const QString & paramInOrder : initializationOrder) {
+                    variables << paramList[paramInOrder].value<ShaderInfo::ShaderVariableName>();
+                }
 
-                    (this->*addToElems)((scene->*findObject)(pos), variables);
+                object = (scene->*findObject)(objectID);
+
+                if (object) {
+                    (this->*addToElems)(object, variables);
                 }
             }
         }

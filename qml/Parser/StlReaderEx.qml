@@ -28,7 +28,7 @@ StlReader {
                     }
                 ],
                 "lights" : {
-                    "-1" : {
+                    "first" : {
                         "position" : "lightSource.position",
                         "color" : "lightSource.color",
                         "ambientIntensity" : "lightSource.ambientIntensity",
@@ -36,7 +36,7 @@ StlReader {
                     }
                 },
                 "materials" : {
-                    "-1" : {
+                    "first" : {
                         "emissive" : "material.emissive",
                         "diffuse" : "material.diffuse",
                         "specular" : "material.specular",

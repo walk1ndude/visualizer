@@ -10,7 +10,7 @@ namespace MaterialInfo {
     using Specular = QVector4D;
     using Shininess = GLfloat;
 
-    using MaterialID = int;
+    using MaterialID = QString;
 
     using Materials = QHash<MaterialID, ShaderInfo::ShaderVariablesNames>;
 
@@ -20,10 +20,13 @@ namespace MaterialInfo {
         Q_PROPERTY(QVector4D specular READ specular WRITE setSpecular NOTIFY specularChanged)
         Q_PROPERTY(qreal shininess READ shininess WRITE setShininess NOTIFY shininessChanged)
 
+        Q_PROPERTY(QString name READ id WRITE setID NOTIFY idChanged)
+
         Q_OBJECT
     public:
         Material();
-        Material(const Emissive & emissive,
+        Material(const MaterialID & id,
+                 const Emissive & emissive,
                  const Diffuse & diffuse,
                  const Specular & specular,
                  const Shininess & shininess);
@@ -33,7 +36,7 @@ namespace MaterialInfo {
         Specular specular() const;
         Shininess shininess() const;
 
-        uint id() const;
+        MaterialID id() const;
 
         static QStringList initializationOrder;
 
@@ -43,19 +46,21 @@ namespace MaterialInfo {
         Specular _specular;
         Shininess _shininess;
 
-        uint _id;
+        MaterialID _id;
 
     signals:
-        void emissiveChanged();
-        void diffuseChanged();
-        void specularChanged();
-        void shininessChanged();
+        void emissiveChanged(const Emissive & emissive);
+        void diffuseChanged(const Diffuse & diffuse);
+        void specularChanged(const Specular & specular);
+        void shininessChanged(const Shininess & shininess);
+        void idChanged(const MaterialID & id);
 
     public slots:
         void setEmissive(const Emissive & emissive);
         void setDiffuse(const Diffuse & diffuse);
         void setSpecular(const Specular & specular);
         void setShininess(const Shininess & shininess);
+        void setID(const MaterialID & id);
     };
 
     class MaterialProgram {

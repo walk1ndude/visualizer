@@ -1,20 +1,22 @@
 #include "Info/LightInfo.h"
 
-static LightInfo::LightID lightSourceNumber = 0;
+static int lightSourceNumber = 0;
 
 namespace LightInfo {
     LightSource::LightSource() :
-        _id(lightSourceNumber ++) {
+        _id(LightID::number(lightSourceNumber ++)) {
 
     }
 
     QStringList LightSource::initializationOrder = {"position", "color", "ambientIntensity", "attenuation"};
 
-    LightSource::LightSource(const Position & position,
+    LightSource::LightSource(const LightID & lightID,
+                             const Position & position,
                              const Color & color,
                              const AmbientIntensity & ambientIntensity,
                              const Attenuation & attenuation) :
         LightSource() {
+        _id = lightID;
         _position = position;
         _color = color;
         _ambientIntensity = ambientIntensity;
@@ -37,32 +39,38 @@ namespace LightInfo {
         return _attenuation;
     }
 
-    uint LightSource::id() const {
+    LightID LightSource::id() const {
         return _id;
+    }
+
+    void LightSource::setID(const LightID & id) {
+        _id = id;
+
+        emit idChanged(id);
     }
 
     void LightSource::setPosition(const Position & position) {
         _position = position;
 
-        emit positionChanged();
+        emit positionChanged(position);
     }
 
     void LightSource::setColor(const Color & color) {
         _color = color;
 
-        emit colorChanged();
+        emit colorChanged(color);
     }
 
     void LightSource::setAmbientIntensity(const AmbientIntensity & ambientIntensity) {
         _ambientIntensity = ambientIntensity;
 
-        emit ambientIntensityChanged();
+        emit ambientIntensityChanged(ambientIntensity);
     }
 
     void LightSource::setAttenuation(const Attenuation & attenuation) {
         _attenuation = attenuation;
 
-        emit attenuationChanged();
+        emit attenuationChanged(attenuation);
     }
 
     LightProgram::LightProgram(QOpenGLShaderProgram * program,

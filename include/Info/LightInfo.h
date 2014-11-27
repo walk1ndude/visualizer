@@ -11,7 +11,7 @@ namespace LightInfo {
     using AmbientIntensity = GLfloat;
     using Attenuation = GLfloat;
 
-    using LightID = int;
+    using LightID = QString;
 
     using LightSources = QHash<LightID, ShaderInfo::ShaderVariablesNames>;
 
@@ -20,11 +20,14 @@ namespace LightInfo {
         Q_PROPERTY(QVector4D color READ color WRITE setColor NOTIFY colorChanged)
         Q_PROPERTY(qreal ambientIntensity READ ambientIntensity WRITE setAmbientIntensity NOTIFY ambientIntensityChanged)
         Q_PROPERTY(qreal attenuation READ attenuation WRITE setAttenuation NOTIFY attenuationChanged)
+
+        Q_PROPERTY(QString name READ id WRITE setID NOTIFY idChanged)
         Q_OBJECT
 
     public:
         LightSource();
-        LightSource(const Position & position,
+        LightSource(const LightID & id,
+                    const Position & position,
                     const Color & color,
                     const AmbientIntensity & ambientIntensity,
                     const Attenuation & attenuation);
@@ -34,7 +37,7 @@ namespace LightInfo {
         AmbientIntensity ambientIntensity() const;
         Attenuation attenuation() const;
 
-        uint id() const;
+        LightID id() const;
 
         static QStringList initializationOrder;
 
@@ -45,19 +48,22 @@ namespace LightInfo {
         AmbientIntensity _ambientIntensity;
         Attenuation _attenuation;
 
-        uint _id;
+        QString _id;
 
     signals:
-        void positionChanged();
-        void colorChanged();
-        void ambientIntensityChanged();
-        void attenuationChanged();
+        void positionChanged(const Position & position);
+        void colorChanged(const Color & color);
+        void ambientIntensityChanged(const AmbientIntensity & ambientIntensity);
+        void attenuationChanged(const Attenuation & attenuation);
+        void idChanged(const LightID & id);
 
     public slots:
         void setPosition(const Position & position);
         void setColor(const Color & color);
         void setAmbientIntensity(const AmbientIntensity & ambientIntensity);
         void setAttenuation(const Attenuation & attenuation);
+
+        void setID(const LightID & id);
     };
 
     class LightProgram {
