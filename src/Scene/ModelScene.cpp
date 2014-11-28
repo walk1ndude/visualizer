@@ -36,6 +36,10 @@ namespace Scene {
     }
 
     void ModelScene::updateScene() {
+        while (!_blueprints.isEmpty()) {
+            unpackBlueprint(_blueprints.dequeue());
+        }
+
         for (Model::AbstractModel * model : _models.array()) {
             if (model->updateNeeded()) {
                 model->update();
@@ -237,13 +241,25 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
-        cleanUp();
+        unpackBlueprint(_blueprint.toMap(), true);
+    }
+
+    void ModelScene::unpackBlueprint(const SceneInfo::Blueprint & blueprint, const bool & resetScene) {
+        if (resetScene) {
+            cleanUp();
+        }
 
         QVariantMap modelMap;
 
-        QVariantMap blueprintMap = _blueprint.toMap();
+        for (const QVariant & lightSource : blueprint["lightSources"].toList()) {
+            lightSources.append(new LightInfo::LightSource(lightSource.toMap()));
+        }
 
-        for (const QVariant & model : blueprintMap["models"].toList()) {
+        for (const QVariant & material : blueprint["materials"].toList()) {
+            materials.append(new MaterialInfo::Material(material.toMap()));
+        }
+
+        for (const QVariant & model : blueprint["models"].toList()) {
             modelMap = model.toMap();
 
             addModel(ModelInfo::Model(
@@ -252,17 +268,14 @@ namespace Scene {
                 )
             );
         }
-
-        for (const QVariant & lightSource : blueprintMap["lightSources"].toList()) {
-            lightSources.append(new LightInfo::LightSource(lightSource.toMap()));
-        }
-
-        for (const QVariant & material : blueprintMap["materials"].toList()) {
-            materials.append(new MaterialInfo::Material(material.toMap()));
-        }
     }
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {
+        if (message.reciever().startsWith("Scene")) {
+            _blueprints.enqueue(message.data["blueprint"].value<SceneInfo::Blueprint>());
+            return;
+        }
+
         if (message.data.contains("modelID") && message.data.contains("action")) {
             QVariant id = message.data["modelID"];
             QVariant action = message.data["action"];

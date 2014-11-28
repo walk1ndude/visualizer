@@ -7,50 +7,68 @@ StlReader {
 
     property variant viewer: ({});
 
-    blueprint: [ {
-            "type" : "StlModel",
-            "params" : {
-                "children" : [
-                    {
-                        "type" : "PointsModel",
-                        "params" : {}
-                    },
-                    {
-                        "type" : "AxesModel",
-                        "params" : {
-                            "axesColor" : {
-                                "x" : "red",
-                                "y" : "green",
-                                "z" : Qt.rgba(0, 0, 1, 1)
-                            },
-                            "length" : 1.5
-                        }
+    blueprint: {
+            "materials" : [ {
+                    "id": "first",
+                    "emissive": Qt.vector4d(1.0, 1.8, 1.0, 1.0),
+                    "diffuse": Qt.vector4d(1.0, 1.0, 1.0, 1.0),
+                    "specular": Qt.vector4d(0.1, 1.2, 0.2, 0.2),
+                    "shininess": 100.0
+                    }
+                 ],
+            "lightSources" : [ {
+                    "id": "first",
+                    "position": Qt.vector4d(0.0, 0.0, 10.0, 1.0),
+                    "color": Qt.vector4d(1.0, 1.0, 1.0, 0.9),
+                    "ambientIntensity": 0.05,
+                    "attenuation": 0.006
                     }
                 ],
-                "lights" : {
-                    "first" : {
-                        "position" : "lightSource.position",
-                        "color" : "lightSource.color",
-                        "ambientIntensity" : "lightSource.ambientIntensity",
-                        "attenuation" : "lightSource.attenuation"
+            "models": [ {
+                "type" : "StlModel",
+                "params" : {
+                    "children" : [
+                        {
+                            "type" : "PointsModel",
+                            "params" : {}
+                        },
+                        {
+                            "type" : "AxesModel",
+                            "params" : {
+                                "axesColor" : {
+                                    "x" : "red",
+                                    "y" : "green",
+                                    "z" : Qt.rgba(0, 0, 1, 1)
+                                },
+                                "length" : 1.5
+                            }
+                        }
+                    ],
+                    "lights" : {
+                        "first" : {
+                            "position" : "lightSource.position",
+                            "color" : "lightSource.color",
+                            "ambientIntensity" : "lightSource.ambientIntensity",
+                            "attenuation" : "lightSource.attenuation"
+                        }
+                    },
+                    "materials" : {
+                        "first" : {
+                            "emissive" : "material.emissive",
+                            "diffuse" : "material.diffuse",
+                            "specular" : "material.specular",
+                            "shineness" : "material.shininess"
+                        }
+                    },
+                    "viewRangeShader" : {
+                        "x" : "ranges.xRange",
+                        "y" : "ranges.yRange",
+                        "z" : "ranges.zRange"
                     }
-                },
-                "materials" : {
-                    "first" : {
-                        "emissive" : "material.emissive",
-                        "diffuse" : "material.diffuse",
-                        "specular" : "material.specular",
-                        "shineness" : "material.shininess"
-                    }
-                },
-                "viewRangeShader" : {
-                    "x" : "ranges.xRange",
-                    "y" : "ranges.yRange",
-                    "z" : "ranges.zRange"
                 }
             }
-        }
-    ];
+        ]
+    };
 
     onSend: {
         if (viewer) {

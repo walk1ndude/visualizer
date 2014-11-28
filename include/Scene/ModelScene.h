@@ -11,6 +11,8 @@
 #include "Model/VertexVN.h"
 #include "Model/ModelArray.h"
 
+#include "Scene/BlueprintQueue.h"
+
 #include "Viewport/ViewportArray.h"
 
 namespace Scene {
@@ -59,6 +61,8 @@ namespace Scene {
 
         Viewport::ViewportArray * _viewportArray;
 
+        BlueprintQueue _blueprints;
+
         void selectModel(Model::AbstractModel * model);
 
         void render(QListIterator<Model::AbstractModel *> & modelIterator,
@@ -88,6 +92,8 @@ namespace Scene {
         virtual void recieve(const Message::SettingsMessage & message);
 
         virtual void setBlueprint(const QVariant & blueprint);
+
+        virtual void unpackBlueprint(const SceneInfo::Blueprint & blueprint, const bool & resetScene = false);
     };
 
 }

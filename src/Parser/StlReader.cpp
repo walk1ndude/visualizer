@@ -384,7 +384,8 @@ namespace Parser {
     }
 
     void StlReader::sendBuffers(ModelInfo::BuffersVN buffers) {
-        QVariantList blueprintList = _blueprint.toList();
+        QVariantMap blueprintOverallMap = _blueprint.toMap();
+        QVariantList blueprintList = blueprintOverallMap["models"].toList();
 
         QVariantMap blueprintMap = blueprintList[0].toMap();
         QVariantMap blueprintParams = blueprintMap["params"].toMap();
@@ -393,9 +394,10 @@ namespace Parser {
         blueprintMap["params"] = QVariant(blueprintParams);
 
         blueprintList[0] = QVariant(blueprintMap);
+        blueprintOverallMap["models"] = QVariant(blueprintList);
 
-        Message::SettingsMessage message("StlParser", "ModelViewer");
-        message.data["blueprint"] = QVariant(blueprintList);
+        Message::SettingsMessage message("StlParser", "Scene");
+        message.data["blueprint"] = QVariant(blueprintOverallMap);
 
         send(message);
     }

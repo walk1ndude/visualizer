@@ -115,7 +115,8 @@ SOURCES +=  src/main.cpp \
             src/Parser/AbstractParser.cpp \
             src/Model/AxesModel.cpp \
     src/Message/AbstractMessage.cpp \
-    src/Message/SettingsMessage.cpp
+    src/Message/SettingsMessage.cpp \
+    src/Scene/BlueprintQueue.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -157,6 +158,8 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/AxesModel.h \
     include/Message/AbstractMessage.h \
     include/Message/SettingsMessage.h \
-    include/Model/ModelFactory.h
+    include/Model/ModelFactory.h \
+    include/Info/SceneInfo.h \
+    include/Scene/BlueprintQueue.h
 
 RESOURCES += resources.qrc

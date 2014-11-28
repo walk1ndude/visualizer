@@ -10,6 +10,7 @@
 #include "Info/VolumeInfo.h"
 #include "Info/LightInfo.h"
 #include "Info/MaterialInfo.h"
+#include "Info/SceneInfo.h"
 
 #include "Message/SettingsMessage.h"
 

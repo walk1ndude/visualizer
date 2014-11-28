@@ -247,7 +247,12 @@ namespace Quick {
                     emit pointUpdated(map);
                 }
             }
-            else {
+            else if (message.reciever().startsWith("Scene")) {
+                /*)
+                QVariantMap blueprintMap = message.data["blueprint"].toMap();
+                qDebug() << blueprintMap;
+                exit(0);
+
                 QVariantList list = message.data["blueprint"].toList();
 
                 QVariantMap model;
@@ -257,8 +262,8 @@ namespace Quick {
 
                     emit addModel(ModelInfo::Model(model["type"].value<ModelInfo::Type>(), model["params"].value<ModelInfo::Params>()));
                 }
-
-                //emit addModel(ModelInfo::Model(map.keys().first(), map.values().first().toMap()));
+                */
+                emit post(message);
             }
         }
     }
