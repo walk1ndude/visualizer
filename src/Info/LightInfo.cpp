@@ -4,7 +4,7 @@ static int lightSourceNumber = 0;
 
 namespace LightInfo {
     LightSource::LightSource() :
-        _id(LightID::number(lightSourceNumber ++)) {
+        _id(getNewID<LightID>(lightSourceNumber)) {
 
     }
 
@@ -14,13 +14,26 @@ namespace LightInfo {
                              const Position & position,
                              const Color & color,
                              const AmbientIntensity & ambientIntensity,
-                             const Attenuation & attenuation) :
-        LightSource() {
+                             const Attenuation & attenuation) {
         _id = lightID;
         _position = position;
         _color = color;
         _ambientIntensity = ambientIntensity;
         _attenuation = attenuation;
+    }
+
+    LightSource::LightSource(const Params & params) {
+        if (params.contains("id")) {
+            _id = params["id"].value<LightID>();
+        }
+        else {
+            _id = getNewID<LightID>(lightSourceNumber);
+        }
+
+        _position = params["position"].value<Position>();
+        _color = params["color"].value<Color>();
+        _ambientIntensity = params["ambientIntensity"].value<AmbientIntensity>();
+        _attenuation = params["attenuation"].value<Attenuation>();
     }
 
     Position LightSource::position() const {

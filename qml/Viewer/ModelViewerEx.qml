@@ -56,32 +56,34 @@ ModelViewer {
 
         viewportArray: viewportArray;
 
-        LightSource {
-            name: "first";
-            position: Qt.vector4d(0.0, 0.0, 10.0, 1.0);
-            color: Qt.vector4d(1.0, 1.0, 1.0, 0.9);
-            ambientIntensity: 0.05;
-            attenuation: 0.006;
-        }
-
-        Material {
-            name: "first";
-            emissive: Qt.vector4d(1.0, 1.8, 1.0, 1.0);
-            diffuse: Qt.vector4d(1.0, 1.0, 1.0, 1.0);
-            specular: Qt.vector4d(0.1, 1.2, 0.2, 0.2);
-            shininess: 100.0;
-        }
-
-        blueprint: [ {
-                "type" : "EvaluatorModel",
-                "params" : {
-                    "width" : 10,
-                    "height" : 10,
-                    "stepX" : 10.0,
-                    "color" : Qt.rgba(0, 0, 0.6)
+        blueprint: {
+            "materials" : [ {
+                    "id": "first",
+                    "emissive": Qt.vector4d(1.0, 1.8, 1.0, 1.0),
+                    "diffuse": Qt.vector4d(1.0, 1.0, 1.0, 1.0),
+                    "specular": Qt.vector4d(0.1, 1.2, 0.2, 0.2),
+                    "shininess": 100.0
+                    }
+                 ],
+            "lightSources" : [ {
+                    "id": "first",
+                    "position": Qt.vector4d(0.0, 0.0, 10.0, 1.0),
+                    "color": Qt.vector4d(1.0, 1.0, 1.0, 0.9),
+                    "ambientIntensity": 0.05,
+                    "attenuation": 0.006
+                    }
+                ],
+            "models" : [ {
+                    "type" : "EvaluatorModel",
+                    "params" : {
+                        "width" : 10,
+                        "height" : 10,
+                        "stepX" : 10.0,
+                        "color" : Qt.rgba(0, 0, 0.6)
+                    }
                 }
-            }
-        ]
+            ]
+        }
 
         onScalingFactorChanged: modelViewerEx.scalingFactor = scalingFactor;
     }

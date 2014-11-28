@@ -38,9 +38,9 @@ namespace ModelInfo {
         IndicesPointer indices;
         VerticesVPointer vertices;
 
-        BuffersV() { }
-        BuffersV(const VerticesVPointer & vertices,
-                 const IndicesPointer & indices) :
+        explicit BuffersV() { }
+        explicit BuffersV(const VerticesVPointer & vertices,
+                          const IndicesPointer & indices) :
             indices(indices),
             vertices(vertices) {
         }

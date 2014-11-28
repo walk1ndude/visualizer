@@ -11,21 +11,6 @@ namespace Scene {
         AbstractScene(),
         _selectedModel(nullptr),
         _selectedTexture(nullptr) {
-        QObject::connect(this, &ModelScene::childrenChanged, [=]() {
-            lightSources.clear();
-            materials.clear();
-
-            for (QQuickItem * child : childItems()) {
-                if (LightInfo::LightSource * lightSource = qobject_cast<LightInfo::LightSource *>(child)) {
-                    lightSources.append(lightSource);
-                }
-                else if (MaterialInfo::Material * material = qobject_cast<MaterialInfo::Material *>(child)) {
-                    materials.append(material);
-                }
-            }
-
-            loaded();
-        });
     }
 
     ModelScene::~ModelScene() {
@@ -124,6 +109,9 @@ namespace Scene {
     void ModelScene::cleanUp() {
         qDeleteAll(_textures.begin(), _textures.end());
         _textures.clear();
+
+        qDeleteAll(materials.begin(), materials.end());
+        qDeleteAll(lightSources.begin(), lightSources.end());
 
         // it's just map to tex info, so no need to del anything allocated
         _texturesInModel.clear();
@@ -249,9 +237,13 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
+        cleanUp();
+
         QVariantMap modelMap;
 
-        for (const QVariant & model : _blueprint.toList()) {
+        QVariantMap blueprintMap = _blueprint.toMap();
+
+        for (const QVariant & model : blueprintMap["models"].toList()) {
             modelMap = model.toMap();
 
             addModel(ModelInfo::Model(
@@ -259,6 +251,14 @@ namespace Scene {
                 modelMap["params"].value<ModelInfo::Params>()
                 )
             );
+        }
+
+        for (const QVariant & lightSource : blueprintMap["lightSources"].toList()) {
+            lightSources.append(new LightInfo::LightSource(lightSource.toMap()));
+        }
+
+        for (const QVariant & material : blueprintMap["materials"].toList()) {
+            materials.append(new MaterialInfo::Material(material.toMap()));
         }
     }
 

@@ -4,7 +4,7 @@ static int materialNumber = 0;
 
 namespace MaterialInfo {
     Material::Material() :
-        _id(MaterialID::number(materialNumber ++)) {
+        _id(getNewID<MaterialID>(materialNumber)) {
     }
 
     QStringList Material::initializationOrder = { "emissive", "diffuse", "specular", "shineness"};
@@ -20,6 +20,20 @@ namespace MaterialInfo {
         _diffuse = diffuse;
         _specular = specular;
         _shininess = shininess;
+    }
+
+    Material::Material(const Params & params) {
+        if (params.contains("id")) {
+            _id = params["id"].value<MaterialID>();
+        }
+        else {
+            _id = getNewID<MaterialID>(materialNumber);
+        }
+
+        _emissive = params["emissive"].value<Emissive>();
+        _diffuse = params["diffuse"].value<Diffuse>();
+        _specular = params["specular"].value<Specular>();
+        _shininess = params["shininess"].value<Shininess>();
     }
 
     Emissive Material::emissive() const {

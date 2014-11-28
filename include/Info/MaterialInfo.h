@@ -14,7 +14,9 @@ namespace MaterialInfo {
 
     using Materials = QHash<MaterialID, ShaderInfo::ShaderVariablesNames>;
 
-    class Material : public QQuickItem {
+    using Params = QVariantMap;
+
+    class Material : public QObject {
         Q_PROPERTY(QVector4D emissive READ emissive WRITE setEmissive NOTIFY emissiveChanged)
         Q_PROPERTY(QVector4D diffuse READ diffuse WRITE setDiffuse NOTIFY diffuseChanged)
         Q_PROPERTY(QVector4D specular READ specular WRITE setSpecular NOTIFY specularChanged)
@@ -24,12 +26,13 @@ namespace MaterialInfo {
 
         Q_OBJECT
     public:
-        Material();
-        Material(const MaterialID & id,
-                 const Emissive & emissive,
-                 const Diffuse & diffuse,
-                 const Specular & specular,
-                 const Shininess & shininess);
+        explicit Material();
+        explicit Material(const MaterialID & id,
+                          const Emissive & emissive,
+                          const Diffuse & diffuse,
+                          const Specular & specular,
+                          const Shininess & shininess);
+        explicit Material(const Params & params);
 
         Emissive emissive() const;
         Diffuse diffuse() const;

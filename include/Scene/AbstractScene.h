@@ -56,7 +56,6 @@ namespace Scene {
         qreal _scalingFactor;
 
         bool _isInitialized;
-        bool _isLoaded;
 
         MeasureUnits _mUnits;
 
@@ -70,7 +69,6 @@ namespace Scene {
 
     public slots:
         virtual void initializeScene() final;
-        virtual void loaded() final;
 
         virtual void setScalingFactor(const qreal & scalingFactor) final;
         virtual void setMeasureUnits(const MeasureUnits & mUnits) final;

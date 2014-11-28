@@ -4,17 +4,12 @@ namespace Scene {
     AbstractScene::AbstractScene() :
         _scalingFactor(100.0f),
         _isInitialized(false),
-        _isLoaded(false),
         _mUnits(MM) {
 
     }
 
     bool AbstractScene::isInitialized() const {
         return _isInitialized;
-    }
-
-    void AbstractScene::loaded() {
-        _isLoaded = true;
     }
 
     qreal AbstractScene::scalingFactor() const {
@@ -28,10 +23,6 @@ namespace Scene {
     }
 
     void AbstractScene::initializeScene() {
-        if (!_isLoaded) {
-            return;
-        }
-
         initScene();
 
         _isInitialized = true;

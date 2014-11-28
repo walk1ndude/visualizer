@@ -15,7 +15,9 @@ namespace LightInfo {
 
     using LightSources = QHash<LightID, ShaderInfo::ShaderVariablesNames>;
 
-    class LightSource : public QQuickItem {
+    using Params = QVariantMap;
+
+    class LightSource : public QObject {
         Q_PROPERTY(QVector4D position READ position WRITE setPosition NOTIFY positionChanged)
         Q_PROPERTY(QVector4D color READ color WRITE setColor NOTIFY colorChanged)
         Q_PROPERTY(qreal ambientIntensity READ ambientIntensity WRITE setAmbientIntensity NOTIFY ambientIntensityChanged)
@@ -25,12 +27,13 @@ namespace LightInfo {
         Q_OBJECT
 
     public:
-        LightSource();
-        LightSource(const LightID & id,
-                    const Position & position,
-                    const Color & color,
-                    const AmbientIntensity & ambientIntensity,
-                    const Attenuation & attenuation);
+        explicit LightSource();
+        explicit LightSource(const LightID & id,
+                             const Position & position,
+                             const Color & color,
+                             const AmbientIntensity & ambientIntensity,
+                             const Attenuation & attenuation);
+        explicit LightSource(const Params & params);
 
         Position position() const;
         Color color() const;

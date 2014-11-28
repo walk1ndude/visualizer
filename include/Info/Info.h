@@ -14,4 +14,9 @@ namespace PointsInfo {
     using Position4D = QVector4D;
 }
 
+template <class T, class C>
+T getNewID(C & currentCounter) {
+    return T::number(currentCounter ++);
+}
+
 #endif // INFO_H
