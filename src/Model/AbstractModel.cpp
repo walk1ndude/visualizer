@@ -8,32 +8,27 @@ namespace Model {
     QHash<ModelInfo::Type, ModelFactory *> AbstractModel::_factories;
 
     AbstractModel::AbstractModel(Scene::AbstractScene * scene,
-                                 AbstractModel * parent, const ShaderInfo::ShaderFiles & shaderFiles,
+                                 const ShaderInfo::ShaderFiles & shaderFiles,
                                  const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                  const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        _vboVert(QOpenGLBuffer::VertexBuffer),
-        _vboInd(QOpenGLBuffer::IndexBuffer),
-        _program(nullptr),
-        _scene(scene),
-        _stride(0),
-        _depthTest(true),
-        _indexCount(0),
-        _vertexCount(0),
-        _updateNeeded(false),
-        _lockToWorldAxis(true) {
+        SceneInfo::SceneObject(SceneInfo::getNewID(modelNumber)) {
 
-        if (_parent) {
-            QObject::disconnect(this, &AbstractModel::childUpdated, _parent, &AbstractModel::update);
-        }
+        _numberedID = -- modelNumber;
 
-        _parent = parent;
+        _vboVert = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+        _vboInd = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 
-        if (_parent) {
-            _parent->addChild(this);
-            QObject::connect(this, &AbstractModel::childUpdated, _parent, &AbstractModel::update);
-        }
+        _program = nullptr;
+        _scene = scene;
 
-        _id = modelNumber ++;
+        _stride = 0;
+        _depthTest = true;
+
+        _indexCount = 0;
+        _vertexCount = 0;
+
+        _updateNeeded = false;
+        _lockToWorldAxis = true;
 
         for (const ShaderInfo::ShaderVariableName & attrArray : shaderAttributeArrays) {
             attributeArrays.insert(attrArray, -1);
@@ -85,9 +80,12 @@ namespace Model {
         _factories[name] = factory;
     }
 
-    AbstractModel * AbstractModel::createModel(const ModelInfo::Type & name, Scene::AbstractScene * scene,
-                                               AbstractModel * parent) {
-        return _factories[name]->createModel(scene, parent);
+    AbstractModel * AbstractModel::createModel(const ModelInfo::Type & name, Scene::AbstractScene * scene) {
+        return _factories[name]->createModel(scene);
+    }
+
+    uint AbstractModel::numberedID() const {
+        return _numberedID;
     }
 
     Scene::AbstractScene * AbstractModel::scene() const {
@@ -286,10 +284,6 @@ namespace Model {
         }
     }
 
-    uint AbstractModel::id() const {
-        return _id;
-    }
-
     QOpenGLShaderProgram * AbstractModel::program() const {
         return _program;
     }
@@ -427,7 +421,7 @@ namespace Model {
         glEnable(GL_STENCIL_TEST);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-        glStencilFunc(GL_ALWAYS, id() + 1, -1);
+        glStencilFunc(GL_ALWAYS, _numberedID + 1, -1);
     }
 
     void AbstractModel::glStatesDisable() const {

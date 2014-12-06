@@ -1,11 +1,11 @@
 #include "Model/VolumeModel.h"
 
 namespace Model {
-    VolumeModel::VolumeModel(Scene::AbstractScene * scene, AbstractModel * parent,
+    VolumeModel::VolumeModel(Scene::AbstractScene * scene,
                          const ShaderInfo::ShaderFiles & shaderFiles,
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModelWithPoints(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+        AbstractModelWithPoints(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         lockToModelAxis();
     }
 

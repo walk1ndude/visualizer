@@ -129,53 +129,16 @@ namespace Scene {
 
     void ModelScene::selectModel(Model::AbstractModel * model) {
         _selectedModel = model;
-        emit modelIDChanged(_selectedModel->id());
+
+        Message::SettingsMessage message(
+                    Message::Sender("scene"),
+                    Message::Reciever("sidebar")
+                    );
+
+        message.data["modelID"] = QVariant::fromValue(_selectedModel->id());
+
+        emit post(message);
     }
-/*
-    void ModelScene::addModel(VolumeInfo::Volume volume) {
-        Model::PointsModel * pointsInModel = new Model::PointsModel(this);
-        _models.append(pointsInModel);
-
-        Model::VolumeModel * model = new Model::VolumeModel(this, pointsInModel);
-
-        model->setPointsModel(pointsInModel);
-
-        selectModel(model);
-
-        model->init(volume.texture.size, volume.physicalSize, volume.texture.scaling);
-        model->scale(volume.texture.scaling);
-
-        addTexture(volume.texture);
-
-        model->addLightSource(_lightSources.at(0),
-                              ShaderInfo::ShaderVariablesNames() << "lightSource.position" << "lightSource.color" <<
-                              "lightSource.ambientIntensity");
-
-        model->addMaterial(_materials.at(0),
-                           ShaderInfo::ShaderVariablesNames() << "material.emissive" << "material.diffuse" <<
-                           "material.specular" << "material.shininess");
-
-        model->addTexture(_textures.back(),
-                          ShaderInfo::ShaderVariablesNames() << "volume");
-
-        model->setViewRange(ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
-                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
-                            ViewRangeInfo::ViewAxisRange(-1.0, 1.0),
-                            ShaderInfo::ShaderVariablesNames() << "ranges.xRange" << "ranges.yRange" << "ranges.zRange");
-
-        model->setSlope(volume.slope);
-        model->setIntercept(volume.intercept);
-
-        model->setWindowCenter(volume.windowCenter);
-        model->setWindowWidth(volume.windowWidth);
-
-        model->setHuRange(volume.huRange);
-        model->setValueRange(volume.valueRange);
-
-        QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
-
-        _models.append(model);
-    }*/
 
     Model::AbstractModel *  ModelScene::addModel(const ModelInfo::Model & model) {
         ModelInfo::Params params;
@@ -201,6 +164,8 @@ namespace Scene {
                                 )
             );
         }
+
+        QObject::connect(modelI, &Model::AbstractModel::post, this, &ModelScene::post, Qt::DirectConnection);
 
         return modelI;
     }
@@ -231,10 +196,12 @@ namespace Scene {
         for (const QVariant & model : blueprint["models"].toList()) {
             helper = model.toMap();
 
-            addModel(ModelInfo::Model(
-                helper["type"].value<ModelInfo::Type>(),
-                helper["params"].value<ModelInfo::Params>()
-                )
+            selectModel(
+                        addModel(ModelInfo::Model(
+                                 helper["type"].value<ModelInfo::Type>(),
+                                 helper["params"].value<ModelInfo::Params>()
+                        )
+                    )
             );
         }
     }

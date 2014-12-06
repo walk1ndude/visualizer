@@ -49,12 +49,12 @@ namespace Model {
         AbstractModel * current = nullptr;
 
         QListIterator<AbstractModel *> it(_models);
-
+/*
         while (!found && it.hasNext()) {
             current = it.next();
             found = (id == current->id()) ? current : found;
         }
-
+*/
         return found;
     }
 

@@ -70,9 +70,7 @@ namespace Scene {
         bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator,
                          QListIterator<Viewport::Viewport *> & viewportIterator);
 
-    signals:
-        void modelIDChanged(const uint & modelID);
-
+    signals:;
         void viewportArrayChanged();
 
         void blueprintChanged(const QVariant & blueprint);
@@ -87,7 +85,6 @@ namespace Scene {
         virtual void recieve(const Message::SettingsMessage & message);
 
         virtual void setBlueprint(const QVariant & blueprint);
-
         virtual void unpackBlueprint(const SceneInfo::Blueprint & blueprint, const bool & resetScene = false);
     };
 

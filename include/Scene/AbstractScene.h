@@ -18,7 +18,6 @@
 namespace Scene {
     class AbstractScene : public QQuickItem {
         Q_PROPERTY(qreal scalingFactor READ scalingFactor WRITE setScalingFactor NOTIFY scalingFactorChanged)
-
         Q_PROPERTY(MeasureUnits measureUnits READ measureUnits WRITE setMeasureUnits NOTIFY measureUnitsChanged)
 
         Q_ENUMS(MeasureUnits)

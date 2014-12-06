@@ -22,12 +22,10 @@
 #include "Model/ModelFactory.h"
 
 namespace Model {
-    class AbstractModel : public QObject {
+    class AbstractModel : public SceneInfo::SceneObject {
         Q_OBJECT
     public:
         virtual ~AbstractModel();
-
-        virtual uint id() const final;
 
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
         virtual Camera::ViewMatrix view(const Viewport::Viewport * viewport) const;
@@ -58,10 +56,10 @@ namespace Model {
         virtual void lockToWorldAxis() final;
         virtual void lockToModelAxis() final;
 
+        virtual uint numberedID() const final;
+
         static void registerType(const ModelInfo::Type & name, ModelFactory * factory);
-        static AbstractModel * createModel(const ModelInfo::Type & name,
-                                           Scene::AbstractScene * scene,
-                                           AbstractModel * parent = nullptr);
+        static AbstractModel * createModel(const ModelInfo::Type & name, Scene::AbstractScene * scene);
 
         virtual void init(const ModelInfo::Params & params = ModelInfo::Params());
 
@@ -72,7 +70,6 @@ namespace Model {
         QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
 
         explicit AbstractModel(Scene::AbstractScene * scene,
-                               AbstractModel * parent = nullptr,
                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
                                const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays = ShaderInfo::ShaderVariablesNames(),
                                const ShaderInfo::ShaderVariablesNames & shaderUniformValues = ShaderInfo::ShaderVariablesNames());
@@ -160,7 +157,8 @@ namespace Model {
         QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;
         QMap<TextureInfo::Texture *, TextureInfo::TextureProgram *> _textures;
 
-        int _id;
+        // for stencil
+        uint _numberedID;
 
         int _stride;
 

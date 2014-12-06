@@ -22,9 +22,6 @@ namespace Render {
     protected:
         void render();
 
-        virtual void connectWithScene(Scene::AbstractScene * scene);
-        virtual void disconnectWithScene(Scene::AbstractScene * scene);
-
     signals:
         void modelIDChanged(const uint & modelID);
 

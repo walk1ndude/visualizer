@@ -15,7 +15,6 @@ namespace Model {
 
     protected:
         explicit AbstractModelWithPoints(Scene::AbstractScene * scene,
-                                AbstractModel * parent = nullptr,
                                 const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
 
                                 const ShaderInfo::ShaderVariablesNames & attributeArrays =

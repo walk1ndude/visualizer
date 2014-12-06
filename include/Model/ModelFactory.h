@@ -8,7 +8,7 @@ namespace Model {
 
     class ModelFactory {
     public:
-        virtual AbstractModel * createModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr) = 0;
+        virtual AbstractModel * createModel(Scene::AbstractScene * scene) = 0;
     };
 }
 
@@ -19,8 +19,8 @@ namespace Model {
             modelName##Factory() { \
                 AbstractModel::registerType(#modelName, this); \
             } \
-            virtual AbstractModel * createModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr) { \
-                return new modelName(scene, parent); \
+            virtual AbstractModel * createModel(Scene::AbstractScene * scene) { \
+                return new modelName(scene); \
             } \
         }; \
         static modelName##Factory global##modelName##Factory; \

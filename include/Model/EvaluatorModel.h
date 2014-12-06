@@ -7,7 +7,7 @@ namespace Model {
     class EvaluatorModel : public AbstractModel {
         Q_OBJECT
     public:
-        explicit EvaluatorModel(Scene::AbstractScene * scene, AbstractModel * parent = nullptr,
+        explicit EvaluatorModel(Scene::AbstractScene * scene,
 
                                 const ShaderInfo::ShaderFiles & shaderFiles =
                                 ShaderInfo::ShaderFiles(

@@ -3,11 +3,10 @@
 
 namespace Model {
     PointsModel::PointsModel(Scene::AbstractScene * scene,
-                             AbstractModel * parent,
                              const ShaderInfo::ShaderFiles & shaderFiles,
                              const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                              const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+        AbstractModel(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         lockToModelAxis();
     }
 

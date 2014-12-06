@@ -9,11 +9,11 @@ ShaderInfo::ShaderVariablesNames appendToNames(const ShaderInfo::ShaderVariables
 }
 
 namespace Model {
-    AbstractModelWithPoints::AbstractModelWithPoints(Scene::AbstractScene * scene, AbstractModel * parent,
+    AbstractModelWithPoints::AbstractModelWithPoints(Scene::AbstractScene * scene,
                                                      const ShaderInfo::ShaderFiles & shaderFiles,
                                                      const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                                      const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
+        AbstractModel(scene, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
         _pointsTexture(nullptr) {
 
     }
@@ -139,7 +139,7 @@ namespace Model {
 
                 uint stencil = posZ & 0x0000000F;
 
-                if (stencil != id() + 1) {
+                if (stencil != numberedID() + 1) {
                     return false;
                 }
 
@@ -153,12 +153,12 @@ namespace Model {
                     updateNeeded = true;
 
                     Message::SettingsMessage message(
-                                Message::Sender("model ") + Message::Sender::number(id()),
+                                Message::Sender(id()),
                                 Message::Reciever("sidebar")
                     );
 
                     message.data["point"] = QVariant::fromValue(
-                                PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), modelPoints()->key(modelPoint), id())
+                                PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), modelPoints()->key(modelPoint), numberedID())
                     );
 
                     emit post(message);

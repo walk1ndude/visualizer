@@ -2,11 +2,11 @@
 #include "Model/VertexVC.h"
 
 namespace Model {
-    AxesModel::AxesModel(Scene::AbstractScene * scene, AbstractModel * parent,
+    AxesModel::AxesModel(Scene::AbstractScene * scene,
                          const ShaderInfo::ShaderFiles & shaderFiles,
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-    AbstractModel(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+    AbstractModel(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         //lockToModelAxis();
     }
 

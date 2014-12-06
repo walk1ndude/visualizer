@@ -12,9 +12,7 @@ namespace Model {
         Q_OBJECT
     public:
         explicit VolumeModel(Scene::AbstractScene * scene,
-                             AbstractModel * parent = nullptr,
-
-                           const ShaderInfo::ShaderFiles & shaderFiles =
+                             const ShaderInfo::ShaderFiles & shaderFiles =
                 ShaderInfo::ShaderFiles(
                     ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/Volume/vertex.glsl"),
                     ShaderInfo::FragmentShaderFiles() << ShaderInfo::FragmentShaderFile(":shaders/Volume/fragment.glsl")

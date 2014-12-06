@@ -8,8 +8,6 @@ namespace Model {
         Q_OBJECT
     public:
         explicit AxesModel(Scene::AbstractScene * scene,
-                           AbstractModel * parent = nullptr,
-
                            const ShaderInfo::ShaderFiles & shaderFiles =
                            ShaderInfo::ShaderFiles(
                                                    ShaderInfo::VertexShaderFiles() << ShaderInfo::VertexShaderFile(":shaders/Axes/vertex.glsl"),

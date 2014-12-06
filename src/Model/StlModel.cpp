@@ -2,11 +2,10 @@
 
 namespace Model {
     StlModel::StlModel(Scene::AbstractScene * scene,
-                       AbstractModel * parent,
                        const ShaderInfo::ShaderFiles & shaderFiles,
                        const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                        const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-            AbstractModelWithPoints(scene, parent, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
+            AbstractModelWithPoints(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
 
     }
 
