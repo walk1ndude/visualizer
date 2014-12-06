@@ -8,6 +8,20 @@ namespace Scene {
 
     }
 
+    AbstractScene::~AbstractScene() {
+        cleanUp();
+    }
+
+    void AbstractScene::cleanUp() {
+        qDeleteAll(lightSources);
+        qDeleteAll(materials);
+        qDeleteAll(textures);
+
+        lightSources.clear();
+        materials.clear();
+        textures.clear();
+    }
+
     bool AbstractScene::isInitialized() const {
         return _isInitialized;
     }
@@ -38,7 +52,7 @@ namespace Scene {
         emit measureUnitsChanged();
     }
 
-    MaterialInfo::Material * AbstractScene::material(const MaterialInfo::MaterialID & id) const {
+    MaterialInfo::Material * AbstractScene::material(const SceneInfo::ObjectID & id) const {
         MaterialInfo::Material * mat = nullptr;
 
         if (id.isEmpty() && !materials.isEmpty()) {
@@ -55,10 +69,10 @@ namespace Scene {
         return mat;
     }
 
-    LightInfo::LightSource * AbstractScene::lightSource(const LightInfo::LightID & id) const {
+    LightInfo::LightSource * AbstractScene::lightSource(const SceneInfo::ObjectID & id) const {
         LightInfo::LightSource * light = nullptr;
 
-        if (id < 0 && !lightSources.isEmpty()) {
+        if (id.isEmpty() && !lightSources.isEmpty()) {
             light = lightSources.first();
         }
 
@@ -69,5 +83,21 @@ namespace Scene {
         }
 
         return light;
+    }
+
+    TextureInfo::Texture * AbstractScene::texture(const SceneInfo::ObjectID & id) const {
+        TextureInfo::Texture * tex = nullptr;
+
+        if (id.isEmpty() && !textures.isEmpty()) {
+            tex = textures.first();
+        }
+
+        for (TextureInfo::Texture * _texture : textures) {
+            if (_texture->id() == id) {
+                tex = _texture;
+            }
+        }
+
+        return tex;
     }
 }

@@ -1,34 +1,29 @@
 #include "Info/LightInfo.h"
 
-static int lightSourceNumber = 0;
+static uint lightSourceNumber = 0;
 
 namespace LightInfo {
     LightSource::LightSource() :
-        _id(getNewID<LightID>(lightSourceNumber)) {
+        SceneInfo::SceneObject(SceneInfo::getNewID(lightSourceNumber), 0) {
 
     }
 
     QStringList LightSource::initializationOrder = {"position", "color", "ambientIntensity", "attenuation"};
 
-    LightSource::LightSource(const LightID & lightID,
+    LightSource::LightSource(const SceneInfo::ObjectID & lightID,
                              const Position & position,
                              const Color & color,
                              const AmbientIntensity & ambientIntensity,
-                             const Attenuation & attenuation) {
-        _id = lightID;
+                             const Attenuation & attenuation) :
+        SceneInfo::SceneObject(lightID, &lightSourceNumber) {
         _position = position;
         _color = color;
         _ambientIntensity = ambientIntensity;
         _attenuation = attenuation;
     }
 
-    LightSource::LightSource(const Params & params) {
-        if (params.contains("id")) {
-            _id = params["id"].value<LightID>();
-        }
-        else {
-            _id = getNewID<LightID>(lightSourceNumber);
-        }
+    LightSource::LightSource(const Params & params) :
+        SceneInfo::SceneObject(params["id"].value<SceneInfo::ObjectID>(), &lightSourceNumber) {
 
         _position = params["position"].value<Position>();
         _color = params["color"].value<Color>();
@@ -50,16 +45,6 @@ namespace LightInfo {
 
     Attenuation LightSource::attenuation() const {
         return _attenuation;
-    }
-
-    LightID LightSource::id() const {
-        return _id;
-    }
-
-    void LightSource::setID(const LightID & id) {
-        _id = id;
-
-        emit idChanged(id);
     }
 
     void LightSource::setPosition(const Position & position) {

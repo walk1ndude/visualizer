@@ -111,12 +111,12 @@ SOURCES +=  src/main.cpp \
             src/Camera/Camera.cpp \
             src/Model/ModelArray.cpp \
             src/Model/VolumeModel.cpp \
-            src/Info/VolumeInfo.cpp \
             src/Parser/AbstractParser.cpp \
             src/Model/AxesModel.cpp \
     src/Message/AbstractMessage.cpp \
     src/Message/SettingsMessage.cpp \
-    src/Scene/BlueprintQueue.cpp
+    src/Scene/BlueprintQueue.cpp \
+    src/Info/SceneInfo.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \

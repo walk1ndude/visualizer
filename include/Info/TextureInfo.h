@@ -5,28 +5,54 @@
 #include <QtGui/QOpenGLPixelTransferOptions>
 
 #include "Info/ShaderInfo.h"
+#include "Info/SceneInfo.h"
 
 namespace TextureInfo {
     using MergedData = quint8;
     using MergedDataPtr = MergedData *;
     using MergedDataPointer = QSharedPointer<MergedData>;
 
-    using Scaling = QVector3D;
     using Size = QVector3D;
 
-    class Texture {
+    using Params = QVariantMap;
+
+    class TextureInfo {
     public:
         MergedDataPointer mergedData;
 
-        Scaling scaling;
-        Size size;
-
         QOpenGLPixelTransferOptions pixelTransferOptions;
+
+        Size size;
 
         QOpenGLTexture::PixelType pixelType;
         QOpenGLTexture::Target target;
         QOpenGLTexture::TextureFormat textureFormat;
         QOpenGLTexture::PixelFormat pixelFormat;
+    };
+
+    class Texture : public SceneInfo::SceneObject {
+        Q_OBJECT
+
+    public:
+        explicit Texture();
+        explicit Texture(QOpenGLTexture * texture,
+                         const SceneInfo::ObjectID & textureID = SceneInfo::ObjectID());
+        explicit Texture(const Params & params);
+
+        QOpenGLTexture * texture() const;
+
+        ~Texture();
+
+        static QStringList initializationOrder;
+
+    private:
+        QOpenGLTexture * _texture;
+
+    signals:
+        void textureChanged(const QOpenGLTexture * texture);
+
+    public slots:
+        void setTexture(QOpenGLTexture * texture);
     };
 
     class TextureProgram {
@@ -41,5 +67,7 @@ namespace TextureInfo {
         ShaderInfo::ShaderVariable _sampler;
     };
 }
+
+Q_DECLARE_METATYPE(TextureInfo::TextureInfo)
 
 #endif // TEXTUREINFO_H

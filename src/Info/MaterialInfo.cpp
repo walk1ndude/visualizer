@@ -1,35 +1,28 @@
 #include "Info/MaterialInfo.h"
 
-static int materialNumber = 0;
+static uint materialNumber = 0;
 
 namespace MaterialInfo {
     Material::Material() :
-        _id(getNewID<MaterialID>(materialNumber)) {
+        SceneInfo::SceneObject(SceneInfo::getNewID(materialNumber)) {
     }
 
     QStringList Material::initializationOrder = { "emissive", "diffuse", "specular", "shineness"};
 
-    Material::Material(const MaterialID & id,
+    Material::Material(const SceneInfo::ObjectID & materialID,
                        const Emissive & emissive,
                        const Diffuse & diffuse,
                        const Specular & specular,
                        const Shininess & shininess) :
-        Material() {
-        _id = id;
+        SceneInfo::SceneObject(materialID, &materialNumber) {
         _emissive = emissive;
         _diffuse = diffuse;
         _specular = specular;
         _shininess = shininess;
     }
 
-    Material::Material(const Params & params) {
-        if (params.contains("id")) {
-            _id = params["id"].value<MaterialID>();
-        }
-        else {
-            _id = getNewID<MaterialID>(materialNumber);
-        }
-
+    Material::Material(const Params & params) :
+        SceneInfo::SceneObject(params["id"].value<SceneInfo::ObjectID>(), &materialNumber) {
         _emissive = params["emissive"].value<Emissive>();
         _diffuse = params["diffuse"].value<Diffuse>();
         _specular = params["specular"].value<Specular>();
@@ -50,16 +43,6 @@ namespace MaterialInfo {
 
     Shininess Material::shininess() const {
         return _shininess;
-    }
-
-    MaterialID Material::id() const {
-        return _id;
-    }
-
-    void Material::setID(const MaterialID & id) {
-        _id = id;
-
-        emit idChanged(id);
     }
 
     void Material::setEmissive(const Emissive & emissive) {

@@ -13,6 +13,7 @@
 #include "Info/ShaderInfo.h"
 #include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
+#include "Info/SceneInfo.h"
 
 #include "Scene/AbstractScene.h"
 
@@ -157,8 +158,7 @@ namespace Model {
 
         QMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> _materials;
         QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;
-
-        QMap<QOpenGLTexture *, TextureInfo::TextureProgram *> _textures;
+        QMap<TextureInfo::Texture *, TextureInfo::TextureProgram *> _textures;
 
         int _id;
 
@@ -187,8 +187,7 @@ namespace Model {
         bool initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles);
         void initShaderVariables();
 
-        void bindTextures() const;
-        void releaseTextures() const;
+        void processTextures(void (QOpenGLTexture::*process)(uint, QOpenGLTexture::TextureUnitReset)) const;
 
         template <class Key, class Value>
         void addToMap(QMap<Key, Value *> & map, Key key, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
@@ -202,18 +201,17 @@ namespace Model {
             }
         }
 
-        template <class T, class U>
+        template <class T>
         void initFromParams(const ModelInfo::Params & params, const QStringList & initializationOrder,
                             void (AbstractModel::*addToElems)(T, const ShaderInfo::ShaderVariablesNames &),
-                            Scene::AbstractScene * scene,
-                            T (Scene::AbstractScene::*findObject)(const U &) const) {
+                            T (Scene::AbstractScene::*findObject)(const SceneInfo::ObjectID &) const) {
             ShaderInfo::ShaderVariablesNames variables;
 
             QVariantMap paramList;
 
             T object;
 
-            for (const QString & objectID : params.keys()) {
+            for (const SceneInfo::ObjectID & objectID : params.keys()) {
                 variables.clear();
 
                 paramList = params[objectID].toMap();
@@ -222,7 +220,7 @@ namespace Model {
                     variables << paramList[paramInOrder].value<ShaderInfo::ShaderVariableName>();
                 }
 
-                object = (scene->*findObject)(objectID);
+                object = (_scene->*findObject)(objectID);
 
                 if (object) {
                     (this->*addToElems)(object, variables);
@@ -252,7 +250,7 @@ namespace Model {
 
         virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
         virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-        virtual void addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addTexture(TextureInfo::Texture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
 
         virtual void setParent(AbstractModel * parent) final;
 

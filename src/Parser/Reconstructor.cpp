@@ -496,6 +496,7 @@ namespace Parser {
     }
 
     void Reconstructor::visualize() {
+        /*
         VolumeInfo::Volume volume;
 
         cv::Mat slice(*_slicesOCL.at(0));
@@ -540,6 +541,7 @@ namespace Parser {
 
         QVariantMap map;
         sendResults<VolumeInfo::Volume>(volume, map);
+        */
     }
 
     QVariant Reconstructor::files() const {

@@ -9,8 +9,24 @@ namespace Model {
         lockToModelAxis();
     }
 
-    void VolumeModel::init(const TextureInfo::Size & size, const VolumeInfo::PhysicalSize & physicalSize,
-                         const TextureInfo::Scaling & scaling) {
+    void VolumeModel::init(const ModelInfo::Params & params) {
+        AbstractModelWithPoints::init(params);
+
+        VolumeInfo::PhysicalSize physicalSize = params["physicalSize"].value<VolumeInfo::PhysicalSize>();
+        VolumeInfo::Size size = params["size"].value<VolumeInfo::Size>();
+        VolumeInfo::Scaling scaling = params["scaling"].value<VolumeInfo::Scaling>();
+
+        scale(scaling);
+
+        setSlope(params["slope"].value<VolumeInfo::Slope>());
+        setIntercept(params["intercept"].value<VolumeInfo::Intercept>());
+
+        setWindowCenter(params["windowCenter"].value<VolumeInfo::WindowCenter>());
+        setWindowWidth(params["windowWidth"].value<VolumeInfo::WindowWidth>());
+
+        setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
+        setValueRange(params["valueRange"].value<VolumeInfo::ValueRange>());
+
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
 
@@ -79,10 +95,6 @@ namespace Model {
     Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
         //qDebug() << child->model(viewport);
         return projection(viewport) * view(viewport) * child->model(viewport);
-    }
-
-    void VolumeModel::drawingRoutine() const {
-        glDrawElements(GL_TRIANGLES, indexCount(), GL_UNSIGNED_INT, 0);
     }
 
     void VolumeModel::glStatesEnable() const {

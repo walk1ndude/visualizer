@@ -81,10 +81,6 @@ namespace Quick {
         void rotationChanged(const QVector3D & rotation);
         void pointAdded(const PointsInfo::Point & point);
 
-        Q_INVOKABLE void addModel(ModelInfo::Model model);
-
-        Q_INVOKABLE void drawModel(VolumeInfo::Volume model);
-
         void pointUpdated(const QVariantMap & point);
 
         void modelIDChanged(const uint & modelID);

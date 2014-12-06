@@ -29,7 +29,7 @@ namespace Model {
                 "scale" << "eye" << "modelBillboard" << "lightView" << "slope" << "intercept" << "windowCenter"
                              << "windowWidth" << "huRange" << "valueRange");
 
-        void init(const TextureInfo::Size & size, const VolumeInfo::PhysicalSize & physicalSize, const TextureInfo::Scaling & scaling);
+        virtual void init(const ModelInfo::Params & params);
 
         virtual void rotate(const QVector3D & rotation, const qreal & speed);
 
@@ -55,8 +55,6 @@ namespace Model {
 
         virtual void glStatesEnable() const;
         virtual void glStatesDisable() const;
-        
-        virtual void drawingRoutine() const;
 
     private:
         VolumeInfo::Slope _slope;

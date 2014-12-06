@@ -111,21 +111,10 @@ namespace Scene {
     }
 
     void ModelScene::cleanUp() {
-        qDeleteAll(_textures.begin(), _textures.end());
-        _textures.clear();
-
-        qDeleteAll(materials.begin(), materials.end());
-        qDeleteAll(lightSources.begin(), lightSources.end());
-
-        // it's just map to tex info, so no need to del anything allocated
-        _texturesInModel.clear();
-        _texturesInfo.clear();
-
         _selectedModel = nullptr;
         _selectedTexture = nullptr;
 
-        materials.clear();
-        lightSources.clear();
+        AbstractScene::cleanUp();
     }
 
     QVariant ModelScene::blueprint() const {
@@ -138,36 +127,12 @@ namespace Scene {
         emit blueprintChanged(blueprint);
     }
 
-    void ModelScene::addTexture(TextureInfo::Texture & textureInfo) {
-        QOpenGLTexture * texture = new QOpenGLTexture(textureInfo.target);
-
-        texture->create();
-        texture->setFormat(textureInfo.textureFormat);
-        texture->setSize(textureInfo.size.x(), textureInfo.size.y(), textureInfo.size.z());
-
-        texture->allocateStorage();
-
-        texture->setMinMagFilters(QOpenGLTexture::LinearMipMapNearest, QOpenGLTexture::Linear);
-        texture->setWrapMode(QOpenGLTexture::ClampToBorder);
-
-        texture->setData(textureInfo.pixelFormat, textureInfo.pixelType,
-                         (void *) textureInfo.mergedData.data(), &(textureInfo.pixelTransferOptions));
-
-        texture->generateMipMaps();
-
-        _textures.append(texture);
-        _texturesInfo.insert(texture, textureInfo);
-        _texturesInModel.insert(_selectedModel, texture);
-
-        textureInfo.mergedData.clear();
-    }
-
     void ModelScene::selectModel(Model::AbstractModel * model) {
         _selectedModel = model;
         emit modelIDChanged(_selectedModel->id());
     }
-
-    void ModelScene::addModel(VolumeInfo::Volume volume) {/*
+/*
+    void ModelScene::addModel(VolumeInfo::Volume volume) {
         Model::PointsModel * pointsInModel = new Model::PointsModel(this);
         _models.append(pointsInModel);
 
@@ -209,8 +174,8 @@ namespace Scene {
 
         QObject::connect(model, &Model::AbstractModel::post, this, &Scene::ModelScene::post, Qt::DirectConnection);
 
-        _models.append(model); */
-    }
+        _models.append(model);
+    }*/
 
     Model::AbstractModel *  ModelScene::addModel(const ModelInfo::Model & model) {
         ModelInfo::Params params;
@@ -249,7 +214,7 @@ namespace Scene {
             cleanUp();
         }
 
-        QVariantMap modelMap;
+        QVariantMap helper;
 
         for (const QVariant & lightSource : blueprint["lightSources"].toList()) {
             lightSources.append(new LightInfo::LightSource(lightSource.toMap()));
@@ -259,12 +224,16 @@ namespace Scene {
             materials.append(new MaterialInfo::Material(material.toMap()));
         }
 
+        for (const QVariant & texture : blueprint["textures"].toList()) {
+            textures.append(new TextureInfo::Texture(texture.toMap()));
+        }
+
         for (const QVariant & model : blueprint["models"].toList()) {
-            modelMap = model.toMap();
+            helper = model.toMap();
 
             addModel(ModelInfo::Model(
-                modelMap["type"].value<ModelInfo::Type>(),
-                modelMap["params"].value<ModelInfo::Params>()
+                helper["type"].value<ModelInfo::Type>(),
+                helper["params"].value<ModelInfo::Params>()
                 )
             );
         }

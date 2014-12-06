@@ -158,51 +158,67 @@ namespace Parser {
 
         size_t depth = _dicomData.depth - _dicomData.neighbourRadius * 2;
 
-        VolumeInfo::Volume volume;
+        VolumeInfo::Scaling scaling = scaleVector<float, QVector3D>(
+                    _dicomData.width * _dicomData.imageSpacings.x(),
+                    _dicomData.height * _dicomData.imageSpacings.y(),
+                    depth * _dicomData.imageSpacings.z()
+                    ) *
+                    QVector3D(
+                        1.0f / _dicomData.imageSpacings.x(),
+                        1.0f / _dicomData.imageSpacings.y(),
+                        1.0f / _dicomData.imageSpacings.z()
+                        );
 
-        volume.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
-        volume.texture.scaling = scaleVector<float, QVector3D>(
-                _dicomData.width * _dicomData.imageSpacings.x(),
-                _dicomData.height * _dicomData.imageSpacings.y(),
-                depth * _dicomData.imageSpacings.z()
-                ) *
-                QVector3D(
-                    1.0f / _dicomData.imageSpacings.x(),
-                    1.0f / _dicomData.imageSpacings.y(),
-                    1.0f / _dicomData.imageSpacings.z()
-                    );
+        scaling.setZ(scaling.x());
 
-        volume.texture.scaling.setZ(volume.texture.scaling.x());
+        TextureInfo::TextureInfo texture;
+        texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
 
-        volume.physicalSize = VolumeInfo::PhysicalSize(_dicomData.width * _dicomData.imageSpacings.x(),
-                                                       _dicomData.height * _dicomData.imageSpacings.y(),
-                                                       depth * _dicomData.imageSpacings.z());
+        texture.pixelTransferOptions = pixelTransferOptions;
 
-        volume.texture.size.setX(_dicomData.width);
-        volume.texture.size.setY(_dicomData.height);
-        volume.texture.size.setZ(depth);
+        texture.size = TextureInfo::Size(_dicomData.width, _dicomData.height, depth);
 
-        volume.texture.pixelTransferOptions = pixelTransferOptions;
+        texture.pixelType = QOpenGLTexture::UInt16;
+        texture.textureFormat = QOpenGLTexture::R16_UNorm;
+        texture.pixelFormat = QOpenGLTexture::Red;
+        texture.target = QOpenGLTexture::Target3D;
 
-        volume.texture.pixelType = QOpenGLTexture::UInt16;
-        volume.texture.textureFormat = QOpenGLTexture::R16_UNorm;
-        volume.texture.pixelFormat = QOpenGLTexture::Red;
-        volume.texture.target = QOpenGLTexture::Target3D;
+        QVariantMap blueprintOverallMap = _blueprint.toMap();
+        QVariantList textureVolumeList = blueprintOverallMap["textures"].toList();
+        QVariantMap textureVolume = textureVolumeList[0].toMap();
 
-        volume.slope = _dicomData.slope;
-        volume.intercept = _dicomData.intercept;
+        textureVolume["desciptor"] = QVariant::fromValue(texture);
 
-        volume.windowWidth = _dicomData.windowWidth;
-        volume.windowCenter = _dicomData.windowCenter;
+        textureVolumeList[0] = QVariant(textureVolume);
 
-        volume.huRange = VolumeInfo::HuRange(_dicomData.minHU, _dicomData.maxHU);
-        volume.valueRange = VolumeInfo::ValueRange(_dicomData.minValue, _dicomData.maxValue);
+        blueprintOverallMap["textures"] = QVariant(textureVolumeList);
 
-        QVariantMap map;
-        map["huRange"] = QVector2D(_dicomData.minHUPossible, _dicomData.maxHUPossible);
+        QVariantList blueprintList = blueprintOverallMap["models"].toList();
 
-        qDebug() << map["huRange"];
-        sendResults<VolumeInfo::Volume>(volume, map);
+        QVariantMap blueprintMap = blueprintList[0].toMap();
+        QVariantMap blueprintParams = blueprintMap["params"].toMap();
+
+        blueprintParams["size"] = QVariant(VolumeInfo::Size(_dicomData.width, _dicomData.height, depth));
+        blueprintParams["scaling"] = QVariant(scaling);
+        blueprintParams["slope"] = QVariant(_dicomData.slope);
+        blueprintParams["intercept"] = QVariant(_dicomData.intercept);
+        blueprintParams["windowWidth"] = QVariant(_dicomData.windowWidth);
+        blueprintParams["windowCenter"] = QVariant(_dicomData.windowCenter);
+        blueprintParams["huRange"] = QVariant(VolumeInfo::HuRange(_dicomData.minHU, _dicomData.maxHU));
+        blueprintParams["valueRange"] = QVariant(VolumeInfo::ValueRange(_dicomData.minValue, _dicomData.maxValue));
+        blueprintParams["physicalSize"] = QVariant(VolumeInfo::PhysicalSize(_dicomData.width * _dicomData.imageSpacings.x(),
+                                                                            _dicomData.height * _dicomData.imageSpacings.y(),
+                                                                            depth * _dicomData.imageSpacings.z()));
+
+        blueprintMap["params"] = QVariant(blueprintParams);
+
+        blueprintList[0] = QVariant(blueprintMap);
+        blueprintOverallMap["models"] = QVariant(blueprintList);
+
+        Message::SettingsMessage message("DicomParser", "Scene");
+        message.data["blueprint"] = QVariant(blueprintOverallMap);
+
+        send(message);
     }
 
     QUrl DicomReader::file() const {

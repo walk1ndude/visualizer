@@ -135,8 +135,6 @@ namespace Quick {
 
             current->makeCurrent(window());
 
-            QObject::connect(this, &ModelViewer::addModel, _modelRenderer, &Render::ModelRenderer::addModel);
-
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
             QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
@@ -248,21 +246,6 @@ namespace Quick {
                 }
             }
             else if (message.reciever().startsWith("Scene")) {
-                /*)
-                QVariantMap blueprintMap = message.data["blueprint"].toMap();
-                qDebug() << blueprintMap;
-                exit(0);
-
-                QVariantList list = message.data["blueprint"].toList();
-
-                QVariantMap model;
-
-                for (const QVariant & map : list) {
-                    model = map.toMap();
-
-                    emit addModel(ModelInfo::Model(model["type"].value<ModelInfo::Type>(), model["params"].value<ModelInfo::Params>()));
-                }
-                */
                 emit post(message);
             }
         }

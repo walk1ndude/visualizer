@@ -17,30 +17,8 @@ namespace VolumeInfo {
     using ValueRange = QVector2D;
     using HuRange = QVector2D;
 
-    class Volume {
-    public:
-        TextureInfo::Texture texture;
-        PhysicalSize physicalSize;
-
-        Slope slope;
-        Intercept intercept;
-
-        WindowCenter windowCenter;
-        WindowWidth windowWidth;
-
-        ValueRange valueRange;
-        HuRange huRange;
-
-        Volume();
-        Volume(TextureInfo::Texture texture,
-               const PhysicalSize & physicalSize,
-               const Slope & slope,
-               const Intercept & intercept,
-               const WindowCenter & windowCenter,
-               const WindowWidth & windowWidth);
-    };
+    using Scaling = QVector3D;
+    using Size = QVector3D;
 }
-
-Q_DECLARE_METATYPE(VolumeInfo::Volume)
 
 #endif // VOLUMEINFO_H

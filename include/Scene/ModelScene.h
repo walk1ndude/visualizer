@@ -48,7 +48,6 @@ namespace Scene {
         Model::ModelArray _models;
 
         QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
-        QMultiMap<Model::AbstractModel *, MaterialInfo::Material *> _materialsInModel;
 
         QVariant _blueprint;
 
@@ -81,11 +80,7 @@ namespace Scene {
     public slots:
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
 
-        virtual void addModel(VolumeInfo::Volume volume);
-
         virtual Model::AbstractModel * addModel(const ModelInfo::Model & model);
-
-        virtual void addTexture(TextureInfo::Texture & textureInfo);
 
         virtual void updateScene();
 

@@ -59,18 +59,25 @@ namespace Model {
     }
 
     void AbstractModel::init(const ModelInfo::Params & params) {
-        initFromParams<LightInfo::LightSource *, LightInfo::LightID>(
+        initFromParams<LightInfo::LightSource *>(
                     params["lights"].toMap(),
                     LightInfo::LightSource::initializationOrder,
                     &AbstractModel::addLightSource,
-                    _scene, &Scene::AbstractScene::lightSource
+                    &Scene::AbstractScene::lightSource
                 );
 
-        initFromParams<MaterialInfo::Material *, MaterialInfo::MaterialID>(
+        initFromParams<MaterialInfo::Material *>(
                     params["materials"].toMap(),
                     MaterialInfo::Material::initializationOrder,
                     &AbstractModel::addMaterial,
-                    _scene, &Scene::AbstractScene::material
+                    &Scene::AbstractScene::material
+                    );
+
+        initFromParams<TextureInfo::Texture *>(
+                    params["textures"].toMap(),
+                    TextureInfo::Texture::initializationOrder,
+                    &AbstractModel::addTexture,
+                    &Scene::AbstractScene::texture
                     );
     }
 
@@ -99,11 +106,13 @@ namespace Model {
         _vboVert.destroy();
         _vboInd.destroy();
 
-        qDeleteAll(_materials.begin(), _materials.end());
-        _materials.clear();
+        qDeleteAll(_lightSources);
+        qDeleteAll(_materials);
+        qDeleteAll(_textures);
 
-        qDeleteAll(_lightSources.begin(), _lightSources.end());
         _lightSources.clear();
+        _materials.clear();
+        _textures.clear();
     }
 
     void AbstractModel::addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
@@ -114,8 +123,8 @@ namespace Model {
         addToMap<LightInfo::LightSource *, LightInfo::LightProgram>(_lightSources, lightSource, shaderVariables);
     }
 
-    void AbstractModel::addTexture(QOpenGLTexture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-        addToMap<QOpenGLTexture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
+    void AbstractModel::addTexture(TextureInfo::Texture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
+        addToMap<TextureInfo::Texture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
     }
 
     int AbstractModel::stride() const {
@@ -263,22 +272,17 @@ namespace Model {
         _program->release();
     }
 
-    void AbstractModel::bindTextures() const {
-        QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
+    void AbstractModel::processTextures(void (QOpenGLTexture::*process)(uint, QOpenGLTexture::TextureUnitReset)) const {
+        QMapIterator<TextureInfo::Texture *, TextureInfo::TextureProgram *> it(_textures);
+
+        QOpenGLTexture * current;
 
         while (it.hasNext()) {
             it.next();
-            it.key()->bind(it.key()->textureId());
-            it.value()->setUniform(_program, it.key()->textureId());
-        }
-    }
+            current = it.key()->texture();
 
-    void AbstractModel::releaseTextures() const {
-        QMapIterator<QOpenGLTexture *, TextureInfo::TextureProgram *> it (_textures);
-
-        while (it.hasNext()) {
-            it.next();
-            it.key()->release(it.key()->textureId());
+            (current->*process)(current->textureId(), QOpenGLTexture::DontResetTextureUnit);
+            it.value()->setUniform(_program, current->textureId());
         }
     }
 
@@ -310,7 +314,7 @@ namespace Model {
             bindUniformValues(_program, viewport);
             bindUniformValues();
             
-            bindTextures();
+            processTextures(&QOpenGLTexture::bind);
             
             glStatesEnable();
             
@@ -321,7 +325,7 @@ namespace Model {
             glFinish();
             _vao.release();
             
-            releaseTextures();
+            processTextures(&QOpenGLTexture::release);
             glStatesDisable();
             releaseShaderProgram();
         }

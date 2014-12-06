@@ -11,6 +11,7 @@
 #include "Info/LightInfo.h"
 #include "Info/MaterialInfo.h"
 #include "Info/SceneInfo.h"
+#include "Info/TextureInfo.h"
 
 #include "Message/SettingsMessage.h"
 
@@ -32,10 +33,12 @@ namespace Scene {
 
         AbstractScene();
 
+        ~AbstractScene();
+
         MeasureUnits measureUnits() const;
 
         virtual void renderScene(const QSize & surfaceSize) = 0;
-        virtual void cleanUp() = 0;
+        virtual void cleanUp();
 
         virtual QVector3D rotation() const = 0;
 
@@ -43,12 +46,14 @@ namespace Scene {
 
         qreal scalingFactor() const;
 
-        MaterialInfo::Material * material(const MaterialInfo::MaterialID & id = "") const;
-        LightInfo::LightSource * lightSource(const LightInfo::LightID & id = "") const;
+        MaterialInfo::Material * material(const SceneInfo::ObjectID & id = SceneInfo::ObjectID()) const;
+        LightInfo::LightSource * lightSource(const SceneInfo::ObjectID & id = SceneInfo::ObjectID()) const;
+        TextureInfo::Texture * texture(const SceneInfo::ObjectID & id = SceneInfo::ObjectID()) const;
 
     protected:
         QList<MaterialInfo::Material *> materials;
         QList<LightInfo::LightSource *> lightSources;
+        QList<TextureInfo::Texture *> textures;
 
         virtual void initScene() = 0;
 
