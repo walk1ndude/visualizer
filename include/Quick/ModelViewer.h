@@ -52,6 +52,8 @@ namespace Quick {
 
         QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData * paintNodeData);
 
+        virtual void recieveMessage(const Message::SettingsMessage & message);
+
     private:
         Render::ModelRenderer * _modelRenderer;
 
@@ -71,7 +73,7 @@ namespace Quick {
 
         uint _modelID;
 
-    signals:
+   signals:
         void xRangeChanged(const ViewRangeInfo::ViewAxisRange & xRange);
         void yRangeChanged(const ViewRangeInfo::ViewAxisRange & yRange);
         void zRangeChanged(const ViewRangeInfo::ViewAxisRange & zRange);
@@ -99,10 +101,7 @@ namespace Quick {
         Q_INVOKABLE virtual void addPoint(const QPointF & point, Viewport::Viewport * viewport);
         Q_INVOKABLE virtual void togglePoint(const QString & point);
 
-        Q_INVOKABLE virtual void recieve(const QString & sender, const QString & reciever,
-                                         const QString &action, const QVariantMap & params);
-
-        Q_INVOKABLE virtual void recieve(const Message::SettingsMessage & message);
+        Q_INVOKABLE virtual void recieve(const QVariant & message);
 
         virtual void setModelScene(Scene::ModelScene * modelScene);
 

@@ -10,12 +10,12 @@ namespace Message {
     using Sender = QString;
     using Reciever = QString;
 
-    class Header : protected QObject {
+    class Header {
         friend class AbstractMessage;
     public:
+        explicit Header();
         explicit Header(const Sender & sender, const Reciever & reciever,
-                        const ReliableTime & reliableTime = -1,
-                        QObject * parent = nullptr);
+                        const ReliableTime & reliableTime = -1);
 
     private:
         Sender _sender;
@@ -25,26 +25,27 @@ namespace Message {
         ReliableTime _reliableTime;
     };
 
-    class AbstractMessage : public QObject {
-        Q_OBJECT
+    class AbstractMessage {
     public:
-        virtual const Header * header() const final;
+        virtual ~AbstractMessage();
+
+        virtual const Header header() const final;
 
         virtual bool isReliable() const;
 
         Sender sender() const;
         Reciever reciever() const;
 
+        void setReliableTime(const ReliableTime & time);
+
     protected:
-        explicit AbstractMessage(QObject * parent = nullptr);
-        explicit AbstractMessage(const AbstractMessage & message);
+        explicit AbstractMessage();
         explicit AbstractMessage(const Sender & sender, const Reciever & reciever,
-                                 const ReliableTime & reliableTime = -1,
-                                 QObject * parent = nullptr);
+                                 const ReliableTime & reliableTime = -1);
 
     private:
-        Header * _header;
-    };
+        Header _header;
+   };
 }
 
 #endif // PACKAGE_H

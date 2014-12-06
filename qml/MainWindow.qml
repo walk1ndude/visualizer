@@ -2,6 +2,8 @@ import QtQuick 2.3;
 import QtQuick.Controls 1.2;
 import QtQuick.Dialogs 1.2;
 
+import RenderTools 1.0;
+
 import "qrc:/js/settings.js" as Settings;
 
 import "Dock" as Dock;
@@ -88,6 +90,14 @@ ApplicationWindow {
                                                        "viewer" : modelViewer
                                                    });
             stlReader.file = fileUrl;
+
+            modelViewer.recieve({
+                                    "sender": "dial",
+                                    "reciever": "viewer",
+                                    "data": {
+                                        "variant": "test"
+                                    }
+                                });
         }
     }
 

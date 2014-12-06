@@ -6,19 +6,15 @@
 namespace Message {
     using SettingsData = QVariantMap;
 
-    using SettingName = QString;
-    using SettingData = QVariant;
-
     class SettingsMessage : public AbstractMessage {
     public:
-        explicit SettingsMessage(QObject * parent = nullptr);
-        explicit SettingsMessage(const SettingsMessage & message);
+        explicit SettingsMessage();
         explicit SettingsMessage(const Sender & sender, const Reciever & reciever,
-                                 const ReliableTime & reliableTime = -1,
-                                 QObject * parent = nullptr);
-
+                                 const ReliableTime & reliableTime = -1);
         SettingsData data;
-    };
+   };
 }
+
+Q_DECLARE_METATYPE(Message::SettingsMessage)
 
 #endif // SETTINGSPACKAGE_H

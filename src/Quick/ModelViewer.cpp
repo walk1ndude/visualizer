@@ -54,10 +54,11 @@ namespace Quick {
     }
 
     void ModelViewer::togglePoint(const QString & point) {
+        /*
         recieve("modelViewer", "model 2", "togglePoint",
             ModelInfo::Params() = {
                 { "point", QVariant(point) }
-        });
+        });*/
     }
 
     int ModelViewer::modelID() const {
@@ -72,13 +73,13 @@ namespace Quick {
 
     }
 
-    void ModelViewer::setRotation(const QVector3D & rotation) {
+    void ModelViewer::setRotation(const QVector3D & rotation) {/*
         recieve("modelViewer", "model 1", "rotate",
             ModelInfo::Params() = {
                 { "rotation", QVariant(rotation) }
         });
 
-        _rotation = rotation;
+        _rotation = rotation;*/
     }
 
     void ModelViewer::setModelID(const int & modelID) {
@@ -111,10 +112,11 @@ namespace Quick {
     }
 
     void ModelViewer::setHuRange(const VolumeInfo::HuRange & huRange) {
+        /*
         recieve("modelViewer", "model 3", "setHuRange",
             ModelInfo::Params() = {
                 { "huRange", QVariant(huRange) }
-        });
+        });*/
     }
 
     void ModelViewer::setViewportArray(Viewport::ViewportArray * viewPortArray) {
@@ -195,15 +197,14 @@ namespace Quick {
         selectedPoint.name = qvariant_cast<PointsInfo::Name>(_selectedPoint["name"]);
         selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
         selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
-
+/*
         recieve("modelViewer", "model 1", "addPoint",
             ModelInfo::Params() = {
                 { "point", QVariant::fromValue(selectedPoint) }
-        });
+        });*/
     }
-
-    void ModelViewer::recieve(const QString & sender, const QString & reciever,
-                              const QString & action, const QVariantMap & params) {
+/*
+    void ModelViewer::recieve(const Message::) {
         // TODO: if reciever empty - this class is final destination
         if (reciever.isEmpty()) {
             return;
@@ -224,8 +225,28 @@ namespace Quick {
             emit post(message);
         }
     }
+*/
+    void ModelViewer::recieve(const QVariant & message) {
+        if (!message.canConvert<Message::SettingsMessage>()) {
+            QVariantMap messageMap = message.toMap();
 
-    void ModelViewer::recieve(const Message::SettingsMessage & message) {
+            Message::SettingsMessage messageToSend(
+                        messageMap["sender"].value<Message::Sender>(),
+                        messageMap["reciever"].value<Message::Reciever>()
+                    );
+
+            if (messageMap.contains("reliableTime")) {
+                messageToSend.setReliableTime(messageMap["reliableTime"].value<Message::ReliableTime>());
+            }
+
+            recieveMessage(messageToSend);
+        }
+        else {
+            recieveMessage(message.value<Message::SettingsMessage>());
+        }
+    }
+
+    void ModelViewer::recieveMessage(const Message::SettingsMessage & message) {
         // TODO: if reciever empty - this class is final destination
         if (message.reciever().isEmpty()) {
             return;
