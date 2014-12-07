@@ -102,10 +102,7 @@ SOURCES +=  src/main.cpp \
             src/Quick/ConsoleLogger.cpp \
             src/Model/EvaluatorModel.cpp \
             src/Info/PointsInfo.cpp \
-            src/Info/LightInfo.cpp \
-            src/Info/MaterialInfo.cpp \
             src/Info/ViewRangeInfo.cpp \
-            src/Info/TextureInfo.cpp \
             src/Info/ShaderInfo.cpp \
             src/Quick/TextureNode.cpp \
             src/Camera/Camera.cpp \
@@ -116,7 +113,10 @@ SOURCES +=  src/main.cpp \
     src/Message/AbstractMessage.cpp \
     src/Message/SettingsMessage.cpp \
     src/Scene/BlueprintQueue.cpp \
-    src/Info/SceneInfo.cpp
+    src/Scene/SceneObject.cpp \
+    src/Scene/LightSource.cpp \
+    src/Scene/Material.cpp \
+    src/Scene/Texture.cpp
 
 HEADERS  += include/Gui/AppWindow.h \
             include/Quick/ModelViewer.h \
@@ -159,7 +159,11 @@ HEADERS  += include/Gui/AppWindow.h \
     include/Message/AbstractMessage.h \
     include/Message/SettingsMessage.h \
     include/Model/ModelFactory.h \
-    include/Info/SceneInfo.h \
-    include/Scene/BlueprintQueue.h
+    include/Scene/BlueprintQueue.h \
+    include/Scene/SceneObjectList.h \
+    include/Scene/SceneObject.h \
+    include/Scene/LightSource.h \
+    include/Scene/Material.h \
+    include/Scene/Texture.h
 
 RESOURCES += resources.qrc

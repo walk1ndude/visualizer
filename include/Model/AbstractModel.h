@@ -5,24 +5,23 @@
 
 #include <QtGui/QOpenGLBuffer>
 #include <QtGui/QOpenGLVertexArrayObject>
-#include <QtGui/QOpenGLTexture>
 
 #include "Info/ModelInfo.h"
-#include "Info/MaterialInfo.h"
-#include "Info/LightInfo.h"
 #include "Info/ShaderInfo.h"
-#include "Info/TextureInfo.h"
 #include "Info/PointsInfo.h"
-#include "Info/SceneInfo.h"
 
 #include "Scene/AbstractScene.h"
+#include "Scene/Material.h"
+#include "Scene/LightSource.h"
+#include "Scene/Texture.h"
+#include "Scene/SceneObject.h"
 
 #include "Camera/Camera.h"
 
 #include "Model/ModelFactory.h"
 
 namespace Model {
-    class AbstractModel : public SceneInfo::SceneObject {
+    class AbstractModel : public Scene::SceneObject {
         Q_OBJECT
     public:
         virtual ~AbstractModel();
@@ -153,9 +152,9 @@ namespace Model {
 
         Scene::AbstractScene * _scene;
 
-        QMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> _materials;
-        QMap<LightInfo::LightSource *, LightInfo::LightProgram *> _lightSources;
-        QMap<TextureInfo::Texture *, TextureInfo::TextureProgram *> _textures;
+        QMap<Scene::Material *, Scene::MaterialProgram *> _materials;
+        QMap<Scene::LightSource *, Scene::LightProgram *> _lightSources;
+        QMap<Scene::Texture *, Scene::TextureProgram *> _textures;
 
         // for stencil
         uint _numberedID;
@@ -202,14 +201,14 @@ namespace Model {
         template <class T>
         void initFromParams(const ModelInfo::Params & params, const QStringList & initializationOrder,
                             void (AbstractModel::*addToElems)(T, const ShaderInfo::ShaderVariablesNames &),
-                            T (Scene::AbstractScene::*findObject)(const SceneInfo::ObjectID &) const) {
+                            T (Scene::AbstractScene::*findObject)(const Scene::ObjectID &) const) {
             ShaderInfo::ShaderVariablesNames variables;
 
             QVariantMap paramList;
 
             T object;
 
-            for (const SceneInfo::ObjectID & objectID : params.keys()) {
+            for (const Scene::ObjectID & objectID : params.keys()) {
                 variables.clear();
 
                 paramList = params[objectID].toMap();
@@ -238,7 +237,7 @@ namespace Model {
         virtual bool bindShaderProgram() final;
         virtual void releaseShaderProgram() final;
 
-        virtual void rotate(const QVector3D & rotation, const qreal & speed = 0.5f);
+        virtual void rotate(const QVector3D & angle, const qreal & speed = 0.5f);
 
         virtual void translate(const QVector3D & translation);
 
@@ -246,9 +245,9 @@ namespace Model {
 
         virtual void drawModel(const Viewport::Viewport * viewPort) final;
 
-        virtual void addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-        virtual void addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
-        virtual void addTexture(TextureInfo::Texture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addMaterial(Scene::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addLightSource(Scene::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
+        virtual void addTexture(Scene::Texture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
 
         virtual void setParent(AbstractModel * parent) final;
 

@@ -13,13 +13,7 @@ namespace Scene {
     }
 
     void AbstractScene::cleanUp() {
-        qDeleteAll(lightSources);
-        qDeleteAll(materials);
-        qDeleteAll(textures);
 
-        lightSources.clear();
-        materials.clear();
-        textures.clear();
     }
 
     bool AbstractScene::isInitialized() const {
@@ -52,52 +46,15 @@ namespace Scene {
         emit measureUnitsChanged();
     }
 
-    MaterialInfo::Material * AbstractScene::material(const SceneInfo::ObjectID & id) const {
-        MaterialInfo::Material * mat = nullptr;
-
-        if (id.isEmpty() && !materials.isEmpty()) {
-            mat = materials.first();
-        }
-
-        for (MaterialInfo::Material * material : materials) {
-            if (material->id() == id) {
-                mat = material;
-                break;
-            }
-        }
-
-        return mat;
+    Material * AbstractScene::material(const ObjectID & id) const {
+        return materials.find(id);
     }
 
-    LightInfo::LightSource * AbstractScene::lightSource(const SceneInfo::ObjectID & id) const {
-        LightInfo::LightSource * light = nullptr;
-
-        if (id.isEmpty() && !lightSources.isEmpty()) {
-            light = lightSources.first();
-        }
-
-        for (LightInfo::LightSource * lightSource : lightSources) {
-            if (lightSource->id() == id) {
-                light = lightSource;
-            }
-        }
-
-        return light;
+    LightSource * AbstractScene::lightSource(const ObjectID & id) const {
+        return lightSources.find(id);
     }
 
-    TextureInfo::Texture * AbstractScene::texture(const SceneInfo::ObjectID & id) const {
-        TextureInfo::Texture * tex = nullptr;
-
-        if (id.isEmpty() && !textures.isEmpty()) {
-            tex = textures.first();
-        }
-
-        for (TextureInfo::Texture * _texture : textures) {
-            if (_texture->id() == id) {
-                tex = _texture;
-            }
-        }
-
-        return tex;
+    Texture * AbstractScene::texture(const ObjectID & id) const {
+        return textures.find(id);
     }
 }

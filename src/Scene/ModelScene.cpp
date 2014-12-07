@@ -8,9 +8,7 @@
 
 namespace Scene {
     ModelScene::ModelScene() :
-        AbstractScene(),
-        _selectedModel(nullptr),
-        _selectedTexture(nullptr) {
+        AbstractScene() {
     }
 
     ModelScene::~ModelScene() {
@@ -22,7 +20,7 @@ namespace Scene {
     }
 
     Model::AbstractModel * ModelScene::selectedModel() const {
-        return _selectedModel;
+        return qobject_cast<Model::AbstractModel *>(_models.selectedObject());
     }
 
     void ModelScene::setViewportArray(Viewport::ViewportArray * viewportArray) {
@@ -40,7 +38,7 @@ namespace Scene {
             unpackBlueprint(_blueprints.dequeue());
         }
 
-        for (Model::AbstractModel * model : _models.array()) {
+        for (Model::AbstractModel * model : _models.list()) {
             if (model->updateNeeded()) {
                 model->update();
             }
@@ -52,7 +50,7 @@ namespace Scene {
 
         updateScene();
 
-        QListIterator<Model::AbstractModel *> modelIterator (_models.array());
+        QListIterator<Model::AbstractModel *> modelIterator (_models.list());
         QListIterator<Viewport::Viewport *> viewportIterator (_viewportArray->array());
 
         render(modelIterator, viewportIterator);
@@ -111,9 +109,6 @@ namespace Scene {
     }
 
     void ModelScene::cleanUp() {
-        _selectedModel = nullptr;
-        _selectedTexture = nullptr;
-
         AbstractScene::cleanUp();
     }
 
@@ -128,14 +123,14 @@ namespace Scene {
     }
 
     void ModelScene::selectModel(Model::AbstractModel * model) {
-        _selectedModel = model;
+        _models.selectObject(model);
 
         Message::SettingsMessage message(
                     Message::Sender("scene"),
                     Message::Reciever("sidebar")
                     );
 
-        message.data["modelID"] = QVariant::fromValue(_selectedModel->id());
+        message.data["modelID"] = QVariant::fromValue(_models.selectedObject()->id());
 
         emit post(message);
     }
@@ -174,7 +169,7 @@ namespace Scene {
         unpackBlueprint(_blueprint.toMap(), true);
     }
 
-    void ModelScene::unpackBlueprint(const SceneInfo::Blueprint & blueprint, const bool & resetScene) {
+    void ModelScene::unpackBlueprint(const Blueprint & blueprint, const bool & resetScene) {
         if (resetScene) {
             cleanUp();
         }
@@ -182,15 +177,15 @@ namespace Scene {
         QVariantMap helper;
 
         for (const QVariant & lightSource : blueprint["lightSources"].toList()) {
-            lightSources.append(new LightInfo::LightSource(lightSource.toMap()));
+            lightSources.append(new LightSource(lightSource.toMap()));
         }
 
         for (const QVariant & material : blueprint["materials"].toList()) {
-            materials.append(new MaterialInfo::Material(material.toMap()));
+            materials.append(new Material(material.toMap()));
         }
 
         for (const QVariant & texture : blueprint["textures"].toList()) {
-            textures.append(new TextureInfo::Texture(texture.toMap()));
+            textures.append(new Texture(texture.toMap()));
         }
 
         for (const QVariant & model : blueprint["models"].toList()) {
@@ -208,18 +203,10 @@ namespace Scene {
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {
         if (message.reciever().startsWith("Scene")) {
-            _blueprints.enqueue(message.data["blueprint"].value<SceneInfo::Blueprint>());
+            _blueprints.enqueue(message.data["blueprint"].value<Blueprint>());
             return;
         }
 
-        if (message.data.contains("modelID") && message.data.contains("action")) {
-            QVariant id = message.data["modelID"];
-            QVariant action = message.data["action"];
-
-            _models[id.toUInt()]->invoke(action.toString(),
-                                         (message.data.contains("params")) ?
-                                             message.data["params"].value<ModelInfo::Params>() : ModelInfo::Params()
-                                         );
-        }
+        _models[message.data["modelID"].value<ObjectID>()]->invoke(message.data["action"].toString(), message.data["params"].value<ModelInfo::Params>());
     }
 }

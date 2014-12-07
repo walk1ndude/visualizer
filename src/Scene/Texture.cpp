@@ -1,24 +1,24 @@
-#include "Info/TextureInfo.h"
+#include "Scene/Texture.h"
 
 static uint textureCount = 0;
 
-namespace TextureInfo {
+namespace Scene {
     QStringList Texture::initializationOrder = { "sampler" };
 
     Texture::Texture() :
-        SceneInfo::SceneObject(SceneInfo::getNewID(textureCount)) {
+        SceneObject(getNewID(textureCount)) {
 
     }
 
-    Texture::Texture(QOpenGLTexture * texture, const SceneInfo::ObjectID & textureID) :
-        SceneInfo::SceneObject(textureID) {
+    Texture::Texture(QOpenGLTexture * texture, const ObjectID & textureID) :
+        SceneObject(textureID) {
         _texture = texture;
     }
 
-    Texture::Texture(const Params & params) :
-        SceneInfo::SceneObject(params["id"].value<SceneInfo::ObjectID>()) {
+    Texture::Texture(const TextureInfo::Params & params) :
+        SceneObject(params["id"].value<ObjectID>()) {
 
-        TextureInfo textureInfo = params["desciptor"].value<TextureInfo::TextureInfo>();
+        TextureInfo::TextureInfo textureInfo = params["desciptor"].value<TextureInfo::TextureInfo>();
 
         _texture = new QOpenGLTexture(textureInfo.target);
 
@@ -60,3 +60,4 @@ namespace TextureInfo {
         program->setUniformValue(_sampler, samplerNum);
     }
 }
+

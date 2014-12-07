@@ -71,8 +71,4 @@ ModelViewer {
 
         onScalingFactorChanged: modelViewerEx.scalingFactor = scalingFactor;
     }
-
-    function processModel(model) {
-        drawModel(model.data);
-    }
 }

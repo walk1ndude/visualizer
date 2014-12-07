@@ -103,10 +103,21 @@ Viewport {
 
         onPositionChanged: {
             if (parent.projectionType == Viewport.FRONTAL && rotating) {
-                parent.array.parent.rotation = Qt.vector3d(
-                            (parent.invertedYAxis ? -1 : 1) * (prevMouseY - mouseY),
-                            0.0,
-                            mouseX - prevMouseX);
+                parent.array.parent.recieve({
+                                                "header" : {
+                                                    "sender" : "viewports",
+                                                    "reciever" : "current_model"
+                                                },
+                                                "data" : {
+                                                    "action" : "rotate",
+                                                    "params" : {
+                                                        "angle" : Qt.vector3d(
+                                                            (parent.invertedYAxis ? -1 : 1) * (prevMouseY - mouseY),
+                                                            0.0,
+                                                            mouseX - prevMouseX)
+                                                    }
+                                                }
+                                            });
 
                 prevMouseX = mouseX;
                 prevMouseY = mouseY;

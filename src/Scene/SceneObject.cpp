@@ -1,6 +1,6 @@
-#include "Info/SceneInfo.h"
+#include "Scene/SceneObject.h"
 
-namespace SceneInfo {
+namespace Scene {
     ObjectID getNewID(uint & currentCounter) {
         return ObjectID::number(currentCounter ++);
     }

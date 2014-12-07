@@ -1,19 +1,21 @@
 #ifndef BLUEPRINTQUEUE_H
 #define BLUEPRINTQUEUE_H
 
-#include "Info/SceneInfo.h"
+#include "Info/Info.h"
 
 #include <QtCore/QQueue>
 
 namespace Scene {
+    using Blueprint = QVariantMap;
+
     using QueueSize = int;
 
     class BlueprintQueue {
     public:
         BlueprintQueue(const QueueSize & size = 10);
 
-        virtual void enqueue(const SceneInfo::Blueprint & blueprint) final;
-        virtual SceneInfo::Blueprint dequeue() final;
+        virtual void enqueue(const Blueprint & blueprint) final;
+        virtual Blueprint dequeue() final;
 
         virtual bool isEmpty() const final;
 
@@ -22,7 +24,7 @@ namespace Scene {
     private:
         QueueSize _size;
 
-        QQueue<SceneInfo::Blueprint> _queue;
+        QQueue<Blueprint> _queue;
 
     public slots:
         virtual void setSize(const QueueSize & size);

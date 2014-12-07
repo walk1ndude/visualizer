@@ -11,7 +11,7 @@ namespace Model {
                                  const ShaderInfo::ShaderFiles & shaderFiles,
                                  const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                  const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
-        SceneInfo::SceneObject(SceneInfo::getNewID(modelNumber)) {
+        Scene::SceneObject(Scene::getNewID(modelNumber)) {
 
         _numberedID = -- modelNumber;
 
@@ -54,23 +54,23 @@ namespace Model {
     }
 
     void AbstractModel::init(const ModelInfo::Params & params) {
-        initFromParams<LightInfo::LightSource *>(
+        initFromParams<Scene::LightSource *>(
                     params["lights"].toMap(),
-                    LightInfo::LightSource::initializationOrder,
+                    Scene::LightSource::initializationOrder,
                     &AbstractModel::addLightSource,
                     &Scene::AbstractScene::lightSource
                 );
 
-        initFromParams<MaterialInfo::Material *>(
+        initFromParams<Scene::Material *>(
                     params["materials"].toMap(),
-                    MaterialInfo::Material::initializationOrder,
+                    Scene::Material::initializationOrder,
                     &AbstractModel::addMaterial,
                     &Scene::AbstractScene::material
                     );
 
-        initFromParams<TextureInfo::Texture *>(
+        initFromParams<Scene::Texture *>(
                     params["textures"].toMap(),
-                    TextureInfo::Texture::initializationOrder,
+                    Scene::Texture::initializationOrder,
                     &AbstractModel::addTexture,
                     &Scene::AbstractScene::texture
                     );
@@ -107,22 +107,18 @@ namespace Model {
         qDeleteAll(_lightSources);
         qDeleteAll(_materials);
         qDeleteAll(_textures);
-
-        _lightSources.clear();
-        _materials.clear();
-        _textures.clear();
     }
 
-    void AbstractModel::addMaterial(MaterialInfo::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-        addToMap<MaterialInfo::Material *, MaterialInfo::MaterialProgram>(_materials, material, shaderVariables);
+    void AbstractModel::addMaterial(Scene::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
+        addToMap<Scene::Material *, Scene::MaterialProgram>(_materials, material, shaderVariables);
     }
 
-    void AbstractModel::addLightSource(LightInfo::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-        addToMap<LightInfo::LightSource *, LightInfo::LightProgram>(_lightSources, lightSource, shaderVariables);
+    void AbstractModel::addLightSource(Scene::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
+        addToMap<Scene::LightSource *, Scene::LightProgram>(_lightSources, lightSource, shaderVariables);
     }
 
-    void AbstractModel::addTexture(TextureInfo::Texture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
-        addToMap<TextureInfo::Texture *, TextureInfo::TextureProgram>(_textures, texture, shaderVariables);
+    void AbstractModel::addTexture(Scene::Texture * texture, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
+        addToMap<Scene::Texture *, Scene::TextureProgram>(_textures, texture, shaderVariables);
     }
 
     int AbstractModel::stride() const {
@@ -241,11 +237,11 @@ namespace Model {
         _lockToWorldAxis = true;
     }
 
-    void AbstractModel::rotate(const QVector3D & rotation, const qreal & speed) {
+    void AbstractModel::rotate(const QVector3D & angle, const qreal & speed) {
         _orientation = changedOrientation(
-            Camera::Rotation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, rotation.x() * speed) *
-            Camera::Rotation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, rotation.y() * speed) *
-            Camera::Rotation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, rotation.z() * speed)
+            Camera::Rotation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, angle.x() * speed) *
+            Camera::Rotation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, angle.y() * speed) *
+            Camera::Rotation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, angle.z() * speed)
                                           );
 
     }
@@ -271,7 +267,7 @@ namespace Model {
     }
 
     void AbstractModel::processTextures(void (QOpenGLTexture::*process)(uint, QOpenGLTexture::TextureUnitReset)) const {
-        QMapIterator<TextureInfo::Texture *, TextureInfo::TextureProgram *> it(_textures);
+        QMapIterator<Scene::Texture *, Scene::TextureProgram *> it(_textures);
 
         QOpenGLTexture * current;
 
@@ -335,14 +331,14 @@ namespace Model {
     }
 
     void AbstractModel::bindUniformValues() const {
-        QMapIterator<MaterialInfo::Material *, MaterialInfo::MaterialProgram *> itM (_materials);
+        QMapIterator<Scene::Material *, Scene::MaterialProgram *> itM (_materials);
 
         while (itM.hasNext()) {
             itM.next();
             itM.value()->setUniform(_program, itM.key());
         }
 
-        QMapIterator<LightInfo::LightSource *, LightInfo::LightProgram *> itL (_lightSources);
+        QMapIterator<Scene::LightSource *, Scene::LightProgram *> itL (_lightSources);
 
         while (itL.hasNext()) {
             itL.next();
@@ -444,10 +440,10 @@ namespace Model {
     void AbstractModel::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "rotate") {
             if (params.contains("speed")) {
-                rotate(params["rotation"].value<QVector3D>(), params["speed"].toReal());
+                rotate(params["angle"].value<QVector3D>(), params["speed"].toReal());
             }
             else {
-                rotate(params["rotation"].value<QVector3D>());
+                rotate(params["angle"].value<QVector3D>());
             }
             return;
         }

@@ -18,7 +18,7 @@ namespace Scene {
         _size = size;
     }
 
-    void BlueprintQueue::enqueue(const SceneInfo::Blueprint & blueprint) {
+    void BlueprintQueue::enqueue(const Blueprint & blueprint) {
         while (_queue.size() >= _size) {
             _queue.dequeue();
         }
@@ -26,7 +26,7 @@ namespace Scene {
         _queue.enqueue(blueprint);
     }
 
-    SceneInfo::Blueprint BlueprintQueue::dequeue() {
-        return (!_queue.isEmpty()) ? _queue.dequeue() : SceneInfo::Blueprint();
+    Blueprint BlueprintQueue::dequeue() {
+        return (!_queue.isEmpty()) ? _queue.dequeue() : Blueprint();
     }
 }

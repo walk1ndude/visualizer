@@ -1,11 +1,9 @@
-#ifndef SCENEINFO_H
-#define SCENEINFO_H
+#ifndef SCENEOBJECT_H
+#define SCENEOBJECT_H
 
 #include "Info/Info.h"
 
-namespace SceneInfo {
-    using Blueprint = QVariantMap;
-
+namespace Scene {
     using ObjectID = QString;
 
     ObjectID getNewID(uint & currentCounter);
@@ -30,4 +28,4 @@ namespace SceneInfo {
     };
 }
 
-#endif // SCENEINFO_H
+#endif // SCENEOBJECT_H

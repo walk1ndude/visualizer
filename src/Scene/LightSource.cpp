@@ -1,71 +1,71 @@
-#include "Info/LightInfo.h"
+#include "Scene/LightSource.h"
 
 static uint lightSourceNumber = 0;
 
-namespace LightInfo {
+namespace Scene {
     LightSource::LightSource() :
-        SceneInfo::SceneObject(SceneInfo::getNewID(lightSourceNumber), 0) {
+        SceneObject(getNewID(lightSourceNumber), 0) {
 
     }
 
     QStringList LightSource::initializationOrder = {"position", "color", "ambientIntensity", "attenuation"};
 
-    LightSource::LightSource(const SceneInfo::ObjectID & lightID,
-                             const Position & position,
-                             const Color & color,
-                             const AmbientIntensity & ambientIntensity,
-                             const Attenuation & attenuation) :
-        SceneInfo::SceneObject(lightID, &lightSourceNumber) {
+    LightSource::LightSource(const ObjectID & lightID,
+                             const LightInfo::Position & position,
+                             const LightInfo::Color & color,
+                             const LightInfo::AmbientIntensity & ambientIntensity,
+                             const LightInfo::Attenuation & attenuation) :
+        SceneObject(lightID, &lightSourceNumber) {
         _position = position;
         _color = color;
         _ambientIntensity = ambientIntensity;
         _attenuation = attenuation;
     }
 
-    LightSource::LightSource(const Params & params) :
-        SceneInfo::SceneObject(params["id"].value<SceneInfo::ObjectID>(), &lightSourceNumber) {
+    LightSource::LightSource(const LightInfo::Params & params) :
+        SceneObject(params["id"].value<ObjectID>(), &lightSourceNumber) {
 
-        _position = params["position"].value<Position>();
-        _color = params["color"].value<Color>();
-        _ambientIntensity = params["ambientIntensity"].value<AmbientIntensity>();
-        _attenuation = params["attenuation"].value<Attenuation>();
+        _position = params["position"].value<LightInfo::Position>();
+        _color = params["color"].value<LightInfo::Color>();
+        _ambientIntensity = params["ambientIntensity"].value<LightInfo::AmbientIntensity>();
+        _attenuation = params["attenuation"].value<LightInfo::Attenuation>();
     }
 
-    Position LightSource::position() const {
+    LightInfo::Position LightSource::position() const {
         return _position;
     }
 
-    Color LightSource::color() const {
+    LightInfo::Color LightSource::color() const {
         return _color;
     }
 
-    AmbientIntensity LightSource::ambientIntensity() const {
+    LightInfo::AmbientIntensity LightSource::ambientIntensity() const {
         return _ambientIntensity;
     }
 
-    Attenuation LightSource::attenuation() const {
+    LightInfo::Attenuation LightSource::attenuation() const {
         return _attenuation;
     }
 
-    void LightSource::setPosition(const Position & position) {
+    void LightSource::setPosition(const LightInfo::Position & position) {
         _position = position;
 
         emit positionChanged(position);
     }
 
-    void LightSource::setColor(const Color & color) {
+    void LightSource::setColor(const LightInfo::Color & color) {
         _color = color;
 
         emit colorChanged(color);
     }
 
-    void LightSource::setAmbientIntensity(const AmbientIntensity & ambientIntensity) {
+    void LightSource::setAmbientIntensity(const LightInfo::AmbientIntensity & ambientIntensity) {
         _ambientIntensity = ambientIntensity;
 
         emit ambientIntensityChanged(ambientIntensity);
     }
 
-    void LightSource::setAttenuation(const Attenuation & attenuation) {
+    void LightSource::setAttenuation(const LightInfo::Attenuation & attenuation) {
         _attenuation = attenuation;
 
         emit attenuationChanged(attenuation);
@@ -110,3 +110,4 @@ namespace LightInfo {
     }
 
 }
+

@@ -3,6 +3,8 @@
 
 #include "Model/AbstractModel.h"
 
+#include "Scene/SceneObject.h"
+
 namespace Model {
     class ModelArray {
     public:
@@ -15,13 +17,15 @@ namespace Model {
 
         virtual QList<AbstractModel *> array() final;
 
-        AbstractModel * find(const uint & id);
-        AbstractModel * operator[] (const uint & id);
+        AbstractModel * find(const Scene::ObjectID & id);
+        AbstractModel * operator[] (const Scene::ObjectID & id);
 
         virtual void invokeMethod(const int & id, const QString & name, const QVariantMap & params = QVariantMap());
 
     private:
         QList<AbstractModel *> _models;
+
+        AbstractModel * _selectedModel;
 
         void reorder();
     };

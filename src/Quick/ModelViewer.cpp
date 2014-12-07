@@ -227,17 +227,21 @@ namespace Quick {
     }
 */
     void ModelViewer::recieve(const QVariant & message) {
-        if (!message.canConvert<Message::SettingsMessage>()) {
+       if (!message.canConvert<Message::SettingsMessage>()) {
             QVariantMap messageMap = message.toMap();
 
+            QVariantMap msHeader = messageMap["header"].toMap();
+
             Message::SettingsMessage messageToSend(
-                        messageMap["sender"].value<Message::Sender>(),
-                        messageMap["reciever"].value<Message::Reciever>()
+                        msHeader["sender"].value<Message::Sender>(),
+                        msHeader["reciever"].value<Message::Reciever>()
                     );
 
-            if (messageMap.contains("reliableTime")) {
-                messageToSend.setReliableTime(messageMap["reliableTime"].value<Message::ReliableTime>());
+            if (msHeader.contains("reliableTime")) {
+                messageToSend.setReliableTime(msHeader["reliableTime"].value<Message::ReliableTime>());
             }
+
+            messageToSend.data = messageMap["data"].toMap();
 
             recieveMessage(messageToSend);
         }
@@ -266,7 +270,7 @@ namespace Quick {
                     emit pointUpdated(map);
                 }
             }
-            else if (message.reciever().startsWith("Scene")) {
+            else {
                 emit post(message);
             }
         }

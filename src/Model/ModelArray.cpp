@@ -1,7 +1,8 @@
 #include "Model/ModelArray.h"
 
 namespace Model {
-    ModelArray::ModelArray() {
+    ModelArray::ModelArray() :
+        _selectedModel(nullptr) {
 
     }
 
@@ -44,28 +45,27 @@ namespace Model {
         _models = QList<AbstractModel *>(withoutDepth + withDepth);
     }
 
-    AbstractModel * ModelArray::find(const uint & id) {
+    AbstractModel * ModelArray::find(const Scene::ObjectID & id) {
         AbstractModel * found = nullptr;
-        AbstractModel * current = nullptr;
 
-        QListIterator<AbstractModel *> it(_models);
-/*
-        while (!found && it.hasNext()) {
-            current = it.next();
-            found = (id == current->id()) ? current : found;
+        for (AbstractModel * model : _models) {
+            if (model->id() == id) {
+                return model;
+            }
         }
-*/
+
         return found;
     }
 
-    AbstractModel * ModelArray::operator [] (const uint & id) {
+    AbstractModel * ModelArray::operator [] (const Scene::ObjectID & id) {
         return find(id);
     }
 
     void ModelArray::invokeMethod(const int & id, const QString & name,
                                   const QVariantMap & params) {
+        /*
         if (AbstractModel * model = find(id)) {
             model->invoke(name, params);
-        }
+        }*/
     }
 }

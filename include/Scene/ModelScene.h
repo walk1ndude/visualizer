@@ -43,18 +43,12 @@ namespace Scene {
         virtual void initScene();
 
     private:
-        QMap<QOpenGLTexture *, TextureInfo::Texture> _texturesInfo;
-
-        Model::ModelArray _models;
-
-        QMultiMap<Model::AbstractModel *, QOpenGLTexture *> _texturesInModel;
+        SceneObjectList<Model::AbstractModel *> _models;
+        //Model::ModelArray _models;
 
         QVariant _blueprint;
 
         QList<QOpenGLTexture *> _textures;
-
-        Model::AbstractModel * _selectedModel;
-        QOpenGLTexture * _selectedTexture;
 
         QVector3D _rotation;
 
@@ -70,7 +64,7 @@ namespace Scene {
         bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator,
                          QListIterator<Viewport::Viewport *> & viewportIterator);
 
-    signals:;
+    signals:
         void viewportArrayChanged();
 
         void blueprintChanged(const QVariant & blueprint);
@@ -85,7 +79,7 @@ namespace Scene {
         virtual void recieve(const Message::SettingsMessage & message);
 
         virtual void setBlueprint(const QVariant & blueprint);
-        virtual void unpackBlueprint(const SceneInfo::Blueprint & blueprint, const bool & resetScene = false);
+        virtual void unpackBlueprint(const Blueprint & blueprint, const bool & resetScene = false);
     };
 
 }

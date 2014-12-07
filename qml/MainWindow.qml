@@ -90,15 +90,7 @@ ApplicationWindow {
                                                        "viewer" : modelViewer
                                                    });
             stlReader.file = fileUrl;
-
-            modelViewer.recieve({
-                                    "sender": "dial",
-                                    "reciever": "viewer",
-                                    "data": {
-                                        "variant": "test"
-                                    }
-                                });
-        }
+       }
     }
 
     FocusScope {

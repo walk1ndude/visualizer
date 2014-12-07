@@ -10,8 +10,12 @@
 #include "Info/VolumeInfo.h"
 #include "Info/LightInfo.h"
 #include "Info/MaterialInfo.h"
-#include "Info/SceneInfo.h"
 #include "Info/TextureInfo.h"
+
+#include "Scene/Material.h"
+#include "Scene/LightSource.h"
+#include "Scene/Texture.h"
+#include "Scene/SceneObjectList.h"
 
 #include "Message/SettingsMessage.h"
 
@@ -45,14 +49,14 @@ namespace Scene {
 
         qreal scalingFactor() const;
 
-        MaterialInfo::Material * material(const SceneInfo::ObjectID & id = SceneInfo::ObjectID()) const;
-        LightInfo::LightSource * lightSource(const SceneInfo::ObjectID & id = SceneInfo::ObjectID()) const;
-        TextureInfo::Texture * texture(const SceneInfo::ObjectID & id = SceneInfo::ObjectID()) const;
+        Material * material(const ObjectID & id = ObjectID()) const;
+        LightSource * lightSource(const ObjectID & id = ObjectID()) const;
+        Texture * texture(const ObjectID & id = ObjectID()) const;
 
     protected:
-        QList<MaterialInfo::Material *> materials;
-        QList<LightInfo::LightSource *> lightSources;
-        QList<TextureInfo::Texture *> textures;
+        SceneObjectList<Material *> materials;
+        SceneObjectList<LightSource *> lightSources;
+        SceneObjectList<Texture *> textures;
 
         virtual void initScene() = 0;
 

@@ -11,6 +11,7 @@ namespace Message {
         explicit SettingsMessage();
         explicit SettingsMessage(const Sender & sender, const Reciever & reciever,
                                  const ReliableTime & reliableTime = -1);
+
         SettingsData data;
    };
 }
