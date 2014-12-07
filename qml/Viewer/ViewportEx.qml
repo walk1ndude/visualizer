@@ -9,21 +9,16 @@ Viewport {
 
     property color color: "green";
 
-    /* link to viewport array to which this
-    one currently belongs */
-    property variant array: parent;
-
-    /* true - mouse events, captured in this
-    also processed by other viewports in array
-    marked by array property */
-    property bool propagateToOthers: true;
-
     property bool invertedYAxis: false;
 
     property real minimumZoom: 0.2;
     property real maximumZoom: 4.0;
 
     property vector2d rotationSpeed: Qt.vector2d(width / 10, height / 10);
+
+    signal rotate(variant message);
+    signal post(variant message);
+    signal setZoom(real zoomFactor, real x, real y);
 
     x: boundingRect.x * parent.width;
     y: boundingRect.y * parent.height;
@@ -82,12 +77,22 @@ Viewport {
                 case Qt.LeftButton:
 
                 if (!rotating) {
-                    parent.array.parent.addPoint(
-                        Qt.point(
-                            mouseX / width,
-                            mouseY / height
-                            ), parent
-                        );
+                    parent.post({
+                                    "header" : {
+                                        "sender" : "viewport",
+                                        "reciever" : "current_model"
+                                    },
+                                    "data" : {
+                                        "action" : "addPoint",
+                                        "params" : {
+                                            "point" : Qt.point(
+                                                          mouseX / width,
+                                                          mouseY / height
+                                                          ),
+                                            "viewport" : parent
+                                        }
+                                    }
+                                });
                 }
 
                 if (parent.projectionType == Viewport.FRONTAL) {
@@ -102,22 +107,22 @@ Viewport {
         }
 
         onPositionChanged: {
-            if (parent.projectionType == Viewport.FRONTAL && rotating) {
-                parent.array.parent.recieve({
-                                                "header" : {
-                                                    "sender" : "viewports",
-                                                    "reciever" : "current_model"
-                                                },
-                                                "data" : {
-                                                    "action" : "rotate",
-                                                    "params" : {
-                                                        "angle" : Qt.vector3d(
-                                                            (parent.invertedYAxis ? -1 : 1) * (prevMouseY - mouseY),
-                                                            0.0,
-                                                            mouseX - prevMouseX)
-                                                    }
-                                                }
-                                            });
+            if (rotating) {
+                parent.rotate({
+                                    "header" : {
+                                        "sender" : "viewport",
+                                        "reciever" : "current_model"
+                                    },
+                                    "data" : {
+                                        "action" : "rotate",
+                                        "params" : {
+                                            "angle" : Qt.vector3d(
+                                                          (parent.invertedYAxis ? -1 : 1) * (prevMouseY - mouseY),
+                                                          0.0,
+                                                          mouseX - prevMouseX)
+                                        }
+                                    }
+                                });
 
                 prevMouseX = mouseX;
                 prevMouseY = mouseY;
@@ -147,14 +152,7 @@ Viewport {
             var zoomFactor = Helpers.clamp(parent.zoom + wheel.angleDelta.y * 0.001, parent.minimumZoom, parent.maximumZoom);
 
             if (zoomFactor !== parent.zoom) {
-                if (parent.propagateToOthers) {
-                    parent.array.zoom(zoomFactor, mouseXW / parent.width, mouseYW / parent.height, parent);
-                }
-                else {
-                    parent.zoom = zoomFactor;
-                }
-
-                parent.array.parent.update();
+                parent.setZoom(zoomFactor, mouseXW / parent.width, mouseYW / parent.height);
             }
         }
     }

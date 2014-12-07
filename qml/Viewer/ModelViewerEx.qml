@@ -33,21 +33,45 @@ ModelViewer {
         ViewportEx  {
             projectionType: Viewport.PERSPECTIVE;
             boundingRect: Qt.rect(0.5, 0.5, 0.5, 0.5);
+
+            onSetZoom: parent.setZoom(zoomFactor, x, y, this);
+
+            onPost: modelViewer.recieve(message);
         }
 
         ViewportEx {
             projectionType: Viewport.TOP;
             boundingRect: Qt.rect(0, 0.5, 0.5, 0.5);
+
+            onSetZoom: parent.setZoom(zoomFactor, x, y, this);
+
+            onPost: modelViewer.recieve(message);
         }
 
         ViewportEx {
             projectionType: Viewport.FRONTAL;
             boundingRect: Qt.rect(0, 0, 0.5, 0.5);
+
+            onRotate: modelViewer.recieve(message);
+
+            onSetZoom: parent.setZoom(zoomFactor, x, y, this);
+
+            onPost: modelViewer.recieve(message);
         }
 
         ViewportEx {
             projectionType: Viewport.LEFT;
             boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
+
+            onSetZoom: parent.setZoom(zoomFactor, x, y, this);
+
+            onPost: modelViewer.recieve(message);
+        }
+
+        function setZoom(zoomFactor, x, y, viewport) {
+            zoom(zoomFactor, x, y, viewport);
+
+            modelViewer.update();
         }
     }
 
