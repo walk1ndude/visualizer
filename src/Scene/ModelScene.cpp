@@ -207,7 +207,9 @@ namespace Scene {
             return;
         }
 
-        _models[message.reciever().startsWith("currentModel") ? ObjectID() : message.data["modelID"].value<ObjectID>()]->invoke(
+        qDebug() << message.data["action"];
+
+        _models[message.reciever()]->invoke(
                     message.data["action"].toString(),
                     message.data["params"].value<ModelInfo::Params>());
     }

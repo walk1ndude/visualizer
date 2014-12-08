@@ -31,7 +31,7 @@ namespace Scene {
         SObj find(const ObjectID & id) const {
             SObj obj = nullptr;
 
-            if (id.isEmpty() && !_objects.isEmpty()) {
+            if ((id.isEmpty() || id.startsWith("currentModel")) && !_objects.isEmpty()) {
                 obj = _selectedObject;
             }
 

@@ -16,6 +16,8 @@ Viewport {
 
     property vector2d rotationSpeed: Qt.vector2d(width / 10, height / 10);
 
+    property string currentPoint: "";
+
     signal rotate(variant message);
     signal post(variant message);
     signal setZoom(real zoomFactor, real x, real y);
@@ -83,12 +85,10 @@ Viewport {
                                         "reciever" : "currentModel"
                                     },
                                     "data" : {
-                                        "action" : "addPoint",
+                                        "action" : "setPoint",
                                         "params" : {
-                                            "point" : Qt.point(
-                                                          mouseX / width,
-                                                          mouseY / height
-                                                          ),
+                                            "name" : parent.currentPoint,
+                                            "position" : Qt.point(mouseX / width, mouseY / height),
                                             "viewport" : parent
                                         }
                                     }

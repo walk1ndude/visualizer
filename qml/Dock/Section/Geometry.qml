@@ -7,12 +7,7 @@ import "qrc:/qml/Control" as Control;
 Rectangle {
     id: geometry;
 
-    property real angleShot: 0.0;
-
-    property int modelId: -1;
-
-    property vector3d angle: Qt.vector3d(0.0, 0.0, 0.0);
-    property real zoomFactor: 2.0;
+    signal post(variant message);
 
     color: "#cccccc";
     border.color: "black";
@@ -23,7 +18,7 @@ Rectangle {
 
     Grid {
         columns: 3;
-        rows: 4;
+        rows: 3;
         spacing: 5;
 
         anchors.top: geometry.top;
@@ -80,28 +75,20 @@ Rectangle {
         Text {
             text: Helpers.pad((Math.round(zRotSlider.value * 1000) / 1000).toFixed(4), 3, 4);
         }
-
-        Text {
-            text: qsTr("zoom");
-        }
-
-        Control.Slider {
-            id: zoomSlider;
-            width: 200;
-            minimumValue: 0.1;
-            maximumValue: 4.0;
-            value: 2.0;
-            onValueChanged: geometryGrid.zoomFactor = maximumValue - value;
-        }
-
-        Text {
-            text: Helpers.pad((Math.round(zoomSlider.value * 1000) / 1000).toFixed(4), 3, 4);
-        }
     }
 
-    onAngleShotChanged: yRotSlider.value = geometryGrid.angleShot;
-
     function updateAngle() {
-        geometry.angle = Qt.vector3d(xRotSlider.value, yRotSlider.value, zRotSlider.value);
+        geometry.post({
+                          "header" : {
+                              "sender" : "geometry",
+                              "reciever" : "currentModel"
+                          },
+                          "data" : {
+                              "action" : "rotate",
+                              "params" : {
+                                  "angle" : Qt.vector3d(xRotSlider.value, yRotSlider.value, zRotSlider.value)
+                              }
+                          }
+                      });
     }
 }

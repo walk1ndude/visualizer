@@ -14,9 +14,7 @@ Rectangle {
         width: 2;
     }
 
-    signal togglePoint(string point);
-
-    property variant selectedPoint: ({});
+    signal post(variant message);
 
     ListView {
         id: listView;
@@ -48,9 +46,10 @@ Rectangle {
         anchors.fill: parent;
 
         onCurrentIndexChanged: {
+            /*
             if (currentIndex === -1) {
                 measures.selectedPoint = { };
-            }
+            }*/
         }
     }
 
@@ -94,7 +93,18 @@ Rectangle {
                 wrapMode: Text.WordWrap;
             }
 
-            onIsShownChanged: measures.togglePoint(itemId);
+            onIsShownChanged: measures.post({
+                              "header" : {
+                                  "sender" : "measures",
+                                  "reciever" : "currentModel"
+                              },
+                              "data" : {
+                                  "action" : "togglePoint",
+                                  "params" : {
+                                      "name" : itemId
+                                  }
+                              }
+                          });
 
             MouseArea {
                 anchors {
@@ -104,7 +114,7 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton;
 
                 onClicked: {
-                    if (modelID < 0) {
+                    if (modelID === "") {
                         return;
                     }
 
@@ -113,11 +123,21 @@ Rectangle {
 
                         if (listView.currentIndex !== -1) {
                             listModel.setProperty(listView.currentIndex, "shown", true);
-                            measures.selectedPoint = {
-                                        "name" : itemId,
-                                        "color" : parent.color,
-                                        "groups" : Helpers.pointInGroups[itemId]
-                            };
+
+                            measures.post({
+                                              "header" : {
+                                                  "sender" : "measures",
+                                                  "reciever" : "currentModel"
+                                              },
+                                              "data" : {
+                                                  "action" : "addPoint",
+                                                  "params" : {
+                                                      "name" : itemId,
+                                                      "color" : parent.color,
+                                                      "groups" : Helpers.pointInGroups[itemId]
+                                                  }
+                                              }
+                                          });
                         }
                     }
                     else if (mouse.button === Qt.RightButton) {

@@ -130,8 +130,7 @@ Sidedock {
                     Section.Geometry {
                         width: sidebarListView.width;
 
-                        onAngleChanged: sidebar.angle = angle;
-                        onZoomFactorChanged: sidebar.zoomFactor = zoomFactor;
+                        onPost: sidebar.post(message);
                 }
             }
         }
@@ -149,8 +148,10 @@ Sidedock {
                     Section.Measures {
                         width: sidebarListView.width;
 
-                        onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
-                        onTogglePoint: sidebar.togglePoint(point);
+                        //onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
+                        //onTogglePoint: sidebar.togglePoint(point);
+
+                        onPost: sidebar.post(message);
 
                         Connections {
                             target: sidebar;

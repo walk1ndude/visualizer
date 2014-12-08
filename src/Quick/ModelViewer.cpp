@@ -122,7 +122,8 @@ namespace Quick {
 
             QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize, Qt::DirectConnection);
 
-            QObject::connect(this, &ModelViewer::post, _modelRenderer, &Render::ModelRenderer::recieve, Qt::DirectConnection);
+            QObject::connect(this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::post,
+                             _modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::recieve, Qt::DirectConnection);
             QObject::connect(_modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::post,
                              this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::recieve, Qt::DirectConnection);
 
@@ -207,22 +208,7 @@ namespace Quick {
 */
     void ModelViewer::recieve(const QVariant & message) {
        if (!message.canConvert<Message::SettingsMessage>()) {
-            QVariantMap messageMap = message.toMap();
-
-            QVariantMap msHeader = messageMap["header"].toMap();
-
-            Message::SettingsMessage messageToSend(
-                        msHeader["sender"].value<Message::Sender>(),
-                        msHeader["reciever"].value<Message::Reciever>()
-                    );
-
-            if (msHeader.contains("reliableTime")) {
-                messageToSend.setReliableTime(msHeader["reliableTime"].value<Message::ReliableTime>());
-            }
-
-            messageToSend.data = messageMap["data"].toMap();
-
-            recieveMessage(messageToSend);
+            recieveMessage(Message::SettingsMessage::toMessage(message));
         }
         else {
             recieveMessage(message.value<Message::SettingsMessage>());
@@ -250,6 +236,10 @@ namespace Quick {
                 }
             }
             else {
+                if (message.data["action"] == "addPoint") {
+                    emit post(Message::SettingsMessage::toVariantMap(message));
+                }
+
                 emit post(message);
             }
         }

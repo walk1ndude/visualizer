@@ -78,6 +78,7 @@ namespace Quick {
         void fboSizeChanged(const QSize & fboSize);
 
         void post(const Message::SettingsMessage & message);
+        void post(const QVariantMap & message);
 
         void lastMessageChanged(const QVariant & message);
 

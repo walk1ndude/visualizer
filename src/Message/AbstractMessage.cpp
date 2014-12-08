@@ -44,6 +44,10 @@ namespace Message {
         return _header._reciever;
     }
 
+    ReliableTime AbstractMessage::reliableTime() const {
+        return _header._reliableTime;
+    }
+
     void AbstractMessage::setReliableTime(const ReliableTime & time) {
         _header._reliableTime = time;
         _header._timeStamp = QDateTime::currentMSecsSinceEpoch();

@@ -35,6 +35,7 @@ namespace Message {
 
         Sender sender() const;
         Reciever reciever() const;
+        ReliableTime reliableTime() const;
 
         void setReliableTime(const ReliableTime & time);
 

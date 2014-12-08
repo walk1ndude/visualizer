@@ -23,14 +23,27 @@ ModelViewer {
         Settings.Points[point.modelID][point.name]["position"] = point.position;
     }
 
+    onPost: {
+        console.log(message.reciever)
+        if (message.reciever === "viewports") {
+            if (message.data["params"]["action"] === "setPoint") {
+                viewportArray.currentPoint = message.data["params"]["point"];
+            }
+        }
+    }
+
     ViewportArray {
         id: viewportArray;
 
         anchors.fill: parent;
 
+        property string currentPoint: "";
+
         ViewportEx  {
             projectionType: Viewport.PERSPECTIVE;
             boundingRect: Qt.rect(0.5, 0.5, 0.5, 0.5);
+
+            currentPoint: viewportArray.currentPoint;
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 
@@ -41,6 +54,8 @@ ModelViewer {
             projectionType: Viewport.TOP;
             boundingRect: Qt.rect(0, 0.5, 0.5, 0.5);
 
+            currentPoint: viewportArray.currentPoint;
+
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 
             onPost: modelViewer.message = message;
@@ -49,6 +64,8 @@ ModelViewer {
         ViewportEx {
             projectionType: Viewport.FRONTAL;
             boundingRect: Qt.rect(0, 0, 0.5, 0.5);
+
+            currentPoint: viewportArray.currentPoint;
 
             onRotate: modelViewer.recieve(message);
 
@@ -60,6 +77,8 @@ ModelViewer {
         ViewportEx {
             projectionType: Viewport.LEFT;
             boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
+
+            currentPoint: viewportArray.currentPoint;
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 

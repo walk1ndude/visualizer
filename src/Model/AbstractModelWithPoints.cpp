@@ -245,11 +245,12 @@ namespace Model {
         }
 
         if (name == "addPoint") {
-            PointsInfo::Point point = params["point"].value<PointsInfo::Point>();
-
-            addPoint(point.name, new PointsInfo::ModelPoint(
-                         PointsInfo::Position3D(point.position),
-                         point.color, point.viewport, point.groups
+            addPoint(params["name"].value<PointsInfo::Name>(),
+                     new PointsInfo::ModelPoint(
+                         PointsInfo::Position3D(),
+                         params["color"].value<QColor>(),
+                         nullptr,
+                         params["groups"].value<PointsInfo::Groups>()
                          )
                      );
             return;

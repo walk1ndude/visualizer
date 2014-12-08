@@ -13,6 +13,9 @@ namespace Message {
                                  const ReliableTime & reliableTime = -1);
 
         SettingsData data;
+
+        static QVariantMap toVariantMap(const SettingsMessage & message);
+        static SettingsMessage toMessage(const QVariant & message);
    };
 }
 
