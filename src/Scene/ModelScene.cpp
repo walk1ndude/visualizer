@@ -124,11 +124,9 @@ namespace Scene {
         _models.selectObject(model);
 
         Message::SettingsMessage message(
-                    Message::Sender("scene"),
+                    Message::Sender(_models.selectedObject()->id()),
                     Message::Reciever("sidebar")
                     );
-
-        message.data["modelID"] = QVariant::fromValue(_models.selectedObject()->id());
 
         emit post(message);
     }
@@ -212,6 +210,8 @@ namespace Scene {
                     message.data["action"].toString(),
                     message.data["params"].value<ModelInfo::Params>()
             );
+
+            return;
         }
     }
 }

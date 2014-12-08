@@ -20,11 +20,13 @@ ModelViewer {
         case "settingsJS":
             if (message.data.action === "updatePoint") {
                 var params = message.data.params;
+
                 // update info about points
                 Settings.Points[message.sender] = Settings.Points[message.sender] || { };
                 Settings.Points[message.sender][params.id] = Settings.Points[message.sender][params.id] || { };
                 Settings.Points[message.sender][params.id]["position"] = params.position;
             }
+            break;
         }
     }
 

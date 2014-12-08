@@ -164,12 +164,15 @@ namespace Model {
 
                     Message::SettingsMessage message(
                                 Message::Sender(id()),
-                                Message::Reciever("settingsJS")
+                                Message::Reciever("settingsJS"),
+                                Message::Recievers() = { "measures" }
                     );
 
                     message.data["action"] = "updatePoint";
-                    message.data["id"] = _modelPoints.key(modelPoint);
-                    message.data["position"] = modelPoint->position * scene()->scalingFactor();
+                    message.data["params"] = ModelInfo::Params() = {
+                        { "id", _modelPoints.key(modelPoint) },
+                        { "position", modelPoint->position * scene()->scalingFactor() }
+                    };
 
                     emit post(message);
                 }

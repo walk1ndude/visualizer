@@ -44,21 +44,20 @@ Rectangle {
 
         delegate: delegateComponent;
         anchors.fill: parent;
-
-        onCurrentIndexChanged: {
-            /*
-            if (currentIndex === -1) {
-                measures.selectedPoint = { };
-            }*/
-        }
     }
 
-    function updatePoint(point) {
-        for (var i = 0; i !== listModel.count; ++ i) {
-            if (listModel.get(i).itemId === point.name) {
-                listModel.setProperty(i, "position", " [" + point.position.x.toFixed(2) + ", "
-                                      + point.position.y.toFixed(2) + ", "
-                                      + point.position.z.toFixed(2) + "]");
+    function recieve(message) {
+        switch (message.data.action) {
+        case "updatePoint" :
+            var id = message.data.params.id;
+            var position = message.data.params.position;
+
+            for (var i = 0; i !== listModel.count; ++ i) {
+            if (listModel.get(i).itemId === id) {
+                listModel.setProperty(i, "position", " [" + position.x.toFixed(2) + ", "
+                                      + position.y.toFixed(2) + ", "
+                                      + position.z.toFixed(2) + "]");
+                }
             }
         }
     }
@@ -92,7 +91,7 @@ Rectangle {
                 clip: true;
                 wrapMode: Text.WordWrap;
             }
-/*
+
             onIsShownChanged: measures.post({
                               "header" : {
                                   "sender" : "measures",
@@ -104,7 +103,7 @@ Rectangle {
                                       "name" : itemId
                                   }
                               }
-                          });*/
+                          });
 
             MouseArea {
                 anchors {

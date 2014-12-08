@@ -29,9 +29,23 @@ namespace Message {
 
         QVariantMap mapData;
 
+        QVariantMap mapKeyVarMS;
+        QVariantMap mapKeyMS;
+
         for (const QString & key : message.data.keys()) {
-            mapData[key] = message.data[key];
+            if (key != "action") {
+                mapKeyMS = message.data[key].toMap();
+
+                for (const QString & keykey : mapKeyMS.keys()) {
+                    mapKeyVarMS[keykey] = mapKeyMS[keykey];
+                }
+
+                mapData[key] = mapKeyVarMS;
+                mapKeyVarMS.clear();
+            }
         }
+
+        mapData["action"] = message.data["action"];
 
         map["data"] = mapData;
 

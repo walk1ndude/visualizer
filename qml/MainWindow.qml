@@ -118,6 +118,14 @@ ApplicationWindow {
                 sidebar.updateIndividual();
                 appWindow.pointUpdated(point);
             }
+
+            onPost: {
+                switch (message.header.reciever) {
+                    case "measures" :
+                            sidebar.recieve(message);
+                            break;
+                    }
+            }
         }
     }
 
@@ -136,8 +144,6 @@ ApplicationWindow {
         onPost: modelViewer.message = message;
 
         dX: appWindow.width * appWindow.sideBarWidth;
-
-        modelID: modelViewer.modelID;
 
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }

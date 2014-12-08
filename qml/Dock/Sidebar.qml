@@ -25,6 +25,13 @@ Sidedock {
     signal distsUpdated();
 
     signal post(variant message);
+    signal postToSections(variant message);
+
+    function recieve(message) {
+        switch (message.header.reciever) {
+        case "measures" : postToSections(message);
+        }
+    }
 
     function updatePoint(point) {
         measuredPoint = point.name;
@@ -146,31 +153,14 @@ Sidedock {
                 id: repeater;
                 delegate:
                     Section.Measures {
+                        id: measures;
                         width: sidebarListView.width;
-
-                        //onSelectedPointChanged: sidebar.selectedPoint = selectedPoint;
-                        //onTogglePoint: sidebar.togglePoint(point);
 
                         onPost: sidebar.post(message);
 
                         Connections {
                             target: sidebar;
-                            onMeasuredPositionChanged: {
-                                updatePoint({
-                                                "name" : measuredPoint,
-                                                "position" : measuredPosition
-                                            });
-                            }
-                        }
-
-                        Connections {
-                            target: sidebar;
-                            onMeasuredPositionChanged: {
-                                updatePoint({
-                                                "name" : measuredPoint,
-                                                "position" : measuredPosition
-                                            });
-                            }
+                            onPostToSections : recieve(message);
                         }
                 }
             }

@@ -4,8 +4,7 @@
 namespace Quick {
     ModelViewer::ModelViewer() :
         _modelRenderer(nullptr),
-        _viewportArray(nullptr),
-        _modelID(-1) {
+        _viewportArray(nullptr) {
 
         setFlag(QQuickItem::ItemHasContents);
 
@@ -57,23 +56,6 @@ namespace Quick {
         _selectedPoint = selectedPoint;
     }
 
-    void ModelViewer::togglePoint(const QString & point) {
-        /*
-        recieve("modelViewer", "model 2", "togglePoint",
-            ModelInfo::Params() = {
-                { "point", QVariant(point) }
-        });*/
-    }
-
-    int ModelViewer::modelID() const {
-        return _modelID;
-    }
-
-    void ModelViewer::setModelID(const int & modelID) {
-        _modelID = modelID;
-        emit modelIDChanged(_modelID);
-    }
-
     Scene::ModelScene * ModelViewer::modelScene() const {
         return _modelScenes.last();
     }
@@ -118,14 +100,13 @@ namespace Quick {
 
             QObject::connect(window(), &QQuickWindow::sceneGraphInvalidated, _modelRenderer, &Render::ModelRenderer::shutDown);
 
-            QObject::connect(_modelRenderer, &Render::ModelRenderer::modelIDChanged, this, &ModelViewer::setModelID, Qt::DirectConnection);
-
-            QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize, Qt::DirectConnection);
+            QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize);
 
             QObject::connect(this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::post,
-                             _modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::recieve, Qt::DirectConnection);
+                             _modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::recieve);
+
             QObject::connect(_modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::post,
-                             this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::recieve, Qt::DirectConnection);
+                             this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::recieveMessage);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -164,48 +145,6 @@ namespace Quick {
         return node;
     }
 
-    void ModelViewer::addPoint(const QPointF & position, Viewport::Viewport * viewport) {
-        if (_selectedPoint.isEmpty()) {
-            return;
-        }
-
-        PointsInfo::Point selectedPoint;
-
-        selectedPoint.position = QPointF(position.x(), position.y());
-        selectedPoint.viewport = viewport;
-
-        selectedPoint.name = qvariant_cast<PointsInfo::PointID>(_selectedPoint["name"]);
-        selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
-        selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
-/*
-        recieve("modelViewer", "model 1", "addPoint",
-            ModelInfo::Params() = {
-                { "point", QVariant::fromValue(selectedPoint) }
-        });*/
-    }
-/*
-    void ModelViewer::recieve(const Message::) {
-        // TODO: if reciever empty - this class is final destination
-        if (reciever.isEmpty()) {
-            return;
-        }
-
-        Message::SettingsMessage message(sender, reciever);
-
-        if (reciever.startsWith("model ")) {
-            QRegExp findID("\\d+$");
-            findID.indexIn(reciever);
-
-            uint modelID = findID.capturedTexts().at(0).toUInt();
-
-            message.data["modelID"] = QVariant(modelID);
-            message.data["action"] = QVariant(action);
-            message.data["params"] = QVariant(params);
-
-            emit post(message);
-        }
-    }
-*/
     void ModelViewer::recieve(const QVariant & message) {
        if (!message.canConvert<Message::SettingsMessage>()) {
             recieveMessage(Message::SettingsMessage::toMessage(message));
@@ -222,20 +161,24 @@ namespace Quick {
         }
 
         if (message.isReliable()) {
-            // some messages could have multiple recievers - we need to send to them also,
-            // we don't need (or it would have been a hell lot of code) destination: QML of C++
-            // so post to both
-
-            for (const Message::Reciever & reciever : message.recievers()) {
-                emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), reciever));
-
-                Message::SettingsMessage ms(message.sender(), reciever);
-                ms.setReliableTime(message.reliableTime());
-                ms.data = message.data;
-                emit post(ms);
-            }
-
-            emit post(message);
+            postMessage(message);
         }
+    }
+
+    void ModelViewer::postMessage(const Message::SettingsMessage & message) {
+        // some messages could have multiple recievers - we need to send to them also,
+        // we don't need (or it would have been a hell lot of code) destination: QML of C++
+        // so post to both
+
+        for (const Message::Reciever & reciever : message.recievers()) {
+            emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), reciever));
+
+            Message::SettingsMessage ms(message.sender(), reciever);
+            ms.setReliableTime(message.reliableTime());
+            ms.data = message.data;
+            emit post(ms);
+        }
+
+        emit post(message);
     }
 }

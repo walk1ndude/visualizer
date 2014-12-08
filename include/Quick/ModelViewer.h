@@ -19,8 +19,6 @@ namespace Quick {
 
         Q_PROPERTY(QVariant message READ message WRITE recieve NOTIFY lastMessageChanged)
 
-        Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
-
         Q_PROPERTY(Scene::ModelScene * modelScene READ modelScene WRITE setModelScene NOTIFY modelSceneChanged)
 
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
@@ -34,8 +32,6 @@ namespace Quick {
         
         QVariantMap selectedPoint() const;
 
-        int modelID() const;
-
         Viewport::ViewportArray * viewportArray() const;
 
         Scene::ModelScene * modelScene() const;
@@ -47,7 +43,8 @@ namespace Quick {
 
         QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData * paintNodeData);
 
-        virtual void recieveMessage(const Message::SettingsMessage & message);
+        void recieveMessage(const Message::SettingsMessage & message);
+        void postMessage(const Message::SettingsMessage & message);
 
     private:
         Render::ModelRenderer * _modelRenderer;
@@ -59,8 +56,6 @@ namespace Quick {
         QVariantMap _selectedPoint;
 
         QSize _fboSize;
-
-        uint _modelID;
 
    signals:
         void viewportArrayChanged();
@@ -83,9 +78,6 @@ namespace Quick {
         void lastMessageChanged(const QVariant & message);
 
     public slots:
-        Q_INVOKABLE virtual void addPoint(const QPointF & point, Viewport::Viewport * viewport);
-        Q_INVOKABLE virtual void togglePoint(const QString & point);
-
         virtual void recieve(const QVariant & message);
 
         virtual void setModelScene(Scene::ModelScene * modelScene);
@@ -96,7 +88,6 @@ namespace Quick {
 
         virtual void setSelectedPoint(const QVariantMap & selectedPoint);
 
-        virtual void setModelID(const int & modelID);
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
     };
 }
