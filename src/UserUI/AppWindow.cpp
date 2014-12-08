@@ -45,26 +45,6 @@ namespace UserUI {
         QObject::connect(appWindow, SIGNAL(recieve(const QVariant &)), this, SLOT(recieve(const QVariant &)));
     }
 
-    void AppWindow::updatePoint(const QVariant & point) {
-        // need to serialize our vector3d
-        QVariantMap pointM(point.toMap());
-
-        QVector3D vector = qvariant_cast<QVector3D>(pointM["position"]);
-        QVariantList vectorV;
-
-        vectorV.append(vector.x());
-        vectorV.append(vector.y());
-        vectorV.append(vector.z());
-
-        pointM.insert("position", vectorV);
-
-        pointUpdated(QJsonObject::fromVariantMap(pointM));
-    }
-
-    void AppWindow::updateDists(const QVariant & dists) {
-        distsUpdated(QJsonObject::fromVariantMap(qvariant_cast<QVariantMap>(dists)));
-    }
-
     void AppWindow::registerQmlTypes() {
         qmlRegisterType<UserUI::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
         qmlRegisterType<UserUI::ConsoleLogger>("RenderTools", 1, 0, "ConsoleLogger");
@@ -92,11 +72,22 @@ namespace UserUI {
             QString action = message.data["action"].toString();
 
             if (action == "updatePoint") {
+                QVariantMap paramsMap = message.data["params"].toMap();
+
+                PointsInfo::Position3D position = paramsMap["position"].value<PointsInfo::Position3D>();
+
+                QVariantList positionJSON = { position.x(), position.y(), position.z() };
+
+                paramsMap["position"] = QVariant(positionJSON);
+
+                emit post(QJsonObject::fromVariantMap(paramsMap));
 
             }
             else if (action == "updateDists") {
-                qDebug() << message.data["params"].toMap();
+                emit post(QJsonObject::fromVariantMap(message.data["params"].toMap()));
             }
+
+            _netUI->recieve(message);
         }
     }
 

@@ -116,15 +116,13 @@ ApplicationWindow {
             width: appWindow.width - sidebar.width;
             height: appWindow.height - consoleDock.height;
 
-            onPointUpdated: {
-                sidebar.updateIndividual();
-                appWindow.pointUpdated(point);
-            }
-
             onPost: {
                 switch (message.header.reciever) {
                     case "sidebar" :
                         sidebar.recieve(message);
+                        break;
+                    case "appWindow" :
+                        appWindow.recieve(message);
                         break;
                     }
             }

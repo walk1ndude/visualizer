@@ -36,13 +36,9 @@ namespace UserUI {
         void fetchConnections();
 
     signals:
-        void pointUpdated(const QJsonObject & json);
-        void distsUpdated(const QJsonObject & json);
+        void post(const QJsonObject & message);
 
     private slots:
-         void updatePoint(const QVariant & point);
-         void updateDists(const QVariant & dists);
-
          virtual void recieve(const Message::SettingsMessage & message);
          virtual void recieve(const QVariant & message);
     };

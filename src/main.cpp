@@ -34,8 +34,7 @@ int main(int argc, char * argv[]) {
                                 parser.value(portOption).toInt()
                                 );
 
-    QObject::connect(&appWindow, &UserUI::AppWindow::pointUpdated, [](const QJsonObject & point) { qDebug() << "JSON: " << point;});
-    QObject::connect(&appWindow, &UserUI::AppWindow::distsUpdated, [](const QJsonObject & dists) { qDebug() << "JSON: " << dists;});
+    QObject::connect(&appWindow, &UserUI::AppWindow::post, [](const QJsonObject & message) { qDebug() << "JSON: " << message;});
 
     appWindow.show();
 

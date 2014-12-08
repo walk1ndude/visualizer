@@ -3,6 +3,8 @@
 
 #include <QtNetwork/QTcpServer>
 
+#include <QtCore/QJsonObject>
+
 #include "Message/SettingsMessage.h"
 
 #define DEFAULT_HOST "127.0.0.1"
@@ -17,10 +19,15 @@ namespace UserUI {
     private:
         QTcpServer * _dataServer;
 
+        QByteArray _dataToSend;
+
         void fetchConnections();
 
     public slots:
         virtual void recieve(const Message::SettingsMessage & message);
+
+    private slots:
+        void sendData();
     };
 }
 

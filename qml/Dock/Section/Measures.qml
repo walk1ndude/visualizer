@@ -98,19 +98,6 @@ Rectangle {
                 wrapMode: Text.WordWrap;
             }
 
-            onIsShownChanged: measures.post({
-                              "header" : {
-                                  "sender" : "measures",
-                                  "reciever" : "currentModel"
-                              },
-                              "data" : {
-                                  "action" : "togglePoint",
-                                  "params" : {
-                                      "name" : itemId
-                                  }
-                              }
-                          });
-
             MouseArea {
                 anchors {
                     fill : parent
@@ -132,7 +119,7 @@ Rectangle {
                             measures.post({
                                               "header" : {
                                                   "sender" : "measures",
-                                                  "reciever" : "currentModel",
+                                                  "reciever" : measures.modelID,
                                                   "recievers" : [
                                                       "viewports"
                                                   ]
@@ -147,9 +134,39 @@ Rectangle {
                                               }
                                           });
                         }
+                        else {
+                            measures.post({
+                                              "header" : {
+                                                  "sender" : "measures",
+                                                  "reciever" : measures.modelID,
+                                                  "recievers" : [
+                                                      "viewports"
+                                                  ]
+                                              },
+                                              "data" : {
+                                                  "action" : "addPoint",
+                                                  "params" : {
+                                                      "id" : "",
+                                                  }
+                                              }
+                                          });
+                        }
                     }
                     else if (mouse.button === Qt.RightButton) {
                         listModel.setProperty(index, "shown", false);
+
+                        measures.post({
+                                          "header" : {
+                                              "sender" : "measures",
+                                              "reciever" : measures.modelID
+                                          },
+                                          "data" : {
+                                              "action" : "togglePoint",
+                                              "params" : {
+                                                  "name" : itemId
+                                              }
+                                          }
+                                      });
 
                         if (listView.currentIndex === index) {
                             listView.currentIndex = -1;

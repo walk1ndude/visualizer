@@ -164,7 +164,8 @@ namespace Model {
 
                     Message::SettingsMessage message(
                                 Message::Sender(id()),
-                                Message::Reciever("sidebar")
+                                Message::Reciever("sidebar"),
+                                Message::Recievers() = { "appWindow" }
                     );
 
                     message.data["action"] = "updatePoint";
