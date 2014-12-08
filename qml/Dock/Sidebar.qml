@@ -15,16 +15,6 @@ Sidedock {
     state: "vertical";
     inverseFolding: false;
 
-    property vector2d xRange: Qt.vector2d(0, 0);
-    property vector2d yRange: Qt.vector2d(0, 0);
-    property vector2d zRange: Qt.vector2d(0, 0);
-
-    property int minHU: -1;
-    property int maxHU: -1;
-
-    property vector3d angle: Qt.vector3d(0, 0, 0);
-    property real zoomFactor: 1.0;
-
     property variant selectedPoint: ({});
 
     signal togglePoint(string point);

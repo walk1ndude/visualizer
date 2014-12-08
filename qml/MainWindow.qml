@@ -114,10 +114,6 @@ ApplicationWindow {
             width: appWindow.width - sidebar.width;
             height: appWindow.height - consoleDock.height;
 
-            //xRange: sidebar.xRange;
-            //yRange: sidebar.yRange;
-            //zRange: sidebar.zRange;
-
             selectedPoint: sidebar.selectedPoint;
 
             onPointUpdated: {
@@ -146,9 +142,6 @@ ApplicationWindow {
         dX: appWindow.width * appWindow.sideBarWidth;
 
         modelID: modelViewer.modelID;
-
-        onMinHUChanged: modelViewer.huRange = Qt.vector2d(minHU, maxHU);
-        onMaxHUChanged: modelViewer.huRange = Qt.vector2d(minHU, maxHU);
 
         onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }

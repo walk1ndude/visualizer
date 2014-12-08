@@ -496,9 +496,6 @@ namespace Parser {
     }
 
     void Reconstructor::visualize() {
-        /*
-        VolumeInfo::Volume volume;
-
         cv::Mat slice(*_slicesOCL.at(0));
 
         size_t oneSliceSize = slice.elemSize() * slice.total();
@@ -512,36 +509,59 @@ namespace Parser {
             posSlice += oneSliceSize;
         }
 
-        volume.texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
+        TextureInfo::TextureInfo texture;
+        texture.mergedData = TextureInfo::MergedDataPointer(mergedData);
 
-        volume.texture.pixelTransferOptions.setAlignment((slice.step & 3) ? 1 : 4);
-        volume.texture.pixelTransferOptions.setRowLength((int) slice.step1());
+        texture.pixelTransferOptions.setAlignment((slice.step & 3) ? 1 : 4);
+        texture.pixelTransferOptions.setRowLength((int) slice.step1());
 
-        volume.texture.size.setX(slice.cols);
-        volume.texture.size.setY(slice.rows);
-        volume.texture.size.setZ(sliceCount);
+        texture.size = TextureInfo::Size(slice.cols, slice.rows, sliceCount);
+
+        texture.pixelType = QOpenGLTexture::UInt8;
+        texture.textureFormat = QOpenGLTexture::R8_UNorm;
+        texture.pixelFormat = QOpenGLTexture::Red;
+        texture.target = QOpenGLTexture::Target3D;
 
         // how to calculate / get these ?
         QVector3D worldSpacings(0.3, 0.3, 1.0);
 
-        volume.texture.scaling = scaleVector<float, QVector3D>(
-                    volume.texture.size.x() * worldSpacings.x(),
-                    volume.texture.size.y() * worldSpacings.y(),
-                    volume.texture.size.z() * worldSpacings.z()
+        VolumeInfo::Scaling scaling = scaleVector<float, QVector3D>(
+                    texture.size.x() * worldSpacings.x(),
+                    texture.size.y() * worldSpacings.y(),
+                    texture.size.z() * worldSpacings.z()
                     ) * QVector3D(
                     1.0f / worldSpacings.x(),
                     1.0f / worldSpacings.y(),
                     1.0f / worldSpacings.z()
                     );
 
-        volume.texture.pixelType = QOpenGLTexture::UInt8;
-        volume.texture.textureFormat = QOpenGLTexture::R8_UNorm;
-        volume.texture.pixelFormat = QOpenGLTexture::Red;
-        volume.texture.target = QOpenGLTexture::Target3D;
+        QVariantMap blueprintOverallMap = _blueprint.toMap();
+        QVariantList textureVolumeList = blueprintOverallMap["textures"].toList();
+        QVariantMap textureVolume = textureVolumeList[0].toMap();
 
-        QVariantMap map;
-        sendResults<VolumeInfo::Volume>(volume, map);
-        */
+        textureVolume["desciptor"] = QVariant::fromValue(texture);
+
+        textureVolumeList[0] = QVariant(textureVolume);
+
+        blueprintOverallMap["textures"] = QVariant(textureVolumeList);
+
+        QVariantList blueprintList = blueprintOverallMap["models"].toList();
+
+        QVariantMap blueprintMap = blueprintList[0].toMap();
+        QVariantMap blueprintParams = blueprintMap["params"].toMap();
+
+        blueprintParams["size"] = QVariant(texture.size);
+        blueprintParams["scaling"] = QVariant(scaling);
+
+        blueprintMap["params"] = QVariant(blueprintParams);
+
+        blueprintList[0] = QVariant(blueprintMap);
+        blueprintOverallMap["models"] = QVariant(blueprintList);
+
+        Message::SettingsMessage message("Reconstructor", "Scene");
+        message.data["blueprint"] = QVariant(blueprintOverallMap);
+
+        send(message);
     }
 
     QVariant Reconstructor::files() const {

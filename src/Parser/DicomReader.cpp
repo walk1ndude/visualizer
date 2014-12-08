@@ -198,7 +198,7 @@ namespace Parser {
         QVariantMap blueprintMap = blueprintList[0].toMap();
         QVariantMap blueprintParams = blueprintMap["params"].toMap();
 
-        blueprintParams["size"] = QVariant(VolumeInfo::Size(_dicomData.width, _dicomData.height, depth));
+        blueprintParams["size"] = QVariant(texture.size);
         blueprintParams["scaling"] = QVariant(scaling);
         blueprintParams["slope"] = QVariant(_dicomData.slope);
         blueprintParams["intercept"] = QVariant(_dicomData.intercept);
