@@ -9,17 +9,20 @@ namespace Message {
 
     using Sender = QString;
     using Reciever = QString;
+    using Recievers = QList<Reciever>;
 
     class Header {
         friend class AbstractMessage;
     public:
         explicit Header();
         explicit Header(const Sender & sender, const Reciever & reciever,
+                        const Recievers & recievers = Recievers(),
                         const ReliableTime & reliableTime = ReliableTime(-1));
 
     private:
         Sender _sender;
         Reciever _reciever;
+        Recievers _recievers;
 
         TimeStamp _timeStamp;
         ReliableTime _reliableTime;
@@ -35,6 +38,7 @@ namespace Message {
 
         Sender sender() const;
         Reciever reciever() const;
+        Recievers recievers() const;
         ReliableTime reliableTime() const;
 
         void setReliableTime(const ReliableTime & time);
@@ -42,6 +46,7 @@ namespace Message {
     protected:
         explicit AbstractMessage();
         explicit AbstractMessage(const Sender & sender, const Reciever & reciever,
+                                 const Recievers & recievers = Recievers(),
                                  const ReliableTime & reliableTime = ReliableTime(-1));
 
     private:

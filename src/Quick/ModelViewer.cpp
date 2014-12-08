@@ -222,26 +222,20 @@ namespace Quick {
         }
 
         if (message.isReliable()) {
-            if (message.reciever().startsWith("sidebar")) {
-                if (message.data.contains("point")) {
-                    PointsInfo::UpdatedPoint point = message.data["point"].value<PointsInfo::UpdatedPoint>();
+            // some messages could have multiple recievers - we need to send to them also,
+            // we don't need (or it would have been a hell lot of code) destination: QML of C++
+            // so post to both
 
-                    QVariantMap map;
+            for (const Message::Reciever & reciever : message.recievers()) {
+                emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), reciever));
 
-                    //map["name"] = point.name;
-                    map["position"] = point.position;
-                    map["modelID"] = point.modelId();
-
-                    emit pointUpdated(map);
-                }
+                Message::SettingsMessage ms(message.sender(), reciever);
+                ms.setReliableTime(message.reliableTime());
+                ms.data = message.data;
+                emit post(ms);
             }
-            else {
-                if (message.data["action"] == "addPoint") {
-                    emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), Message::Reciever("viewports")));
-                }
 
-                emit post(message);
-            }
+            emit post(message);
         }
     }
 }

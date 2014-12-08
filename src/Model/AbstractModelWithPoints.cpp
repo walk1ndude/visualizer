@@ -160,12 +160,12 @@ namespace Model {
 
                     Message::SettingsMessage message(
                                 Message::Sender(id()),
-                                Message::Reciever("sidebar")
+                                Message::Reciever("settingsJS")
                     );
 
-                    message.data["point"] = QVariant::fromValue(
-                                PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), _modelPoints.key(modelPoint), numberedID())
-                    );
+                    message.data["action"] = "updatePoint";
+                    message.data["id"] = _modelPoints.key(modelPoint);
+                    message.data["position"] = modelPoint->position * scene()->scalingFactor();
 
                     emit post(message);
                 }
@@ -265,10 +265,12 @@ namespace Model {
                      params["position"].value<PointsInfo::Position3D>(),
                      params["viewport"].value<Viewport::Viewport *>()
             );
+
+            return;
         }
 
         if (name == "togglePoint") {
-            //togglePoint(params["name"].value<PointsInfo::Name>());
+            togglePoint(params["name"].value<PointsInfo::PointID>());
 
             return;
         }

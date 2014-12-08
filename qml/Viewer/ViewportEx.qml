@@ -78,7 +78,7 @@ Viewport {
             switch (mouse.button) {
                 case Qt.LeftButton:
 
-                if (!rotating) {
+                if (parent.currentPoint) {
                     parent.post({
                                     "header" : {
                                         "sender" : "viewport",
@@ -95,12 +95,10 @@ Viewport {
                                 });
                 }
 
-                if (parent.projectionType == Viewport.FRONTAL) {
-                    prevMouseX = mouseX;
-                    prevMouseY = mouseY;
+                prevMouseX = mouseX;
+                prevMouseY = mouseY;
 
-                    rotating = !rotating;
-                }
+                rotating = true;
 
                 break;
             }

@@ -92,7 +92,7 @@ Rectangle {
                 clip: true;
                 wrapMode: Text.WordWrap;
             }
-
+/*
             onIsShownChanged: measures.post({
                               "header" : {
                                   "sender" : "measures",
@@ -104,7 +104,7 @@ Rectangle {
                                       "name" : itemId
                                   }
                               }
-                          });
+                          });*/
 
             MouseArea {
                 anchors {
@@ -127,7 +127,10 @@ Rectangle {
                             measures.post({
                                               "header" : {
                                                   "sender" : "measures",
-                                                  "reciever" : "currentModel"
+                                                  "reciever" : "currentModel",
+                                                  "recievers" : [
+                                                      "viewports"
+                                                  ]
                                               },
                                               "data" : {
                                                   "action" : "addPoint",

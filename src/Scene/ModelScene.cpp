@@ -29,10 +29,6 @@ namespace Scene {
         emit viewportArrayChanged();
     }
 
-    QVector3D ModelScene::rotation() const {
-        return _rotation;
-    }
-
     void ModelScene::updateScene() {
         while (!_blueprints.isEmpty()) {
             unpackBlueprint(_blueprints.dequeue());
@@ -117,6 +113,8 @@ namespace Scene {
     }
 
     void ModelScene::setBlueprint(const QVariant & blueprint) {
+        _blueprints.enqueue(blueprint.value<Blueprint>());
+
         _blueprint = blueprint;
 
         emit blueprintChanged(blueprint);
@@ -166,7 +164,7 @@ namespace Scene {
     }
 
     void ModelScene::initScene() {
-        unpackBlueprint(_blueprint.toMap(), true);
+        unpackBlueprint(_blueprints.dequeue(), true);
     }
 
     void ModelScene::unpackBlueprint(const Blueprint & blueprint, const bool & resetScene) {
@@ -207,10 +205,12 @@ namespace Scene {
             return;
         }
 
-        qDebug() << message.data["action"];
+        Model::AbstractModel * model = _models[message.reciever()];
 
-        _models[message.reciever()]->invoke(
+        if (model) {
+            model->invoke(
                     message.data["action"].toString(),
                     message.data["params"].value<ModelInfo::Params>());
+        }
     }
 }

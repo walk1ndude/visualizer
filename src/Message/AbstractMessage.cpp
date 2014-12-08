@@ -7,10 +7,11 @@ namespace Message {
 
     }
 
-    Header::Header(const Sender & sender, const Reciever & reciever,
+    Header::Header(const Sender & sender, const Reciever & reciever, const Recievers & recievers,
                    const ReliableTime & reliableTime) :
         _sender(sender),
         _reciever(reciever),
+        _recievers(recievers),
         _reliableTime(reliableTime) {
         _timeStamp = QDateTime::currentMSecsSinceEpoch();
     }
@@ -20,8 +21,9 @@ namespace Message {
     }
 
     AbstractMessage::AbstractMessage(const Sender & sender, const Reciever & reciever,
+                                     const Recievers & recievers,
                                      const ReliableTime & reliableTime) {
-        _header = Header(sender, reciever, reliableTime);
+        _header = Header(sender, reciever, recievers, reliableTime);
     }
 
     AbstractMessage::~AbstractMessage() {
@@ -42,6 +44,10 @@ namespace Message {
 
     Reciever AbstractMessage::reciever() const {
         return _header._reciever;
+    }
+
+    Recievers AbstractMessage::recievers() const {
+        return _header._recievers;
     }
 
     ReliableTime AbstractMessage::reliableTime() const {

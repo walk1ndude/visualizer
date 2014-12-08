@@ -9,7 +9,6 @@
 
 #include "Model/StlModel.h"
 #include "Model/VertexVN.h"
-#include "Model/ModelArray.h"
 
 #include "Scene/BlueprintQueue.h"
 
@@ -31,8 +30,6 @@ namespace Scene {
 
         virtual void cleanUp();
 
-        QVector3D rotation() const;
-
         Viewport::ViewportArray * viewportArray() const;        
 
         Model::AbstractModel * selectedModel() const;
@@ -44,15 +41,10 @@ namespace Scene {
 
     private:
         SceneObjectList<Model::AbstractModel *> _models;
-        //Model::ModelArray _models;
-
-        QVariant _blueprint;
-
-        QList<QOpenGLTexture *> _textures;
-
-        QVector3D _rotation;
 
         Viewport::ViewportArray * _viewportArray;
+
+        QVariant _blueprint;
 
         BlueprintQueue _blueprints;
 

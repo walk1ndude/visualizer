@@ -106,7 +106,6 @@ SOURCES +=  src/main.cpp \
             src/Info/ShaderInfo.cpp \
             src/Quick/TextureNode.cpp \
             src/Camera/Camera.cpp \
-            src/Model/ModelArray.cpp \
             src/Model/VolumeModel.cpp \
             src/Parser/AbstractParser.cpp \
             src/Model/AxesModel.cpp \
@@ -151,7 +150,6 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Info/ViewRangeInfo.h \
             include/Model/EvaluatorModel.h \
             include/Camera/Camera.h \
-            include/Model/ModelArray.h \
             include/Model/VolumeModel.h \
             include/Info/VolumeInfo.h \
             include/Parser/AbstractParser.h \

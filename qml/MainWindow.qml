@@ -114,8 +114,6 @@ ApplicationWindow {
             width: appWindow.width - sidebar.width;
             height: appWindow.height - consoleDock.height;
 
-            selectedPoint: sidebar.selectedPoint;
-
             onPointUpdated: {
                 sidebar.updateIndividual();
                 appWindow.pointUpdated(point);
@@ -136,8 +134,6 @@ ApplicationWindow {
         }
 
         onPost: modelViewer.message = message;
-
-        onTogglePoint: modelViewer.togglePoint(point);
 
         dX: appWindow.width * appWindow.sideBarWidth;
 

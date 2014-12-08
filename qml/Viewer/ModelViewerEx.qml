@@ -10,23 +10,20 @@ ModelViewer {
 
     fboSize: Qt.size(768, 768);
 
-    //xRange: Qt.vector2d(0.0, 1.0);
-    //yRange: Qt.vector2d(0.0, 1.0);
-    //zRange: Qt.vector2d(0.0, 1.0);
-
-    selectedPoint: ({});
-
-    onPointUpdated: {
-        // update info about points
-        Settings.Points[point.modelID] = Settings.Points[point.modelID] || { };
-        Settings.Points[point.modelID][point.name] = Settings.Points[point.modelID][point.name] || { };
-        Settings.Points[point.modelID][point.name]["position"] = point.position;
-    }
-
     onPost: {
-        if (message.header.reciever === "viewports") {
+        switch (message.header.reciever) {
+        case "viewports" :
             if (message.data.action === "addPoint") {
                 viewportArray.currentPoint = message.data.params.id;
+            }
+            break;
+        case "settingsJS":
+            if (message.data.action === "updatePoint") {
+                var params = message.data.params;
+                // update info about points
+                Settings.Points[message.sender] = Settings.Points[message.sender] || { };
+                Settings.Points[message.sender][params.id] = Settings.Points[message.sender][params.id] || { };
+                Settings.Points[message.sender][params.id]["position"] = params.position;
             }
         }
     }

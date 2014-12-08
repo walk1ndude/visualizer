@@ -43,8 +43,6 @@ namespace Scene {
         virtual void renderScene(const QSize & surfaceSize) = 0;
         virtual void cleanUp();
 
-        virtual QVector3D rotation() const = 0;
-
         bool isInitialized() const;
 
         qreal scalingFactor() const;
