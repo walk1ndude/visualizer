@@ -26,9 +26,9 @@ namespace Model {
         QVariantMap viewMap = params["viewRangeShader"].toMap();
 
         setViewRange(
-                    (rangesMap.contains("x") ? ViewRangeInfo::ViewAxisRange() : rangesMap["x"].value<ViewRangeInfo::ViewAxisRange>()),
-                    (rangesMap.contains("y") ? ViewRangeInfo::ViewAxisRange() : rangesMap["y"].value<ViewRangeInfo::ViewAxisRange>()),
-                    (rangesMap.contains("z") ? ViewRangeInfo::ViewAxisRange() : rangesMap["z"].value<ViewRangeInfo::ViewAxisRange>()),
+                    (rangesMap.contains("x") ? rangesMap["x"].value<ViewRangeInfo::ViewAxisRange>() : DEFAULT_VIEWAXISRANGE),
+                    (rangesMap.contains("y") ? rangesMap["y"].value<ViewRangeInfo::ViewAxisRange>() : DEFAULT_VIEWAXISRANGE),
+                    (rangesMap.contains("z") ? rangesMap["z"].value<ViewRangeInfo::ViewAxisRange>() : DEFAULT_VIEWAXISRANGE),
                     ShaderInfo::ShaderVariablesNames()
                         << viewMap["x"].value<ShaderInfo::ShaderVariableName>()
                         << viewMap["y"].value<ShaderInfo::ShaderVariableName>()
@@ -226,7 +226,21 @@ namespace Model {
 
     void AbstractModelWithPoints::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "setRange") {
-            setViewAxisRange(params["range"].value<ViewRangeInfo::ViewAxisRange>(), params["axis"].value<ViewRangeInfo::ViewAxis>());
+            ViewRangeInfo::ViewAxis viewAxis;
+
+            QString axis = params["axis"].toString();
+
+            if (axis.startsWith("y")) {
+                viewAxis = ViewRangeInfo::ViewAxis::YAXIS;
+            }
+            else if (axis.startsWith("z")) {
+                viewAxis = ViewRangeInfo::ViewAxis::ZAXIS;
+            }
+            else {
+                viewAxis = ViewRangeInfo::ViewAxis::XAXIS;
+            }
+
+            setViewAxisRange(params["range"].value<ViewRangeInfo::ViewAxisRange>(), viewAxis);
             return;
         }
 

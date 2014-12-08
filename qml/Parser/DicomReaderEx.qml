@@ -80,7 +80,7 @@ DicomReader {
     };
 
     onSend: {
-        viewer.recieve(model);
+        viewer.message = model;
         toggleDocks();
         destroy();
     }

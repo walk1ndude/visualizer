@@ -118,8 +118,6 @@ ApplicationWindow {
             //yRange: sidebar.yRange;
             //zRange: sidebar.zRange;
 
-            rotation: sidebar.angle;
-
             selectedPoint: sidebar.selectedPoint;
 
             onPointUpdated: {
@@ -140,6 +138,8 @@ ApplicationWindow {
             bottom: appWindow.bottom;
             right: appWindow.right;
         }
+
+        onPost: modelViewer.message = message;
 
         onTogglePoint: modelViewer.togglePoint(point);
 

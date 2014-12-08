@@ -34,6 +34,8 @@ Sidedock {
     signal updateIndividual();
     signal distsUpdated();
 
+    signal post(variant message);
+
     function updatePoint(point) {
         measuredPoint = point.name;
         measuredPosition = point.position;
@@ -120,12 +122,7 @@ Sidedock {
                     Section.ModelSpecs {
                         width: sidebarListView.width;
 
-                        onXRangeChanged: sidebar.xRange = xRange;
-                        onYRangeChanged: sidebar.yRange = yRange;
-                        onZRangeChanged: sidebar.zRange = zRange;
-
-                        onMinHUChanged: sidebar.minHU = minHU;
-                        onMaxHUChanged: sidebar.maxHU = maxHU;
+                        onPost: sidebar.post(message);
                 }
             }
         }

@@ -3,13 +3,10 @@
 
 #include "Info/ShaderInfo.h"
 
+#define DEFAULT_VIEWAXISRANGE ViewRangeInfo::ViewAxisRange(-1.0f, 1.0f)
+
 namespace ViewRangeInfo {
-    class ViewAxisRange : public QVector2D {
-    public:
-        ViewAxisRange(const qreal & minV = -1.0f, const qreal & maxV = 1.0f) :
-            QVector2D(minV, maxV) {
-        }
-    };
+    using ViewAxisRange = QVector2D;
 
     enum ViewAxis {
         XAXIS,

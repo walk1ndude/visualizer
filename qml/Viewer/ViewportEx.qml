@@ -80,7 +80,7 @@ Viewport {
                     parent.post({
                                     "header" : {
                                         "sender" : "viewport",
-                                        "reciever" : "current_model"
+                                        "reciever" : "currentModel"
                                     },
                                     "data" : {
                                         "action" : "addPoint",
@@ -111,7 +111,7 @@ Viewport {
                 parent.rotate({
                                     "header" : {
                                         "sender" : "viewport",
-                                        "reciever" : "current_model"
+                                        "reciever" : "currentModel"
                                     },
                                     "data" : {
                                         "action" : "rotate",

@@ -5,21 +5,13 @@ import "qrc:/qml/Control" as Control;
 Rectangle {
     id: modelSpecs;
 
-    property vector2d xRange: xRange.rangeVector;
-    property vector2d yRange: yRange.rangeVector;
-    property vector2d zRange: zRange.rangeVector;
-
     property vector2d huRangeMax: Qt.vector2d(0, 65535);
     property vector2d huRangeModel: Qt.vector2d(0, 65535);
 
     property int windowCenterModel: 400;
     property int windowWidthModel: 1000;
 
-    property int windowCenter: windowCenterSlider.value;
-    property int windowWidth: windowWidthSlider.value;
-
-    property int minHU: minHUSlider.value;
-    property int maxHU: maxHUSlider.value;
+    signal post(variant message);
 
     color: "#cccccc";
     border.color: "black";
@@ -51,6 +43,19 @@ Rectangle {
             maximumValue: modelSpecs.huRangeMax.y;
             value: modelSpecs.huRangeModel.x;
             stepSize: 100.0;
+
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setMinHU",
+                                                    "params" : {
+                                                        "range" : value
+                                                    }
+                                                }
+                                            });
         }
 
         Text {
@@ -68,6 +73,19 @@ Rectangle {
             maximumValue: modelSpecs.huRangeMax.y;
             value: modelSpecs.huRangeModel.y;
             stepSize: 1.0;
+
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setMaxHU",
+                                                    "params" : {
+                                                        "range" : value
+                                                    }
+                                                }
+                                            });
         }
 
         Text {
@@ -85,6 +103,19 @@ Rectangle {
             maximumValue: 10000;
             value: modelSpecs.windowCenterModel;
             stepSize: 100.0;
+
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setWindowCenter",
+                                                    "params" : {
+                                                        "range" : value
+                                                    }
+                                                }
+                                            });
         }
 
         Text {
@@ -102,6 +133,19 @@ Rectangle {
             maximumValue: 10000;
             value: modelSpecs.windowWidthModel;
             stepSize: 100.0;
+
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setWindowWidth",
+                                                    "params" : {
+                                                        "range" : value
+                                                    }
+                                                }
+                                            });
         }
 
         Text {
@@ -129,7 +173,19 @@ Rectangle {
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: modelSpecs.xRange = value;
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setRange",
+                                                    "params" : {
+                                                        "range" : value,
+                                                        "axis" : "x"
+                                                    }
+                                                }
+                                            });
         }
 
         Text {
@@ -142,7 +198,19 @@ Rectangle {
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: modelSpecs.yRange = value;
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setRange",
+                                                    "params" : {
+                                                        "range" : value,
+                                                        "axis" : "y"
+                                                    }
+                                                }
+                                            });
         }
 
         Text {
@@ -155,7 +223,19 @@ Rectangle {
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: modelSpecs.zRange = value;
+            onValueChanged: modelSpecs.post({
+                                                "header" : {
+                                                    "sender" : "modelSpecs",
+                                                    "reciever" : "currentModel"
+                                                },
+                                                "data" : {
+                                                    "action" : "setRange",
+                                                    "params" : {
+                                                        "range" : value,
+                                                        "axis" : "z"
+                                                    }
+                                                }
+                                            });
         }
     }
 }

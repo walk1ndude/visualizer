@@ -35,6 +35,10 @@ namespace Quick {
         }
     }
 
+    QVariant ModelViewer::message() const {
+        return QVariant();
+    }
+
     QSize ModelViewer::fboSize() const {
         return _fboSize;
     }
@@ -65,23 +69,6 @@ namespace Quick {
         return _modelID;
     }
 
-    QVector3D ModelViewer::rotation() const {
-        return _rotation;
-    }
-
-    VolumeInfo::HuRange ModelViewer::huRange() const {
-
-    }
-
-    void ModelViewer::setRotation(const QVector3D & rotation) {/*
-        recieve("modelViewer", "model 1", "rotate",
-            ModelInfo::Params() = {
-                { "rotation", QVariant(rotation) }
-        });
-
-        _rotation = rotation;*/
-    }
-
     void ModelViewer::setModelID(const int & modelID) {
         _modelID = modelID;
         emit modelIDChanged(_modelID);
@@ -109,14 +96,6 @@ namespace Quick {
 
     Viewport::ViewportArray * ModelViewer::viewportArray() const {
         return _viewportArray;
-    }
-
-    void ModelViewer::setHuRange(const VolumeInfo::HuRange & huRange) {
-        /*
-        recieve("modelViewer", "model 3", "setHuRange",
-            ModelInfo::Params() = {
-                { "huRange", QVariant(huRange) }
-        });*/
     }
 
     void ModelViewer::setViewportArray(Viewport::ViewportArray * viewPortArray) {

@@ -17,12 +17,9 @@ namespace Quick {
 
         Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize NOTIFY fboSizeChanged)
 
-        Q_PROPERTY(QVector3D rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
-
+        Q_PROPERTY(QVariant message READ message WRITE recieve NOTIFY lastMessageChanged)
 
         Q_PROPERTY(int modelID READ modelID WRITE setModelID NOTIFY modelIDChanged)
-
-        Q_PROPERTY(QVector2D huRange READ huRange WRITE setHuRange NOTIFY huRangeChanged)
 
         Q_PROPERTY(Scene::ModelScene * modelScene READ modelScene WRITE setModelScene NOTIFY modelSceneChanged)
 
@@ -37,15 +34,13 @@ namespace Quick {
         
         QVariantMap selectedPoint() const;
 
-        QVector3D rotation() const;
-
         int modelID() const;
 
         Viewport::ViewportArray * viewportArray() const;
 
         Scene::ModelScene * modelScene() const;
 
-        VolumeInfo::HuRange huRange() const;
+        QVariant message() const;
 
     protected:
         bool _needsInitialize;
@@ -65,22 +60,11 @@ namespace Quick {
 
         QSize _fboSize;
 
-        QVector3D _rotation;
-
-        ViewRangeInfo::ViewAxisRange _xRange;
-        ViewRangeInfo::ViewAxisRange _yRange;
-        ViewRangeInfo::ViewAxisRange _zRange;
-
         uint _modelID;
 
    signals:
-        void xRangeChanged(const ViewRangeInfo::ViewAxisRange & xRange);
-        void yRangeChanged(const ViewRangeInfo::ViewAxisRange & yRange);
-        void zRangeChanged(const ViewRangeInfo::ViewAxisRange & zRange);
-
         void viewportArrayChanged();
 
-        void rotationChanged(const QVector3D & rotation);
         void pointAdded(const PointsInfo::Point & point);
 
         void pointUpdated(const QVariantMap & point);
@@ -89,19 +73,19 @@ namespace Quick {
 
         void modelSceneChanged();
 
-        void huRangeChanged(const VolumeInfo::HuRange & huRange);
-
         void togglePointChanged(const QString & point);
 
         void fboSizeChanged(const QSize & fboSize);
 
         void post(const Message::SettingsMessage & message);
 
+        void lastMessageChanged(const QVariant & message);
+
     public slots:
         Q_INVOKABLE virtual void addPoint(const QPointF & point, Viewport::Viewport * viewport);
         Q_INVOKABLE virtual void togglePoint(const QString & point);
 
-        Q_INVOKABLE virtual void recieve(const QVariant & message);
+        virtual void recieve(const QVariant & message);
 
         virtual void setModelScene(Scene::ModelScene * modelScene);
 
@@ -110,10 +94,6 @@ namespace Quick {
         virtual void setFboSize(const QSize & fboSize);
 
         virtual void setSelectedPoint(const QVariantMap & selectedPoint);
-
-        virtual void setRotation(const QVector3D & rotation);
-
-        virtual void setHuRange(const VolumeInfo::HuRange & huRange);
 
         virtual void setModelID(const int & modelID);
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);

@@ -207,6 +207,8 @@ namespace Scene {
             return;
         }
 
-        _models[message.data["modelID"].value<ObjectID>()]->invoke(message.data["action"].toString(), message.data["params"].value<ModelInfo::Params>());
+        _models[message.reciever().startsWith("currentModel") ? ObjectID() : message.data["modelID"].value<ObjectID>()]->invoke(
+                    message.data["action"].toString(),
+                    message.data["params"].value<ModelInfo::Params>());
     }
 }

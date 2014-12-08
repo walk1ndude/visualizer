@@ -14,8 +14,6 @@ ModelViewer {
     //yRange: Qt.vector2d(0.0, 1.0);
     //zRange: Qt.vector2d(0.0, 1.0);
 
-    rotation: Qt.vector3d(0.0, 0.0, 0.0);
-
     selectedPoint: ({});
 
     onPointUpdated: {
@@ -36,7 +34,7 @@ ModelViewer {
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 
-            onPost: modelViewer.recieve(message);
+            onPost: modelViewer.message = message;
         }
 
         ViewportEx {
@@ -45,7 +43,7 @@ ModelViewer {
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 
-            onPost: modelViewer.recieve(message);
+            onPost: modelViewer.message = message;
         }
 
         ViewportEx {
@@ -56,7 +54,7 @@ ModelViewer {
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 
-            onPost: modelViewer.recieve(message);
+            onPost: modelViewer.message = message;
         }
 
         ViewportEx {
@@ -65,7 +63,7 @@ ModelViewer {
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
 
-            onPost: modelViewer.recieve(message);
+            onPost: modelViewer.message = message;
         }
 
         function setZoom(zoomFactor, x, y, viewport) {
