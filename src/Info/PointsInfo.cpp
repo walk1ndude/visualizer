@@ -31,6 +31,10 @@ namespace PointsInfo {
         return _positionCalculated;
     }
 
+    void ModelPoint::queueToRecalculate() {
+        _positionCalculated = false;
+    }
+
     void ModelPoint::positionCalculated(const Position3D & position) {
         this->position = position;
         _positionCalculated = true;

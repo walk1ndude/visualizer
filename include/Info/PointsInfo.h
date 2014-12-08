@@ -62,6 +62,8 @@ namespace PointsInfo {
 
         bool isPositionCalculated() const;
 
+        void queueToRecalculate();
+
         void positionCalculated(const Position3D & position);
 
         ModelPoint();

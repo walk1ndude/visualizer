@@ -210,7 +210,8 @@ namespace Scene {
         if (model) {
             model->invoke(
                     message.data["action"].toString(),
-                    message.data["params"].value<ModelInfo::Params>());
+                    message.data["params"].value<ModelInfo::Params>()
+            );
         }
     }
 }

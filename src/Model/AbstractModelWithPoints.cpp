@@ -56,6 +56,10 @@ namespace Model {
 
         point->position = position;
         point->viewport = viewport;
+
+        point->queueToRecalculate();
+
+        queueForUpdate();
     }
 
     void AbstractModelWithPoints::togglePoint(const PointsInfo::PointID & point) {
