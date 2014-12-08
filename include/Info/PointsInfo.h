@@ -13,40 +13,6 @@ namespace PointsInfo {
     using PointID = QString;
     using Groups = QStringList;
     using Color = QColor;
-    
-    class Point {
-    public:
-        Position2D position;
-        PointID name;
-        Color color;
-        
-        Groups groups;
-
-        Viewport::Viewport * viewport;
-        
-        Point();
-        Point(const Position2D & position,
-              const PointID & name,
-              const Color & color,
-              Viewport::Viewport * viewport);
-    };
-    
-    class UpdatedPoint {
-    public:
-        Position3D position;
-        PointID id;
-
-        UpdatedPoint();
-
-        UpdatedPoint(const Position3D & position,
-                     const PointID & id,
-                     const uint & modelId);
-
-        uint modelId() const;
-
-    private:
-        uint _modelId;
-    };
 
     class ModelPoint {
     public:
@@ -87,7 +53,9 @@ namespace PointsInfo {
         void insert(const PointID & id, ModelPoint * point);
         int size() const;
 
-        void togglePoint(const PointID & point);
+        bool containts(const PointID & id);
+
+        void togglePoint(const PointID & id);
 
         ModelPoint * operator [] (const PointID & id);
 
@@ -98,9 +66,6 @@ namespace PointsInfo {
     };
 }
 
-Q_DECLARE_METATYPE(PointsInfo::Point)
-Q_DECLARE_METATYPE(PointsInfo::UpdatedPoint)
-Q_DECLARE_METATYPE(PointsInfo::ModelPoints)
 Q_DECLARE_METATYPE(PointsInfo::ModelPoints *)
 
 #endif // POINTSINFO_H

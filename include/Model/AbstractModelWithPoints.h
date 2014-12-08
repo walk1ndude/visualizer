@@ -51,7 +51,7 @@ namespace Model {
     public slots:
         virtual void addPoint(const PointsInfo::PointID & id, PointsInfo::ModelPoint * point) final;
         virtual void setPoint(const PointsInfo::PointID & id, const PointsInfo::Position3D & position, Viewport::Viewport * viewport) final;
-        virtual void togglePoint(const PointsInfo::PointID & point) final;
+        virtual void togglePoint(const PointsInfo::PointID & id) final;
 
         virtual void addChild(AbstractModel * child);
 

@@ -13,14 +13,11 @@
 
 namespace UserUI {
     class ModelViewer : public QQuickItem {        
-        Q_PROPERTY(QVariantMap selectedPoint READ selectedPoint WRITE setSelectedPoint)
-
         Q_PROPERTY(QSize fboSize READ fboSize WRITE setFboSize NOTIFY fboSizeChanged)
 
         Q_PROPERTY(QVariant message READ message WRITE recieve NOTIFY lastMessageChanged)
 
         Q_PROPERTY(Scene::ModelScene * modelScene READ modelScene WRITE setModelScene NOTIFY modelSceneChanged)
-
         Q_PROPERTY(Viewport::ViewportArray * viewportArray READ viewportArray WRITE setViewportArray NOTIFY viewportArrayChanged)
 
         Q_OBJECT
@@ -29,8 +26,6 @@ namespace UserUI {
         virtual ~ModelViewer();
 
         QSize fboSize() const;
-        
-        QVariantMap selectedPoint() const;
 
         Viewport::ViewportArray * viewportArray() const;
 
@@ -60,15 +55,7 @@ namespace UserUI {
    signals:
         void viewportArrayChanged();
 
-        void pointAdded(const PointsInfo::Point & point);
-
-        void pointUpdated(const QVariantMap & point);
-
-        void modelIDChanged(const uint & modelID);
-
         void modelSceneChanged();
-
-        void togglePointChanged(const QString & point);
 
         void fboSizeChanged(const QSize & fboSize);
 
@@ -82,11 +69,7 @@ namespace UserUI {
 
         virtual void setModelScene(Scene::ModelScene * modelScene);
 
-        virtual void updatePoint(const PointsInfo::UpdatedPoint & point);
-
         virtual void setFboSize(const QSize & fboSize);
-
-        virtual void setSelectedPoint(const QVariantMap & selectedPoint);
 
         virtual void setViewportArray(Viewport::ViewportArray * viewportArray);
     };

@@ -8,7 +8,7 @@
 namespace Render {
     ModelRenderer::ModelRenderer(QOpenGLContext * context, const QSize & size) :
         AbstractRenderer(context, size) {
-        qRegisterMetaType<PointsInfo::UpdatedPoint>("PointsInfo::UpdatedPoint");
+
     }
 
     ModelRenderer::~ModelRenderer() {

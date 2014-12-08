@@ -48,7 +48,12 @@ namespace Model {
     }
 
     void AbstractModelWithPoints::addPoint(const PointsInfo::PointID & id, PointsInfo::ModelPoint * point) {
-        _modelPoints.insert(id, point);
+        if (!_modelPoints.containts(id)) {
+            _modelPoints.insert(id, point);
+        }
+        else {
+            togglePoint(id);
+        }
     }
 
     void AbstractModelWithPoints::setPoint(const PointsInfo::PointID & id, const PointsInfo::Position3D & position, Viewport::Viewport * viewport) {
@@ -62,8 +67,8 @@ namespace Model {
         queueForUpdate();
     }
 
-    void AbstractModelWithPoints::togglePoint(const PointsInfo::PointID & point) {
-        _modelPoints.togglePoint(point);
+    void AbstractModelWithPoints::togglePoint(const PointsInfo::PointID & id) {
+        _modelPoints.togglePoint(id);
 
         queueForUpdate();
     }

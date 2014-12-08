@@ -48,14 +48,6 @@ namespace UserUI {
         emit fboSizeChanged(fboSize);
     }
 
-    QVariantMap ModelViewer::selectedPoint() const {
-        return _selectedPoint;
-    }
-    
-    void ModelViewer::setSelectedPoint(const QVariantMap & selectedPoint) {
-        _selectedPoint = selectedPoint;
-    }
-
     Scene::ModelScene * ModelViewer::modelScene() const {
         return _modelScenes.last();
     }
@@ -64,16 +56,6 @@ namespace UserUI {
         _modelScenes.push_back(modelScene);
 
         emit modelSceneChanged();
-    }
-    
-    void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint & point) {
-        QVariantMap map;
-
-        //map["name"] = point.name;
-        map["position"] = point.position;
-        map["modelID"] = point.modelId();
-
-        emit pointUpdated(map);
     }
 
     Viewport::ViewportArray * ModelViewer::viewportArray() const {
