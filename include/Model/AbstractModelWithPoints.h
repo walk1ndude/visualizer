@@ -27,7 +27,6 @@ namespace Model {
         virtual void bindUniformValues() const;
 
         virtual PointsModel * pointsModel() const final;
-        virtual PointsInfo::ModelPoints * modelPoints() final;
         
         virtual bool checkDepthBuffer(const Viewport::Viewport * viewport) final;
 
@@ -50,10 +49,11 @@ namespace Model {
         virtual void updatePointsTexture(QOpenGLShaderProgram * program) final;
 
     public slots:
-        virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) final;
-        virtual void togglePoint(const PointsInfo::Name & point) final;
+        virtual void addPoint(const PointsInfo::PointID & id, PointsInfo::ModelPoint * point) final;
+        virtual void setPoint(const PointsInfo::PointID & id, const PointsInfo::Position3D & position, Viewport::Viewport * viewport) final;
+        virtual void togglePoint(const PointsInfo::PointID & point) final;
 
-        virtual void setPointsModel(PointsModel * points);
+        virtual void addChild(AbstractModel * child);
 
         virtual void setViewRange(const ViewRangeInfo::ViewAxisRange & xRange,
                                   const ViewRangeInfo::ViewAxisRange & yRange,

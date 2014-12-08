@@ -39,28 +39,34 @@ namespace Model {
         return _points;
     }
 
-    void AbstractModelWithPoints::setPointsModel(PointsModel * points) {
-        _points = points;
-        _points->setParent(this);
-    }
-    
-    PointsInfo::ModelPoints * AbstractModelWithPoints::modelPoints() {
-        return &_modelPoints;
+    void AbstractModelWithPoints::addChild(AbstractModel * child) {
+        if (PointsModel * pointsModel = qobject_cast<PointsModel *>(child)) {
+            _points = pointsModel;
+        }
+
+        AbstractModel::addChild(child);
     }
 
-    void AbstractModelWithPoints::addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) {
-        _modelPoints.insert(name, point);
+    void AbstractModelWithPoints::addPoint(const PointsInfo::PointID & id, PointsInfo::ModelPoint * point) {
+        _modelPoints.insert(id, point);
     }
 
-    void AbstractModelWithPoints::togglePoint(const PointsInfo::Name & point) {
+    void AbstractModelWithPoints::setPoint(const PointsInfo::PointID & id, const PointsInfo::Position3D & position, Viewport::Viewport * viewport) {
+        PointsInfo::ModelPoint * point = _modelPoints[id];
+
+        point->position = position;
+        point->viewport = viewport;
+    }
+
+    void AbstractModelWithPoints::togglePoint(const PointsInfo::PointID & point) {
         _modelPoints.togglePoint(point);
 
         queueForUpdate();
     }
     
     void AbstractModelWithPoints::updateRoutine() {
-        _points->invoke("init", QVariantMap() = {
-            {"modelPoints", QVariant::fromValue(&_modelPoints)}
+        _points->init(ModelInfo::Params() = {
+            { "modelPoints", QVariant::fromValue(&_modelPoints) }
         });
 
         updatePointsTexture(program());
@@ -158,7 +164,7 @@ namespace Model {
                     );
 
                     message.data["point"] = QVariant::fromValue(
-                                PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), modelPoints()->key(modelPoint), numberedID())
+                                PointsInfo::UpdatedPoint(modelPoint->position * scene()->scalingFactor(), _modelPoints.key(modelPoint), numberedID())
                     );
 
                     emit post(message);
@@ -245,19 +251,24 @@ namespace Model {
         }
 
         if (name == "addPoint") {
-            addPoint(params["name"].value<PointsInfo::Name>(),
+            addPoint(params["id"].value<PointsInfo::PointID>(),
                      new PointsInfo::ModelPoint(
-                         PointsInfo::Position3D(),
                          params["color"].value<QColor>(),
-                         nullptr,
                          params["groups"].value<PointsInfo::Groups>()
                          )
                      );
             return;
         }
 
+        if (name == "setPoint") {
+            setPoint(params["id"].value<PointsInfo::PointID>(),
+                     params["position"].value<PointsInfo::Position3D>(),
+                     params["viewport"].value<Viewport::Viewport *>()
+            );
+        }
+
         if (name == "togglePoint") {
-            togglePoint(params["name"].value<PointsInfo::Name>());
+            //togglePoint(params["name"].value<PointsInfo::Name>());
 
             return;
         }

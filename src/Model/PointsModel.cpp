@@ -111,12 +111,6 @@ namespace Model {
     bool PointsModel::hasDepth() const {
         return false;
     }
-
-    void PointsModel::invoke(const QString & name, const ModelInfo::Params & params) {
-        if (name == "init") {
-            init(params);
-        }
-    }
 }
 
 REGISTER_TYPE(PointsModel)

@@ -428,12 +428,12 @@ namespace Model {
         return true;
     }
 
-    void AbstractModel::addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point) {
+    void AbstractModel::addPoint(const PointsInfo::PointID & name, PointsInfo::ModelPoint * point) {
         Q_UNUSED(name)
         Q_UNUSED(point)
     }
 
-    void AbstractModel::togglePoint(const PointsInfo::Name & point) {
+    void AbstractModel::togglePoint(const PointsInfo::PointID & point) {
         Q_UNUSED(point)
     }
 

@@ -10,14 +10,14 @@ namespace PointsInfo {
     using Position3D = QVector3D;
     using Position4D = QVector4D;
     
-    using Name = QString;
+    using PointID = QString;
     using Groups = QStringList;
     using Color = QColor;
     
     class Point {
     public:
         Position2D position;
-        Name name;
+        PointID name;
         Color color;
         
         Groups groups;
@@ -26,7 +26,7 @@ namespace PointsInfo {
         
         Point();
         Point(const Position2D & position,
-              const Name & name,
+              const PointID & name,
               const Color & color,
               Viewport::Viewport * viewport);
     };
@@ -34,12 +34,12 @@ namespace PointsInfo {
     class UpdatedPoint {
     public:
         Position3D position;
-        Name name;
+        PointID id;
 
         UpdatedPoint();
 
         UpdatedPoint(const Position3D & position,
-                     const Name & name,
+                     const PointID & id,
                      const uint & modelId);
 
         uint modelId() const;
@@ -66,9 +66,7 @@ namespace PointsInfo {
 
         ModelPoint();
 
-        ModelPoint(const Position3D & position,
-                   const Color & color,
-                   Viewport::Viewport * viewport,
+        ModelPoint(const Color & color,
                    const Groups & groups = Groups(),
                    const qreal & radius = 0.05f,
                    const bool & shown = true);
@@ -82,17 +80,19 @@ namespace PointsInfo {
         ModelPoints();
         ~ModelPoints();
 
-        Name key(ModelPoint * point) const;
+        PointID key(ModelPoint * point) const;
 
-        void insert(const Name & name, ModelPoint * point);
+        void insert(const PointID & id, ModelPoint * point);
         int size() const;
 
-        void togglePoint(const Name & point);
+        void togglePoint(const PointID & point);
+
+        ModelPoint * operator [] (const PointID & id);
 
         QVector<ModelPoint *> points() const;
 
     private:
-        QHash<Name, ModelPoint *> _points;
+        QHash<PointID, ModelPoint *> _points;
     };
 }
 

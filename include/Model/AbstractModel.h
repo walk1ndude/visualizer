@@ -48,7 +48,7 @@ namespace Model {
 
         virtual Scene::AbstractScene * scene() const;
 
-        virtual void addChild(AbstractModel * child) final;
+        virtual void addChild(AbstractModel * child);
 
         virtual bool hasDepth() const;
 
@@ -257,8 +257,8 @@ namespace Model {
 
         virtual void update();
 
-        virtual void addPoint(const PointsInfo::Name & name, PointsInfo::ModelPoint * point);
-        virtual void togglePoint(const PointsInfo::Name & point);
+        virtual void addPoint(const PointsInfo::PointID & name, PointsInfo::ModelPoint * point);
+        virtual void togglePoint(const PointsInfo::PointID & point);
 
         virtual void invoke(const QString & name, const ModelInfo::Params & params = ModelInfo::Params());
     };

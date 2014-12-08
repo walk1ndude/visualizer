@@ -87,8 +87,8 @@ Viewport {
                                     "data" : {
                                         "action" : "setPoint",
                                         "params" : {
-                                            "name" : parent.currentPoint,
-                                            "position" : Qt.point(mouseX / width, mouseY / height),
+                                            "id" : parent.currentPoint,
+                                            "position" : Qt.vector3d(mouseX / width, mouseY / height, 0),
                                             "viewport" : parent
                                         }
                                     }

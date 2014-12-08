@@ -15,7 +15,7 @@ namespace Message {
     public:
         explicit Header();
         explicit Header(const Sender & sender, const Reciever & reciever,
-                        const ReliableTime & reliableTime = -1);
+                        const ReliableTime & reliableTime = ReliableTime(-1));
 
     private:
         Sender _sender;
@@ -42,7 +42,7 @@ namespace Message {
     protected:
         explicit AbstractMessage();
         explicit AbstractMessage(const Sender & sender, const Reciever & reciever,
-                                 const ReliableTime & reliableTime = -1);
+                                 const ReliableTime & reliableTime = ReliableTime(-1));
 
     private:
         Header _header;

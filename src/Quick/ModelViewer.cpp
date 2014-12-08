@@ -87,7 +87,7 @@ namespace Quick {
     void ModelViewer::updatePoint(const PointsInfo::UpdatedPoint & point) {
         QVariantMap map;
 
-        map["name"] = point.name;
+        //map["name"] = point.name;
         map["position"] = point.position;
         map["modelID"] = point.modelId();
 
@@ -174,7 +174,7 @@ namespace Quick {
         selectedPoint.position = QPointF(position.x(), position.y());
         selectedPoint.viewport = viewport;
 
-        selectedPoint.name = qvariant_cast<PointsInfo::Name>(_selectedPoint["name"]);
+        selectedPoint.name = qvariant_cast<PointsInfo::PointID>(_selectedPoint["name"]);
         selectedPoint.groups = qvariant_cast<PointsInfo::Groups>(_selectedPoint["groups"]);
         selectedPoint.color = qvariant_cast<PointsInfo::Color>(_selectedPoint["color"]);
 /*
@@ -228,7 +228,7 @@ namespace Quick {
 
                     QVariantMap map;
 
-                    map["name"] = point.name;
+                    //map["name"] = point.name;
                     map["position"] = point.position;
                     map["modelID"] = point.modelId();
 
@@ -237,7 +237,7 @@ namespace Quick {
             }
             else {
                 if (message.data["action"] == "addPoint") {
-                    emit post(Message::SettingsMessage::toVariantMap(message));
+                    emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), Message::Reciever("viewports")));
                 }
 
                 emit post(message);

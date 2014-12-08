@@ -10,12 +10,18 @@ namespace Message {
     public:
         explicit SettingsMessage();
         explicit SettingsMessage(const Sender & sender, const Reciever & reciever,
-                                 const ReliableTime & reliableTime = -1);
+                                 const ReliableTime & reliableTime = ReliableTime(-1));
 
         SettingsData data;
 
-        static QVariantMap toVariantMap(const SettingsMessage & message);
-        static SettingsMessage toMessage(const QVariant & message);
+        static QVariantMap toVariantMap(const SettingsMessage & message,
+                                        const Sender & sender = Sender(),
+                                        const Reciever & reciever = Reciever(),
+                                        const ReliableTime & reliableTime = ReliableTime(-1));
+        static SettingsMessage toMessage(const QVariant & message,
+                                         const Sender & sender = Sender(),
+                                         const Reciever & reciever = Reciever(),
+                                         const ReliableTime & reliableTime = ReliableTime(-1));
    };
 }
 

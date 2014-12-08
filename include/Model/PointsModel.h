@@ -23,8 +23,6 @@ namespace Model {
 
         virtual bool hasDepth() const;
 
-        virtual void invoke(const QString & name, const ModelInfo::Params & params = ModelInfo::Params());
-
         virtual void init(const ModelInfo::Params & params);
 
     protected:

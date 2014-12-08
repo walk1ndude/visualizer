@@ -12,14 +12,17 @@ namespace Message {
 
     }
 
-    QVariantMap SettingsMessage::toVariantMap(const SettingsMessage & message) {
+    QVariantMap SettingsMessage::toVariantMap(const SettingsMessage & message,
+                                              const Sender & sender,
+                                              const Reciever & reciever,
+                                              const ReliableTime & reliableTime) {
         QVariantMap map;
 
         map["header"] = QVariantMap() = {
-            { "sender", message.sender() },
-            { "reciever", message.reciever() },
-            { "reliableTime", message.reliableTime() }
-        };
+        { "sender", sender.isEmpty() ? message.sender() : sender },
+        { "reciever", reciever.isEmpty() ? message.reciever() : reciever },
+        { "reliableTime", reliableTime == ReliableTime(-1) ? message.reliableTime() : reliableTime }
+    };
 
         QVariantMap mapData;
 
@@ -32,18 +35,22 @@ namespace Message {
         return map;
     }
 
-    SettingsMessage SettingsMessage::toMessage(const QVariant &message) {
+    SettingsMessage SettingsMessage::toMessage(const QVariant & message,
+                                               const Sender & sender,
+                                               const Reciever & reciever,
+                                               const ReliableTime & reliableTime) {
+
         QVariantMap messageMap = message.toMap();
 
         QVariantMap msHeader = messageMap["header"].toMap();
 
         Message::SettingsMessage ms(
-                    msHeader["sender"].value<Message::Sender>(),
-                    msHeader["reciever"].value<Message::Reciever>()
+                    sender.isEmpty() ? msHeader["sender"].value<Message::Sender>() : sender,
+                    reciever.isEmpty() ? msHeader["reciever"].value<Message::Reciever>() : reciever
                 );
 
         if (msHeader.contains("reliableTime")) {
-            ms.setReliableTime(msHeader["reliableTime"].value<Message::ReliableTime>());
+            ms.setReliableTime(reliableTime == ReliableTime(-1) ? msHeader["reliableTime"].value<Message::ReliableTime>() : reliableTime);
         }
 
         ms.data = messageMap["data"].toMap();

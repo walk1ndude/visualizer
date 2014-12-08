@@ -132,7 +132,7 @@ Rectangle {
                                               "data" : {
                                                   "action" : "addPoint",
                                                   "params" : {
-                                                      "name" : itemId,
+                                                      "id" : itemId,
                                                       "color" : parent.color,
                                                       "groups" : Helpers.pointInGroups[itemId]
                                                   }

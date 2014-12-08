@@ -4,7 +4,7 @@ namespace PointsInfo {
     Point::Point() { }
 
     Point::Point(const Position2D & position,
-      const Name & name,
+      const PointID & name,
       const Color & color,
       Viewport::Viewport * viewport) :
     position(position),
@@ -15,10 +15,10 @@ namespace PointsInfo {
     UpdatedPoint::UpdatedPoint() { }
 
     UpdatedPoint::UpdatedPoint(const Position3D & position,
-                               const Name & name,
+                               const PointID & id,
                                const uint & modelId) :
         position(position),
-        name(name),
+        id(id),
         _modelId(modelId) {
 
     }
@@ -38,18 +38,14 @@ namespace PointsInfo {
 
     ModelPoint::ModelPoint() { }
 
-    ModelPoint::ModelPoint(const Position3D & position,
-                           const Color & color,
-                           Viewport::Viewport * viewport,
+    ModelPoint::ModelPoint(const Color & color,
                            const Groups & groups,
                            const qreal & radius,
                            const bool & shown) :
-        position(position),
         radius(radius),
         color(color),
         shown(shown),
         groups(groups),
-        viewport(viewport),
         _positionCalculated(false) {
 
     }
@@ -57,15 +53,15 @@ namespace PointsInfo {
     ModelPoints::ModelPoints() { }
 
     ModelPoints::~ModelPoints() {
-        qDeleteAll(_points.begin(), _points.end());
+        qDeleteAll(_points);
     }
 
-    Name ModelPoints::key(ModelPoint * point) const {
+    PointID ModelPoints::key(ModelPoint * point) const {
         return _points.key(point);
     }
 
-    void ModelPoints::insert(const Name & name, ModelPoint * point) {
-        _points.insert(name, point);
+    void ModelPoints::insert(const PointID & id, ModelPoint * point) {
+        _points.insert(id, point);
     }
 
     int ModelPoints::size() const {
@@ -88,9 +84,13 @@ namespace PointsInfo {
         return points;
     }
 
-    void ModelPoints::togglePoint(const Name & point) {
-        if (_points.find(point) != _points.end()) {
-            _points[point]->shown = !_points[point]->shown;
+    ModelPoint * ModelPoints::operator [](const PointID & id) {
+        return _points[id];
+    }
+
+    void ModelPoints::togglePoint(const PointID & id) {
+        if (_points.contains(id)) {
+            _points[id]->shown = !_points[id]->shown;
         }
     }
 }

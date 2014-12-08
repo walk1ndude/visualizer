@@ -24,10 +24,9 @@ ModelViewer {
     }
 
     onPost: {
-        console.log(message.reciever)
-        if (message.reciever === "viewports") {
-            if (message.data["params"]["action"] === "setPoint") {
-                viewportArray.currentPoint = message.data["params"]["point"];
+        if (message.header.reciever === "viewports") {
+            if (message.data.action === "addPoint") {
+                viewportArray.currentPoint = message.data.params.id;
             }
         }
     }
