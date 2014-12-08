@@ -5,11 +5,14 @@
 
 #include "Message/SettingsMessage.h"
 
+#define DEFAULT_HOST "127.0.0.1"
+#define DEFAULT_PORT 5555
+
 namespace UserUI {
     class NetUI : public QObject {
         Q_OBJECT
     public:
-        explicit NetUI(const QString & host = "127.0.0.1", const qint16 & port = 5555, QObject * parent = nullptr);
+        explicit NetUI(const QString & host = DEFAULT_HOST, const qint16 & port = DEFAULT_PORT, QObject * parent = nullptr);
 
     private:
         QTcpServer * _dataServer;
