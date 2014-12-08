@@ -2,17 +2,17 @@
 
 #include <QtCore/QDebug>
 
-#include "Gui/AppWindow.h"
+#include "UserUI/AppWindow.h"
 
 int main(int argc, char * argv[]) {
     QGuiApplication a(argc, argv);
 
     //qputenv("QML_FORCE_THREADED_RENDERER", "1");
 
-    Gui::AppWindow appWindow("qrc:/qml/MainWindow.qml");
+    UserUI::AppWindow appWindow("qrc:/qml/MainWindow.qml");
 
-    QObject::connect(&appWindow, &Gui::AppWindow::pointUpdated, [](const QJsonObject & point) { qDebug() << "JSON: " << point;});
-    QObject::connect(&appWindow, &Gui::AppWindow::distsUpdated, [](const QJsonObject & dists) { qDebug() << "JSON: " << dists;});
+    QObject::connect(&appWindow, &UserUI::AppWindow::pointUpdated, [](const QJsonObject & point) { qDebug() << "JSON: " << point;});
+    QObject::connect(&appWindow, &UserUI::AppWindow::distsUpdated, [](const QJsonObject & dists) { qDebug() << "JSON: " << dists;});
 
     appWindow.show();
 

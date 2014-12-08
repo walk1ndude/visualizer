@@ -14,7 +14,7 @@ Rectangle {
         width: 2;
     }
 
-    signal distsUpdated();
+    signal post(variant message);
 
     function updateIndividual(modelID) {
         if (individualListView.model) {
@@ -28,7 +28,18 @@ Rectangle {
 
         // why bother when no dists are updated?
         if (individualListView.model.distUpdatedCount) {
-            distsUpdated();
+            individual.post({
+                                "header" : {
+                                    "sender" : "individualInfo",
+                                    "reciever" : "appWindow"
+                                },
+                                "data" : {
+                                    "action" : "updateDists",
+                                    "params" : {
+                                        "modelID" : modelID,
+                                        "dists" : Settings.Distances[modelID]}
+                                    }
+                                });
         }
     }
 

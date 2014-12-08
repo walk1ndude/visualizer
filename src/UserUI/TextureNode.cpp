@@ -1,4 +1,4 @@
-#include "Quick/TextureNode.h"
+#include "UserUI/TextureNode.h"
 
 TextureNode::TextureNode(QQuickWindow * window) :
     _size(0, 0),

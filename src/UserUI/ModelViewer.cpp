@@ -1,7 +1,7 @@
-#include "Quick/ModelViewer.h"
-#include "Quick/TextureNode.h"
+#include "UserUI/ModelViewer.h"
+#include "UserUI/TextureNode.h"
 
-namespace Quick {
+namespace UserUI {
     ModelViewer::ModelViewer() :
         _modelRenderer(nullptr),
         _viewportArray(nullptr) {

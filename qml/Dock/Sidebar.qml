@@ -168,7 +168,7 @@ Sidedock {
                             onPostToSections: recieve(message);
                         }
 
-                        onDistsUpdated: sidebar.distsUpdated();
+                        onPost: sidebar.post(message);
                 }
             }
         }

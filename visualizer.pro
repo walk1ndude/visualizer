@@ -84,8 +84,8 @@ win32 {
 }
 
 SOURCES +=  src/main.cpp \
-            src/Gui/AppWindow.cpp \
-            src/Quick/ModelViewer.cpp \
+            src/UserUI/AppWindow.cpp \
+            src/UserUI/ModelViewer.cpp \
             src/Parser/DicomReader.cpp \
             src/Parser/Reconstructor.cpp \
             src/Parser/StlReader.cpp \
@@ -99,12 +99,12 @@ SOURCES +=  src/main.cpp \
             src/Scene/AbstractScene.cpp \
             src/Viewport/Viewport.cpp \
             src/Viewport/ViewportArray.cpp \
-            src/Quick/ConsoleLogger.cpp \
+            src/UserUI/ConsoleLogger.cpp \
             src/Model/EvaluatorModel.cpp \
             src/Info/PointsInfo.cpp \
             src/Info/ViewRangeInfo.cpp \
             src/Info/ShaderInfo.cpp \
-            src/Quick/TextureNode.cpp \
+            src/UserUI/TextureNode.cpp \
             src/Camera/Camera.cpp \
             src/Model/VolumeModel.cpp \
             src/Parser/AbstractParser.cpp \
@@ -115,10 +115,11 @@ SOURCES +=  src/main.cpp \
     src/Scene/SceneObject.cpp \
     src/Scene/LightSource.cpp \
     src/Scene/Material.cpp \
-    src/Scene/Texture.cpp
+    src/Scene/Texture.cpp \
+    src/UserUI/NetUI.cpp
 
-HEADERS  += include/Gui/AppWindow.h \
-            include/Quick/ModelViewer.h \
+HEADERS  += include/UserUI/AppWindow.h \
+            include/UserUI/ModelViewer.h \
             include/Parser/ctprocessing.hpp \
             include/Parser/parallelprocessing.hpp \
             include/Parser/DicomReader.h \
@@ -142,8 +143,8 @@ HEADERS  += include/Gui/AppWindow.h \
             include/Model/AbstractModelWithPoints.h \
             include/Viewport/Viewport.h \
             include/Viewport/ViewportArray.h \
-            include/Quick/TextureNode.h \
-            include/Quick/ConsoleLogger.h \
+            include/UserUI/TextureNode.h \
+            include/UserUI/ConsoleLogger.h \
             include/Model/VertexVC.h \
             include/Model/VertexVN.h \
             include/Model/VertexVT.h \
@@ -162,6 +163,7 @@ HEADERS  += include/Gui/AppWindow.h \
     include/Scene/SceneObject.h \
     include/Scene/LightSource.h \
     include/Scene/Material.h \
-    include/Scene/Texture.h
+    include/Scene/Texture.h \
+    include/UserUI/NetUI.h
 
 RESOURCES += resources.qrc

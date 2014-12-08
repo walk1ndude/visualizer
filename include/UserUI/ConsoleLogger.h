@@ -3,7 +3,7 @@
 
 #include <QtCore/QObject>
 
-namespace Quick {
+namespace UserUI {
     class ConsoleLogger : public QObject {
         Q_PROPERTY(QString output READ output WRITE setOutput NOTIFY outputChanged)
         Q_PROPERTY(QString logFile READ logFile WRITE setLogFile NOTIFY logFileChanged)

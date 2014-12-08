@@ -11,7 +11,7 @@
 
 #include "Render/ModelRenderer.h"
 
-namespace Quick {
+namespace UserUI {
     class ModelViewer : public QQuickItem {        
         Q_PROPERTY(QVariantMap selectedPoint READ selectedPoint WRITE setSelectedPoint)
 

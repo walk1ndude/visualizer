@@ -1,14 +1,15 @@
-#include "Gui/AppWindow.h"
-
-#include "Quick/ModelViewer.h"
-#include "Quick/ConsoleLogger.h"
+#include "UserUI/AppWindow.h"
+#include "UserUI/ModelViewer.h"
+#include "UserUI/ConsoleLogger.h"
 
 #include "Parser/DicomReader.h"
 #include "Parser/StlReader.h"
 #include "Parser/Reconstructor.h"
 
-namespace Gui {
-    AppWindow::AppWindow(const QString & qmlSource, QObject * parent) :
+#include <QtNetwork/QHostAddress>
+
+namespace UserUI {
+    AppWindow::AppWindow(const QString & qmlSource, const QString & host, const qint16 & port, QObject * parent) :
         QObject(parent) {
 
         //qInstallMessageHandler(Quick::ConsoleLogger::customMessageHandler);
@@ -16,13 +17,11 @@ namespace Gui {
         registerMetaTypes();
         registerQmlTypes();
 
-        _engine = new QQmlApplicationEngine(QUrl(qmlSource));
+        _engine = new QQmlApplicationEngine(QUrl(qmlSource), this);
+
+        _netUI = new NetUI(host, port, this);
 
         fetchConnections();
-    }
-
-    AppWindow::~AppWindow() {
-        _engine->deleteLater();
     }
 
     QQuickWindow * AppWindow::appWindow() const {
@@ -43,8 +42,7 @@ namespace Gui {
         _appWindow->setFormat(surfaceFormat);
 #endif
 
-        QObject::connect(appWindow, SIGNAL(distsUpdated(const QVariant &)), this, SLOT(updateDists(const QVariant &)));
-        QObject::connect(appWindow, SIGNAL(pointUpdated(const QVariant &)), this, SLOT(updatePoint(const QVariant &)));
+        QObject::connect(appWindow, SIGNAL(recieve(const QVariant &)), this, SLOT(recieve(const QVariant &)));
     }
 
     void AppWindow::updatePoint(const QVariant & point) {
@@ -68,8 +66,8 @@ namespace Gui {
     }
 
     void AppWindow::registerQmlTypes() {
-        qmlRegisterType<Quick::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
-        qmlRegisterType<Quick::ConsoleLogger>("RenderTools", 1, 0, "ConsoleLogger");
+        qmlRegisterType<UserUI::ModelViewer>("RenderTools", 1, 0, "ModelViewer");
+        qmlRegisterType<UserUI::ConsoleLogger>("RenderTools", 1, 0, "ConsoleLogger");
 
         qmlRegisterType<Viewport::ViewportArray>("RenderTools", 1, 0, "ViewportArray");
         qmlRegisterType<Viewport::Viewport>("RenderTools", 1, 0, "Viewport");
@@ -83,8 +81,23 @@ namespace Gui {
 
     void AppWindow::registerMetaTypes() {
         qRegisterMetaType<Message::SettingsMessage>("Message::SettingsMessage");
+    }
 
-        qRegisterMetaType<ModelInfo::Model>("ModelInfo::Model");
+    void AppWindow::recieve(const QVariant & message) {
+        recieve(Message::SettingsMessage::toMessage(message));
+    }
+
+    void AppWindow::recieve(const Message::SettingsMessage & message) {
+        if (message.isReliable() && message.reciever().startsWith("appWindow")) {
+            QString action = message.data["action"].toString();
+
+            if (action == "updatePoint") {
+
+            }
+            else if (action == "updateDists") {
+                qDebug() << message.data["params"].toMap();
+            }
+        }
     }
 
     void AppWindow::show() {

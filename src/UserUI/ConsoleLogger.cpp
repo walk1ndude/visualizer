@@ -3,13 +3,13 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QTextStream>
 
-#include "Quick/ConsoleLogger.h"
+#include "UserUI/ConsoleLogger.h"
 
-Quick::ConsoleLogger * _instance = nullptr;
+UserUI::ConsoleLogger * _instance = nullptr;
 
 QRegExp logRx("<p>([^<]*)</p>");
 
-namespace Quick {
+namespace UserUI {
     QString ConsoleLogger::_output;
 
     int ConsoleLogger::_lineCount = 5;

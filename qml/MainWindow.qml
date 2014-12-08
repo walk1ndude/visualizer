@@ -23,6 +23,8 @@ ApplicationWindow {
     signal distsUpdated(variant distanses);
     signal pointUpdated(variant point);
 
+    signal recieve(variant message);
+
     menuBar: MenuBar {
         id: menubar;
         Menu {
@@ -129,8 +131,6 @@ ApplicationWindow {
         }
     }
 
-    onPointUpdated: sidebar.updatePoint(point);
-
     Dock.Sidebar {
         id: sidebar;
 
@@ -141,11 +141,16 @@ ApplicationWindow {
             right: appWindow.right;
         }
 
-        onPost: modelViewer.message = message;
+        onPost: {
+            if (message.header.reciever === "appWindow") {
+                appWindow.recieve(message)
+            }
+            else {
+                modelViewer.message = message;
+            }
+        }
 
         dX: appWindow.width * appWindow.sideBarWidth;
-
-        //onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
 
     function nextSlice() {
