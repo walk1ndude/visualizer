@@ -14,11 +14,9 @@ Rectangle {
         width: 2;
     }
 
-    property int modelID: -1;
-
     signal distsUpdated();
 
-    function updateIndividual() {
+    function updateIndividual(modelID) {
         if (individualListView.model) {
             individualListView.model.destroy();
         }
@@ -31,6 +29,22 @@ Rectangle {
         // why bother when no dists are updated?
         if (individualListView.model.distUpdatedCount) {
             distsUpdated();
+        }
+    }
+
+    function recieve(message) {
+        switch (message.data.action) {
+        case "updatePoint":
+            var params = message.data.params;
+            var modelID = message.header.sender;
+
+            // update info about points
+            Settings.Points[modelID] = Settings.Points[modelID] || { };
+            Settings.Points[modelID][params.id] = Settings.Points[modelID][params.id] || { };
+            Settings.Points[modelID][params.id]["position"] = params.position;
+        case "changeModelID" :
+            updateIndividual(modelID);
+            break;
         }
     }
 

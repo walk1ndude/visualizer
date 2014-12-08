@@ -14,6 +14,8 @@ Rectangle {
         width: 2;
     }
 
+    property string modelID: "";
+
     signal post(variant message);
 
     ListView {
@@ -59,6 +61,10 @@ Rectangle {
                                       + position.z.toFixed(2) + "]");
                 }
             }
+            break;
+        case "changeModelID" :
+            measures.modelID = message.header.sender;
+            break;
         }
     }
 
@@ -113,7 +119,7 @@ Rectangle {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton;
 
                 onClicked: {
-                    if (modelID === "") {
+                    if (measures.modelID === "") {
                         return;
                     }
 

@@ -164,8 +164,7 @@ namespace Model {
 
                     Message::SettingsMessage message(
                                 Message::Sender(id()),
-                                Message::Reciever("settingsJS"),
-                                Message::Recievers() = { "measures" }
+                                Message::Reciever("sidebar")
                     );
 
                     message.data["action"] = "updatePoint";

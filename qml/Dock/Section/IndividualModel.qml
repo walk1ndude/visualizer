@@ -9,12 +9,14 @@ ListModel {
 
     property int distUpdatedCount: 0;
 
+    property string modelID: "";
+
     Component.onCompleted: {
         function populateListElements(ptps, measures) {
             var qmlElements = [];
             var modelPoints = Settings.Points[modelID];
 
-            if (modelID != -1) {
+            if (modelID !== "") {
                 Settings.Distances[modelID] = Settings.Distances[modelID] || { };
                 var modelDists = Settings.Distances[modelID];
             }

@@ -180,5 +180,6 @@ namespace Quick {
         }
 
         emit post(message);
+        emit post(Message::SettingsMessage::toVariantMap(message));
     }
 }

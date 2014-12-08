@@ -15,31 +15,14 @@ Sidedock {
     state: "vertical";
     inverseFolding: false;
 
-    property variant selectedPoint: ({});
-
-    signal togglePoint(string point);
-
-    property int modelID: -1;
-
-    signal updateIndividual();
     signal distsUpdated();
 
     signal post(variant message);
     signal postToSections(variant message);
 
     function recieve(message) {
-        switch (message.header.reciever) {
-        case "measures" : postToSections(message);
-        }
+        postToSections(message);
     }
-
-    function updatePoint(point) {
-        measuredPoint = point.name;
-        measuredPosition = point.position;
-    }
-
-    property string measuredPoint: "";
-    property vector3d measuredPosition: Qt.vector3d(0, 0, 0);
 
     ListView {
         id: sidebarListView;
@@ -180,11 +163,9 @@ Sidedock {
                         id: individual
                         width: sidebarListView.width;
 
-                        modelID: sidebar.modelID;
-
                         Connections {
-                            target: sidebar
-                            onUpdateIndividual: individual.updateIndividual();
+                            target: sidebar;
+                            onPostToSections: recieve(message);
                         }
 
                         onDistsUpdated: sidebar.distsUpdated();

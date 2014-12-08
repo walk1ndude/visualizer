@@ -128,6 +128,8 @@ namespace Scene {
                     Message::Reciever("sidebar")
                     );
 
+        message.data["action"] = "changeModelID";
+
         emit post(message);
     }
 

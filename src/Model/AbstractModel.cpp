@@ -13,7 +13,7 @@ namespace Model {
                                  const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         Scene::SceneObject(Scene::getNewID(modelNumber)) {
 
-        _numberedID = -- modelNumber;
+        _numberedID = modelNumber - 1;
 
         _vboVert = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
         _vboInd = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);

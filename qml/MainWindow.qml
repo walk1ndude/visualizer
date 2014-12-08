@@ -121,9 +121,9 @@ ApplicationWindow {
 
             onPost: {
                 switch (message.header.reciever) {
-                    case "measures" :
-                            sidebar.recieve(message);
-                            break;
+                    case "sidebar" :
+                        sidebar.recieve(message);
+                        break;
                     }
             }
         }
@@ -145,7 +145,7 @@ ApplicationWindow {
 
         dX: appWindow.width * appWindow.sideBarWidth;
 
-        onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
+        //onDistsUpdated: appWindow.distsUpdated({"modelID": modelID, "dists": Settings.Distances[modelID]});
     }
 
     function nextSlice() {
