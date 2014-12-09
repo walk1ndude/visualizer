@@ -48,8 +48,6 @@ namespace UserUI {
 
         QVector<Scene::ModelScene *> _modelScenes;
 
-        QVariantMap _selectedPoint;
-
         QSize _fboSize;
 
    signals:

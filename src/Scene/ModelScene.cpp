@@ -203,7 +203,11 @@ namespace Scene {
 
     void ModelScene::recieve(const Message::SettingsMessage & message) {
         if (message.reciever().startsWith("Scene")) {
-            _blueprints.enqueue(message.data["blueprint"].value<Blueprint>());
+            if (message.data["action"] == "add") {
+                _blueprints.enqueue(message.data["blueprint"].value<Blueprint>());
+                return;
+            }
+
             return;
         }
 

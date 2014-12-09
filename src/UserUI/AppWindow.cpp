@@ -42,7 +42,7 @@ namespace UserUI {
         _appWindow->setFormat(surfaceFormat);
 #endif
 
-        QObject::connect(appWindow, SIGNAL(recieve(const QVariant &)), this, SLOT(recieve(const QVariant &)));
+        QObject::connect(appWindow, SIGNAL(recieve(QVariant)), this, SLOT(recieve(QVariant)));
     }
 
     void AppWindow::registerQmlTypes() {

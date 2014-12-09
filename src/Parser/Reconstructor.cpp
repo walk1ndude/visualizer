@@ -559,6 +559,7 @@ namespace Parser {
         blueprintOverallMap["models"] = QVariant(blueprintList);
 
         Message::SettingsMessage message("Reconstructor", "Scene");
+        message.data["action"] = "add";
         message.data["blueprint"] = QVariant(blueprintOverallMap);
 
         send(message);

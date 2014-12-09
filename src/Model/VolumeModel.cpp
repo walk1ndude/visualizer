@@ -27,9 +27,6 @@ namespace Model {
         setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
         setValueRange(params["valueRange"].value<VolumeInfo::ValueRange>());
 
-        //Message::SettingsMessage messageToSidebar(id(), )
-
-
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
 

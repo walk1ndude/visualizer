@@ -397,6 +397,7 @@ namespace Parser {
         blueprintOverallMap["models"] = QVariant(blueprintList);
 
         Message::SettingsMessage message("StlParser", "Scene");
+        message.data["action"] = "add";
         message.data["blueprint"] = QVariant(blueprintOverallMap);
 
         send(message);

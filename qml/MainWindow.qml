@@ -20,10 +20,7 @@ ApplicationWindow {
 
     color: "black";
 
-    signal distsUpdated(var distanses);
-    signal pointUpdated(var point);
-
-    signal recieve(var message);
+    signal recieve(variant message);
 
     menuBar: MenuBar {
         id: menubar;

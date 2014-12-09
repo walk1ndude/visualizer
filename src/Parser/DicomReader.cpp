@@ -216,7 +216,22 @@ namespace Parser {
         blueprintOverallMap["models"] = QVariant(blueprintList);
 
         Message::SettingsMessage message("DicomParser", "Scene");
+        message.data["action"] = "add";
         message.data["blueprint"] = QVariant(blueprintOverallMap);
+
+        Message::SettingsMessage messageSpecs("DicomParser", "sidebar");
+        messageSpecs.data["action"] = "setSpecs";
+
+        QVariantMap paramsSpecs;
+
+        paramsSpecs["huRange"] = QVariant(VolumeInfo::HuRange(_dicomData.minHU, _dicomData.maxHU));
+        paramsSpecs["huRangePossible"] = QVariant(VolumeInfo::HuRange(_dicomData.minHUPossible, _dicomData.maxHUPossible));
+        paramsSpecs["windowWidth"] = QVariant(_dicomData.windowWidth);
+        paramsSpecs["windowCenter"] = QVariant(_dicomData.windowCenter);
+
+        messageSpecs.data["params"] = QVariant(paramsSpecs);
+
+        send(messageSpecs);
 
         send(message);
     }

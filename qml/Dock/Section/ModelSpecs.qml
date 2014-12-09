@@ -5,12 +5,6 @@ import "qrc:/qml/Control" as Control;
 Rectangle {
     id: modelSpecs;
 
-    property vector2d huRangeMax: Qt.vector2d(0, 65535);
-    property vector2d huRangeModel: Qt.vector2d(0, 65535);
-
-    property int windowCenterModel: 400;
-    property int windowWidthModel: 1000;
-
     property string modelID: "";
 
     signal post(var message);
@@ -41,9 +35,6 @@ Rectangle {
             id: huRangeSlider;
             width: 200;
 
-            value: Qt.vector2d(-1.0, 1.0);
-            valueRange: Qt.vector2d(-1.0, 1.0);
-
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
                                                     "header" : {
@@ -61,7 +52,7 @@ Rectangle {
         }
 
         Text {
-            text: huRangeSlider.value.x + " " + huRangeSlider.value.y;
+            text: huRangeSlider.value.x.toFixed(2) + " " + huRangeSlider.value.y.toFixed(2);
         }
 
         Text {
@@ -71,10 +62,7 @@ Rectangle {
         Control.Slider {
             id: windowCenterSlider;
             width: 200;
-            minimumValue: 0;
-            maximumValue: 10000;
-            value: modelSpecs.windowCenterModel;
-            stepSize: 100.0;
+            stepSize: 10.0;
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
@@ -103,10 +91,7 @@ Rectangle {
         Control.Slider {
             id: windowWidthSlider;
             width: 200;
-            minimumValue: 0;
-            maximumValue: 10000;
-            value: modelSpecs.windowWidthModel;
-            stepSize: 100.0;
+            stepSize: 10.0;
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
@@ -225,6 +210,27 @@ Rectangle {
         switch (message.data.action) {
         case "changeModelID" :
             modelSpecs.modelID = message.header.sender;
+            break;
+        case "setSpecs" :
+            var windowCenter = message.data["params"]["windowCenter"];
+
+            windowCenterSlider.minimumValue = 0;
+            windowCenterSlider.maximumValue = windowCenter * 3;
+            windowCenterSlider.value = windowCenter;
+
+            var windowWidth = message.data["params"]["windowWidth"];
+
+            windowWidthSlider.minimumValue = 0;
+            windowWidthSlider.maximumValue = windowWidth * 3;
+            windowWidthSlider.value = windowWidth;
+
+            var huRange = message.data["params"]["huRange"];
+            var huRangePossible = message.data["params"]["huRangePossible"];
+
+            huRangePossible.y = Math.min(huRangePossible.y, huRange.y * 5);
+
+            huRangeSlider.valueRange = huRangePossible;
+            huRangeSlider.value = huRange;
             break;
         }
     }
