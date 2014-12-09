@@ -11,6 +11,8 @@ Rectangle {
     property int windowCenterModel: 400;
     property int windowWidthModel: 1000;
 
+    property string modelID: "";
+
     signal post(variant message);
 
     color: "#cccccc";
@@ -24,7 +26,6 @@ Rectangle {
         id: grid;
 
         columns: 3;
-        rows: 12;
 
         anchors {
             top: modelSpecs.top;
@@ -33,63 +34,34 @@ Rectangle {
         }
 
         Text {
-            text: qsTr("minHU");
+            text: qsTr("huRange");
         }
 
-        Control.Slider {
-            id: minHUSlider;
+        Control.RangeSlider {
+            id: huRangeSlider;
             width: 200;
-            minimumValue: modelSpecs.huRangeMax.x;
-            maximumValue: modelSpecs.huRangeMax.y;
-            value: modelSpecs.huRangeModel.x;
-            stepSize: 100.0;
 
-            onValueChanged: modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
-                                                },
-                                                "data" : {
-                                                    "action" : "setMinHU",
-                                                    "params" : {
-                                                        "range" : value
+            value: Qt.vector2d(-1.0, 1.0);
+            valueRange: Qt.vector2d(-1.0, 1.0);
+
+            onValueChanged: if (modelSpecs.modelID !== "") {
+                                modelSpecs.post({
+                                                    "header" : {
+                                                        "sender" : "modelSpecs",
+                                                        "reciever" : modelSpecs.modelID
+                                                    },
+                                                    "data" : {
+                                                        "action" : "setHuRange",
+                                                        "params" : {
+                                                            "range" : value
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
+                            }
         }
 
         Text {
-            text: minHUSlider.value;
-        }
-
-        Text {
-            text: qsTr("maxHU");
-        }
-
-        Control.Slider {
-            id: maxHUSlider;
-            width: 200;
-            minimumValue: modelSpecs.huRangeMax.x;
-            maximumValue: modelSpecs.huRangeMax.y;
-            value: modelSpecs.huRangeModel.y;
-            stepSize: 1.0;
-
-            onValueChanged: modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
-                                                },
-                                                "data" : {
-                                                    "action" : "setMaxHU",
-                                                    "params" : {
-                                                        "range" : value
-                                                    }
-                                                }
-                                            });
-        }
-
-        Text {
-            text: maxHUSlider.value;
+            text: huRangeSlider.value.x + " " + huRangeSlider.value.y;
         }
 
         Text {
@@ -104,10 +76,11 @@ Rectangle {
             value: modelSpecs.windowCenterModel;
             stepSize: 100.0;
 
-            onValueChanged: modelSpecs.post({
+            onValueChanged: if (modelSpecs.modelID !== "") {
+                                modelSpecs.post({
                                                 "header" : {
                                                     "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
+                                                    "reciever" : modelSpecs.modelID
                                                 },
                                                 "data" : {
                                                     "action" : "setWindowCenter",
@@ -116,6 +89,7 @@ Rectangle {
                                                     }
                                                 }
                                             });
+                            }
         }
 
         Text {
@@ -134,10 +108,11 @@ Rectangle {
             value: modelSpecs.windowWidthModel;
             stepSize: 100.0;
 
-            onValueChanged: modelSpecs.post({
+            onValueChanged: if (modelSpecs.modelID !== "") {
+                                modelSpecs.post({
                                                 "header" : {
                                                     "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
+                                                    "reciever" : modelSpecs.modelID
                                                 },
                                                 "data" : {
                                                     "action" : "setWindowWidth",
@@ -146,6 +121,7 @@ Rectangle {
                                                     }
                                                 }
                                             });
+                            }
         }
 
         Text {
@@ -173,10 +149,11 @@ Rectangle {
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: modelSpecs.post({
+            onValueChanged: if (modelSpecs.modelID !== "") {
+                                modelSpecs.post({
                                                 "header" : {
                                                     "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
+                                                    "reciever" : modelSpecs.modelID
                                                 },
                                                 "data" : {
                                                     "action" : "setRange",
@@ -186,6 +163,7 @@ Rectangle {
                                                     }
                                                 }
                                             });
+                            }
         }
 
         Text {
@@ -198,10 +176,11 @@ Rectangle {
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: modelSpecs.post({
+            onValueChanged: if (modelSpecs.modelID !== "") {
+                                modelSpecs.post({
                                                 "header" : {
                                                     "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
+                                                    "reciever" : modelSpecs.modelID
                                                 },
                                                 "data" : {
                                                     "action" : "setRange",
@@ -211,6 +190,7 @@ Rectangle {
                                                     }
                                                 }
                                             });
+                            }
         }
 
         Text {
@@ -223,10 +203,11 @@ Rectangle {
             value: Qt.vector2d(-1.0, 1.0);
             valueRange: Qt.vector2d(-1.0, 1.0);
 
-            onValueChanged: modelSpecs.post({
+            onValueChanged: if (modelSpecs.modelID !== "") {
+                                modelSpecs.post({
                                                 "header" : {
                                                     "sender" : "modelSpecs",
-                                                    "reciever" : "currentModel"
+                                                    "reciever" : modelSpecs.modelID
                                                 },
                                                 "data" : {
                                                     "action" : "setRange",
@@ -236,7 +217,15 @@ Rectangle {
                                                     }
                                                 }
                                             });
+                            }
         }
+    }
 
+    function recieve(message) {
+        switch (message.data.action) {
+        case "changeModelID" :
+            modelSpecs.modelID = message.header.sender;
+            break;
+        }
     }
 }

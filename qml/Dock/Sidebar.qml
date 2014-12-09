@@ -103,6 +103,11 @@ Sidedock {
                         width: sidebarListView.width;
 
                         onPost: sidebar.post(message);
+
+                        Connections {
+                            target: sidebar;
+                            onPostToSections : recieve(message);
+                        }
                 }
             }
         }
