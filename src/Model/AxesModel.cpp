@@ -94,6 +94,7 @@ namespace Model {
 
     void AxesModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         Camera::Matrix mvp;
+
         if (parent()) {
             mvp = parent()->childsMVP(viewport, this);
         }

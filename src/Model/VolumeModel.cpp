@@ -93,8 +93,7 @@ namespace Model {
     }
 
     Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
-        //qDebug() << child->model(viewport);
-        return projection(viewport) * view(viewport) * child->model(viewport);
+        return projection(viewport) * view(viewport) * AbstractModel::model(viewport);
     }
 
     void VolumeModel::glStatesEnable() const {
