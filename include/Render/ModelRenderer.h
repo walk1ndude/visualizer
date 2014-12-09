@@ -22,9 +22,6 @@ namespace Render {
     protected:
         void render();
 
-    signals:
-        void modelIDChanged(const uint & modelID);
-
     public slots:
         virtual void addModel(const ModelInfo::Model & model);
 

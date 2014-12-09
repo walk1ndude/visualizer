@@ -82,11 +82,17 @@ namespace UserUI {
 
             QObject::connect(this, &ModelViewer::fboSizeChanged, _modelRenderer, &Render::ModelRenderer::setSurfaceSize);
 
-            QObject::connect(this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::post,
-                             _modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::recieve);
+            QObject::connect(this,
+                             (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::post,
+                             _modelRenderer,
+                             (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::recieve,
+                             Qt::DirectConnection);
 
-            QObject::connect(_modelRenderer, (void (Render::ModelRenderer::*)(const Message::SettingsMessage &)) &Render::ModelRenderer::post,
-                             this, (void (ModelViewer::*)(const Message::SettingsMessage &)) &ModelViewer::recieveMessage);
+            QObject::connect(_modelRenderer,
+                             (void (Render::ModelRenderer::*)(const Message::SettingsMessage &, const Message::SettingsMessage::PostCriteria &)) &Render::ModelRenderer::post,
+                             this,
+                             (void (ModelViewer::*)(const Message::SettingsMessage &, const Message::SettingsMessage::PostCriteria &)) &ModelViewer::recieveMessage,
+                             Qt::DirectConnection);
 
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
@@ -127,39 +133,51 @@ namespace UserUI {
 
     void ModelViewer::recieve(const QVariant & message) {
        if (!message.canConvert<Message::SettingsMessage>()) {
-            recieveMessage(Message::SettingsMessage::toMessage(message));
+            recieveMessage(Message::SettingsMessage::toMessage(message), Message::SettingsMessage::SEND_EVERYTHING);
         }
         else {
-            recieveMessage(message.value<Message::SettingsMessage>());
+            recieveMessage(message.value<Message::SettingsMessage>(), Message::SettingsMessage::SEND_EVERYTHING);
         }
     }
 
-    void ModelViewer::recieveMessage(const Message::SettingsMessage & message) {
+    void ModelViewer::recieveMessage(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria) {
         // TODO: if reciever empty - this class is final destination
         if (message.reciever().isEmpty()) {
             return;
         }
 
         if (message.isReliable()) {
-            postMessage(message);
+            postMessage(message, criteria);
         }
     }
 
-    void ModelViewer::postMessage(const Message::SettingsMessage & message) {
+    void ModelViewer::postMessage(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria) {
+        // check to how we can post message
+        bool canSendVariants = criteria & Message::SettingsMessage::SEND_VARIANTMAPS;
+        bool canSendMessages = criteria & Message::SettingsMessage::SEND_MESSAGES;
+
         // some messages could have multiple recievers - we need to send to them also,
         // we don't need (or it would have been a hell lot of code) destination: QML of C++
         // so post to both
-
         for (const Message::Reciever & reciever : message.recievers()) {
-            emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), reciever));
+            if (canSendVariants) {
+                emit post(Message::SettingsMessage::toVariantMap(message, message.sender(), reciever));
+            }
 
-            Message::SettingsMessage ms(message.sender(), reciever);
-            ms.setReliableTime(message.reliableTime());
-            ms.data = message.data;
-            emit post(ms);
+            if (canSendMessages) {
+                Message::SettingsMessage ms(message.sender(), reciever);
+                ms.setReliableTime(message.reliableTime());
+                ms.data = message.data;
+                emit post(ms);
+            }
         }
 
-        emit post(message);
-        emit post(Message::SettingsMessage::toVariantMap(message));
+        if (canSendMessages) {
+            emit post(message);
+        }
+
+        if (canSendVariants) {
+            emit post(Message::SettingsMessage::toVariantMap(message));
+        }
     }
 }

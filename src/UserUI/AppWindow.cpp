@@ -61,6 +61,7 @@ namespace UserUI {
 
     void AppWindow::registerMetaTypes() {
         qRegisterMetaType<Message::SettingsMessage>("Message::SettingsMessage");
+        qRegisterMetaType<Message::SettingsMessage::PostCriteria>("Message::SettingsMessage::PostCriteria");
     }
 
     void AppWindow::recieve(const QVariant & message) {

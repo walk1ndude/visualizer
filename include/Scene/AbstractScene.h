@@ -72,7 +72,7 @@ namespace Scene {
         void scalingFactorChanged();
         void measureUnitsChanged();
 
-        void post(const Message::SettingsMessage & message);
+        void post(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria = Message::SettingsMessage::SEND_VARIANTMAPS);
 
     public slots:
         virtual void initializeScene() final;

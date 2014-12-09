@@ -231,7 +231,7 @@ namespace Model {
 
         void childUpdated();
 
-        void post(const Message::SettingsMessage & message);
+        void post(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria = Message::SettingsMessage::SEND_VARIANTMAPS);
 
     public slots:
         virtual bool bindShaderProgram() final;

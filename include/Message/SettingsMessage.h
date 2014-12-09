@@ -8,6 +8,12 @@ namespace Message {
 
     class SettingsMessage : public AbstractMessage {
     public:
+        enum PostCriteria {
+            SEND_VARIANTMAPS = 0b00000001,
+            SEND_MESSAGES = 0b00000010,
+            SEND_EVERYTHING = 0b00000011
+        };
+
         explicit SettingsMessage();
         explicit SettingsMessage(const Sender & sender, const Reciever & reciever,
                                  const Recievers & recievers = Recievers(),

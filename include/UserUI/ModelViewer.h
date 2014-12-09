@@ -38,8 +38,8 @@ namespace UserUI {
 
         QSGNode * updatePaintNode(QSGNode * node, UpdatePaintNodeData * paintNodeData);
 
-        void recieveMessage(const Message::SettingsMessage & message);
-        void postMessage(const Message::SettingsMessage & message);
+        void recieveMessage(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria);
+        void postMessage(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria);
 
     private:
         Render::ModelRenderer * _modelRenderer;

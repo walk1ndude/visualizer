@@ -69,7 +69,7 @@ namespace Render {
         void contentToSaveRendered(const QImage & fboContent, const QRect & saveArea, const qreal & angle);
         void redraw();
 
-        void post(const Message::SettingsMessage & message);
+        void post(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria = Message::SettingsMessage::SEND_VARIANTMAPS);
 
     public slots:
         virtual void renderNext() final;
