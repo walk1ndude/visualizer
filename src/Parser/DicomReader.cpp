@@ -13,8 +13,8 @@
 
 #define WINDOW_NOISY "noisy"
 
-#define MIN_HU -100
-#define MAX_HU 1000
+#define MIN_HU 200
+#define MAX_HU 1500
 
 namespace Parser {
     DicomReader::DicomReader() :
@@ -179,8 +179,8 @@ namespace Parser {
         texture.size = TextureInfo::Size(_dicomData.width, _dicomData.height, depth);
 
         texture.pixelType = QOpenGLTexture::UInt16;
-        texture.textureFormat = QOpenGLTexture::R16_UNorm;
-        texture.pixelFormat = QOpenGLTexture::Red;
+        texture.textureFormat = QOpenGLTexture::R16U;
+        texture.pixelFormat = QOpenGLTexture::Red_Integer;
         texture.target = QOpenGLTexture::Target3D;
 
         QVariantMap blueprintOverallMap = _blueprint.toMap();

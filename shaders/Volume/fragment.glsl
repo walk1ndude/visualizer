@@ -2,7 +2,7 @@
 layout(location = 0) in highp vec4 fragPos;
 layout(location = 1) in highp vec4 vertPos;
 
-uniform highp sampler3D volume;
+uniform highp usampler3D volume;
 
 uniform highp vec4 eye;
 
@@ -29,9 +29,9 @@ void main(void) {
         discard;
     }
 
-    float valueRangeSpan = valueRange.y - valueRange.x;
+    float _valueRange = (valueRange.y - valueRange.x) * 1.0f;
 
-    float volumeColor = texture(volume, fragPos.stp).r * valueRangeSpan;
+    uint volumeColor = texture(volume, fragPos.stp).r;
 
     float volColorH = volumeColor * slope + intercept;
 
@@ -50,11 +50,7 @@ void main(void) {
     uint volColorHNorm = uint(
         minStep * valueRange.x +
         maxStep * valueRange.y +
-        (1 - minStep) * (1 - maxStep) * ((volColorH - windowCenter + 0.5f) / (windowWidth - 1) + 0.5f) *
-                         valueRangeSpan
-                         );
+        (1 - minStep) * (1 - maxStep) * ((volColorH - windowCenter + 0.5f) / (windowWidth - 1) + 0.5f) * _valueRange);
 
-    vec4 volumeColorf = vec4(volColorHNorm / valueRangeSpan);
-
-    fragColor = calcFragColor(vertPos, fragPos, volumeColorf, fragPos.xyz);
+    fragColor = calcFragColor(vertPos, fragPos, vec4(volColorHNorm / _valueRange), fragPos.xyz);
 }

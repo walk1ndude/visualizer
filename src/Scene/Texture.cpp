@@ -28,11 +28,12 @@ namespace Scene {
 
         _texture->allocateStorage();
 
-        _texture->setMinMagFilters(QOpenGLTexture::LinearMipMapNearest, QOpenGLTexture::Linear);
+        _texture->setMinMagFilters(QOpenGLTexture::NearestMipMapNearest, QOpenGLTexture::Nearest);
         _texture->setWrapMode(QOpenGLTexture::ClampToBorder);
 
         _texture->setData(textureInfo.pixelFormat, textureInfo.pixelType,
                          (void *) textureInfo.mergedData.data(), &(textureInfo.pixelTransferOptions));
+
         _texture->generateMipMaps();
     }
 
