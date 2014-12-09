@@ -5,7 +5,7 @@ import ParserTools 1.0;
 Reconstructor {
     id: reconstructor;
 
-    property variant viewer: ({});
+    property var viewer: ({});
 
     blueprint: {
             "textures" : [ {

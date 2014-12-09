@@ -14,7 +14,7 @@ Rectangle {
     property string text: "";
     property bool collapsed: true;
 
-    property variant model: null;
+    property var model: null;
 
     property url collapsedIcon: "qrc:/icons/collapse.svg";
     property url uncollapsedIcon: "qrc:/icons/expand.svg";

@@ -18,8 +18,9 @@ Viewport {
 
     property string currentPoint: "";
 
-    signal rotate(variant message);
-    signal post(variant message);
+    signal rotate(var message);
+    signal post(var message);
+
     signal setZoom(real zoomFactor, real x, real y);
 
     x: boundingRect.x * parent.width;

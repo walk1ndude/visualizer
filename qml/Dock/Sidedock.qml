@@ -5,7 +5,7 @@ Rectangle {
     height: heading.height;
 
     property string heading: "";
-    property variant head: heading;
+    property var head: heading;
 
     // means where heading goes: below or above dock content, true - below
     property bool inverseFolding: true;

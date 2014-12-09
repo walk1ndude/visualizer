@@ -7,7 +7,7 @@ import "qrc:/qml/Control" as Control;
 Rectangle {
     id: geometry;
 
-    signal post(variant message);
+    signal post(var message);
 
     color: "#cccccc";
     border.color: "black";

@@ -16,7 +16,7 @@ Rectangle {
 
     property string modelID: "";
 
-    signal post(variant message);
+    signal post(var message);
 
     ListView {
         id: listView;

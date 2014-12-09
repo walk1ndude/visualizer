@@ -5,7 +5,7 @@ import ParserTools 1.0;
 StlReader {
     id: stlReader;
 
-    property variant viewer: ({});
+    property var viewer: ({});
 
     blueprint: {
             "materials" : [ {

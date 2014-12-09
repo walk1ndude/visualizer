@@ -14,7 +14,7 @@ Rectangle {
         width: 2;
     }
 
-    signal post(variant message);
+    signal post(var message);
 
     function updateIndividual(modelID) {
         if (individualListView.model) {
@@ -194,7 +194,7 @@ Rectangle {
         id: textMeasures;
         Column {
             id: textMeasuresColumn;
-            property variant model: GridView.view.model;
+            property var model: GridView.view.model;
             Repeater {
                 model: parent.model;
                 delegate: Row {

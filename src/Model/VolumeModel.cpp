@@ -27,6 +27,9 @@ namespace Model {
         setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
         setValueRange(params["valueRange"].value<VolumeInfo::ValueRange>());
 
+        //Message::SettingsMessage messageToSidebar(id(), )
+
+
         ModelInfo::VerticesVTPtr vertices = new ModelInfo::VerticesVT;
         ModelInfo::IndicesPtr indices = new ModelInfo::Indices;
 
@@ -190,7 +193,17 @@ namespace Model {
 
     void VolumeModel::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "setHuRange") {
-            setHuRange(params["huRange"].value<VolumeInfo::HuRange>());
+            setHuRange(params["range"].value<VolumeInfo::HuRange>());
+            return;
+        }
+
+        if (name == "setWindowCenter") {
+            setWindowCenter(params["windowCenter"].value<VolumeInfo::WindowCenter>());
+            return;
+        }
+
+        if (name == "setWindowWidth") {
+            setWindowWidth(params["windowWidth"].value<VolumeInfo::WindowWidth>());
             return;
         }
 

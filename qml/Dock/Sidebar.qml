@@ -15,10 +15,8 @@ Sidedock {
     state: "vertical";
     inverseFolding: false;
 
-    signal distsUpdated();
-
-    signal post(variant message);
-    signal postToSections(variant message);
+    signal post(var message);
+    signal postToSections(var message);
 
     function recieve(message) {
         postToSections(message);
@@ -71,7 +69,7 @@ Sidedock {
 
             Loader {
                 visible: !collapsed
-                property variant subSectionModel : subSections;
+                property var subSectionModel : subSections;
                 sourceComponent: if (!!collapsed) {
                                      return null;
                                  }

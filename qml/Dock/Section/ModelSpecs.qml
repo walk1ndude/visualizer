@@ -13,7 +13,7 @@ Rectangle {
 
     property string modelID: "";
 
-    signal post(variant message);
+    signal post(var message);
 
     color: "#cccccc";
     border.color: "black";
@@ -85,7 +85,7 @@ Rectangle {
                                                 "data" : {
                                                     "action" : "setWindowCenter",
                                                     "params" : {
-                                                        "range" : value
+                                                        "windowCenter" : value
                                                     }
                                                 }
                                             });
@@ -117,7 +117,7 @@ Rectangle {
                                                 "data" : {
                                                     "action" : "setWindowWidth",
                                                     "params" : {
-                                                        "range" : value
+                                                        "windowWidth" : value
                                                     }
                                                 }
                                             });

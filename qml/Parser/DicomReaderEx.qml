@@ -5,7 +5,7 @@ import ParserTools 1.0;
 DicomReader {
     id: dicomReader;
 
-    property variant viewer: ({});
+    property var viewer: ({});
 
     blueprint: {
             "textures" : [ {
