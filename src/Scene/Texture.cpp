@@ -37,7 +37,7 @@ namespace Scene {
     }
 
     Texture::~Texture() {
-        delete _texture;
+        _texture->destroy();
     }
 
     QOpenGLTexture * Texture::texture() const {

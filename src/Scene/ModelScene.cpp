@@ -105,6 +105,8 @@ namespace Scene {
     }
 
     void ModelScene::cleanUp() {
+        _models.clear();
+
         AbstractScene::cleanUp();
     }
 

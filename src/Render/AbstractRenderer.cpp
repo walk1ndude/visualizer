@@ -134,19 +134,21 @@ namespace Render {
 
         _surface->deleteLater();
 
-        //moveToThread(QGuiApplication::instance()->thread());
-        //exit();
+        exit();
+        moveToThread(QGuiApplication::instance()->thread());
     }
 
     void AbstractRenderer::cleanUp() {
         QMutexLocker locker(&renderMutex);
 
+        QObject::disconnect(this, &AbstractRenderer::redraw, this, &AbstractRenderer::renderNext);
+
+        disconnectWithScene(currentScene());
+
         activateContext();
 
-        QSetIterator<Scene::AbstractScene *> it (_sceneHistory);
-
-        while (it.hasNext()) {
-            it.next()->cleanUp();
+        for (Scene::AbstractScene * scene : _sceneHistory) {
+            scene->cleanUp();
         }
     }
 }

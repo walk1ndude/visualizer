@@ -28,10 +28,8 @@ namespace UserUI {
     }
 
     ModelViewer::~ModelViewer() {
-        if (_modelRenderer->isRunning()) {
-            _modelRenderer->wait();
-            _modelRenderer->deleteLater();
-        }
+        _modelRenderer->wait();
+        _modelRenderer->deleteLater();
     }
 
     QVariant ModelViewer::message() const {

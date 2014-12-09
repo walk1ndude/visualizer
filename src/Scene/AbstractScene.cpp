@@ -9,11 +9,13 @@ namespace Scene {
     }
 
     AbstractScene::~AbstractScene() {
-        cleanUp();
+
     }
 
     void AbstractScene::cleanUp() {
-
+        lightSources.clear();
+        materials.clear();
+        textures.clear();
     }
 
     bool AbstractScene::isInitialized() const {

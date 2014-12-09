@@ -13,7 +13,7 @@ namespace Scene {
         }
 
         ~SceneObjectList() {
-            clear();
+            //clear();
         }
 
         SObj selectedObject() const {
