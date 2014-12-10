@@ -5,7 +5,7 @@
 #include "UserUI/AppWindow.h"
 
 int main(int argc, char * argv[]) {
-    QGuiApplication a(argc, argv); /*
+    QGuiApplication a(argc, argv);
     QGuiApplication::setApplicationVersion("visualizer");
     QGuiApplication::setApplicationVersion("0.99");
 
@@ -28,11 +28,10 @@ int main(int argc, char * argv[]) {
     parser.addOption(portOption);
 
     parser.process(a);
-    */
 
-    UserUI::AppWindow appWindow("qrc:/qml/MainWindow.qml"
-                                //,QString::fromStdString(parser.value(hostOption).toStdString()),
-                                //parser.value(portOption).toInt()
+    UserUI::AppWindow appWindow("qrc:/qml/MainWindow.qml",
+                                QString::fromStdString(parser.value(hostOption).toStdString()),
+                                parser.value(portOption).toInt()
                                 );
 
     QObject::connect(&appWindow, &UserUI::AppWindow::post, [](const QJsonObject & message) { qDebug() << "JSON: " << message;});

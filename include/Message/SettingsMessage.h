@@ -9,9 +9,9 @@ namespace Message {
     class SettingsMessage : public AbstractMessage {
     public:
         enum PostCriteria {
-            SEND_VARIANTMAPS = 0b00000001,
-            SEND_MESSAGES = 0b00000010,
-            SEND_EVERYTHING = 0b00000011
+            SEND_VARIANTMAPS = 1,
+            SEND_MESSAGES = 2,
+            SEND_EVERYTHING = 3
         };
 
         explicit SettingsMessage();
