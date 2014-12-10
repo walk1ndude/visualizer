@@ -56,7 +56,9 @@ namespace Model {
             _modelPoints.insert(id, point);
         }
         else {
-            togglePoint(id);
+            if (!_modelPoints[id]->shown) {
+                togglePoint(id);
+            }
         }
     }
 
@@ -158,7 +160,7 @@ namespace Model {
 
                 uint stencil = posZ & 0x0000000F;
 
-                if (stencil != numberedID() + 1) {
+                if (stencil != numberedID()  + 1) {
                     return false;
                 }
 
