@@ -31,6 +31,8 @@ ModelViewer {
             projectionType: Viewport.PERSPECTIVE;
             boundingRect: Qt.rect(0.5, 0.5, 0.5, 0.5);
 
+            onRotate: modelViewer.recieve(message);
+
             currentPoint: viewportArray.currentPoint;
 
             onSetZoom: parent.setZoom(zoomFactor, x, y, this);
@@ -41,6 +43,8 @@ ModelViewer {
         ViewportEx {
             projectionType: Viewport.TOP;
             boundingRect: Qt.rect(0, 0.5, 0.5, 0.5);
+
+            onRotate: modelViewer.recieve(message);
 
             currentPoint: viewportArray.currentPoint;
 
@@ -65,6 +69,8 @@ ModelViewer {
         ViewportEx {
             projectionType: Viewport.LEFT;
             boundingRect: Qt.rect(0.5, 0, 0.5, 0.5);
+
+            onRotate: modelViewer.recieve(message);
 
             currentPoint: viewportArray.currentPoint;
 

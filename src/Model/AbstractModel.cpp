@@ -148,14 +148,10 @@ namespace Model {
 
     Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport *) const {
         Camera::ModelMatrix mMatrix;
-        mMatrix.translate(_position);
+        //mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
 
         return mMatrix;
-    }
-
-    Camera::Matrix AbstractModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * ) const {
-        return mvp(viewport);
     }
 
     Camera::Matrix AbstractModel::mvp(const Viewport::Viewport * viewport) const {
@@ -244,6 +240,9 @@ namespace Model {
             Camera::Rotation::fromAxisAndAngle(0.0f, 0.0f, 1.0f, angle.z() * speed)
                                           );
 
+        for (AbstractModel * child : childModels()) {
+            child->rotate(angle, speed);
+        }
     }
     
     Camera::Orientation AbstractModel::changedOrientation(const Camera::Rotation & rot) const{
@@ -456,5 +455,9 @@ namespace Model {
         if (name == "scale") {
             scale(params["scale"].value<QVector3D>());
         }
+    }
+
+    QList<AbstractModel *> AbstractModel::childModels() const {
+        return _children;
     }
 }

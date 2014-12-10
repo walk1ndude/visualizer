@@ -39,6 +39,10 @@ namespace Model {
         return _points;
     }
 
+    Camera::Matrix AbstractModelWithPoints::mvp(const Viewport::Viewport * viewport) const {
+        return _points ? _points->projection(viewport) * _points->view(viewport) * _points->model(viewport) : Camera::Matrix();
+    }
+
     void AbstractModelWithPoints::addChild(AbstractModel * child) {
         if (PointsModel * pointsModel = qobject_cast<PointsModel *>(child)) {
             _points = pointsModel;

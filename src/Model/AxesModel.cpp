@@ -7,7 +7,7 @@ namespace Model {
                          const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
     AbstractModel(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
-        //lockToModelAxis();
+
     }
 
     void AxesModel::init(const ModelInfo::Params & params) {
@@ -93,16 +93,7 @@ namespace Model {
     }
 
     void AxesModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
-        Camera::Matrix mvp;
-
-        if (parent()) {
-            mvp = parent()->childsMVP(viewport, this);
-        }
-        else {
-            mvp = projection(viewport) * view(viewport) * model(viewport);
-        }
-
-        program->setUniformValue(uniformValues["mvp"], mvp);
+        program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
     }
 
     void AxesModel::glStatesEnable() const {

@@ -12,7 +12,7 @@ Viewport {
     property bool invertedYAxis: false;
 
     property real minimumZoom: 0.2;
-    property real maximumZoom: 4.0;
+    property real maximumZoom: 10.0;
 
     property vector2d rotationSpeed: Qt.vector2d(width / 10, height / 10);
 

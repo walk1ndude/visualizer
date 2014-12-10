@@ -18,7 +18,7 @@ namespace Model {
                              ShaderInfo::ShaderVariablesNames() << "vertex" << "color",
 
                              const ShaderInfo::ShaderVariablesNames & uniformValues =
-                             ShaderInfo::ShaderVariablesNames() << "mvp");
+                             ShaderInfo::ShaderVariablesNames() << "mvp" << "parentTraslate");
 
         virtual void init(const ModelInfo::Params & params);
 

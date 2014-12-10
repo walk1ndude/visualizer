@@ -29,11 +29,6 @@ namespace Model {
 
         virtual void init(const ModelInfo::Params & params);
 
-        virtual void rotate(const QVector3D & rotation, const qreal & speed);
-
-        virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
-        virtual Camera::Matrix childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const;
-
         virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport) const;
 
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
@@ -65,14 +60,14 @@ namespace Model {
         VolumeInfo::ValueRange _valueRange;
 
     public slots:
-        void setSlope(const VolumeInfo::Slope & slope);
-        void setIntercept(const VolumeInfo::Intercept & intercept);
+        virtual void setSlope(const VolumeInfo::Slope & slope);
+        virtual void setIntercept(const VolumeInfo::Intercept & intercept);
 
-        void setWindowCenter(const VolumeInfo::WindowCenter & windowCenter);
-        void setWindowWidth(const VolumeInfo::WindowWidth & windowWidth);
+        virtual void setWindowCenter(const VolumeInfo::WindowCenter & windowCenter);
+        virtual void setWindowWidth(const VolumeInfo::WindowWidth & windowWidth);
 
-        void setHuRange(const VolumeInfo::HuRange & huRange);
-        void setValueRange(const VolumeInfo::ValueRange & valueRange);
+        virtual void setHuRange(const VolumeInfo::HuRange & huRange);
+        virtual void setValueRange(const VolumeInfo::ValueRange & valueRange);
 
         virtual void invoke(const QString & name, const ModelInfo::Params & params = ModelInfo::Params());
     };

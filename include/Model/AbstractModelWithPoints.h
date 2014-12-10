@@ -27,6 +27,8 @@ namespace Model {
         virtual void bindUniformValues() const;
 
         virtual PointsModel * pointsModel() const final;
+
+        virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
         
         virtual bool checkDepthBuffer(const Viewport::Viewport * viewport) final;
 

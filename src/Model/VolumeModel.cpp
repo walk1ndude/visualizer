@@ -7,6 +7,7 @@ namespace Model {
                          const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         AbstractModelWithPoints(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
         lockToModelAxis();
+        //lockToWorldAxis();
     }
 
     void VolumeModel::init(const ModelInfo::Params & params) {
@@ -81,19 +82,6 @@ namespace Model {
         lightView.rotate(viewport->orientationBillboard());
         
         return lightView;
-    }
-
-    void VolumeModel::rotate(const QVector3D & rotation, const qreal & speed) {
-        pointsModel()->rotate(rotation, speed);
-        AbstractModel::rotate(rotation, speed);
-    }
-
-    Camera::Matrix VolumeModel::mvp(const Viewport::Viewport * viewport) const {
-        return projection(viewport) * view(viewport) * AbstractModel::model(viewport);
-    }
-
-    Camera::Matrix VolumeModel::childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const {
-        return projection(viewport) * view(viewport) * AbstractModel::model(viewport);
     }
 
     void VolumeModel::glStatesEnable() const {

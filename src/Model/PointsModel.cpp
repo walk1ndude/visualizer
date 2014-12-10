@@ -7,7 +7,7 @@ namespace Model {
                              const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                              const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         AbstractModel(scene, shaderFiles, shaderAttributeArrays, shaderUniformValues) {
-        lockToModelAxis();
+
     }
 
     void PointsModel::init(const ModelInfo::Params & params) {
@@ -90,7 +90,7 @@ namespace Model {
     }
 
     void PointsModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
-        program->setUniformValue(uniformValues["mvp"], parent()->childsMVP(viewport, this));
+        program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
 
         program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
     }

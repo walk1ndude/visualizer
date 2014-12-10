@@ -5,6 +5,8 @@ layout(location = 1) in highp vec4 color;
 
 uniform highp mat4x4 mvp;
 
+uniform highp vec4 parentTraslate;
+
 layout(location = 0) out highp vec4 vColor;
 
 void main(void) {

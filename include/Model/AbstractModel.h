@@ -31,7 +31,6 @@ namespace Model {
         virtual Camera::ProjectionMatrix projection(const Viewport::Viewport * viewport) const;
         virtual Camera::ViewMatrix lightView(const Viewport::Viewport * viewport) const;
 
-        virtual Camera::Matrix childsMVP(const Viewport::Viewport * viewport, const AbstractModel * child) const;
         virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
         
         virtual Camera::ScaleMatrix scaleMatrix() const;
@@ -61,6 +60,8 @@ namespace Model {
         static AbstractModel * createModel(const ModelInfo::Type & name, Scene::AbstractScene * scene);
 
         virtual void init(const ModelInfo::Params & params = ModelInfo::Params());
+
+        QList<AbstractModel *> childModels() const;
 
     protected:
         QMutex modelMutex;
