@@ -14,6 +14,7 @@ namespace Model {
                                                      const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                                      const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         AbstractModel(scene, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
+        _points(nullptr),
         _pointsTexture(nullptr) {
 
     }
@@ -44,8 +45,10 @@ namespace Model {
     }
 
     void AbstractModelWithPoints::addChild(AbstractModel * child) {
-        if (PointsModel * pointsModel = qobject_cast<PointsModel *>(child)) {
-            _points = pointsModel;
+        if (!_points) {
+            if (PointsModel * pointsModel = qobject_cast<PointsModel *>(child)) {
+                _points = pointsModel;
+            }
         }
 
         AbstractModel::addChild(child);
