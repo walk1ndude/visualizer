@@ -6,6 +6,8 @@
 
 #include "Render/AbstractRenderer.h"
 
+#include "Scene/ModelScene.h"
+
 #include "Viewport/ViewportArray.h"
 
 #include "Info/VolumeInfo.h"

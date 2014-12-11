@@ -64,7 +64,7 @@ namespace Model {
         QList<AbstractModel *> childModels() const;
 
     protected:
-        QMutex modelMutex;
+        mutable QMutex modelMutex;
 
         QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
         QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
@@ -257,9 +257,6 @@ namespace Model {
         virtual bool checkDepthBuffer(const Viewport::Viewport * viewPort);
 
         virtual void update();
-
-        virtual void addPoint(const PointsInfo::PointID & name, PointsInfo::ModelPoint * point);
-        virtual void togglePoint(const PointsInfo::PointID & point);
 
         virtual void invoke(const QString & name, const ModelInfo::Params & params = ModelInfo::Params());
     };

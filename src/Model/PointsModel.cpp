@@ -82,6 +82,8 @@ namespace Model {
     }
 
     void PointsModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
+        QMutexLocker locker (&modelMutex);
+
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 

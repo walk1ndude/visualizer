@@ -91,6 +91,8 @@ namespace Model {
     }
 
     void AbstractModelWithPoints::updatePointsTexture(QOpenGLShaderProgram * program) {
+        QMutexLocker locker (&modelMutex);
+
         int pointsCount = _modelPoints.size();
         
         if (!pointsCount) {
@@ -144,6 +146,8 @@ namespace Model {
     }
 
     bool AbstractModelWithPoints::checkDepthBuffer(const Viewport::Viewport * viewport) {
+        QMutexLocker locker (&modelMutex);
+
         PointsInfo::Position3D unprojectedPoint;
 
         bool updateNeeded = false;

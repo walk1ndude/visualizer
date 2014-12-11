@@ -98,6 +98,8 @@ namespace Model {
     }
 
     void VolumeModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {
+        QMutexLocker locker (&modelMutex);
+
         program->enableAttributeArray(attributeArrays["vertex"]);
         program->setAttributeBuffer(attributeArrays["vertex"], GL_FLOAT, 0, 3, stride());
 
@@ -152,26 +154,38 @@ namespace Model {
     }
 
     void VolumeModel::setSlope(const VolumeInfo::Slope & slope) {
+        QMutexLocker locker (&modelMutex);
+
         _slope = slope;
     }
 
     void VolumeModel::setIntercept(const VolumeInfo::Intercept & intercept) {
+        QMutexLocker locker (&modelMutex);
+
         _intercept = intercept;
     }
 
     void VolumeModel::setWindowCenter(const VolumeInfo::WindowCenter & windowCenter) {
+        QMutexLocker locker (&modelMutex);
+
         _windowCenter = windowCenter;
     }
 
     void VolumeModel::setWindowWidth(const VolumeInfo::WindowWidth & windowWidth) {
+        QMutexLocker locker (&modelMutex);
+
         _windowWidth = windowWidth;
     }
 
     void VolumeModel::setHuRange(const VolumeInfo::HuRange & huRange) {
+        QMutexLocker locker (&modelMutex);
+
         _huRange = huRange;
     }
 
     void VolumeModel::setValueRange(const VolumeInfo::ValueRange & valueRange) {
+        QMutexLocker locker (&modelMutex);
+
         _valueRange = valueRange;
     }
 

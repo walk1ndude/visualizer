@@ -142,19 +142,21 @@ namespace Model {
     }
 
     void AbstractModel::addChild(AbstractModel * child) {
+        QMutexLocker locker (&modelMutex);
         child->setParent(this);
         _children.append(child);
     }
 
     Camera::ModelMatrix AbstractModel::model(const Viewport::Viewport *) const {
         Camera::ModelMatrix mMatrix;
-        //mMatrix.translate(_position);
+        mMatrix.translate(_position);
         mMatrix.rotate(_orientation);
 
         return mMatrix;
     }
 
     Camera::Matrix AbstractModel::mvp(const Viewport::Viewport * viewport) const {
+        QMutexLocker locker(&modelMutex);
         return projection(viewport) * view(viewport) * model(viewport);
     }
 
@@ -187,34 +189,42 @@ namespace Model {
     }
 
     Camera::ViewMatrix AbstractModel::view(const Viewport::Viewport * viewport) const {
+        QMutexLocker locker (&modelMutex);
         return viewport->view();
     }
 
     Camera::ProjectionMatrix AbstractModel::projection(const Viewport::Viewport * viewport) const {
+        QMutexLocker locker (&modelMutex);
         return viewport->projection();
     }
     
     Camera::ViewMatrix AbstractModel::lightView(const Viewport::Viewport * viewport) const {
+        QMutexLocker locker (&modelMutex);
         return viewport->view();
     }
 
     Camera::NormalMatrix AbstractModel::normalMatrix(const Viewport::Viewport * viewport) const {
+        QMutexLocker locker (&modelMutex);
         return model(viewport).normalMatrix();
     }
 
     Camera::ScaleMatrix AbstractModel::scaleMatrix() const {
+        QMutexLocker locker (&modelMutex);
         return _scaleM;
     }
 
     bool AbstractModel::checkDepthBuffer(const Viewport::Viewport * ) {
+        QMutexLocker locker (&modelMutex);
         return false;
     }
 
     void AbstractModel::translate(const QVector3D & translation) {
+        QMutexLocker locker (&modelMutex);
         _position += translation;
     }
 
     void AbstractModel::scale(const QVector3D & scale) {
+        QMutexLocker locker (&modelMutex);
         if (_scale.isNull()) {
             _scale = scale;
         }
@@ -226,14 +236,17 @@ namespace Model {
     }
 
     void AbstractModel::lockToModelAxis() {
+        QMutexLocker locker (&modelMutex);
         _lockToWorldAxis = false;
     }
 
     void AbstractModel::lockToWorldAxis() {
+        QMutexLocker locker (&modelMutex);
         _lockToWorldAxis = true;
     }
 
     void AbstractModel::rotate(const QVector3D & angle, const qreal & speed) {
+        QMutexLocker locker (&modelMutex);
         _orientation = changedOrientation(
             Camera::Rotation::fromAxisAndAngle(1.0f, 0.0f, 0.0f, angle.x() * speed) *
             Camera::Rotation::fromAxisAndAngle(0.0f, 1.0f, 0.0f, angle.y() * speed) *
@@ -321,6 +334,7 @@ namespace Model {
     }
 
     void AbstractModel::drawingRoutine() const {
+        QMutexLocker locker (&modelMutex);
         if (_indexCount) {
             glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
         }
@@ -330,6 +344,8 @@ namespace Model {
     }
 
     void AbstractModel::bindUniformValues() const {
+        QMutexLocker locker (&modelMutex);
+
         QMapIterator<Scene::Material *, Scene::MaterialProgram *> itM (_materials);
 
         while (itM.hasNext()) {
@@ -346,6 +362,8 @@ namespace Model {
     }
 
     bool AbstractModel::initShaderProgram(const ShaderInfo::ShaderFiles & shaderFiles) {
+        QMutexLocker locker (&modelMutex);
+
         bool programIsInited = true;
 
         if (!_program) {
@@ -424,16 +442,9 @@ namespace Model {
     }
 
     bool AbstractModel::hasDepth() const {
+        QMutexLocker locker (&modelMutex);
+
         return true;
-    }
-
-    void AbstractModel::addPoint(const PointsInfo::PointID & name, PointsInfo::ModelPoint * point) {
-        Q_UNUSED(name)
-        Q_UNUSED(point)
-    }
-
-    void AbstractModel::togglePoint(const PointsInfo::PointID & point) {
-        Q_UNUSED(point)
     }
 
     void AbstractModel::invoke(const QString & name, const ModelInfo::Params & params) {

@@ -10,10 +10,6 @@
 
 #include "Model/AbstractModel.h"
 
-#include "Scene/ModelScene.h"
-
-#include "Info/TextureInfo.h"
-
 #include "Message/SettingsMessage.h"
 
 namespace Render {
