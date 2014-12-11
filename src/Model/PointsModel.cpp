@@ -109,10 +109,6 @@ namespace Model {
 
         AbstractModel::glStatesDisable();
     }
-
-    bool PointsModel::hasDepth() const {
-        return false;
-    }
 }
 
 REGISTER_TYPE(PointsModel)

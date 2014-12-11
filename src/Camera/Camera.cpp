@@ -122,10 +122,6 @@ namespace Camera {
         return _vMatrix;
     }
 
-    ModelMatrix Camera::model() const {
-        return _mMatrix;
-    }
-
     ZoomFactor Camera::zoomFactor() const {
         return _zoomFactor;
     }

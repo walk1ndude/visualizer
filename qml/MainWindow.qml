@@ -99,8 +99,6 @@ ApplicationWindow {
         Keys.onPressed: {
             switch (event.key) {
                 case Qt.Key_Escape: Qt.quit(); break;
-                case Qt.Key_Left: previousSlice(); break;
-                case Qt.Key_Right: nextSlice(); break;
             }
         }
     }
@@ -146,23 +144,6 @@ ApplicationWindow {
         }
 
         dX: appWindow.width * appWindow.sideBarWidth;
-    }
-
-    function nextSlice() {
-        translateBy(1);
-    }
-
-    function previousSlice() {
-        translateBy(-1);
-    }
-
-    function translateBy(slicer, dS) {
-        if (!!dicomReader) {
-            dicomReader.nextSlice(dS);
-        }
-        if (!!reconstructor) {
-            reconstructor.nextSlice(dS);
-        }
     }
 
     function toggleDocks() {

@@ -25,18 +25,9 @@ namespace Parser {
     protected:
         explicit AbstractParser();
 
-        template<class T>
-        void sendResults(T result, QVariantMap & map) {
-            map["data"] = QVariant::fromValue<T>(result);
-
-            emit finished(map);
-        }
-
         QVariant _blueprint;
 
     signals:
-        void finished(QVariantMap model);
-
         void send(const Message::SettingsMessage & model);
 
         void fileChanged();

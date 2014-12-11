@@ -49,8 +49,6 @@ namespace Model {
 
         virtual void addChild(AbstractModel * child);
 
-        virtual bool hasDepth() const;
-
         virtual void lockToWorldAxis() final;
         virtual void lockToModelAxis() final;
 
@@ -66,8 +64,8 @@ namespace Model {
     protected:
         mutable QMutex modelMutex;
 
-        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
-        QMap<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
+        QHash<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> attributeArrays;
+        QHash<ShaderInfo::ShaderVariableName, ShaderInfo::ShaderVariable> uniformValues;
 
         explicit AbstractModel(Scene::AbstractScene * scene,
                                const ShaderInfo::ShaderFiles & shaderFiles = ShaderInfo::ShaderFiles(),
@@ -162,8 +160,6 @@ namespace Model {
 
         int _stride;
 
-        bool _depthTest;
-
         GLsizei _indexCount;
         GLsizei _vertexCount;
 
@@ -229,8 +225,6 @@ namespace Model {
     signals:
         void shaderProgramInitErrorHappened();
         void shaderProgramSetVariableErrorHappened();
-
-        void childUpdated();
 
         void post(const Message::SettingsMessage & message, const Message::SettingsMessage::PostCriteria & criteria = Message::SettingsMessage::SEND_VARIANTMAPS);
 

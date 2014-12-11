@@ -22,7 +22,6 @@ namespace Model {
         _scene = scene;
 
         _stride = 0;
-        _depthTest = true;
 
         _indexCount = 0;
         _vertexCount = 0;
@@ -439,12 +438,6 @@ namespace Model {
 
     void AbstractModel::glStatesDisable() const {
         glDisable(GL_STENCIL_TEST);
-    }
-
-    bool AbstractModel::hasDepth() const {
-        QMutexLocker locker (&modelMutex);
-
-        return true;
     }
 
     void AbstractModel::invoke(const QString & name, const ModelInfo::Params & params) {

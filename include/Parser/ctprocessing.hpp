@@ -166,9 +166,6 @@ namespace Parser {
         float slope;
         float intercept;
 
-        std::vector<cv::Mat *> * noisy;
-        std::vector<cv::Mat *> * filtered;
-
         TextureInfo::MergedDataPtr * mergeLocation;
 
         QOpenGLPixelTransferOptions * pixelTransferOptions;
@@ -252,9 +249,6 @@ namespace Parser {
 
             _noisy.resize(slicesTotalCount);
             _filtered.resize(slicesTotalCount);
-
-            _dicomData->noisy->resize(slicesTotalCount);
-            _dicomData->filtered->resize(slicesTotalCount);
 
             _hasMerged.resize(slicesMergeCount, false);
 

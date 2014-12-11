@@ -48,7 +48,6 @@
 namespace Parser {
     Reconstructor::Reconstructor() :
         AbstractParser(),
-        _sliceNumber(0),
         _isOCLInitialized(false) {
     }
 
@@ -61,7 +60,7 @@ namespace Parser {
     }
 
     void Reconstructor::reset() {
-        qDeleteAll(_slicesOCL.begin(), _slicesOCL.end());
+        qDeleteAll(_slicesOCL);
     }
 
     void Reconstructor::initOCL() {
@@ -492,10 +491,10 @@ namespace Parser {
         
         clReleaseMemObject(sliceImage);
         
-        visualize();
+        sendToScene();
     }
 
-    void Reconstructor::visualize() {
+    void Reconstructor::sendToScene() {
         cv::Mat slice(*_slicesOCL.at(0));
 
         size_t oneSliceSize = slice.elemSize() * slice.total();
@@ -596,8 +595,6 @@ namespace Parser {
         cv::namedWindow(SLICES_IMAGE_WINDOW);
         cv::namedWindow(SLICE_POSITION);
 
-        showSliceWithNumber(0);
-
         _imgFiles = files;
         emit filesChanged();
     }
@@ -612,23 +609,6 @@ namespace Parser {
 
         cv::parallel_for_(cv::Range(0, reconstructionData.sliceCount), ReconstructorLoop(&reconstructionData));
 
-        visualize();
-    }
-
-    void Reconstructor::nextSlice(const int & ds) {
-        if (_slicesOCL.size()) {
-            _sliceNumber += ds;
-            _sliceNumber %= _slicesOCL.size();
-            showSliceWithNumber(_sliceNumber);
-        }
-    }
-
-    void Reconstructor::showSliceWithNumber(const int & sliceNumber) {
-        cv::imshow(SLICES_IMAGE_WINDOW, *_slicesOCL.at(sliceNumber));
-
-        cv::Mat slicePosition(_src.at(sliceNumber % _src.size()));
-        cv::cvtColor(slicePosition, slicePosition, CV_GRAY2BGR);
-        cv::rectangle(slicePosition, cv::Rect(0, sliceNumber, slicePosition.cols, 1), cv::Scalar(0, 0, 255));
-        cv::imshow(SLICE_POSITION, slicePosition);
+        sendToScene();
     }
 }

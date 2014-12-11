@@ -11,33 +11,14 @@
 #include "Parser/DicomReader.h"
 #include "Parser/Helpers.hpp"
 
-#define WINDOW_NOISY "noisy"
-
 #define MIN_HU 200
 #define MAX_HU 1500
 
 namespace Parser {
     DicomReader::DicomReader() :
-        AbstractParser(),
-        _sliceNumber(0) {
+        AbstractParser()
+    {
 
-    }
-
-    DicomReader::~DicomReader() {
-        reset();
-    }
-
-    void DicomReader::resetV(std::vector<cv::Mat *> & vec, const int & newSize) {
-        for (std::vector<cv::Mat *>::iterator it = vec.begin(); it != vec.end(); ++ it) {
-            delete *it;
-        }
-        vec.clear();
-        vec.resize(newSize);
-    }
-
-    void DicomReader::reset(const int & newSize) {
-        resetV(_noisy, newSize);
-        resetV(_filtered, newSize);
     }
 
     void DicomReader::fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage) {
@@ -126,18 +107,12 @@ namespace Parser {
 
         dicomData.neighbourRadius = 0;
 
-        dicomData.noisy = &_noisy;
-        dicomData.filtered = &_filtered;
-
         dicomData.minHU = std::max(dicomData.minHUPossible, MIN_HU);
         dicomData.maxHU = std::min(dicomData.maxHUPossible, MAX_HU);
     }
 
     void DicomReader::readImage(gdcm::File & dFile, const gdcm::Image & dImage) {
-
         fetchDicomData(_dicomData, dFile, dImage);
-
-        //cv::namedWindow(WINDOW_NOISY, CV_WINDOW_AUTOSIZE);
 
         runSliceProcessing(true);
     }
@@ -259,38 +234,5 @@ namespace Parser {
         }
 
         emit fileChanged();
-    }
-
-    void DicomReader::nextSlice(const int & ds) {
-        if (_noisy.size()) {
-            _sliceNumber += ds;
-            _sliceNumber %= _noisy.size();
-            showSliceWithNumber(_sliceNumber);
-        }
-    }
-
-    void DicomReader::showSliceWithNumber(const size_t & sliceNumber) {
-        cv::imshow(WINDOW_NOISY, *(_noisy.at(sliceNumber)));
-        cv::waitKey(1);
-    }
-
-    void DicomReader::updateMinHU(const int & minHU) {
-        _dicomData.minHU = std::min(minHU, _dicomData.maxHU);
-        _dicomData.maxHU = std::max(minHU, _dicomData.maxHU);
-
-        resetV(_noisy);
-        resetV(_filtered);
-
-        runSliceProcessing();
-    }
-
-    void DicomReader::updateMaxHU(const int & maxHU) {
-        _dicomData.minHU = std::max(maxHU, _dicomData.minHU);
-        _dicomData.maxHU = std::min(maxHU, _dicomData.minHU);
-
-        resetV(_noisy);
-        resetV(_filtered);
-
-        runSliceProcessing();
     }
 }

@@ -24,8 +24,6 @@ namespace Parser {
         QVariant files() const;
 
     private:
-        int _sliceNumber;
-
         QVariant _imgFiles;
 
         QVector<cv::Mat>_src;
@@ -45,21 +43,18 @@ namespace Parser {
         
         bool _isOCLInitialized;
 
-        void showSliceWithNumber(const int & sliceNumber);
-
         void initOCL();
         void releaseOCLResources();
 
         void reconstruct();
         void reconstructCPU();
 
-        void visualize();
+        void sendToScene();
 
         void reset();
 
     public slots:
         virtual void setFiles(const QVariant & files) final;
-        Q_INVOKABLE virtual void nextSlice(const int & ds);
     };
 }
 

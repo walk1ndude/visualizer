@@ -10,42 +10,26 @@
 #include "Info/VolumeInfo.h"
 
 namespace Parser {
-    class DicomReader : public AbstractParser {
-        Q_OBJECT
-    public:
-        explicit DicomReader();
-        ~DicomReader();
+class DicomReader : public AbstractParser {
+    Q_OBJECT
+public:
+    explicit DicomReader();
 
-        QUrl file() const;
+    QUrl file() const;
 
-    private:
-        size_t _sliceNumber;
+private:
+    QUrl _dicomFile;
 
-        QUrl _dicomFile;
+    DicomData _dicomData;
 
-        std::vector<cv::Mat *> _noisy;
-        std::vector<cv::Mat *> _filtered;
+    void readImage(gdcm::File &dFile, const gdcm::Image & dImage);
 
-        DicomData _dicomData;
+    void fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage);
+    void runSliceProcessing(const bool & tellAboutHURange = false);
 
-        void showSliceWithNumber(const size_t & sliceNumber);
-        void readImage(gdcm::File &dFile, const gdcm::Image & dImage);
-
-        void fetchDicomData(DicomData & dicomData, gdcm::File & dFile, const gdcm::Image & dImage);
-        void runSliceProcessing(const bool & tellAboutHURange = false);
-        void updateDicomData();
-
-        void reset(const int & newSize = 0);
-        void resetV(std::vector<cv::Mat*> & vec, const int & newSize = 0);
-
-    public slots:
-        Q_INVOKABLE virtual void nextSlice(const int & ds);
-
-        virtual void setFile(const QUrl & file);
-
-        virtual void updateMinHU(const int & minHU);
-        virtual void updateMaxHU(const int & maxHU);
-    };
+public slots:
+    virtual void setFile(const QUrl & file);
+};
 }
 
 #endif // DICOMREADER_H

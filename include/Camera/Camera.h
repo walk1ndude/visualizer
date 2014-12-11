@@ -82,8 +82,6 @@ namespace Camera {
 
         ViewMatrix view() const;
 
-        ModelMatrix model() const;
-
         ModelMatrix modelBillboard() const;
         ModelMatrix modelTextureBillboard() const;
         
@@ -109,8 +107,6 @@ namespace Camera {
         ProjectionMatrix _pMatrix;
 
         ViewMatrix _vMatrix;
-
-        ModelMatrix _mMatrix;
 
         Eye _eye;
         Center _center;
