@@ -235,8 +235,6 @@ namespace Model {
         _pointsTexture->release(_pointsTexture->textureId());
         _pointsTexture->destroy();
 
-        delete _points;
-
         AbstractModel::deleteModel();
     }
 
