@@ -33,10 +33,6 @@ Reconstructor {
                 "params" : {
                     "children" : [
                         {
-                            "type" : "PointsModel",
-                            "params" : {}
-                        },
-                        {
                             "type" : "AxesModel",
                             "params" : {
                                 "axesColor" : {

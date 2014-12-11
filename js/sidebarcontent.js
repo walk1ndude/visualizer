@@ -13,7 +13,7 @@ var sidebarDict = {
             "collapsed" : false
         },
         {
-            "text" : "Секущие плоскости",
+            "text" : "Настройки модели",
             "type" : "ModelSpecs",
             "collapsed" : false
         },

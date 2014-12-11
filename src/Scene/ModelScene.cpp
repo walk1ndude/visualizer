@@ -46,60 +46,42 @@ namespace Scene {
 
         updateScene();
 
-        QListIterator<Model::AbstractModel *> modelIterator (_models.list());
-        QListIterator<Viewport::Viewport *> viewportIterator (_viewportArray->array());
-
-        render(modelIterator, viewportIterator);
+        render();
 
         /* some children, like pointsmodel can change its values after rendering -
         * for example depth buffer check affects values of points (z-coordinate)
         */
-        if (postProcess(modelIterator, viewportIterator)) {
+        if (postProcess()) {
             emit redraw();
         }
     }
 
-    void ModelScene::render(QListIterator<Model::AbstractModel *> & modelIterator,
-                            QListIterator<Viewport::Viewport *> & viewportIterator) {
+    void ModelScene::render() {
         Viewport::ViewportRect boundingRect;
-        const Viewport::Viewport * viewport;
 
-        while (viewportIterator.hasNext()) {
-            viewport = viewportIterator.next();
-
+        for (const Viewport::Viewport * viewport : _viewportArray->array()) {
             boundingRect = viewport->boundingRect();
+
             glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
 
-            // draw each model
-            while (modelIterator.hasNext()) {
-                modelIterator.next()->drawModel(viewport);
+            for (Model::AbstractModel * model : _models.list()) {
+                model->drawModel(viewport);
             }
-
-            modelIterator.toFront();
         }
-
-        viewportIterator.toFront();
     }
 
-    bool ModelScene::postProcess(QListIterator<Model::AbstractModel *> & modelIterator,
-                                 QListIterator<Viewport::Viewport *> & viewportIterator) {
+    bool ModelScene::postProcess() {
         bool redraw = false;
 
-        while (modelIterator.hasNext()) {
-            Model::AbstractModel * model = modelIterator.next();
-
-            while (viewportIterator.hasNext()) {
-                redraw |= model->checkDepthBuffer(viewportIterator.next());
+        for (Model::AbstractModel * model : _models.list()) {
+            for (const Viewport::Viewport * viewport : _viewportArray->array()) {
+                redraw |= model->checkDepthBuffer(viewport);
             }
-
-            viewportIterator.toFront();
 
             if (redraw) {
                 model->update();
             }
         }
-
-        modelIterator.toFront();
 
         return redraw;
     }
@@ -142,8 +124,6 @@ namespace Scene {
 
         params = model.second;
         modelI->init(params);
-
-        _models.append(modelI);
 
         QVariantList children = params["children"].toList();
 
@@ -188,16 +168,19 @@ namespace Scene {
             textures.append(new Texture(texture.toMap()));
         }
 
+        Model::AbstractModel * newModel;
+
         for (const QVariant & model : blueprint["models"].toList()) {
             helper = model.toMap();
 
-            selectModel(
-                        addModel(ModelInfo::Model(
-                                 helper["type"].value<ModelInfo::Type>(),
-                                 helper["params"].value<ModelInfo::Params>()
-                        )
+            newModel = addModel(ModelInfo::Model(
+                                    helper["type"].value<ModelInfo::Type>(),
+                                    helper["params"].value<ModelInfo::Params>()
                     )
             );
+
+            _models.append(newModel);
+            selectModel(newModel);
         }
     }
 

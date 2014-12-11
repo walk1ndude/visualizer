@@ -14,8 +14,10 @@ namespace Model {
                                                      const ShaderInfo::ShaderVariablesNames & shaderAttributeArrays,
                                                      const ShaderInfo::ShaderVariablesNames & shaderUniformValues) :
         AbstractModel(scene, shaderFiles, shaderAttributeArrays, appendToNames(shaderUniformValues)),
-        _points(nullptr),
         _pointsTexture(nullptr) {
+
+        _points = new PointsModel(scene);
+        addChild(_points);
 
     }
 
@@ -45,12 +47,6 @@ namespace Model {
     }
 
     void AbstractModelWithPoints::addChild(AbstractModel * child) {
-        if (!_points) {
-            if (PointsModel * pointsModel = qobject_cast<PointsModel *>(child)) {
-                _points = pointsModel;
-            }
-        }
-
         AbstractModel::addChild(child);
     }
 
@@ -150,7 +146,7 @@ namespace Model {
 
         PointsInfo::Position3D unprojectedPoint;
 
-        bool updateNeeded = false;
+        bool updateNeeded = AbstractModel::checkDepthBuffer(viewport);
 
         for (PointsInfo::ModelPoint * modelPoint : _modelPoints.points()) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
@@ -238,6 +234,8 @@ namespace Model {
     void AbstractModelWithPoints::deleteModel() {
         _pointsTexture->release(_pointsTexture->textureId());
         _pointsTexture->destroy();
+
+        delete _points;
 
         AbstractModel::deleteModel();
     }

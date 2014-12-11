@@ -106,6 +106,10 @@ namespace Model {
         qDeleteAll(_lightSources);
         qDeleteAll(_materials);
         qDeleteAll(_textures);
+
+        for (AbstractModel * child : childModels()) {
+            delete child;
+        }
     }
 
     void AbstractModel::addMaterial(Scene::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) {
@@ -210,11 +214,6 @@ namespace Model {
     Camera::ScaleMatrix AbstractModel::scaleMatrix() const {
         QMutexLocker locker (&modelMutex);
         return _scaleM;
-    }
-
-    bool AbstractModel::checkDepthBuffer(const Viewport::Viewport * ) {
-        QMutexLocker locker (&modelMutex);
-        return false;
     }
 
     void AbstractModel::translate(const QVector3D & translation) {
@@ -330,6 +329,20 @@ namespace Model {
             glStatesDisable();
             releaseShaderProgram();
         }
+
+        for (AbstractModel * child : childModels()) {
+            child->drawModel(viewport);
+        }
+    }
+
+    bool AbstractModel::checkDepthBuffer(const Viewport::Viewport * viewport) {
+        bool redraw = false;
+
+        for (AbstractModel * child : childModels()) {
+            redraw |= child->checkDepthBuffer(viewport);
+        }
+
+        return redraw;
     }
 
     void AbstractModel::drawingRoutine() const {

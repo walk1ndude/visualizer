@@ -50,11 +50,8 @@ namespace Scene {
 
         void selectModel(Model::AbstractModel * model);
 
-        void render(QListIterator<Model::AbstractModel *> & modelIterator,
-                    QListIterator<Viewport::Viewport *> & viewportIterator);
-
-        bool postProcess(QListIterator<Model::AbstractModel *> & modelIterator,
-                         QListIterator<Viewport::Viewport *> & viewportIterator);
+        void render();
+        bool postProcess();
 
     signals:
         void viewportArrayChanged();
