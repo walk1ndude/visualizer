@@ -92,7 +92,6 @@ namespace Camera {
         ZoomFactor zoomFactor() const;
 
         Eye eye() const;
-        Eye eyeBillboard() const;
 
         void reproject(const AspectRatio & ratio);
 
