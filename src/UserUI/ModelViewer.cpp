@@ -97,6 +97,10 @@ namespace UserUI {
             _modelRenderer->moveToThread(_modelRenderer);
             _modelRenderer->start();
 
+            while (!_messageQueue.isEmpty()) {
+                post(_messageQueue.dequeue());
+            }
+
             update();
             return nullptr;
         }
@@ -168,12 +172,23 @@ namespace UserUI {
                 Message::SettingsMessage ms(message.sender(), reciever);
                 ms.setReliableTime(message.reliableTime());
                 ms.data = message.data;
-                emit post(ms);
+
+                if (_modelRenderer) {
+                    _messageQueue.enqueue(ms);
+                }
+                else {
+                    emit post(ms);
+                }
             }
         }
 
         if (canSendMessages) {
-            emit post(message);
+            if (_modelRenderer) {
+                _messageQueue.enqueue(message);
+            }
+            else {
+                emit post(message);
+            }
         }
 
         if (canSendVariants) {

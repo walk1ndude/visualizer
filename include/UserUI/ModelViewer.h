@@ -50,6 +50,8 @@ namespace UserUI {
 
         QSize _fboSize;
 
+        QQueue<Message::SettingsMessage> _messageQueue;
+
    signals:
         void viewportArrayChanged();
 
