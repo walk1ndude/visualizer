@@ -335,11 +335,11 @@ namespace Model {
         }
     }
 
-    bool AbstractModel::checkDepthBuffer(const Viewport::Viewport * viewport) {
+    bool AbstractModel::checkBuffers(const Viewport::Viewport * viewport) {
         bool redraw = false;
 
         for (AbstractModel * child : childModels()) {
-            redraw |= child->checkDepthBuffer(viewport);
+            redraw |= child->checkBuffers(viewport);
         }
 
         return redraw;

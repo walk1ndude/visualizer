@@ -248,7 +248,7 @@ namespace Model {
 
         virtual void queueForUpdate() final;
 
-        virtual bool checkDepthBuffer(const Viewport::Viewport * viewPort);
+        virtual bool checkBuffers(const Viewport::Viewport * viewPort);
 
         virtual void update();
 

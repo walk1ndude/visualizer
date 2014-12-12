@@ -30,7 +30,7 @@ namespace Model {
 
         virtual Camera::Matrix mvp(const Viewport::Viewport * viewport) const;
         
-        virtual bool checkDepthBuffer(const Viewport::Viewport * viewport) final;
+        virtual bool checkBuffers(const Viewport::Viewport * viewport) final;
 
         virtual void deleteModel();
 

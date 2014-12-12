@@ -75,7 +75,7 @@ namespace Scene {
 
         for (Model::AbstractModel * model : _models.list()) {
             for (const Viewport::Viewport * viewport : _viewportArray->array()) {
-                redraw |= model->checkDepthBuffer(viewport);
+                redraw |= model->checkBuffers(viewport);
             }
 
             if (redraw) {

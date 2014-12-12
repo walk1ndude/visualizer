@@ -141,12 +141,12 @@ namespace Model {
         program->setUniformValue(uniformValues["pointsCount"], pointsCount);
     }
 
-    bool AbstractModelWithPoints::checkDepthBuffer(const Viewport::Viewport * viewport) {
+    bool AbstractModelWithPoints::checkBuffers(const Viewport::Viewport * viewport) {
         QMutexLocker locker (&modelMutex);
 
         PointsInfo::Position3D unprojectedPoint;
 
-        bool updateNeeded = AbstractModel::checkDepthBuffer(viewport);
+        bool updateNeeded = AbstractModel::checkBuffers(viewport);
 
         for (PointsInfo::ModelPoint * modelPoint : _modelPoints.points()) {
             if (modelPoint->viewport == viewport && !modelPoint->isPositionCalculated()) {
