@@ -58,38 +58,44 @@ ApplicationWindow {
     FileDialog {
         id: openFileDialogDicom;
         title: "Choose DICOM file";
-        onAccepted: {
-            var component = Qt.createComponent("Parser/DicomReaderEx.qml");
-            var dicomReader = component.createObject(null, {
-                                                       "viewer" : modelViewer
-                                                   });
-            dicomReader.file = fileUrl;
-        }
+        onAccepted: readDicom(fileUrl)
     }
 
     FileDialog {
         id: openFileDialogReconstructor;
         title: "Choose image files";
         selectMultiple: true;
-        onAccepted: {
-            var component = Qt.createComponent("Parser/ReconstructorEx.qml");
-            var reconstructor = component.createObject(null, {
-                                                           "viewer" : modelViewer
-                                                       });
-            reconstructor.files = fileUrls;
-        }
+        onAccepted: readReconstructor(fileUrls);
     }
 
     FileDialog {
         id: openFileDialogStl;
         title: "Choose stl files";
-        onAccepted: {
-            var component = Qt.createComponent("Parser/StlReaderEx.qml");
-            var stlReader = component.createObject(null, {
+        onAccepted: readSTL(fileUrl);
+    }
+
+    function readDicom(fileUrl) {
+        var component = Qt.createComponent("Parser/DicomReaderEx.qml");
+        var dicomReader = component.createObject(null, {
+                                                   "viewer" : modelViewer
+                                               });
+        dicomReader.file = fileUrl;
+    }
+
+    function readReconstructor(fileUrls) {
+        var component = Qt.createComponent("Parser/ReconstructorEx.qml");
+        var reconstructor = component.createObject(null, {
                                                        "viewer" : modelViewer
                                                    });
-            stlReader.file = fileUrl;
-       }
+        reconstructor.files = fileUrls;
+    }
+
+    function readSTL(fileUrl) {
+        var component = Qt.createComponent("Parser/StlReaderEx.qml");
+        var stlReader = component.createObject(null, {
+                                                   "viewer" : modelViewer
+                                               });
+        stlReader.file = fileUrl;
     }
 
     FocusScope {
