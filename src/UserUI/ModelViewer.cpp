@@ -173,7 +173,7 @@ namespace UserUI {
                 ms.setReliableTime(message.reliableTime());
                 ms.data = message.data;
 
-                if (_modelRenderer) {
+                if (!_modelRenderer) {
                     _messageQueue.enqueue(ms);
                 }
                 else {
@@ -183,7 +183,7 @@ namespace UserUI {
         }
 
         if (canSendMessages) {
-            if (_modelRenderer) {
+            if (!_modelRenderer) {
                 _messageQueue.enqueue(message);
             }
             else {
