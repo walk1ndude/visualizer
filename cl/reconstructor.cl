@@ -34,13 +34,10 @@ float calcElem(image3d_t src,
 
 int reflect(int maxDir,
             int curP) {
-    if (curP < 0) {
-        return - curP - 1;
-    }
-    if (curP >= maxDir) {
-        return 2 * maxDir - curP - 1;
-    }
-    return curP;
+    float k1 = 1 - step((float) curP, 0.0f);
+    float k2 = step((float) curP, (float) maxDir);
+
+    return int(round(2 * maxDir * k2 - (k1 + k2) * curP + (1 - k1) * (1 - k2) * curP - k1 - k2));
 }
 
 __kernel void gauss1d(__read_only image3d_t src,
@@ -54,11 +51,19 @@ __kernel void gauss1d(__read_only image3d_t src,
     
     float sum = 0.0f;
     int4 posR = (int4) (0);
+
+    __local int w;
+    __local int h;
+    __local int d;
+
+    w = get_image_width(src);
+    h = get_image_height(src);
+    d = get_image_depth(src);
     
     for (int i = - kernGaussSize + 1; i != kernGaussSize; ++ i) {
-        posR.x = reflect(get_image_width(src), pos.x + dirX * i);
-        posR.y = reflect(get_image_height(src), pos.y + dirY * i);
-        posR.z = reflect(get_image_depth(src), pos.z + dirZ * i);
+        posR.x = reflect(w, pos.x + dirX * i);
+        posR.y = reflect(h, pos.y + dirY * i);
+        posR.z = reflect(d, pos.z + dirZ * i);
         
         sum += (gaussTab[kernGaussSize + i] * read_imagef(src, sampler, posR).x);
     }
