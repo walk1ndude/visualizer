@@ -88,10 +88,11 @@ __kernel void calcTables(__global float * cas,
     tanTable[posT] = - atan2pi(origin.y, origin.x) * 180.0f;
     radTable[posT] = sqrt(origin.y * origin.y + origin.x * origin.x);
 
-    if (tanTable[posT] < 0.0f) {
-        radTable[posT] = - radTable[posT];
-        tanTable[posT] = min(tanTable[posT] + 180.0f, 180.0f);
-    }
+    float k = step(tanTable[posT], 0.0f);
+    float k180 = 180.0f * (1 - k);
+
+    radTable[posT] = radTable[posT] - (1 - k) * 2 * radTable[posT];
+    tanTable[posT] = min(tanTable[posT] + k180, tanTable[posT] * k + k180);
 }
 
 __kernel void fourier2d(__read_only image3d_t src,
