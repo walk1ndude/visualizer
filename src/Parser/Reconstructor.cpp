@@ -1,31 +1,12 @@
 #include "Parser/Reconstructor.h"
 #include "Parser/parallelprocessing.hpp"
 
+#include "Info/CLInfo.h"
+
 #define SLICES_IMAGE_WINDOW "slices"
 #define SLICE_POSITION "position"
 
 #define GAUSS
-// opencl settings for Iris 5200
-#define IRIS_5200
-//#define AMD_BARTS
-
-#ifdef IRIS_5200
-#define WORK_GROUP_WIDTH 8
-#define WORK_GROUP_HEIGHT 8
-#define WORK_GROUP_DEPTH 8
-
-#define PADDED_INCREASE 1.0f
-#endif
-
-#ifdef AMD_BARTS
-#define WORK_GROUP_WIDTH 4
-#define WORK_GROUP_HEIGHT 4
-#define WORK_GROUP_DEPTH 4
-
-#define CL_CONTEXT_OFFLINE_DEVICES_AMD 0x403F
-
-#define PADDED_INCREASE 1.5f
-#endif
 
 #define SIGMA_GAUSS 1.5
 #define KERN_SIZE_GAUSS 5
@@ -64,59 +45,9 @@ namespace Parser {
     }
 
     void Reconstructor::initOCL() {
-        QFile programFile(":cl/reconstructor.cl");
-
-        programFile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-        QTextStream stream(&programFile);
-        stream.setCodec(QTextCodec::codecForName("UTF-8"));
-
-        QString programStringList;
-
-        while (true) {
-            QString line = stream.readLine();
-            if (line.isNull()) {
-                break;
-            }
-            else {
-                programStringList.append(line + '\n');
-            }
-        }
-
-        char * programText = (char *) malloc(programStringList.length());
-        size_t programLength = strlen(programStringList.toStdString().c_str()) + 1;
-        memcpy(programText, programStringList.toStdString().c_str(), programLength);
-
-        programFile.close();
-
-        cl_int errNo;
-
-        cl_platform_id * platforms;
-        cl_uint platforms_n;
-
-        clGetPlatformIDs(0, nullptr, &platforms_n);
-        platforms = (cl_platform_id *) malloc(sizeof(cl_platform_id) * (platforms_n + 1));
-        clGetPlatformIDs(platforms_n, platforms, &platforms_n);
-
-        qDebug() << clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_GPU, 1, &_device_id, nullptr);
-
-#ifdef AMD_BARTS
-        _context = clCreateContext(0, 1, &_device_id, nullptr, nullptr, &errNo);
-#else
-        _context = clCreateContextFromType(nullptr, CL_DEVICE_TYPE_GPU, nullptr, nullptr, &errNo);
-#endif
-        qDebug() << errNo;
-
-        size_t size[3];
-        clGetDeviceInfo(_device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(size_t) * 3, size, nullptr);
-        
+        _context = CLInfo::createContext(nullptr, CL_DEVICE_TYPE_GPU, 1, const_cast<cl_device_id *>(&_device_id), nullptr, nullptr, nullptr);
         _queue = clCreateCommandQueue(_context, _device_id, 0, nullptr);
-        
-        _programReconstruction = clCreateProgramWithSource(_context, 1, (const char **) &programText,
-                                                  (const size_t *) &programLength, nullptr);
-
-        free(programText);
-        free(platforms);
+        _programReconstruction = CLInfo::createProgram(_context, ":cl/reconstructor.cl");
 
         qDebug() << "Building OpenCL Program, error: " << clBuildProgram(_programReconstruction, 1, &_device_id, nullptr, nullptr, nullptr);
 

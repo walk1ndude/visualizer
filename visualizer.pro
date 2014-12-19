@@ -116,7 +116,11 @@ SOURCES +=  src/main.cpp \
     src/Scene/LightSource.cpp \
     src/Scene/Material.cpp \
     src/Scene/Texture.cpp \
-    src/UserUI/NetUI.cpp
+    src/UserUI/NetUI.cpp \
+    src/Plugin/AbstractPlugin.cpp \
+    src/Info/CLInfo.cpp \
+    src/Plugin/AbstractOpenCLPlugin.cpp \
+    src/Plugin/InterconnectionFinderPlugin.cpp
 
 HEADERS  += include/UserUI/AppWindow.h \
             include/UserUI/ModelViewer.h \
@@ -164,6 +168,10 @@ HEADERS  += include/UserUI/AppWindow.h \
     include/Scene/LightSource.h \
     include/Scene/Material.h \
     include/Scene/Texture.h \
-    include/UserUI/NetUI.h
+    include/UserUI/NetUI.h \
+    include/Plugin/AbstractPlugin.h \
+    include/Plugin/InterconnectionFinderPlugin.h \
+    include/Info/CLInfo.h \
+    include/Plugin/AbstractOpenCLPlugin.h
 
 RESOURCES += resources.qrc
