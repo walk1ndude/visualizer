@@ -32,13 +32,13 @@
 #endif
 
 namespace CLInfo {
-    cl_context createContext(const cl_context_properties * props,
-                             cl_device_type device_type,
+    cl_context createContext(cl_device_type device_type,
                              cl_uint num_devices,
                              cl_device_id * device_id,
                              void (CL_CALLBACK * pfn_notify)(const char *, const void *, size_t, void *),
                              void * user_data,
-                             cl_int * errcode_ret);
+                             cl_int * errcode_ret,
+                             const bool & graphicsShared = true);
 
     cl_program createProgram(cl_context context, const QString & source);
 }

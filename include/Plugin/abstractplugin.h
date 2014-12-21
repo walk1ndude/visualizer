@@ -5,6 +5,8 @@
 #include "Message/SettingsMessage.h"
 
 namespace Plugin {
+    using Params = QVariantMap;
+
     class AbstractPlugin : public QQuickItem {
         Q_OBJECT
     protected:

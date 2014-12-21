@@ -45,7 +45,7 @@ namespace Parser {
     }
 
     void Reconstructor::initOCL() {
-        _context = CLInfo::createContext(nullptr, CL_DEVICE_TYPE_GPU, 1, const_cast<cl_device_id *>(&_device_id), nullptr, nullptr, nullptr);
+        _context = CLInfo::createContext(CL_DEVICE_TYPE_GPU, 1, const_cast<cl_device_id *>(&_device_id), nullptr, nullptr, nullptr, false);
         _queue = clCreateCommandQueue(_context, _device_id, 0, nullptr);
         _programReconstruction = CLInfo::createProgram(_context, ":cl/reconstructor.cl");
 

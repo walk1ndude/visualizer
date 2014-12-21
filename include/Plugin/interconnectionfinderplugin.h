@@ -10,7 +10,7 @@ namespace Plugin {
         explicit InterconnectionFinderPlugin();
 
     protected:
-        void init();
+        void init(const Params & params);
 
     public slots:
         virtual void recieve(const Message::SettingsMessage & message);

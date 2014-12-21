@@ -6,8 +6,8 @@ namespace Plugin {
 
     }
 
-    void InterconnectionFinderPlugin::init() {
-        context = CLInfo::createContext(nullptr, CL_DEVICE_TYPE_GPU, 1, const_cast<cl_device_id *>(&device_id), nullptr, nullptr, nullptr);
+    void InterconnectionFinderPlugin::init(const Params & params) {
+        context = CLInfo::createContext(CL_DEVICE_TYPE_GPU, 1, const_cast<cl_device_id *>(&device_id), nullptr, nullptr, nullptr);
 
         queue = clCreateCommandQueue(context, device_id, 0, nullptr);
 

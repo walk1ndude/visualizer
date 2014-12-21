@@ -20,7 +20,7 @@ namespace Plugin {
     protected:
         explicit AbstractOpenCLPlugin();
 
-        virtual void init() = 0;
+        virtual void init(const Params & params) = 0;
 
         cl_context context;
 
