@@ -16,6 +16,10 @@ Rectangle {
     width: 200;
     height: 200;
 
+    Component.onCompleted: {
+        heightChanged(height);
+    }
+
     Grid {
         id: grid;
 

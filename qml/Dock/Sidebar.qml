@@ -72,35 +72,30 @@ Sidedock {
 
                 transitions: [
                     Transition {
-                        from: "expanded"
-                        to: "collapsed"
+                        from: "expanded";
+                        to: "collapsed";
 
-                        NumberAnimation {
-                            target: sectionColumn;
-                            property: "height";
-                            duration: sidebar.animationSpeed;
-                            to: heading.height;
-                            easing.type: Easing.InOutQuad;
-                        }
-                    },
-
-                    Transition {
-                        from: "collapsed"
-                        to: "expanded"
-
-                        SequentialAnimation {
-                            ScriptAction {
-                                script: {
-                                    for (var item in sidebarListView.currentItem) { console.log(height); }
-                                    console.log(sidebarListView.currentItem);
-                                }
-                            }
-
+                        ParallelAnimation {
                             NumberAnimation {
                                 target: sectionColumn;
                                 property: "height";
                                 duration: sidebar.animationSpeed;
-                                to: 400;
+                                to: heading.height;
+                                easing.type: Easing.InOutQuad;
+                            }
+                        }
+                    },
+
+                    Transition {
+                        from: "collapsed";
+                        to: "expanded";
+
+                        ParallelAnimation {
+                            NumberAnimation {
+                                target: sectionColumn;
+                                property: "height";
+                                duration: sidebar.animationSpeed;
+                                to: sectionColumn.sumHeight;
                                 easing.type: Easing.InOutQuad;
                             }
                         }
@@ -109,8 +104,10 @@ Sidedock {
             }
 
             Loader {
-                visible: !(_state === "collapsed")
+                id: sectionLoader;
+
                 property var subSectionModel : subSections;
+
                 sourceComponent: {
                                 if (_state === "collapsed") {
                                      return null;
@@ -128,6 +125,7 @@ Sidedock {
 
                 onStatusChanged: if (status == Loader.Ready) {
                                      item.model = subSectionModel;
+                                     sectionColumn.sumHeight = heading.height + item.height;
                                  }
             }
         }
@@ -137,8 +135,11 @@ Sidedock {
         id: subSectionModelSpecs;
 
         Column {
+            id: column;
+
             property alias model : repeater.model;
             width: sidebarListView.width;
+
             Repeater {
                 id: repeater;
                 delegate:
@@ -151,6 +152,8 @@ Sidedock {
                             target: sidebar;
                             onPostToSections : recieve(message);
                         }
+
+                        onHeightChanged: column.height = height;
                 }
             }
         }
@@ -160,6 +163,8 @@ Sidedock {
         id: subSectionGeometry;
 
         Column {
+            id: column;
+
             property alias model : repeater.model;
             width: sidebarListView.width;
             Repeater {
@@ -169,6 +174,8 @@ Sidedock {
                         width: sidebarListView.width;
 
                         onPost: sidebar.post(message);
+
+                        onHeightChanged: column.height = height;
                 }
             }
         }
@@ -178,7 +185,10 @@ Sidedock {
         id: subSectionMeasures;
 
         Column {
-            property alias model : repeater.model;
+            id: column;
+
+            property alias model: repeater.model;
+
             width: sidebarListView.width;
             Repeater {
                 id: repeater;
@@ -193,6 +203,8 @@ Sidedock {
                             target: sidebar;
                             onPostToSections : recieve(message);
                         }
+
+                        onHeightChanged: column.height = height;
                 }
             }
         }
@@ -202,6 +214,8 @@ Sidedock {
         id: subSectionIndividual;
 
         Column {
+            id: column;
+
             property alias model : repeater.model;
             width: sidebarListView.width;
             Repeater {
@@ -217,6 +231,8 @@ Sidedock {
                         }
 
                         onPost: sidebar.post(message);
+
+                        onHeightChanged: column.height = height;
                 }
             }
         }
