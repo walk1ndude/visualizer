@@ -38,8 +38,8 @@ Rectangle {
 
     Image {
         id: icon;
-        width: 20;
-        height: 20;
+        width: parent.height * 0.8;
+        height: parent.height * 0.8;
 
         anchors {
             right: parent.right;
@@ -48,7 +48,7 @@ Rectangle {
             verticalCenter: parent.verticalCenter;
         }
 
-        source: parent.state === "collapsed" ? parent.collapsedIcon : parent.expandedIcon;
+        source: parent.state !== "collapsed" ? parent.collapsedIcon : parent.expandedIcon;
     }
 
     MouseArea {

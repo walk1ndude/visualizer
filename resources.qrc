@@ -37,5 +37,7 @@
         <file>shaders/Volume/vertex.glsl</file>
         <file>shaders/Axes/fragment.glsl</file>
         <file>shaders/Axes/vertex.glsl</file>
+        <file>icons/left_arrow.svg</file>
+        <file>icons/right_arrow.svg</file>
     </qresource>
 </RCC>

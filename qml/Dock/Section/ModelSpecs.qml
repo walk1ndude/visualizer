@@ -20,10 +20,13 @@ Rectangle {
         heightChanged(height);
     }
 
+
     Grid {
         id: grid;
 
         columns: 3;
+
+        columnSpacing: 10;
 
         anchors {
             top: modelSpecs.top;
@@ -70,17 +73,17 @@ Rectangle {
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : modelSpecs.modelID
-                                                },
-                                                "data" : {
-                                                    "action" : "setWindowCenter",
-                                                    "params" : {
-                                                        "windowCenter" : value
+                                                    "header" : {
+                                                        "sender" : "modelSpecs",
+                                                        "reciever" : modelSpecs.modelID
+                                                    },
+                                                    "data" : {
+                                                        "action" : "setWindowCenter",
+                                                        "params" : {
+                                                            "windowCenter" : value
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
                             }
         }
 
@@ -99,17 +102,17 @@ Rectangle {
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : modelSpecs.modelID
-                                                },
-                                                "data" : {
-                                                    "action" : "setWindowWidth",
-                                                    "params" : {
-                                                        "windowWidth" : value
+                                                    "header" : {
+                                                        "sender" : "modelSpecs",
+                                                        "reciever" : modelSpecs.modelID
+                                                    },
+                                                    "data" : {
+                                                        "action" : "setWindowWidth",
+                                                        "params" : {
+                                                            "windowWidth" : value
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
                             }
         }
 
@@ -121,6 +124,8 @@ Rectangle {
     Grid {
         columns: 2;
         rows: 3;
+
+        columnSpacing: 10;
 
         anchors {
             top: grid.bottom;
@@ -140,18 +145,18 @@ Rectangle {
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : modelSpecs.modelID
-                                                },
-                                                "data" : {
-                                                    "action" : "setRange",
-                                                    "params" : {
-                                                        "range" : value,
-                                                        "axis" : "x"
+                                                    "header" : {
+                                                        "sender" : "modelSpecs",
+                                                        "reciever" : modelSpecs.modelID
+                                                    },
+                                                    "data" : {
+                                                        "action" : "setRange",
+                                                        "params" : {
+                                                            "range" : value,
+                                                            "axis" : "x"
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
                             }
         }
 
@@ -167,18 +172,18 @@ Rectangle {
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : modelSpecs.modelID
-                                                },
-                                                "data" : {
-                                                    "action" : "setRange",
-                                                    "params" : {
-                                                        "range" : value,
-                                                        "axis" : "y"
+                                                    "header" : {
+                                                        "sender" : "modelSpecs",
+                                                        "reciever" : modelSpecs.modelID
+                                                    },
+                                                    "data" : {
+                                                        "action" : "setRange",
+                                                        "params" : {
+                                                            "range" : value,
+                                                            "axis" : "y"
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
                             }
         }
 
@@ -194,18 +199,18 @@ Rectangle {
 
             onValueChanged: if (modelSpecs.modelID !== "") {
                                 modelSpecs.post({
-                                                "header" : {
-                                                    "sender" : "modelSpecs",
-                                                    "reciever" : modelSpecs.modelID
-                                                },
-                                                "data" : {
-                                                    "action" : "setRange",
-                                                    "params" : {
-                                                        "range" : value,
-                                                        "axis" : "z"
+                                                    "header" : {
+                                                        "sender" : "modelSpecs",
+                                                        "reciever" : modelSpecs.modelID
+                                                    },
+                                                    "data" : {
+                                                        "action" : "setRange",
+                                                        "params" : {
+                                                            "range" : value,
+                                                            "axis" : "z"
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
                             }
         }
     }

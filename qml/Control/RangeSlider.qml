@@ -13,8 +13,9 @@ Item {
 
     Rectangle  {
         anchors {
-            verticalCenter: parent.verticalCenter;
             fill: parent;
+            topMargin: parent.height / 3;
+            bottomMargin: parent.height / 3;
         }
 
         radius: 8;
@@ -49,15 +50,10 @@ Item {
 
         radius: parent.height / 2;
 
-        gradient: Gradient  {
-            GradientStop  {
-                position: 0.0;
-                color: "lightgray";
-            }
-            GradientStop  {
-                position: 1.0;
-                color: "gray";
-            }
+        Image {
+            anchors.fill: parent;
+
+            source: "qrc:/icons/left_arrow.svg";
         }
 
         MouseArea  {
@@ -92,15 +88,10 @@ Item {
 
         radius: parent.height / 2;
 
-        gradient: Gradient  {
-            GradientStop  {
-                position: 0.0;
-                color: "lightgray";
-            }
-            GradientStop  {
-                position: 1.0;
-                color: "gray";
-            }
+        Image {
+            anchors.fill: parent;
+
+            source: "qrc:/icons/right_arrow.svg";
         }
 
         MouseArea  {
@@ -121,12 +112,15 @@ Item {
     }
 
     Rectangle {
-        x: handleMinValue.x + handleMinValue.width / 2;
+        anchors {
+            top: parent.top;
+            bottom: parent.bottom;
+            topMargin: parent.height / 3;
+            bottomMargin: parent.height / 3;
 
-        anchors.top: parent.top;
-        height: parent.height;
-
-        width: handleMaxValue.x - handleMinValue.x;
+            left: handleMinValue.right;
+            right: handleMaxValue.left;
+        }
 
         gradient: Gradient  {
             GradientStop  {

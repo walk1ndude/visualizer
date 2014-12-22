@@ -15,9 +15,12 @@ Item {
     height: 20;
 
     Rectangle  {
+        id: rangeRect;
+
         anchors {
-            verticalCenter: parent.verticalCenter;
             fill: parent;
+            topMargin: parent.height / 3;
+            bottomMargin: parent.height / 3;
         }
 
         radius: 8;
@@ -33,6 +36,8 @@ Item {
                 color: "white";
             }
         }
+
+        z: -2;
     }
 
     Rectangle  {
@@ -49,16 +54,7 @@ Item {
 
         radius: parent.height / 2;
 
-        gradient: Gradient  {
-            GradientStop  {
-                position: 0.0;
-                color: "lightgray";
-            }
-            GradientStop  {
-                position: 1.0;
-                color: "gray";
-            }
-        }
+        color: "black";
 
         MouseArea  {
             anchors.fill: parent;
@@ -75,6 +71,34 @@ Item {
                 value += (Math.ceil((newValue - value) / stepSize) * stepSize);
             }
         }
+    }
+
+    Rectangle {
+        anchors {
+            top: parent.top;
+            bottom: parent.bottom;
+            topMargin: parent.height / 3;
+            bottomMargin: parent.height / 3;
+
+            left: parent.left;
+            right: handle.right;
+        }
+
+        radius: rangeRect.radius;
+
+        gradient: Gradient  {
+            GradientStop  {
+                position: 0.0;
+                color: "cyan";
+            }
+
+            GradientStop  {
+                position: 1.0;
+                color: "blue";
+            }
+        }
+
+        z: -1;
     }
 
     onValueChanged: {

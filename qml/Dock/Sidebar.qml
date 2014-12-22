@@ -68,7 +68,13 @@ Sidedock {
 
                 state: _state;
 
-                onStateChanged: sidebarListModel.setProperty(index, "_state", state === "collapsed" ? "collapsed" : "expanded");
+                Timer {
+                    id: timerToggleContent;
+                    interval: sidebar.animationSpeed * (heading.state === "collapsed" ? 0.75 : 0.2);
+                    running: false;
+                    repeat: false;
+                    onTriggered: sidebarListModel.setProperty(index, "_state", heading.state);
+                }
 
                 transitions: [
                     Transition {
@@ -76,10 +82,15 @@ Sidedock {
                         to: "collapsed";
 
                         ParallelAnimation {
+                            ScriptAction {
+                                script: timerToggleContent.start();
+                            }
+
                             NumberAnimation {
                                 target: sectionColumn;
                                 property: "height";
                                 duration: sidebar.animationSpeed;
+                                from: sectionColumn.sumHeight;
                                 to: heading.height;
                                 easing.type: Easing.InOutQuad;
                             }
@@ -95,8 +106,13 @@ Sidedock {
                                 target: sectionColumn;
                                 property: "height";
                                 duration: sidebar.animationSpeed;
+                                from: heading.height;
                                 to: sectionColumn.sumHeight;
                                 easing.type: Easing.InOutQuad;
+                            }
+
+                            ScriptAction {
+                                script: timerToggleContent.start();
                             }
                         }
                     }
