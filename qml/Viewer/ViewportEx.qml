@@ -7,8 +7,6 @@ import "qrc:/js/helpers.js" as Helpers;
 Viewport {
     id: viewport;
 
-    property bool isFullsized: false;
-
     property color color: "green";
 
     property bool invertedYAxis: false;
@@ -124,8 +122,7 @@ Viewport {
                 onClicked: {
                     switch (mouse.button) {
                         case Qt.LeftButton:
-                            viewport.isFullsized = !viewport.isFullsized;
-
+                            viewport.state = viewport.state === "normal" ? "fullsized" : "normal";
                             break;
                     }
                 }
@@ -133,16 +130,38 @@ Viewport {
         }
     }
 
-    onIsFullsizedChanged: switchFullNormal();
+    state: "normal";
 
-    function switchFullNormal() {
-        if (viewport.isFullsized) {
-            parent.hideExcept(viewport);
+    states: [
+        State {
+            name: "normal";
+        },
+        State {
+            name: "fullsized"
         }
-        else {
-            parent.restore();
+    ]
+
+    transitions: [
+        Transition {
+            from: "normal";
+            to: "fullsized";
+            SequentialAnimation {
+                ScriptAction {
+                    script: parent.hideExcept(viewport);
+                }
+            }
+        },
+
+        Transition {
+            from: "fullsized";
+            to: "normal";
+            SequentialAnimation {
+                ScriptAction {
+                    script: parent.restore();
+                }
+            }
         }
-    }
+    ]
 
     MouseArea {
         id: mouseArea;
