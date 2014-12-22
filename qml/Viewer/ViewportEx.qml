@@ -14,6 +14,8 @@ Viewport {
     property real minimumZoom: 0.2;
     property real maximumZoom: 10.0;
 
+    property int animationSpeed: 1000;
+
     property vector2d rotationSpeed: Qt.vector2d(width / 10, height / 10);
 
     property string currentPoint: "";
@@ -141,13 +143,55 @@ Viewport {
         }
     ]
 
+    property rect prevRect: Qt.rect(0.0, 0.0, 0.0, 0.0);
+
     transitions: [
         Transition {
             from: "normal";
             to: "fullsized";
             SequentialAnimation {
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: viewport;
+                        property: "x";
+                        duration: animationSpeed;
+                        from: x;
+                        to: 0;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: viewport;
+                        property: "y";
+                        duration: animationSpeed;
+                        from: y;
+                        to: 0;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: viewport;
+                        property: "width";
+                        duration: animationSpeed;
+                        from: width;
+                        to: parent.width;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: viewport;
+                        property: "height";
+                        duration: animationSpeed;
+                        from: height;
+                        to: parent.height;
+                        easing.type: Easing.InOutQuad;
+                    }
+                }
                 ScriptAction {
-                    script: parent.hideExcept(viewport);
+                    script: {
+                        prevRect = boundingRect;
+                        parent.hideExcept(viewport);
+                    }
                 }
             }
         },
@@ -158,6 +202,45 @@ Viewport {
             SequentialAnimation {
                 ScriptAction {
                     script: parent.restore();
+                }
+
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: viewport;
+                        properties: "x";
+                        duration: animationSpeed;
+                        from: 0;
+                        to: prevRect.x * parent.width;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: viewport;
+                        property: "y";
+                        duration: animationSpeed;
+                        from: 0;
+                        to: prevRect.y * parent.height;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+
+                    NumberAnimation {
+                        target: viewport;
+                        property: "width";
+                        duration: animationSpeed;
+                        from: parent.width;
+                        to: prevRect.width * parent.width;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: viewport;
+                        property: "height";
+                        duration: animationSpeed;
+                        from: parent.height;
+                        to: prevRect.height * parent.height;
+                        easing.type: Easing.InOutQuad;
+                    }
                 }
             }
         }

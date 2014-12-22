@@ -25,6 +25,9 @@ ModelViewer {
 
         anchors.fill: parent;
 
+        width: parent.width;
+        height: parent.height;
+
         property string currentPoint: "";
 
         ViewportEx  {
