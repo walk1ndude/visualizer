@@ -7,15 +7,16 @@ Rectangle {
     property string heading: "";
     property var head: heading;
 
-    // means where heading goes: below or above dock content, true - below
-    property bool inverseFolding: true;
+    property bool showContent: false;
+
+    property int animationSpeed: 1000;
 
     property real dX: 300;
     property real dY: 300;
 
     states: [
         State {
-            name: "horizontal";
+            name: "top";
 
             AnchorChanges {
                 target: sidedock;
@@ -42,7 +43,54 @@ Rectangle {
         },
 
         State {
-            name: "vertical";
+            name: "bottom";
+
+            AnchorChanges {
+                target: sidedock;
+
+                anchors {
+                    left: parent.left;
+                    right: parent.right;
+                }
+            }
+
+            AnchorChanges {
+                target: heading;
+
+                anchors {
+                    left: parent.left;
+                    right: parent.right;
+                }
+            }
+
+            PropertyChanges {
+                target: sidedock;
+                height: heading.height;
+            }
+        },
+
+        State {
+            name: "left";
+
+            PropertyChanges {
+                target: heading;
+                width: parent.height;
+                transform: [
+                    translateTo,
+                    rotate,
+                    translateBack
+                ]
+            }
+
+            PropertyChanges {
+                target: sidedock;
+                width: heading.height;
+                height: parent ? parent.height : parent.dX;
+            }
+        },
+
+        State {
+            name: "right";
 
             PropertyChanges {
                 target: heading;
@@ -62,7 +110,7 @@ Rectangle {
         }
     ]
 
-    state: "horizontal";
+    state: "right";
 
     Translate {
         id: translateTo;
@@ -89,9 +137,6 @@ Rectangle {
 
     color: "#AAFFFFFF";
 
-    onDXChanged: heading.recalcWidth();
-    onDYChanged: heading.recalcHeight();
-
     Heading {
         id: heading;
         text: parent.heading;
@@ -99,37 +144,132 @@ Rectangle {
         property int parentX: 0;
         property int parentY: 0;
 
-        function recalcWidth() {
-            parent.width = collapsed ? height : height + dX;
-
-            x = parentX < parent.x ? (inverseFolding  ? 1 : -1) * (parent.width - height) : 0;
-
-            parentX = parent.x;
+        Timer {
+            id: timerToggleContent;
+            interval: animationSpeed / 2;
+            running: false;
+            repeat: false;
+            onTriggered: sidedock.showContent = !sidedock.showContent;
         }
 
-        function recalcHeight() {
-            parent.height = collapsed ? height : height + dY;
+        transitions: [
+            Transition {
+                from: "collapsed";
+                to: "expanded";
 
-            parent.y = parentY <= parent.y ? (inverseFolding  ? 1 : -1) * (height - parent.height) : 0;
-            y = (inverseFolding  ? 1 : -1) * (parent.height - height);
+                ParallelAnimation {
+                    ScriptAction {
+                        script: timerToggleContent.start();
+                    }
 
-            parentY = parent.y;
-        }
+                    NumberAnimation {
+                        target: heading;
+                        property: "x";
+                        duration: animationSpeed;
+                        to: sidedock.state === "left" ? sidedock.dX : sidedock.state === "right" ? - sidedock.dX : x;
+                        easing.type: Easing.InOutQuad;
+                    }
 
-        onCollapsedChanged: {
-            parent.state === "horizontal" ? recalcHeight() : recalcWidth();
-        }
-    }
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "x";
+                        duration: animationSpeed;
+                        to: sidedock.state === "left" ? sidedock.dX : sidedock.state === "right" ? - sidedock.dX : x;
+                        easing.type: Easing.InOutQuad;
+                    }
 
-    onXChanged: {
-        if (!!heading.parentX) {
-            heading.parentX = parent.x;
-        }
-    }
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "width";
+                        duration: animationSpeed;
+                        to: sidedock.state === "left" || sidedock.state === "right" ?  sidedock.width + sidedock.dX : width;
+                        easing.type: Easing.InOutQuad;
+                    }
 
-    onYChanged: {
-        if (!!heading.parentY) {
-            heading.parentY = parent.y;
-        }
+                    NumberAnimation {
+                        target: heading;
+                        property: "y";
+                        duration: animationSpeed;
+                        to: sidedock.state === "top" ? - sidedock.dY : sidedock.state === "bottom" ? sidedock.dY : y;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "y";
+                        duration: animationSpeed;
+                        to: sidedock.state === "top" ? sidedock.dY : sidedock.state === "bottom" ? - sidedock.dY : y;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "height";
+                        duration: animationSpeed;
+                        to: sidedock.state === "top" || sidedock.state === "bottom" ?  sidedock.height + sidedock.dY : height;
+                        easing.type: Easing.InOutQuad;
+                    }
+                }
+            },
+
+            Transition {
+                from: "expanded";
+                to: "collapsed";
+
+                ParallelAnimation {
+                    ScriptAction {
+                        script: timerToggleContent.start();
+                    }
+
+                    NumberAnimation {
+                        target: heading;
+                        property: "x";
+                        duration: animationSpeed;
+                        to: 0
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "x";
+                        duration: animationSpeed;
+                        to: 0;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "width";
+                        duration: animationSpeed;
+                        to: sidedock.state === "left" || sidedock.state === "right" ?  sidedock.width - sidedock.dX : width;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: heading;
+                        property: "y";
+                        duration: animationSpeed;
+                        to: 0
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "y";
+                        duration: animationSpeed;
+                        to: 0;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "height";
+                        duration: animationSpeed;
+                        to: sidedock.state === "top" || sidedock.state === "bottom" ?  sidedock.height - sidedock.dXY : height;
+                        easing.type: Easing.InOutQuad;
+                    }
+                }
+            }
+        ]
     }
 }

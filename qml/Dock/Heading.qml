@@ -12,12 +12,22 @@ Rectangle {
     width: 20;
 
     property string text: "";
-    property bool collapsed: true;
 
     property var model: null;
 
     property url collapsedIcon: "qrc:/icons/collapse.svg";
-    property url uncollapsedIcon: "qrc:/icons/expand.svg";
+    property url expandedIcon: "qrc:/icons/expand.svg";
+
+    state: "collapsed";
+
+    states: [
+        State {
+            name: "collapsed";
+        },
+        State {
+            name: "expanded";
+        }
+    ]
 
     Text {
         anchors.verticalCenter: parent.verticalCenter;
@@ -38,13 +48,15 @@ Rectangle {
             verticalCenter: parent.verticalCenter;
         }
 
-        source: collapsed ? parent.collapsedIcon : parent.uncollapsedIcon;
+        source: parent.state === "collapsed" ? parent.collapsedIcon : parent.expandedIcon;
     }
 
     MouseArea {
         anchors.fill: parent;
-        onClicked: if (mouse.button === Qt.LeftButton) {
-                       parent.collapsed = !parent.collapsed;
-                   }
+        onClicked: {
+                if (mouse.button === Qt.LeftButton) {
+                    parent.state = parent.state === "collapsed" ? "expanded" : "collapsed";
+                }
+        }
     }
 }

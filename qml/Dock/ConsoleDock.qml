@@ -12,6 +12,8 @@ Rectangle {
 
         heading: "Console output";
 
+        state: "bottom";
+
         color: "#880000FF";
 
         ConsoleLogger {
@@ -41,7 +43,7 @@ Rectangle {
                 margins: 10;
             }
 
-            visible: !consoleOutput.head.collapsed;
+            visible: consoleOutput.showContent;
 
             clip: true;
 

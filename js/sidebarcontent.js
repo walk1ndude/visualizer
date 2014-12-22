@@ -5,22 +5,22 @@ var sidebarDict = {
         {
             "text" : "Индивидуальные параметры",
             "type" : "Individual",
-            "collapsed" : false
+            "state" : "expanded"
         },
         {
             "text" : "Измерения",
             "type" : "Measures",
-            "collapsed" : false
+            "state" : "expanded"
         },
         {
             "text" : "Настройки модели",
             "type" : "ModelSpecs",
-            "collapsed" : false
-        },
-        /*{
+            "state" : "expanded"
+        }/*,
+        {
             "text" : "Вращение",
             "type" : "Geometry",
-            "collapsed" : false
+            "state" : "expanded"
         }*/
     ]
 };

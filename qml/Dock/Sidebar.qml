@@ -12,8 +12,7 @@ Sidedock {
 
     heading: "Sidebar";
 
-    state: "vertical";
-    inverseFolding: false;
+    state: "right";
 
     signal post(var message);
     signal postToSections(var message);
@@ -31,7 +30,7 @@ Sidedock {
                 for (var i = 0; i !== sections.length; ++ i) {
                     append({
                                "sectionName" : sections[i].text,
-                               "collapsed" : sections[i].collapsed,
+                               "_state" : sections[i].state,
                                "sectionType" : sections[i].type,
                                "subSections" : [ { } ]
                            });
@@ -47,7 +46,7 @@ Sidedock {
 
         width: parent.width - parent.head.height;
 
-        visible: !!width;
+        visible: showContent;
 
         delegate: sectionDelegate;
     }
@@ -55,22 +54,65 @@ Sidedock {
     Component {
         id: sectionDelegate;
         Column {
+            id: sectionColumn;
             width: sidebarListView.width;
 
+            property int sumHeight: 0;
+
             Heading {
+                id: heading;
+
                 width: parent.width;
 
                 text: sectionName;
 
-                collapsed: collapsed;
+                state: _state;
 
-                onCollapsedChanged: sidebarListModel.setProperty(index, "collapsed", !collapsed);
+                onStateChanged: sidebarListModel.setProperty(index, "_state", state === "collapsed" ? "collapsed" : "expanded");
+
+                transitions: [
+                    Transition {
+                        from: "expanded"
+                        to: "collapsed"
+
+                        NumberAnimation {
+                            target: sectionColumn;
+                            property: "height";
+                            duration: sidebar.animationSpeed;
+                            to: heading.height;
+                            easing.type: Easing.InOutQuad;
+                        }
+                    },
+
+                    Transition {
+                        from: "collapsed"
+                        to: "expanded"
+
+                        SequentialAnimation {
+                            ScriptAction {
+                                script: {
+                                    for (var item in sidebarListView.currentItem) { console.log(height); }
+                                    console.log(sidebarListView.currentItem);
+                                }
+                            }
+
+                            NumberAnimation {
+                                target: sectionColumn;
+                                property: "height";
+                                duration: sidebar.animationSpeed;
+                                to: 400;
+                                easing.type: Easing.InOutQuad;
+                            }
+                        }
+                    }
+                ]
             }
 
             Loader {
-                visible: !collapsed
+                visible: !(_state === "collapsed")
                 property var subSectionModel : subSections;
-                sourceComponent: if (!!collapsed) {
+                sourceComponent: {
+                                if (_state === "collapsed") {
                                      return null;
                                  }
                                  else {
@@ -82,8 +124,11 @@ Sidedock {
                                      default: return null;
                                      }
                                  }
+                }
 
-                onStatusChanged: if (status == Loader.Ready) item.model = subSectionModel;
+                onStatusChanged: if (status == Loader.Ready) {
+                                     item.model = subSectionModel;
+                                 }
             }
         }
     }

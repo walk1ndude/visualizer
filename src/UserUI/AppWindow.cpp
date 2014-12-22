@@ -12,7 +12,7 @@ namespace UserUI {
     AppWindow::AppWindow(const QString & qmlSource, const QString & host, const qint16 & port, QObject * parent) :
         QObject(parent) {
 
-        //qInstallMessageHandler(Quick::ConsoleLogger::customMessageHandler);
+        //qInstallMessageHandler(UserUI::ConsoleLogger::customMessageHandler);
 
         registerMetaTypes();
         registerQmlTypes();

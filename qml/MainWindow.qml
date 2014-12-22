@@ -153,7 +153,7 @@ ApplicationWindow {
     }
 
     function toggleDocks() {
-        sidebar.head.collapsed = false;
+        sidebar.head.state = "expanded";
     }
 
     Dock.ConsoleDock {

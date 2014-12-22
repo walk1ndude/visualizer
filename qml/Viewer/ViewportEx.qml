@@ -94,7 +94,7 @@ Viewport {
 
                 color: viewport.color;
 
-                visible: !viewport.isFullsized;
+                visible: viewport.state === "normal"
             }
 
             Rectangle {
