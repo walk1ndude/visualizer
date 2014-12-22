@@ -68,8 +68,6 @@ Sidedock {
 
                 state: _state;
 
-                z: parent.z;
-
                 Timer {
                     id: timerToggleContent;
                     interval: sidebar.animationSpeed * (heading.state === "collapsed" ? 1.0 : 0.0);

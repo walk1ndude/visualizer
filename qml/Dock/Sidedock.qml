@@ -14,6 +14,8 @@ Rectangle {
     property real dX: 300;
     property real dY: 300;
 
+    clip: true;
+
     states: [
         State {
             name: "top";
@@ -110,8 +112,27 @@ Rectangle {
         }
     ]
 
+    // for saving proportions of docks on window resizing
+    onDXChanged: {
+        if ((state === "left" || state === "right") && heading.state === "expanded") {
+            var oldW = width;
+            // height 'cause of transformations
+            width = dX + heading.height;
+            heading.x += (oldW - width)
+        }
+    }
+
+    onDYChanged: {
+        if ((state === "top" || state === "bottom") && heading.state === "expanded") {
+            var oldH = height;
+            height = dY + heading.height;
+            heading.y += (oldH - height)
+        }
+    }
+
     state: "right";
 
+    // transformations to make heading vertical
     Translate {
         id: translateTo;
         x: - width / 2;
@@ -144,14 +165,6 @@ Rectangle {
         property int parentX: 0;
         property int parentY: 0;
 
-        Timer {
-            id: timerToggleContent;
-            interval: animationSpeed * 0.3;
-            running: false;
-            repeat: false;
-            onTriggered: sidedock.showContent = !sidedock.showContent;
-        }
-
         transitions: [
             Transition {
                 from: "collapsed";
@@ -159,7 +172,7 @@ Rectangle {
 
                 ParallelAnimation {
                     ScriptAction {
-                        script: timerToggleContent.start();
+                        script: sidedock.showContent = !sidedock.showContent;
                     }
 
                     NumberAnimation {
@@ -182,7 +195,7 @@ Rectangle {
                         target: sidedock;
                         property: "width";
                         duration: animationSpeed;
-                        to: sidedock.state === "left" || sidedock.state === "right" ?  sidedock.width + sidedock.dX : width;
+                        to: sidedock.state === "left" || sidedock.state === "right" ? sidedock.width + sidedock.dX : width;
                         easing.type: Easing.InOutQuad;
                     }
 
@@ -206,7 +219,7 @@ Rectangle {
                         target: sidedock;
                         property: "height";
                         duration: animationSpeed;
-                        to: sidedock.state === "top" || sidedock.state === "bottom" ?  sidedock.height + sidedock.dY : height;
+                        to: sidedock.state === "top" || sidedock.state === "bottom" ? sidedock.height + sidedock.dY : height;
                         easing.type: Easing.InOutQuad;
                     }
                 }
@@ -218,7 +231,7 @@ Rectangle {
 
                 ParallelAnimation {
                     ScriptAction {
-                        script: timerToggleContent.start();
+                        script: sidedock.showContent = !sidedock.showContent;
                     }
 
                     NumberAnimation {

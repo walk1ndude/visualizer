@@ -150,6 +150,13 @@ Viewport {
             from: "normal";
             to: "fullsized";
             SequentialAnimation {
+                ScriptAction {
+                    script: {
+                        prevRect = boundingRect;
+                        parent.hideExcept(viewport);
+                    }
+                }
+
                 ParallelAnimation {
                     NumberAnimation {
                         target: viewport;
@@ -187,12 +194,6 @@ Viewport {
                         easing.type: Easing.InOutQuad;
                     }
                 }
-                ScriptAction {
-                    script: {
-                        prevRect = boundingRect;
-                        parent.hideExcept(viewport);
-                    }
-                }
             }
         },
 
@@ -200,10 +201,6 @@ Viewport {
             from: "fullsized";
             to: "normal";
             SequentialAnimation {
-                ScriptAction {
-                    script: parent.restore();
-                }
-
                 ParallelAnimation {
                     NumberAnimation {
                         target: viewport;
@@ -241,6 +238,10 @@ Viewport {
                         to: prevRect.height * parent.height;
                         easing.type: Easing.InOutQuad;
                     }
+                }
+
+                ScriptAction {
+                    script: parent.restore();
                 }
             }
         }
