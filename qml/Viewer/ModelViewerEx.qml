@@ -73,10 +73,12 @@ ModelViewer {
             onPost: modelViewer.message = message;
         }
 
+        onViewportsUpdated: {
+            modelViewer.update();
+        }
+
         function setZoom(zoomFactor, x, y, viewport) {
             zoom(zoomFactor, x, y, viewport);
-
-            modelViewer.update();
         }
     }
 

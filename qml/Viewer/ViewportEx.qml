@@ -7,6 +7,8 @@ import "qrc:/js/helpers.js" as Helpers;
 Viewport {
     id: viewport;
 
+    property bool isFullsized: false;
+
     property color color: "green";
 
     property bool invertedYAxis: false;
@@ -56,11 +58,95 @@ Viewport {
                 capitalization: Font.SmallCaps;
                 pointSize: 24;
             }
+
+            visible: viewport.width;
+        }
+
+        Rectangle {
+            color: "transparent";
+
+            anchors {
+                right: parent.right;
+                top: parent.top;
+
+                rightMargin: 0.4 * text.height;
+                topMargin: 0.4 * text.height;
+            }
+
+            width: parent.width / 16;
+            height: parent.width / 16;
+
+            border {
+                color: viewport.color;
+            }
+
+            Rectangle {
+                anchors {
+                    horizontalCenter: parent.horizontalCenter;
+                    top: parent.top;
+                    bottom: parent.bottom;
+                    topMargin: parent.height / 8;
+                    bottomMargin: parent.height / 8;
+                }
+
+                width: 1;
+                height: parent.height * 3 / 4;
+
+                color: viewport.color;
+
+                visible: !viewport.isFullsized;
+            }
+
+            Rectangle {
+                anchors {
+                    verticalCenter: parent.verticalCenter;
+                    left: parent.left;
+                    right: parent.right;
+                    leftMargin: parent.width / 8;
+                    rightMargin: parent.width / 8;
+                }
+
+                width: parent.width * 3 / 4;
+                height: 1;
+
+                color: viewport.color;
+            }
+
+            MouseArea {
+                z: 2;
+
+                anchors.fill: parent;
+
+                enabled: true;
+
+                cursorShape: Qt.PointingHandCursor;
+
+                onClicked: {
+                    switch (mouse.button) {
+                        case Qt.LeftButton:
+                            viewport.isFullsized = !viewport.isFullsized;
+
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    onIsFullsizedChanged: switchFullNormal();
+
+    function switchFullNormal() {
+        if (viewport.isFullsized) {
+            parent.hideExcept(viewport);
+        }
+        else {
+            parent.restore();
         }
     }
 
     MouseArea {
         id: mouseArea;
+
         property real prevMouseX: 0.0;
         property real prevMouseY: 0.0;
 
@@ -72,6 +158,8 @@ Viewport {
         property bool rotating: false;
 
         hoverEnabled: true;
+
+        propagateComposedEvents: true;
 
         anchors.fill: parent;
 
@@ -103,6 +191,10 @@ Viewport {
 
                 break;
             }
+        }
+
+        onClicked: {
+            mouse.accepted = false;
         }
 
         onPositionChanged: {

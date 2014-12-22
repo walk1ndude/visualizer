@@ -110,7 +110,7 @@ namespace Viewport {
         _surfaceSize = surfaceSize;
     }
 
-    void Viewport::setBoundingRectNormalized(const QRectF & boundingRectNormalized) {
+    void Viewport::normalizeAndSetBoundingRect(const QRectF & boundingRectNormalized) {
         QRectF clamped = QRectF(
                     std::min(std::max((float) boundingRectNormalized.x(), 0.0f), 1.0f),
                     std::min(std::max((float) boundingRectNormalized.y(), 0.0f), 1.0f),
@@ -180,7 +180,6 @@ namespace Viewport {
             initCamera(Camera::Delta(_delta));
         }
         else {
-            //initCamera(Camera::Delta(modelBillboard() * viewport->delta()));
             _camera->zoom(Camera::ZoomFactor(zoomFactor), Camera::AspectRatio(width() / height()));
         }
         
@@ -205,5 +204,15 @@ namespace Viewport {
     
     Camera::Orientation Viewport::orientationBillboard() const {
         return _camera->orientationBillboard();
+    }
+
+    void Viewport::restore() {
+        if (!_viewportRects.isEmpty()) {
+            normalizeAndSetBoundingRect(_viewportRects.dequeue());
+        }
+    }
+
+    void Viewport::remember() {
+        _viewportRects.enqueue(_boundingRectNormalized);
     }
 }

@@ -18,6 +18,9 @@ namespace Viewport {
 
         Q_INVOKABLE void zoom(const qreal & zoomFactor, const qreal & x, const qreal & y, Viewport * viewport);
 
+        Q_INVOKABLE void hideExcept(Viewport * viewport);
+        Q_INVOKABLE void restore();
+
         void resize(const QSize & surfaceSize);
 
         QList<Viewport *> array() const;
@@ -26,7 +29,7 @@ namespace Viewport {
         QList<Viewport *>  _viewportArray;
 
     signals:
-        void viewportsChanged();
+        void viewportsUpdated();
     };
 }
 

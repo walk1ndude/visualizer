@@ -1,6 +1,8 @@
 #ifndef VIEWPORT_H
 #define VIEWPORT_H
 
+#include <QtCore/QQueue>
+
 #include <QtGui/QMatrix4x4>
 
 #include <QtQuick/QQuickItem>
@@ -12,7 +14,7 @@ namespace Viewport {
 
     class Viewport : public QQuickItem {
         Q_PROPERTY(QRectF boundingRect READ boundingRectNormalized
-                   WRITE setBoundingRectNormalized NOTIFY boundingRectNormalizedChanged)
+                   WRITE normalizeAndSetBoundingRect NOTIFY boundingRectNormalizedChanged)
 
         Q_PROPERTY(ProjectionType projectionType READ projectionType WRITE setProjectionType)
         Q_PROPERTY(QString text READ text CONSTANT)
@@ -62,6 +64,9 @@ namespace Viewport {
 
         qreal zoom() const;
 
+        virtual void remember() final;
+        virtual void restore() final;
+
     private:
         QSize _surfaceSize;
 
@@ -77,13 +82,15 @@ namespace Viewport {
 
         QString _text;
 
+        QQueue<QRectF> _viewportRects;
+
     signals:
         void boundingRectNormalizedChanged();
 
         void zoomChanged();
 
     public slots:
-        virtual void setBoundingRectNormalized(const QRectF & boundingRectNormalized) final;
+        virtual void normalizeAndSetBoundingRect(const QRectF & boundingRectNormalized) final;
 
         virtual void setBoundingRect(const QRect & boundingRect) final;
 

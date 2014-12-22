@@ -47,9 +47,42 @@ namespace Viewport {
                 viewport->setZoom(zoomFactor, x, y, vp);
             }
         }
+
+        emit viewportsUpdated();
     }
 
     QList<Viewport *> ViewportArray::array() const {
-        return _viewportArray;
+        QList<Viewport *> array;
+
+        for (Viewport * viewport : _viewportArray) {
+            if (!viewport->boundingRect().isEmpty()) {
+                array.append(viewport);
+            }
+        }
+
+        return array;
+    }
+
+    void ViewportArray::hideExcept(Viewport * vp) {
+        for (Viewport * viewport : _viewportArray) {
+            viewport->remember();
+
+            if (vp != viewport) {
+                viewport->normalizeAndSetBoundingRect(QRectF(0.0f, 0.0f, 0.0f, 0.0f));
+            }
+            else {
+                viewport->normalizeAndSetBoundingRect(QRectF(0.0f, 0.0f, 1.0f, 1.0f));
+            }
+        }
+
+        emit viewportsUpdated();
+    }
+
+    void ViewportArray::restore() {
+        for (Viewport * viewport : _viewportArray) {
+            viewport->restore();
+        }
+
+        emit viewportsUpdated();
     }
 }
