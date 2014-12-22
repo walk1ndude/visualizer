@@ -146,7 +146,7 @@ Rectangle {
 
         Timer {
             id: timerToggleContent;
-            interval: animationSpeed / 2;
+            interval: animationSpeed * 0.3;
             running: false;
             repeat: false;
             onTriggered: sidedock.showContent = !sidedock.showContent;

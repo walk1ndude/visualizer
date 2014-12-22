@@ -20,7 +20,6 @@ Rectangle {
         heightChanged(height);
     }
 
-
     Grid {
         id: grid;
 

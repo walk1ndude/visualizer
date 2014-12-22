@@ -59,6 +59,8 @@ Sidedock {
 
             property int sumHeight: 0;
 
+            clip: true;
+
             Heading {
                 id: heading;
 
@@ -68,9 +70,11 @@ Sidedock {
 
                 state: _state;
 
+                z: parent.z;
+
                 Timer {
                     id: timerToggleContent;
-                    interval: sidebar.animationSpeed * (heading.state === "collapsed" ? 0.75 : 0.2);
+                    interval: sidebar.animationSpeed * (heading.state === "collapsed" ? 1.0 : 0.0);
                     running: false;
                     repeat: false;
                     onTriggered: sidebarListModel.setProperty(index, "_state", heading.state);
