@@ -46,8 +46,6 @@ Sidedock {
 
         width: parent.width - parent.head.height;
 
-        visible: showContent;
-
         delegate: sectionDelegate;
     }
 
