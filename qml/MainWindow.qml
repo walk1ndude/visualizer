@@ -25,52 +25,63 @@ ApplicationWindow {
     menuBar: MenuBar {
         id: menubar;
         Menu {
-            title: "File";
+            title: qsTr("File");
 
             MenuItem {
-                text: "Open dicom";
+                text: qsTr("Open dicom");
                 onTriggered: {
                     openFileDialogDicom.visible = true;
                 }
             }
 
             MenuItem {
-                text: "Open reconstructor";
+                text: qsTr("Open reconstructor");
                 onTriggered: {
                     openFileDialogReconstructor.visible = true;
                 }
             }
 
             MenuItem {
-                text: "Open Stl file";
+                text: qsTr("Open Stl file");
                 onTriggered: {
                     openFileDialogStl.visible = true;
                 }
             }
 
             MenuItem {
-                text: "Quit";
+                text: qsTr("Quit");
                 onTriggered: Qt.quit();
+            }
+        }
+
+        Menu {
+            title: qsTr("Edit");
+
+            MenuItem {
+                text: qsTr("Find interceptions");
+                onTriggered: {
+                    openFileDialogDicom.visible = true;
+                }
             }
         }
     }
 
     FileDialog {
         id: openFileDialogDicom;
-        title: "Choose DICOM file";
+        title: qsTr("Choose DICOM file");
         onAccepted: readDicom(fileUrl)
     }
 
     FileDialog {
         id: openFileDialogReconstructor;
-        title: "Choose image files";
+        title: qsTr("Choose image files");
         selectMultiple: true;
         onAccepted: readReconstructor(fileUrls);
     }
 
     FileDialog {
         id: openFileDialogStl;
-        title: "Choose stl files";
+        title: qsTr("Choose stl files");
         onAccepted: readSTL(fileUrl);
     }
 

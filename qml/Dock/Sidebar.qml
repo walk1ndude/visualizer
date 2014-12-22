@@ -10,7 +10,7 @@ Sidedock {
 
     color: "#FFFFFF";
 
-    heading: "Sidebar";
+    heading: qsTr("Sidebar");
 
     state: "right";
 

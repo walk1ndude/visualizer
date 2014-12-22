@@ -61,6 +61,9 @@ namespace Model {
 
         QList<AbstractModel *> childModels() const;
 
+        virtual GLuint verticesBufferID() const final;
+        virtual GLuint indicesBufferID() const final;
+
     protected:
         mutable QMutex modelMutex;
 

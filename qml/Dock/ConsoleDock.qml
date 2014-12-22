@@ -10,7 +10,7 @@ Rectangle {
     Sidedock {
         id: consoleOutput;
 
-        heading: "Console output";
+        heading: qsTr("Console output");
 
         state: "bottom";
 

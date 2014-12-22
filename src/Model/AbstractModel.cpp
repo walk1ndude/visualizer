@@ -87,6 +87,14 @@ namespace Model {
         return _numberedID;
     }
 
+    GLuint AbstractModel::verticesBufferID() const {
+        return _vboVert.bufferId();
+    }
+
+    GLuint AbstractModel::indicesBufferID() const {
+        return _vboInd.bufferId();
+    }
+
     Scene::AbstractScene * AbstractModel::scene() const {
         return _scene;
     }
