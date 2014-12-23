@@ -105,10 +105,17 @@ Rectangle {
     }
 
     onDYChanged: {
-        if ((state === "top" || state === "bottom") && heading.state === "expanded") {
-            var oldH = height;
-            height = dY + heading.height;
-            heading.y += (oldH - height)
+        if (heading.state === "expanded") {
+            if (state === "bottom") {
+                heading.y = sidedock.dY;
+                y = parent.height - heading.height - dY;
+                height = height + dY;
+            }
+            else if (state === "top") {
+                heading.y = - sidedock.dY;
+                y = heading.height + sidedock.dY;
+                height = height + dY;
+            }
         }
     }
 

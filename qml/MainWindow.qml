@@ -14,7 +14,8 @@ ApplicationWindow {
     width: 1100;
     height: 768;
 
-    property real sideBarWidth: 0.35
+    property real sidebarWidth: 0.35;
+    property real consoleDockHeight: 0.4;
 
     title: "visualizer";
 
@@ -160,7 +161,7 @@ ApplicationWindow {
             }
         }
 
-        dX: appWindow.width * appWindow.sideBarWidth;
+        dX: appWindow.width * appWindow.sidebarWidth;
     }
 
     function toggleDocks() {
@@ -177,5 +178,7 @@ ApplicationWindow {
         anchors {
             left: parent.left;
         }
+
+        dY: appWindow.height * appWindow.consoleDockHeight;
     }
 }
