@@ -21,15 +21,6 @@ Rectangle {
             name: "top";
 
             AnchorChanges {
-                target: sidedock;
-
-                anchors {
-                    left: parent.left;
-                    right: parent.right;
-                }
-            }
-
-            AnchorChanges {
                 target: heading;
 
                 anchors {
@@ -46,15 +37,6 @@ Rectangle {
 
         State {
             name: "bottom";
-
-            AnchorChanges {
-                target: sidedock;
-
-                anchors {
-                    left: parent.left;
-                    right: parent.right;
-                }
-            }
 
             AnchorChanges {
                 target: heading;
@@ -211,7 +193,7 @@ Rectangle {
                         target: sidedock;
                         property: "y";
                         duration: animationSpeed;
-                        to: sidedock.state === "top" ? sidedock.dY : sidedock.state === "bottom" ? - sidedock.dY : y;
+                        to: sidedock.state === "top" ? heading.height + sidedock.dY : sidedock.state === "bottom" ? parent.height - heading.height - sidedock.dY : y;
                         easing.type: Easing.InOutQuad;
                     }
 
@@ -262,7 +244,7 @@ Rectangle {
                         target: heading;
                         property: "y";
                         duration: animationSpeed;
-                        to: 0
+                        to: sidedock.state === "top" || sidedock.state === "bottom" ? 0 : y;
                         easing.type: Easing.InOutQuad;
                     }
 
@@ -270,15 +252,7 @@ Rectangle {
                         target: sidedock;
                         property: "y";
                         duration: animationSpeed;
-                        to: 0;
-                        easing.type: Easing.InOutQuad;
-                    }
-
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "height";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" || sidedock.state === "bottom" ?  sidedock.height - sidedock.dXY : height;
+                        to: sidedock.state === "top" ? heading.height - sidedock.dY : sidedock.state === "bottom" ? parent.height - heading.height : y;
                         easing.type: Easing.InOutQuad;
                     }
                 }

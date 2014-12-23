@@ -126,7 +126,7 @@ ApplicationWindow {
         Viewer.ModelViewerEx {
             id: modelViewer;
             width: appWindow.width - sidebar.width;
-            height: appWindow.height - consoleDock.height;
+            height: appWindow.height - consoleDock.head.height;
 
             onPost: {
                 switch (message.header.reciever) {
@@ -170,10 +170,12 @@ ApplicationWindow {
     Dock.ConsoleDock {
         id: consoleDock;
 
+        y: appWindow.height - head.height;
+
+        width: modelViewer.width;
+
         anchors {
             left: parent.left;
-            right: sidebar.left;
-            top: modelRow.bottom;
         }
     }
 }

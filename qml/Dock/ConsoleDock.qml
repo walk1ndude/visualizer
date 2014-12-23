@@ -2,82 +2,76 @@ import QtQuick 2.3;
 
 import RenderTools 1.0;
 
-Rectangle {
-    id: consoleWrapper;
+Sidedock {
+    id: consoleOutput;
 
-    height: consoleOutput.head.height;
+    heading: qsTr("Console output");
 
-    Sidedock {
-        id: consoleOutput;
+    state: "bottom";
 
-        heading: qsTr("Console output");
+    color: "#880000FF";
 
-        state: "bottom";
+    ConsoleLogger {
+        id: logger;
 
-        color: "#880000FF";
-
-        ConsoleLogger {
-            id: logger;
-
-            onOutputChanged: {
-                textEdit.text = logger.output;
-            }
-
-            lineCount: 20;
+        onOutputChanged: {
+            textEdit.text = logger.output;
         }
 
-        Flickable {
-            id: flick;
+        lineCount: 20;
+    }
 
-            width: parent.width;
-            height: consoleOutput.dY - consoleOutput.head.height + 20;
+    Flickable {
+        id: flick;
 
-            contentWidth: textEdit.paintedWidth;
-            contentHeight: textEdit.paintedHeight;
+        width: parent.width;
+        height: consoleOutput.dY - consoleOutput.head.height + 20;
 
-            anchors {
-                left: parent.left;
-                right: parent.right;
-                top: parent.top;
+        contentWidth: textEdit.paintedWidth;
+        contentHeight: textEdit.paintedHeight;
 
-                margins: 10;
+        anchors {
+            left: parent.left;
+            right: parent.right;
+            top: parent.top;
+
+            margins: 10;
+        }
+
+        visible: consoleOutput.showContent;
+
+        clip: true;
+
+        function ensureVisible(r) {
+            if (contentX >= r.x)
+                contentX = r.x;
+            else if (contentX + width <= r.x + r.width)
+                contentX = r.x + r.width - width;
+            if (contentY >= r.y)
+                contentY = r.y;
+            else if (contentY + height <= r.y + r.height)
+                contentY = r.y + r.height - height;
+        }
+
+        TextEdit {
+            id: textEdit;
+
+            width: flick.width;
+            height: flick.height;
+            focus: true;
+
+            readOnly: true;
+
+            font {
+                family: "Helvetica";
+                pointSize: 14;
+                bold: true;
             }
 
-            visible: consoleOutput.showContent;
+            wrapMode: TextEdit.Wrap;
+            textFormat: Text.RichText;
 
-            clip: true;
-
-            function ensureVisible(r) {
-                if (contentX >= r.x)
-                    contentX = r.x;
-                else if (contentX + width <= r.x + r.width)
-                    contentX = r.x + r.width - width;
-                if (contentY >= r.y)
-                    contentY = r.y;
-                else if (contentY + height <= r.y + r.height)
-                    contentY = r.y + r.height - height;
-            }
-
-            TextEdit {
-                id: textEdit;
-
-                width: flick.width;
-                height: flick.height;
-                focus: true;
-
-                readOnly: true;
-
-                font {
-                    family: "Helvetica";
-                    pointSize: 14;
-                    bold: true;
-                }
-
-                wrapMode: TextEdit.Wrap;
-                textFormat: Text.RichText;
-
-                onCursorRectangleChanged: flick.ensureVisible(cursorRectangle);
-            }
+            onCursorRectangleChanged: flick.ensureVisible(cursorRectangle);
         }
     }
 }
