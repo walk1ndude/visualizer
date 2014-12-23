@@ -16,6 +16,7 @@ ApplicationWindow {
 
     property real sidebarWidth: 0.35;
     property real consoleDockHeight: 0.4;
+    property real settingsDockHeight: 0.4;
 
     title: "visualizer";
 
@@ -61,7 +62,7 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Find interceptions");
                 onTriggered: {
-                    openFileDialogDicom.visible = true;
+                    settingsDock.head.state = (settingsDock.head.state === "collapsed") ? "expanded" : "collapsed";
                 }
             }
         }
@@ -124,10 +125,12 @@ ApplicationWindow {
     Row {
         id: modelRow;
 
+        y: settingsDock.head.height;
+
         Viewer.ModelViewerEx {
             id: modelViewer;
             width: appWindow.width - sidebar.width;
-            height: appWindow.height - consoleDock.head.height;
+            height: appWindow.height - consoleDock.head.height - settingsDock.head.height;
 
             onPost: {
                 switch (message.header.reciever) {
@@ -180,5 +183,17 @@ ApplicationWindow {
         }
 
         dY: appWindow.height * appWindow.consoleDockHeight;
+    }
+
+    Dock.SettingsDock {
+        id: settingsDock;
+
+        width: modelViewer.width;
+
+        anchors {
+            left: parent.left;
+        }
+
+        dY: appWindow.height * appWindow.settingsDockHeight;
     }
 }

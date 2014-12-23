@@ -112,9 +112,9 @@ Rectangle {
                 height = height + dY;
             }
             else if (state === "top") {
-                heading.y = - sidedock.dY;
-                y = heading.height + sidedock.dY;
-                height = height + dY;
+                heading.y = sidedock.dY;
+                y = 0;
+                height = heading.height + dY;
             }
         }
     }
@@ -192,7 +192,7 @@ Rectangle {
                         target: heading;
                         property: "y";
                         duration: animationSpeed;
-                        to: sidedock.state === "top" ? - sidedock.dY : sidedock.state === "bottom" ? sidedock.dY : y;
+                        to: sidedock.state === "top" ? sidedock.dY : sidedock.state === "bottom" ? sidedock.dY : y;
                         easing.type: Easing.InOutQuad;
                     }
 
@@ -200,7 +200,7 @@ Rectangle {
                         target: sidedock;
                         property: "y";
                         duration: animationSpeed;
-                        to: sidedock.state === "top" ? heading.height + sidedock.dY : sidedock.state === "bottom" ? parent.height - heading.height - sidedock.dY : y;
+                        to: sidedock.state === "top" ? 0 : sidedock.state === "bottom" ? parent.height - heading.height - sidedock.dY : y;
                         easing.type: Easing.InOutQuad;
                     }
 
@@ -259,7 +259,15 @@ Rectangle {
                         target: sidedock;
                         property: "y";
                         duration: animationSpeed;
-                        to: sidedock.state === "top" ? heading.height - sidedock.dY : sidedock.state === "bottom" ? parent.height - heading.height : y;
+                        to: sidedock.state === "top" ? 0 : sidedock.state === "bottom" ? parent.height - heading.height : y;
+                        easing.type: Easing.InOutQuad;
+                    }
+
+                    NumberAnimation {
+                        target: sidedock;
+                        property: "height";
+                        duration: animationSpeed;
+                        to: sidedock.state === "top" ? heading.height : height;
                         easing.type: Easing.InOutQuad;
                     }
                 }

@@ -39,6 +39,6 @@
         <file>shaders/Axes/vertex.glsl</file>
         <file>icons/left_arrow.svg</file>
         <file>icons/right_arrow.svg</file>
-        <file>qml/Dock/IntercectionDock.qml</file>
+        <file>qml/Dock/SettingsDock.qml</file>
     </qresource>
 </RCC>
