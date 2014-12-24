@@ -56,7 +56,7 @@ namespace Scene {
         }
     }
 
-    void ModelScene::render() {
+    void ModelScene::render(const Model::AbstractModel::RenderState & state) {
         Viewport::ViewportRect boundingRect;
 
         for (const Viewport::Viewport * viewport : _viewportArray->array()) {
@@ -65,12 +65,14 @@ namespace Scene {
             glViewport(boundingRect.x(), boundingRect.y(), boundingRect.width(), boundingRect.height());
 
             for (Model::AbstractModel * model : _models.list()) {
-                model->drawModel(viewport);
+                model->drawModel(viewport, state);
             }
         }
     }
 
     bool ModelScene::postProcess() {
+        render(Model::AbstractModel::RenderState::CONTOUR_RENDER);
+
         bool redraw = false;
 
         for (Model::AbstractModel * model : _models.list()) {

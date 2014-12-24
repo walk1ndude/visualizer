@@ -14,7 +14,7 @@ Viewport {
     property real minimumZoom: 0.2;
     property real maximumZoom: 10.0;
 
-    property int animationSpeed: 1000;
+    property int animationSpeed: 500;
 
     property vector2d rotationSpeed: Qt.vector2d(width / 10, height / 10);
 

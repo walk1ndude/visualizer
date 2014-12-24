@@ -50,7 +50,7 @@ namespace Scene {
 
         void selectModel(Model::AbstractModel * model);
 
-        void render();
+        void render(const Model::AbstractModel::RenderState & state = Model::AbstractModel::RenderState::CORE_RENDER);
         bool postProcess();
 
     signals:

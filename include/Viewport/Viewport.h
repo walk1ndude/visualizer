@@ -45,6 +45,8 @@ namespace Viewport {
 
         ViewportRect boundingRectNormalized() const;
 
+        qreal xRect() const;
+
         ProjectionType projectionType() const;
 
         Camera::ProjectionMatrix projection() const;

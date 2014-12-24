@@ -324,7 +324,9 @@ namespace Model {
             bindUniformValues(_program, viewport);
             bindUniformValues();
             
-            processTextures(&QOpenGLTexture::bind);
+            if (state == RenderState::CORE_RENDER) {
+                processTextures(&QOpenGLTexture::bind);
+            }
             
             glStatesEnable(state);
             
@@ -334,8 +336,11 @@ namespace Model {
             
             glFinish();
             _vao.release();
-            
-            processTextures(&QOpenGLTexture::release);
+
+            if (state == RenderState::CORE_RENDER) {
+                processTextures(&QOpenGLTexture::release);
+            }
+
             glStatesDisable(state);
             releaseShaderProgram();
         }
@@ -475,6 +480,17 @@ namespace Model {
             glEnable(GL_DEPTH_TEST);
             glDepthFunc(GL_LEQUAL);
             break;
+        case CONTOUR_RENDER:
+            glStencilFunc(GL_NOTEQUAL, 1, 0xFFFF);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            // Draw the object with thick lines
+            glLineWidth(3.0f);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            break;
         }
     }
 
@@ -482,7 +498,10 @@ namespace Model {
         switch (state) {
         case CORE_RENDER:
             glDisable(GL_STENCIL_TEST);
-
+            glDisable(GL_DEPTH_TEST);
+            break;
+        case CONTOUR_RENDER:
+            glDisable(GL_STENCIL_TEST);
             glDisable(GL_DEPTH_TEST);
             break;
         }
