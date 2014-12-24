@@ -84,17 +84,29 @@ namespace Model {
         return lightView;
     }
 
-    void VolumeModel::glStatesEnable() const {
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    void VolumeModel::glStatesEnable(const RenderState & state) const {
+        switch (state) {
+        case CORE_RENDER:
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            break;
+        case CONTOUR_RENDER:
+            break;
+        }
 
-        AbstractModelWithPoints::glStatesEnable();
+        AbstractModel::glStatesEnable();
     }
 
-    void VolumeModel::glStatesDisable() const {
-        glDisable(GL_BLEND);
+    void VolumeModel::glStatesDisable(const RenderState & state) const {
+        switch (state) {
+        case CORE_RENDER:
+            glDisable(GL_BLEND);
+            break;
+        case CONTOUR_RENDER:
+            break;
+        }
 
-        AbstractModelWithPoints::glStatesDisable();
+        AbstractModel::glStatesDisable();
     }
 
     void VolumeModel::bindAttributeArrays(QOpenGLShaderProgram * program) const {

@@ -46,8 +46,8 @@ namespace Model {
         virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;
         virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
 
-        virtual void glStatesEnable() const;
-        virtual void glStatesDisable() const;
+        virtual void glStatesEnable(const RenderState & state = RenderState::CORE_RENDER) const;
+        virtual void glStatesDisable(const RenderState & state = RenderState::CORE_RENDER) const;
 
     private:
         VolumeInfo::Slope _slope;

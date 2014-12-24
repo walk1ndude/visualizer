@@ -97,19 +97,6 @@ namespace Model {
     void AxesModel::bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const {
         program->setUniformValue(uniformValues["mvp"], projection(viewport) * view(viewport) * model(viewport));
     }
-
-    void AxesModel::glStatesEnable() const {
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        AbstractModel::glStatesEnable();
-    }
-
-    void AxesModel::glStatesDisable() const {
-        glDisable(GL_DEPTH_TEST);
-
-        AbstractModel::glStatesDisable();
-    }
 }
 
 REGISTER_TYPE(AxesModel)

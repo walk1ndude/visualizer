@@ -1,7 +1,7 @@
 import QtQuick 2.3;
 
-import "qrc:/js/pointsdictionary.js" as PointsDict
-import "qrc:/js/helpers.js" as Helpers
+import "qrc:/js/pointsdictionary.js" as PointsDict;
+import "qrc:/js/helpers.js" as Helpers;
 
 Rectangle {
     id: measures;

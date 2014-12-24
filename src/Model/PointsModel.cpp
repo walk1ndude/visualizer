@@ -96,19 +96,6 @@ namespace Model {
 
         program->setUniformValue(uniformValues["viewportSize"], QVector4D(viewport->width(), viewport->height(), 0.0f, 0.0f));
     }
-
-    void PointsModel::glStatesEnable() const {
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        AbstractModel::glStatesEnable();
-    }
-
-    void PointsModel::glStatesDisable() const {
-        glDisable(GL_DEPTH_TEST);
-
-        AbstractModel::glStatesDisable();
-    }
 }
 
 REGISTER_TYPE(PointsModel)

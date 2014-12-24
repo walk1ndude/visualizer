@@ -26,10 +26,7 @@ public:
 protected:
     virtual void bindAttributeArrays(QOpenGLShaderProgram * program) const;
     virtual void bindUniformValues(QOpenGLShaderProgram * program, const Viewport::Viewport * viewport) const;
-
-    virtual void glStatesEnable() const;
-    virtual void glStatesDisable() const;
-};
+    };
 }
 
 #endif // POINTSMODEL_H

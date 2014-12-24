@@ -36,9 +36,6 @@ namespace Model {
 
         virtual void drawingRoutine() const;
 
-        virtual void glStatesEnable() const;
-        virtual void glStatesDisable() const;
-
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
 
     private:

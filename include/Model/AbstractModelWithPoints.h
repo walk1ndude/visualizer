@@ -34,9 +34,6 @@ namespace Model {
 
         virtual void deleteModel();
 
-        virtual void glStatesEnable() const;
-        virtual void glStatesDisable() const;
-
         virtual void init(const ModelInfo::Params & params);
 
     private:

@@ -238,19 +238,6 @@ namespace Model {
         AbstractModel::deleteModel();
     }
 
-    void AbstractModelWithPoints::glStatesEnable() const {
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        AbstractModel::glStatesEnable();
-    }
-
-    void AbstractModelWithPoints::glStatesDisable() const {
-        glDisable(GL_DEPTH_TEST);
-
-        AbstractModel::glStatesDisable();
-    }
-
     void AbstractModelWithPoints::invoke(const QString & name, const ModelInfo::Params & params) {
         if (name == "setRange") {
             ViewRangeInfo::ViewAxis viewAxis;

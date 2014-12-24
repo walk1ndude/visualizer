@@ -32,9 +32,6 @@ namespace Model {
 
         virtual void drawingRoutine() const;
 
-        virtual void glStatesEnable() const;
-        virtual void glStatesDisable() const;
-
     private:
         QVector<QColor> _axesColors;
 

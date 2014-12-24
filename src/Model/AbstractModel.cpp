@@ -15,6 +15,8 @@ namespace Model {
 
         _numberedID = modelNumber - 1;
 
+        _selectedID = 0;
+
         _vboVert = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
         _vboInd = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 
@@ -310,7 +312,7 @@ namespace Model {
         _updateNeeded = true;
     }
 
-    void AbstractModel::drawModel(const Viewport::Viewport * viewport) {
+    void AbstractModel::drawModel(const Viewport::Viewport * viewport, const RenderState & state) {
         /* model can contain no vertices or | and no program
         so it can serve as a "root" model, containing some
         number of children: models with vertices and program.
@@ -324,7 +326,7 @@ namespace Model {
             
             processTextures(&QOpenGLTexture::bind);
             
-            glStatesEnable();
+            glStatesEnable(state);
             
             _vao.bind();
             
@@ -334,7 +336,7 @@ namespace Model {
             _vao.release();
             
             processTextures(&QOpenGLTexture::release);
-            glStatesDisable();
+            glStatesDisable(state);
             releaseShaderProgram();
         }
 
@@ -450,15 +452,40 @@ namespace Model {
 
     }
 
-    void AbstractModel::glStatesEnable() const {
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-        glStencilFunc(GL_ALWAYS, _numberedID + 1, -1);
+    void AbstractModel::selectModel(const uint & selectedID) {
+        _selectedID = selectedID;
     }
 
-    void AbstractModel::glStatesDisable() const {
-        glDisable(GL_STENCIL_TEST);
+    void AbstractModel::unselectModel() {
+        _selectedID = 0;
+    }
+
+    bool AbstractModel::isSelected() const {
+        return _selectedID != 0;
+    }
+
+    void AbstractModel::glStatesEnable(const RenderState & state) const {
+        switch (state) {
+        case CORE_RENDER:
+            glEnable(GL_STENCIL_TEST);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            glStencilFunc(GL_ALWAYS, (isSelected() ? _selectedID : _numberedID) + 1, 0xFFFF);
+
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            break;
+        }
+    }
+
+    void AbstractModel::glStatesDisable(const RenderState & state) const {
+        switch (state) {
+        case CORE_RENDER:
+            glDisable(GL_STENCIL_TEST);
+
+            glDisable(GL_DEPTH_TEST);
+            break;
+        }
     }
 
     void AbstractModel::invoke(const QString & name, const ModelInfo::Params & params) {

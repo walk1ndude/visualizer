@@ -125,18 +125,13 @@ Sidedock {
                 property var subSectionModel : subSections;
 
                 sourceComponent: {
-                                if (_state === "collapsed") {
-                                     return null;
-                                 }
-                                 else {
-                                     switch(sectionType) {
-                                     case "ModelSpecs" : return subSectionModelSpecs;
-                                     case "Geometry" : return subSectionGeometry;
-                                     case "Measures" : return subSectionMeasures;
-                                     case "Individual" : return subSectionIndividual;
-                                     default: return null;
-                                     }
-                                 }
+                    switch(sectionType) {
+                    case "ModelSpecs" : return subSectionModelSpecs;
+                    case "Geometry" : return subSectionGeometry;
+                    case "Measures" : return subSectionMeasures;
+                    case "Individual" : return subSectionIndividual;
+                    default: return null;
+                    }
                 }
 
                 onStatusChanged: if (status == Loader.Ready) {

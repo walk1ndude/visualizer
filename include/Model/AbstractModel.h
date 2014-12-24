@@ -23,7 +23,13 @@
 namespace Model {
     class AbstractModel : public Scene::SceneObject {
         Q_OBJECT
+
     public:
+        enum RenderState {
+            CORE_RENDER = 0,
+            CONTOUR_RENDER = 1
+        };
+
         virtual ~AbstractModel();
 
         virtual Camera::ModelMatrix model(const Viewport::Viewport * viewport) const;
@@ -80,8 +86,8 @@ namespace Model {
 
         virtual void bindUniformValues() const;
 
-        virtual void glStatesEnable() const;
-        virtual void glStatesDisable() const;
+        virtual void glStatesEnable(const RenderState & state = RenderState::CORE_RENDER) const;
+        virtual void glStatesDisable(const RenderState & state = RenderState::CORE_RENDER) const;
 
         virtual int stride() const;
 
@@ -96,6 +102,8 @@ namespace Model {
         virtual QOpenGLShaderProgram * program() const final;
 
         virtual void deleteModel();
+
+        bool isSelected() const;
         
         virtual Camera::Orientation changedOrientation(const Camera::Rotation & rot) const;
         
@@ -160,6 +168,7 @@ namespace Model {
 
         // for stencil
         uint _numberedID;
+        uint _selectedID;
 
         int _stride;
 
@@ -241,7 +250,10 @@ namespace Model {
 
         virtual void scale(const QVector3D & scale);
 
-        virtual void drawModel(const Viewport::Viewport * viewPort) final;
+        virtual void drawModel(const Viewport::Viewport * viewport, const RenderState & state = RenderState::CORE_RENDER) final;
+
+        virtual void selectModel(const uint & selectedID) final;
+        virtual void unselectModel() final;
 
         virtual void addMaterial(Scene::Material * material, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;
         virtual void addLightSource(Scene::LightSource * lightSource, const ShaderInfo::ShaderVariablesNames & shaderVariables) final;

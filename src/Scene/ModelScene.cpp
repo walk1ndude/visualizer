@@ -105,7 +105,22 @@ namespace Scene {
     }
 
     void ModelScene::selectModel(Model::AbstractModel * model) {
+        Model::AbstractModel * prevSelected = _models.selectedObject();
+
+        if (prevSelected) {
+            prevSelected->unselectModel();
+        }
+
         _models.selectObject(model);
+
+        uint selectedID = 0;
+
+        for (const Model::AbstractModel * model : _models.list()) {
+            selectedID = std::max(selectedID, model->numberedID());
+        }
+
+        // this is for stencil
+        model->selectModel(selectedID);
 
         Message::SettingsMessage message(
                     Message::Sender(_models.selectedObject()->id()),
