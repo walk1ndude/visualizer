@@ -14,14 +14,15 @@ Rectangle {
 
     property alias viewer: modelViewer;
 
+    property alias settings: settingsDock;
+
     signal post(var message);
 
     ModelViewerEx  {
         id: modelViewer;
 
-        y: settingsDock.head.height;
         width: content.width - sidebar.width;
-        height: content.height - consoleDock.head.height - settingsDock.head.height;
+        height: content.height - consoleDock.head.height;
 
         onPost: {
             switch (message.header.reciever) {
@@ -79,11 +80,38 @@ Rectangle {
 
        width: modelViewer.width;
 
+       headingCanBeHidden: true;
+
        anchors {
            left: parent.left;
        }
 
        dY: parent.height * parent.settingsDockHeight;
+   }
+
+   MouseArea {
+       anchors {
+           top: modelViewer.top;
+           bottom: modelViewer.bottom;
+           right: modelViewer.right;
+           bottomMargin: consoleDock.head.height;
+           topMargin: settingsDock.head.height;
+       }
+
+       width: sidebar.head.state === "collapsed" ? 10 : 0;
+
+       hoverEnabled: true;
+
+       onEntered: {
+           if (!sidebar.width) {
+               sidebar.show();
+           }
+       }
+   }
+
+   Component.onCompleted: {
+       sidebar.width = 0;
+       settingsDock.height = 0;
    }
 }
 

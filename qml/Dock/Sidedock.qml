@@ -123,23 +123,13 @@ Rectangle {
 
     state: "right";
 
-    MouseArea {
-        anchors {
-            fill: parent;
-        }
 
-        hoverEnabled: true;
+    function show() {
+        width = heading.height;
+    }
 
-        onPositionChanged: {/*
-            if (headingCanBeHidden) {
-                switch (parent.state) {
-                case "right" :
-                    if (mouse.x <= heading.maximumHeight && heading.height) {
-                        //heading.toggle();
-                    }
-                }
-            }*/
-        }
+    function hide() {
+        width = 0;
     }
 
     // transformations to make heading vertical
@@ -172,65 +162,71 @@ Rectangle {
         id: heading;
         text: parent.heading;
 
-        property int parentX: 0;
-        property int parentY: 0;
-
         transitions: [
             Transition {
                 from: "collapsed";
                 to: "expanded";
 
-                ParallelAnimation {
+                SequentialAnimation {
                     ScriptAction {
-                        script: sidedock.showContent = !sidedock.showContent;
+                        script: {
+                            var horizontal = state === "left" || state === "right";
+                            width = horizontal ? heading.height : heading.width;
+                        }
                     }
 
-                    NumberAnimation {
-                        target: heading;
-                        property: "x";
-                        duration: animationSpeed;
-                        to: sidedock.state === "left" ? sidedock.dX : sidedock.state === "right" ? - sidedock.dX : x;
-                        easing.type: Easing.InOutQuad;
-                    }
+                    ParallelAnimation {
+                        ScriptAction {
+                            script: sidedock.showContent = !sidedock.showContent;
+                        }
 
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "x";
-                        duration: animationSpeed;
-                        to: sidedock.state === "left" ? sidedock.dX : sidedock.state === "right" ? - sidedock.dX : x;
-                        easing.type: Easing.InOutQuad;
-                    }
+                        NumberAnimation {
+                            target: heading;
+                            property: "x";
+                            duration: animationSpeed;
+                            to: sidedock.state === "left" ? sidedock.dX : sidedock.state === "right" ? - sidedock.dX : x;
+                            easing.type: Easing.InOutQuad;
+                        }
 
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "width";
-                        duration: animationSpeed;
-                        to: sidedock.state === "left" || sidedock.state === "right" ? sidedock.width + sidedock.dX : width;
-                        easing.type: Easing.InOutQuad;
-                    }
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "x";
+                            duration: animationSpeed;
+                            to: state === "left" ? dX : state === "right" ? - dX : x;
+                            easing.type: Easing.InOutQuad;
+                        }
 
-                    NumberAnimation {
-                        target: heading;
-                        property: "y";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" ? sidedock.dY : sidedock.state === "bottom" ? sidedock.dY : y;
-                        easing.type: Easing.InOutQuad;
-                    }
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "width";
+                            duration: animationSpeed;
+                            to: state === "left" || state === "right" ? width + dX : width;
+                            easing.type: Easing.InOutQuad;
+                        }
 
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "y";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" ? 0 : sidedock.state === "bottom" ? parent.height - heading.height - sidedock.dY : y;
-                        easing.type: Easing.InOutQuad;
-                    }
+                        NumberAnimation {
+                            target: heading;
+                            property: "y";
+                            duration: animationSpeed;
+                            to: state === "top" ? dY - heading.height : state === "bottom" ? dY : y;
+                            easing.type: Easing.InOutQuad;
+                        }
 
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "height";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" || sidedock.state === "bottom" ? sidedock.height + sidedock.dY : height;
-                        easing.type: Easing.InOutQuad;
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "y";
+                            duration: animationSpeed;
+                            to: state === "top" ? 0 : state === "bottom" ? parent.height - heading.height - dY : y;
+                            easing.type: Easing.InOutQuad;
+                        }
+
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "height";
+                            duration: animationSpeed;
+                            to: state === "top" || state === "bottom" ? height + dY : height;
+                            easing.type: Easing.InOutQuad;
+                        }
                     }
                 }
             },
@@ -239,57 +235,77 @@ Rectangle {
                 from: "expanded";
                 to: "collapsed";
 
-                ParallelAnimation {
-                    ScriptAction {
-                        script: sidedock.showContent = !sidedock.showContent;
+                SequentialAnimation {
+                    ParallelAnimation {
+                        ScriptAction {
+                            script: sidedock.showContent = !sidedock.showContent;
+                        }
+
+                        NumberAnimation {
+                            target: heading;
+                            property: "x";
+                            duration: animationSpeed;
+                            to: 0
+                            easing.type: Easing.InOutQuad;
+                        }
+
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "x";
+                            duration: animationSpeed;
+                            to: 0;
+                            easing.type: Easing.InOutQuad;
+                        }
+
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "width";
+                            duration: animationSpeed;
+                            to: state === "left" || state === "right" ? width - dX : width;
+                            easing.type: Easing.InOutQuad;
+                        }
+
+                        NumberAnimation {
+                            target: heading;
+                            property: "y";
+                            duration: animationSpeed;
+                            to: state === "top" || state === "bottom" ? 0 : y;
+                            easing.type: Easing.InOutQuad;
+                        }
+
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "y";
+                            duration: animationSpeed;
+                            to: state === "top" ? 0 : state === "bottom" ? parent.height - heading.height : y;
+                            easing.type: Easing.InOutQuad;
+                        }
+
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "height";
+                            duration: animationSpeed;
+                            to: state === "top" ? heading.height : height;
+                            easing.type: Easing.InOutQuad;
+                        }
                     }
 
-                    NumberAnimation {
-                        target: heading;
-                        property: "x";
-                        duration: animationSpeed;
-                        to: 0
-                        easing.type: Easing.InOutQuad;
-                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "width";
+                            duration: animationSpeed / 2;
+                            to: heading.canBeHidden && (state === "left" || state === "right") ? 0 : width;
+                            easing.type: Easing.InOutQuad;
+                        }
 
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "x";
-                        duration: animationSpeed;
-                        to: 0;
-                        easing.type: Easing.InOutQuad;
-                    }
-
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "width";
-                        duration: animationSpeed;
-                        to: sidedock.state === "left" || sidedock.state === "right" ?  sidedock.width - sidedock.dX : width;
-                        easing.type: Easing.InOutQuad;
-                    }
-
-                    NumberAnimation {
-                        target: heading;
-                        property: "y";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" || sidedock.state === "bottom" ? 0 : y;
-                        easing.type: Easing.InOutQuad;
-                    }
-
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "y";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" ? 0 : sidedock.state === "bottom" ? parent.height - heading.height : y;
-                        easing.type: Easing.InOutQuad;
-                    }
-
-                    NumberAnimation {
-                        target: sidedock;
-                        property: "height";
-                        duration: animationSpeed;
-                        to: sidedock.state === "top" ? heading.height : height;
-                        easing.type: Easing.InOutQuad;
+                        NumberAnimation {
+                            target: sidedock;
+                            property: "height";
+                            duration: animationSpeed / 2;
+                            to: heading.canBeHidden && (state === "top" || state === "bottom") ? 0 : height;
+                            easing.type: Easing.InOutQuad;
+                        }
                     }
                 }
             }

@@ -57,7 +57,7 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Find interceptions");
                 onTriggered: {
-                    settingsDock.head.state = (settingsDock.head.state === "collapsed") ? "expanded" : "collapsed";
+                    viewerContent.settings.head.state = (viewerContent.settings.head.state === "collapsed") ? "expanded" : "collapsed";
                 }
             }
         }

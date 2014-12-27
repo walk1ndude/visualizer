@@ -1,6 +1,8 @@
 import QtQuick 2.3;
 
 Rectangle {
+    id: heading;
+
     border {
         color: "black";
         width: 5;
@@ -21,6 +23,8 @@ Rectangle {
 
     property url collapsedIcon: "qrc:/icons/collapse.svg";
     property url expandedIcon: "qrc:/icons/expand.svg";
+
+    signal toggle();
 
     state: "collapsed";
 
@@ -55,10 +59,6 @@ Rectangle {
         source: parent.state !== "collapsed" ? parent.collapsedIcon : parent.expandedIcon;
     }
 
-    function toggle() {
-        //height = height ? (canBeHidden ? 0 : maximumHeight) : maximumHeight;
-    }
-
     MouseArea {
         anchors.fill: parent;
         onClicked: {
@@ -69,8 +69,10 @@ Rectangle {
 
         hoverEnabled: true;
 
-        onEntered: toggle();
-
-        onExited: toggle();
+        onExited: {
+            if (parent.state === "collapsed" && canBeHidden) {
+                heading.parent.hide();
+            }
+        }
     }
 }
