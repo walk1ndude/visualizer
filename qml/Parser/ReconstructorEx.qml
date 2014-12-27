@@ -77,7 +77,7 @@ Reconstructor {
 
     onSend: {
         viewer.message = model;
-        toggleDocks();
+        viewer.toggleDocks();
         destroy();
     }
 }

@@ -184,7 +184,7 @@ Rectangle {
                             target: heading;
                             property: "x";
                             duration: animationSpeed;
-                            to: sidedock.state === "left" ? sidedock.dX : sidedock.state === "right" ? - sidedock.dX : x;
+                            to: state === "left" ? dX : state === "right" ? - dX : x;
                             easing.type: Easing.InOutQuad;
                         }
 
@@ -200,7 +200,7 @@ Rectangle {
                             target: sidedock;
                             property: "width";
                             duration: animationSpeed;
-                            to: state === "left" || state === "right" ? width + dX : width;
+                            to: state === "left" || state === "right" ? heading.maximumHeight + dX : width;
                             easing.type: Easing.InOutQuad;
                         }
 
@@ -224,7 +224,7 @@ Rectangle {
                             target: sidedock;
                             property: "height";
                             duration: animationSpeed;
-                            to: state === "top" || state === "bottom" ? height + dY : height;
+                            to: state === "top" ? dY : state === "bottom" ? heading.height + dY : height;
                             easing.type: Easing.InOutQuad;
                         }
                     }
@@ -289,6 +289,7 @@ Rectangle {
                             easing.type: Easing.InOutQuad;
                         }
                     }
+
 
                     ParallelAnimation {
                         NumberAnimation {
