@@ -23,8 +23,6 @@
         <file>qml/Parser/StlReaderEx.qml</file>
         <file>qml/Parser/ReconstructorEx.qml</file>
         <file>qml/Parser/DicomReaderEx.qml</file>
-        <file>qml/Viewer/ModelViewerEx.qml</file>
-        <file>qml/Viewer/ViewportEx.qml</file>
         <file>qml/Dock/Section/Geometry.qml</file>
         <file>qml/Dock/Section/Individual.qml</file>
         <file>qml/Dock/Section/IndividualModel.qml</file>
@@ -40,5 +38,8 @@
         <file>icons/left_arrow.svg</file>
         <file>icons/right_arrow.svg</file>
         <file>qml/Dock/SettingsDock.qml</file>
+        <file>qml/Content/ViewerContent.qml</file>
+        <file>qml/Content/ModelViewerEx.qml</file>
+        <file>qml/Content/ViewportEx.qml</file>
     </qresource>
 </RCC>

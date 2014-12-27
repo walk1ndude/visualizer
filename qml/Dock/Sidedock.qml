@@ -11,6 +11,8 @@ Rectangle {
 
     property int animationSpeed: 1000;
 
+    property alias headingCanBeHidden: heading.canBeHidden;
+
     property real dX: 300;
     property real dY: 300;
 
@@ -120,6 +122,25 @@ Rectangle {
     }
 
     state: "right";
+
+    MouseArea {
+        anchors {
+            fill: parent;
+        }
+
+        hoverEnabled: true;
+
+        onPositionChanged: {/*
+            if (headingCanBeHidden) {
+                switch (parent.state) {
+                case "right" :
+                    if (mouse.x <= heading.maximumHeight && heading.height) {
+                        //heading.toggle();
+                    }
+                }
+            }*/
+        }
+    }
 
     // transformations to make heading vertical
     Translate {

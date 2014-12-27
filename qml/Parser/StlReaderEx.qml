@@ -69,7 +69,7 @@ StlReader {
     onSend: {
         if (viewer) {
             viewer.message = model;
-            toggleDocks();
+            viewer.toggleDocks();
             destroy();
         }
     }

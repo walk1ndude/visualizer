@@ -8,12 +8,16 @@ Rectangle {
 
     color: "white";
 
-    height: 50;
+    height: maximumHeight;
     width: 20;
 
     property string text: "";
 
     property var model: null;
+
+    property bool canBeHidden: false;
+
+    property int maximumHeight: 40;
 
     property url collapsedIcon: "qrc:/icons/collapse.svg";
     property url expandedIcon: "qrc:/icons/expand.svg";
@@ -51,6 +55,10 @@ Rectangle {
         source: parent.state !== "collapsed" ? parent.collapsedIcon : parent.expandedIcon;
     }
 
+    function toggle() {
+        //height = height ? (canBeHidden ? 0 : maximumHeight) : maximumHeight;
+    }
+
     MouseArea {
         anchors.fill: parent;
         onClicked: {
@@ -58,5 +66,11 @@ Rectangle {
                     parent.state = parent.state === "collapsed" ? "expanded" : "collapsed";
                 }
         }
+
+        hoverEnabled: true;
+
+        onEntered: toggle();
+
+        onExited: toggle();
     }
 }

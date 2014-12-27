@@ -6,17 +6,12 @@ import RenderTools 1.0;
 
 import "qrc:/js/settings.js" as Settings;
 
-import "Dock" as Dock;
-import "Viewer" as Viewer;
+import "Content" as Content;
 
 ApplicationWindow {
     id: appWindow;
     width: 1100;
     height: 768;
-
-    property real sidebarWidth: 0.35;
-    property real consoleDockHeight: 0.4;
-    property real settingsDockHeight: 0.4;
 
     title: "visualizer";
 
@@ -90,7 +85,7 @@ ApplicationWindow {
     function readDicom(fileUrl) {
         var component = Qt.createComponent("Parser/DicomReaderEx.qml");
         var dicomReader = component.createObject(null, {
-                                                   "viewer" : modelViewer
+                                                   "viewer" : viewerContent.viewer
                                                });
         dicomReader.file = fileUrl;
     }
@@ -98,7 +93,7 @@ ApplicationWindow {
     function readReconstructor(fileUrls) {
         var component = Qt.createComponent("Parser/ReconstructorEx.qml");
         var reconstructor = component.createObject(null, {
-                                                       "viewer" : modelViewer
+                                                       "viewer" : viewerContent.viewer
                                                    });
         reconstructor.files = fileUrls;
     }
@@ -106,7 +101,7 @@ ApplicationWindow {
     function readSTL(fileUrl) {
         var component = Qt.createComponent("Parser/StlReaderEx.qml");
         var stlReader = component.createObject(null, {
-                                                   "viewer" : modelViewer
+                                                   "viewer" : viewerContent.viewer
                                                });
         stlReader.file = fileUrl;
     }
@@ -122,78 +117,16 @@ ApplicationWindow {
         }
     }
 
-    Row {
-        id: modelRow;
+    Content.ViewerContent {
+        id: viewerContent;
 
-        y: settingsDock.head.height;
-
-        Viewer.ModelViewerEx {
-            id: modelViewer;
-            width: appWindow.width - sidebar.width;
-            height: appWindow.height - consoleDock.head.height - settingsDock.head.height;
-
-            onPost: {
-                switch (message.header.reciever) {
-                    case "sidebar" :
-                        sidebar.recieve(message);
-                        break;
-                    case "appWindow" :
-                        appWindow.recieve(message);
-                        break;
-                    }
-            }
-        }
-    }
-
-    Dock.Sidebar {
-        id: sidebar;
-
-        anchors {
-            left: modelRow.right;
-            top: appWindow.top;
-            bottom: appWindow.bottom;
-            right: appWindow.right;
-        }
+        width: parent.width;
+        height: parent.height;
 
         onPost: {
             if (message.header.reciever === "appWindow") {
-                appWindow.recieve(message)
-            }
-            else {
-                modelViewer.message = message;
+                appWindow.recieve(message);
             }
         }
-
-        dX: appWindow.width * appWindow.sidebarWidth;
-    }
-
-    function toggleDocks() {
-        sidebar.head.state = "expanded";
-    }
-
-    Dock.ConsoleDock {
-        id: consoleDock;
-
-        y: appWindow.height - head.height;
-
-        width: modelViewer.width;
-
-        anchors {
-            left: parent.left;
-        }
-
-        dY: appWindow.height * appWindow.consoleDockHeight;
-    }
-
-    Dock.SettingsDock {
-        id: settingsDock;
-
-        width: modelViewer.width;
-
-        anchors {
-            left: parent.left;
-        }
-
-        dY: appWindow.height * appWindow.settingsDockHeight;
     }
 }

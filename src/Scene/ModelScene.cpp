@@ -71,7 +71,7 @@ namespace Scene {
     }
 
     bool ModelScene::postProcess() {
-        render(Model::AbstractModel::RenderState::CONTOUR_RENDER);
+        //render(Model::AbstractModel::RenderState::CONTOUR_RENDER);
 
         bool redraw = false;
 

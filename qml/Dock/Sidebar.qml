@@ -12,6 +12,8 @@ Sidedock {
 
     heading: qsTr("Sidebar");
 
+    headingCanBeHidden: true;
+
     state: "right";
 
     signal post(var message);
